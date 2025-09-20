@@ -1,0 +1,242 @@
+<html lang="en" class="h-full"><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/content/location/location.js" id="eppiocemhmnlbhjplcgkofciiegomcon"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/extend-native-history-api.js"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/requests.js"></script><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script><script bis_use="true" type="text/javascript" charset="utf-8" data-bis-config="[&quot;facebook.com/&quot;,&quot;twitter.com/&quot;,&quot;youtube-nocookie.com/embed/&quot;,&quot;//vk.com/&quot;,&quot;//www.vk.com/&quot;,&quot;linkedin.com/&quot;,&quot;//www.linkedin.com/&quot;,&quot;//instagram.com/&quot;,&quot;//www.instagram.com/&quot;,&quot;//www.google.com/recaptcha/api2/&quot;,&quot;//hangouts.google.com/webchat/&quot;,&quot;//www.google.com/calendar/&quot;,&quot;//www.google.com/maps/embed&quot;,&quot;spotify.com/&quot;,&quot;soundcloud.com/&quot;,&quot;//player.vimeo.com/&quot;,&quot;//disqus.com/&quot;,&quot;//tgwidget.com/&quot;,&quot;//js.driftt.com/&quot;,&quot;friends2follow.com&quot;,&quot;/widget&quot;,&quot;login&quot;,&quot;//video.bigmir.net/&quot;,&quot;blogger.com&quot;,&quot;//smartlock.google.com/&quot;,&quot;//keep.google.com/&quot;,&quot;/web.tolstoycomments.com/&quot;,&quot;moz-extension://&quot;,&quot;chrome-extension://&quot;,&quot;/auth/&quot;,&quot;//analytics.google.com/&quot;,&quot;adclarity.com&quot;,&quot;paddle.com/checkout&quot;,&quot;hcaptcha.com&quot;,&quot;recaptcha.net&quot;,&quot;2captcha.com&quot;,&quot;accounts.google.com&quot;,&quot;www.google.com/shopping/customerreviews&quot;,&quot;buy.tinypass.com&quot;,&quot;gstatic.com&quot;,&quot;secureir.ebaystatic.com&quot;,&quot;docs.google.com&quot;,&quot;contacts.google.com&quot;,&quot;github.com&quot;,&quot;mail.google.com&quot;,&quot;chat.google.com&quot;,&quot;audio.xpleer.com&quot;,&quot;keepa.com&quot;,&quot;static.xx.fbcdn.net&quot;,&quot;sas.selleramp.com&quot;,&quot;1plus1.video&quot;,&quot;console.googletagservices.com&quot;,&quot;//lnkd.demdex.net/&quot;,&quot;//radar.cedexis.com/&quot;,&quot;//li.protechts.net/&quot;,&quot;challenges.cloudflare.com/&quot;,&quot;ogs.google.com&quot;]" src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/executors/traffic.js"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%; /* Pastikan html dan body mengambil tinggi viewport penuh agar flex-grow berfungsi */
+            margin: 0; /* Hapus margin default */
+            padding: 0; /* Hapus padding default */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000; /* Warna latar belakang hitam murni */
+            color: #e2e8f0; /* Warna teks terang untuk kontras */
+            display: flex; /* Jadikan body sebagai kontainer flex */
+            flex-direction: column; /* Susun elemen anak secara vertikal */
+        }
+        /* Gaya kustom untuk meniru tautan aktif Bootstrap untuk tab */
+        .tab-link.active {
+            border-bottom: 1px solid #3b82f6; /* Garis bawah biru untuk tab aktif */
+            color: #3b82f6; /* Teks biru untuk tab aktif */
+            font-weight: 100;
+        }
+        /* Gaya untuk konten tab tidak aktif */
+        .tab-content-item {
+            display: none;
+            flex-grow: 1; /* Izinkan konten untuk tumbuh dan mengisi ruang */
+            overflow: hidden; /* Sembunyikan overflow */
+        }
+        /* Gaya untuk konten tab aktif */
+        .tab-content-item.active {
+            display: flex; /* Gunakan flex untuk membuat konten mengisi */
+            flex-direction: column; /* Susun elemen anak secara vertikal */
+            height: 100%; /* Pastikan mengambil tinggi penuh dalam parent flex-nya */
+        }
+
+        /* Pastikan area konten utama adalah kontainer flex untuk elemen anaknya */
+        main {
+            flex-grow: 1; /* Buat main mengambil ruang vertikal yang tersisa */
+            display: flex;
+            flex-direction: column;
+            padding: 0; /* Hapus padding default dari main */
+            width: 100%; /* Pastikan main membentang selebar penuh */
+            max-width: 100%; /* Pastikan main membentang selebar penuh */
+            margin: 0 auto; /* Pusatkan secara horizontal, tetapi tidak ada margin vertikal */
+        }
+
+        /* Wrapper untuk konten tab untuk mengontrol tinggi keseluruhan */
+        .tab-contents-wrapper {
+            flex-grow: 1; /* Buat div ini mengambil ruang vertikal yang tersisa */
+            display: flex; /* Elemen anaknya adalah item konten tab, yang juga flex */
+            flex-direction: column; /* Susun elemen anak secara vertikal */
+            /* Dihapus min-height karena iframe akan menentukan tinggi dan flex-grow menangani perluasan */
+            background-color: transparent; /* Tidak ada latar belakang untuk wrapper ini */
+            border-radius: 0; /* Tidak ada border radius */
+            box-shadow: none; /* Tidak ada bayangan */
+            overflow: hidden; /* Sembunyikan overflow dari iframe */
+        }
+
+        /* Kontainer Iframe */
+        .iframe-container {
+            width: 100%;
+            height: 100%; /* Buat mengisi tinggi parent-nya */
+            display: flex; /* Gunakan flexbox untuk membuat iframe tumbuh */
+            flex-grow: 1; /* Buat kontainer iframe tumbuh untuk mengisi item konten tab */
+        }
+        .iframe-container iframe {
+            flex-grow: 1; /* Buat iframe mengambil semua ruang yang tersedia */
+            width: 100%;
+            height: 100%;
+            border: 0; /* Tidak ada border */
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.sticky{position:sticky}.top-0{top:0px}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mr-12{margin-right:3rem}.mt-0{margin-top:0px}.block{display:block}.flex{display:flex}.hidden{display:none}.h-16{height:4rem}.h-full{height:100%}.w-auto{width:auto}.w-full{width:100%}.flex-grow{flex-grow:1}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.space-x-8 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(2rem * var(--tw-space-x-reverse));margin-left:calc(2rem * calc(1 - var(--tw-space-x-reverse)))}.rounded-md{border-radius:0.375rem}.rounded-t-md{border-top-left-radius:0.375rem;border-top-right-radius:0.375rem}.border{border-width:1px}.border-gray-600{--tw-border-opacity:1;border-color:rgb(75 85 99 / var(--tw-border-opacity, 1))}.bg-black{--tw-bg-opacity:1;background-color:rgb(0 0 0 / var(--tw-bg-opacity, 1))}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.bg-gray-900{--tw-bg-opacity:1;background-color:rgb(17 24 39 / var(--tw-bg-opacity, 1))}.p-2{padding:0.5rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-4{padding-left:1rem;padding-right:1rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.text-center{text-align:center}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-gray-200{--tw-text-opacity:1;color:rgb(229 231 235 / var(--tw-text-opacity, 1))}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219 / var(--tw-text-opacity, 1))}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.hover\:text-blue-400:hover{--tw-text-opacity:1;color:rgb(96 165 250 / var(--tw-text-opacity, 1))}.focus\:border-blue-500:focus{--tw-border-opacity:1;border-color:rgb(59 130 246 / var(--tw-border-opacity, 1))}.focus\:ring-blue-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(59 130 246 / var(--tw-ring-opacity, 1))}@media (min-width: 768px){.md\:flex{display:flex}.md\:hidden{display:none}}</style></head>
+<body class="bg-gray-900 text-gray-200" __processed_64c33de0-5640-4ab8-b235-a2b953fffd49__="true" bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWllZ29tY29uIiwiYWRibG9ja2VyU3RhdHVzIjp7IkRJU1BMQVkiOiJkaXNhYmxlZCIsIkZBQ0VCT09LIjoiZGlzYWJsZWQiLCJUV0lUVEVSIjoiZGlzYWJsZWQiLCJSRURESVQiOiJkaXNhYmxlZCIsIlBJTlRFUkVTVCI6ImRpc2FibGVkIiwiSU5TVEFHUkFNIjoiZGlzYWJsZWQiLCJUSUtUT0siOiJkaXNhYmxlZCIsIkxJTktFRElOIjoiZGlzYWJsZWQiLCJDT05GSUciOiJkaXNhYmxlZCJ9LCJ2ZXJzaW9uIjoiMi4wLjI2Iiwic2NvcmUiOjIwMDI2fV0=">
+
+    <!-- Bagian Navbar (Meniru Navbar Bootstrap) -->
+    <nav class="bg-black p-2 sticky top-0 z-50">
+        <div class="container mx-auto flex items-center justify-between" bis_skin_checked="1">
+            <!-- Logo -->
+            <a href="#" class="flex items-center">
+                <!-- Logo Gambar -->
+                <img src="https://static.wixstatic.com/media/5e69ae_a65b067cab044c649fdcee3e1d52483e~mv2.png" alt="MyBrand Logo" class="h-16 w-auto mr-12" onerror="this.onerror=null;this.src='https://placehold.co/100x64/000000/FFFFFF?text=Logo';">
+            </a>
+            <div class="bg-black shadow-sm mt-0 py-2" bis_skin_checked="1">
+                <div class="container mx-auto px-4" bis_skin_checked="1">
+                    <!-- Desktop Tabs -->
+                    <div class="hidden md:flex justify-center space-x-8" bis_skin_checked="1">
+                        <a href="#tab1-content" class="tab-link text-gray-300 hover:text-blue-400 py-2 px-2 text-sm transition duration-300 text-center rounded-t-md active" data-target="tab1-content">Sentiment</a>
+                        <a href="#tab2-content" class="tab-link text-gray-300 hover:text-blue-400 py-2 px-2 text-sm transition duration-300 text-center rounded-t-md" data-target="tab2-content">Calendar</a>
+                        <a href="#tab3-content" class="tab-link text-gray-300 hover:text-blue-400 py-2 px-2 text-sm transition duration-300 text-center rounded-t-md" data-target="tab3-content">Premium News</a>
+                        <a href="#tab4-content" class="tab-link text-gray-300 hover:text-blue-400 py-2 px-2 text-sm transition duration-300 text-center rounded-t-md" data-target="tab4-content">Analysis</a>
+                        <a href="#tab5-content" class="tab-link text-gray-300 hover:text-blue-400 py-2 px-2 text-sm transition duration-300 text-center rounded-t-md" data-target="tab5-content">TV+ chart</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Mobile Dropdown -->
+            <div class="md:hidden" bis_skin_checked="1">
+                <select id="mobile-tab-select" class="block w-full p-2 border border-gray-600 rounded-md bg-gray-800 text-gray-200 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="tab1-content" selected="">Sentiment</option>
+                    <option value="tab2-content">Calendar</option>
+                    <option value="tab3-content">Premium News</option>
+                    <option value="tab4-content">Analysis</option>
+                    <option value="tab5-content">TV+ chart</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Area Konten Utama -->
+    <main class="flex-grow">
+        <!-- Kontainer Konten Tab -->
+        <div class="tab-contents-wrapper" bis_skin_checked="1">
+            <!-- Tab Konten 1 (Video) -->
+            <div id="tab1-content" class="tab-content-item active" bis_skin_checked="1" style="display: flex;">
+                <div class="iframe-container" bis_skin_checked="1">
+                    <iframe src="https://dashboard.acuitytrading.com/widgets/widget?widgetname=acuityassetsoverview&amp;settingId=7236&amp;apikey=0dbb2498-051a-45c6-b883-e62d9bbb3853&amp;lang=en-GB" frameborder="0" scrolling="auto" bis_size="{&quot;x&quot;:0,&quot;y&quot;:80,&quot;w&quot;:1366,&quot;h&quot;:519,&quot;abs_x&quot;:0,&quot;abs_y&quot;:80}"></iframe>
+                </div>
+            </div>
+
+            <!-- Tab Konten 2 (Web) -->
+            <div id="tab2-content" class="tab-content-item" bis_skin_checked="1" style="display: none;">
+                <div class="iframe-container" bis_skin_checked="1">
+                    <!-- Ganti dengan URL halaman web yang Anda inginkan -->
+                    <iframe src="https://dashboard.acuitytrading.com/widgets/widget?widgetname=acuitycalendar&amp;settingId=72&amp;apikey=0dbb2498-051a-45c6-b883-e62d9bbb3853&amp;lang=en-GB" frameborder="0" scrolling="auto" bis_size="{&quot;x&quot;:0,&quot;y&quot;:0,&quot;w&quot;:0,&quot;h&quot;:0,&quot;abs_x&quot;:0,&quot;abs_y&quot;:0}"></iframe>
+                </div>
+            </div>
+
+            <!-- Tab Konten 3 (Dokumen) -->
+            <div id="tab3-content" class="tab-content-item" bis_skin_checked="1" style="display: none;">
+                <div class="iframe-container" bis_skin_checked="1">
+                    <!-- Ganti dengan URL dokumen yang Anda inginkan (misalnya, penampil PDF, Google Docs) -->
+                    <iframe src="https://dashboard.acuitytrading.com/Widgets/Widget?widgetname=dowjonesnews&amp;apikey=0dbb2498-051a-45c6-b883-e62d9bbb3853&amp;lang=en-GB" frameborder="0" scrolling="auto" bis_size="{&quot;x&quot;:0,&quot;y&quot;:0,&quot;w&quot;:0,&quot;h&quot;:0,&quot;abs_x&quot;:0,&quot;abs_y&quot;:0}"></iframe>
+                </div>
+            </div>
+            <!-- Tab Konten 4 (Dokumen) -->
+            <div id="tab4-content" class="tab-content-item" bis_skin_checked="1" style="display: none;">
+                <div class="iframe-container" bis_skin_checked="1">
+                    <!-- Ganti dengan URL dokumen yang Anda inginkan (misalnya, penampil PDF, Google Docs) -->
+                    <iframe src="https://dashboard.acuitytrading.com/widgets/widget?widgetname=acuityanalysisiq&amp;settingId=72&amp;apikey=0dbb2498-051a-45c6-b883-e62d9bbb3853&amp;lang=en-GB" frameborder="0" scrolling="auto" bis_size="{&quot;x&quot;:0,&quot;y&quot;:0,&quot;w&quot;:0,&quot;h&quot;:0,&quot;abs_x&quot;:0,&quot;abs_y&quot;:0}"></iframe>
+                </div>
+            </div>
+            <div id="tab5-content" class="tab-content-item" bis_skin_checked="1" style="display: none;">
+                <div class="iframe-container" bis_skin_checked="1">
+                    <!-- Ganti dengan URL dokumen yang Anda inginkan (misalnya, penampil PDF, Google Docs) -->
+                    <iframe src="https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_0f15003b90c22efc8e781add6df75407.html" frameborder="0" scrolling="auto" bis_size="{&quot;x&quot;:0,&quot;y&quot;:0,&quot;w&quot;:0,&quot;h&quot;:0,&quot;abs_x&quot;:0,&quot;abs_y&quot;:0}"></iframe>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabLinks = document.querySelectorAll('.tab-link');
+            const tabContents = document.querySelectorAll('.tab-content-item');
+            const mobileTabSelect = document.getElementById('mobile-tab-select');
+
+            // Fungsi untuk mengaktifkan tab/konten
+            const activateTab = (targetId) => {
+                // Hapus class 'active' dari semua tautan dan sembunyikan semua konten
+                tabLinks.forEach(l => l.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                tabContents.forEach(c => c.style.display = 'none');
+
+                // Temukan tautan dan konten yang sesuai untuk diaktifkan
+                const targetLink = document.querySelector(`.tab-link[data-target="${targetId}"]`);
+                const targetContent = document.getElementById(targetId);
+
+                if (targetLink) {
+                    targetLink.classList.add('active');
+                }
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                    targetContent.style.display = 'flex';
+                }
+            };
+
+            // Fungsionalitas Tautan Tab Desktop
+            tabLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    activateTab(targetId);
+                    // Perbarui pilihan seluler jika terlihat
+                    if (mobileTabSelect) {
+                        mobileTabSelect.value = targetId;
+                    }
+                });
+            });
+
+            // Fungsionalitas Dropdown Seluler
+            if (mobileTabSelect) {
+                mobileTabSelect.addEventListener('change', (event) => {
+                    const targetId = event.target.value;
+                    activateTab(targetId);
+                    // Hapus class aktif dari tab desktop juga
+                    tabLinks.forEach(l => l.classList.remove('active'));
+                    // Temukan dan aktifkan tautan tab desktop yang sesuai secara visual jika ada
+                    const desktopLinkForSelectedTab = document.querySelector(`.tab-link[data-target="${targetId}"]`);
+                    if (desktopLinkForSelectedTab) {
+                        desktopLinkForSelectedTab.classList.add('active');
+                    }
+                });
+            }
+
+
+            // Inisialisasi konten tab pertama menjadi aktif saat dimuat
+            // Periksa apakah tab sudah ditandai aktif secara default, jika tidak aktifkan yang pertama.
+            let initialActiveId = null;
+            const activeDesktopLink = document.querySelector('.tab-link.active');
+            const activeMobileOption = document.querySelector('#mobile-tab-select option[selected]');
+
+            if (activeDesktopLink) {
+                initialActiveId = activeDesktopLink.getAttribute('data-target');
+            } else if (activeMobileOption) {
+                initialActiveId = activeMobileOption.value;
+            }
+
+            if (initialActiveId) {
+                activateTab(initialActiveId);
+                // Pastikan pilihan seluler diatur ke nilai yang benar saat dimuat
+                if (mobileTabSelect) {
+                    mobileTabSelect.value = initialActiveId;
+                }
+            } else {
+                // Cadangan: aktifkan tab/opsi pertama jika tidak ada yang aktif awal ditemukan
+                if (tabLinks.length > 0) {
+                    activateTab(tabLinks[0].getAttribute('data-target'));
+                    if (mobileTabSelect) {
+                        mobileTabSelect.value = tabLinks[0].getAttribute('data-target');
+                    }
+                }
+            }
+        });
+    </script>
+
+
+</body></html>
