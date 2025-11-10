@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Kuantara Terminal</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <!-- Fira Code -->
   <link
     rel="stylesheet"
@@ -12,22 +12,23 @@
   <style>
     :root {
       --amber: #ffbf00;
-      --bg-root: #000000;
-      --bg-main: #111111;
-      --bg-card: #181818;
-      --border-soft: #2b2b2b;
-      --text-main: #f5f5f5;
+      --bg-dark: #050505;
+      --bg-dark-alt: #111111;
+      --bg-panel: #181818;
+      --border-muted: #2a2a2a;
+      --text-primary: #f5f5f5;
       --text-muted: #9b9b9b;
+      --accent: #ffbf00;
       --danger: #ff4b4b;
       --success: #1dd75b;
     }
 
     body[data-theme="light"] {
-      --bg-root: #f4f4f4;
-      --bg-main: #ffffff;
-      --bg-card: #ffffff;
-      --border-soft: #d0d0d0;
-      --text-main: #111111;
+      --bg-dark: #f5f5f5;
+      --bg-dark-alt: #ffffff;
+      --bg-panel: #ffffff;
+      --border-muted: #d0d0d0;
+      --text-primary: #111111;
       --text-muted: #555555;
     }
 
@@ -44,39 +45,44 @@
 
     body {
       font-family: "Fira Code", monospace;
-      background: var(--bg-root);
-      color: var(--text-main);
+      background: radial-gradient(circle at top, #222222 0, var(--bg-dark) 55%);
+      color: var(--text-primary);
+      margin: 0;
       min-height: 100vh;
       overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
     }
 
-    .kt-root {
-      min-height: 100vh;
+    .app-shell {
+      background: var(--bg-dark-alt);
       display: flex;
       flex-direction: column;
-      background: radial-gradient(circle at top, #252525 0, var(--bg-main) 55%);
+      width: 100%;
+      min-height: 100vh;
+      overflow: hidden;
     }
 
-    /* ===== TOP APP BAR ===== */
-    .kt-appbar {
-      padding: 10px 14px 6px;
+    /* Top bar */
+    .top-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border-soft);
+      padding: 8px 14px;
       background: linear-gradient(90deg, #000000, #151515);
+      border-bottom: 1px solid var(--border-muted);
+      flex-shrink: 0;
     }
 
-    .kt-brand {
+    .brand-block {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .kt-logo {
+    .brand-logo {
       width: 26px;
       height: 26px;
-      border-radius: 7px;
+      border-radius: 4px;
       border: 1px solid var(--amber);
       background: radial-gradient(circle at 20% 0%, var(--amber), #654200 55%, #201600);
       display: flex;
@@ -86,411 +92,466 @@
       font-size: 14px;
       letter-spacing: 1px;
       color: #000;
-      box-shadow: 0 0 10px rgba(255, 191, 0, 0.5);
+      box-shadow: 0 0 12px rgba(255, 191, 0, 0.4);
+      flex-shrink: 0;
     }
 
-    .kt-brand-text-main {
-      font-size: 14px;
-      text-transform: uppercase;
+    .brand-text-main {
+      font-weight: 700;
+      font-size: 15px;
       letter-spacing: 0.12em;
+      text-transform: uppercase;
       color: var(--amber);
     }
 
-    .kt-brand-text-sub {
-      font-size: 9px;
+    .brand-text-sub {
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.16em;
       color: var(--text-muted);
+      letter-spacing: 0.16em;
     }
 
-    .kt-appbar-right {
+    .top-bar-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 16px;
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-shrink: 0;
     }
 
-    .kt-live-pill {
+    .status-pill {
+      border-radius: 999px;
+      border: 1px solid var(--border-muted);
+      padding: 3px 8px;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid var(--border-soft);
-      font-size: 10px;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(0, 0, 0, 0.5);
+      white-space: nowrap;
     }
 
-    .kt-live-dot {
+    .status-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
       background: var(--success);
-      box-shadow: 0 0 6px rgba(29, 215, 91, 0.9);
+      box-shadow: 0 0 6px rgba(29, 215, 91, 0.8);
+      flex-shrink: 0;
     }
 
-    .kt-icon-btn {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      border: 1px solid var(--border-soft);
-      background: rgba(0, 0, 0, 0.5);
+    .world-clock {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 14px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .world-clock label {
       color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    /* ===== SESSION STRIP ===== */
-    .kt-session-strip {
-      padding: 4px 10px 8px;
-      border-bottom: 1px solid var(--border-soft);
-      background: rgba(0, 0, 0, 0.9);
-    }
-
-    .kt-session-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-
-    .kt-session-title {
-      font-size: 9px;
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
+      letter-spacing: 0.14em;
+      white-space: nowrap;
     }
 
-    .kt-session-strip label {
-      font-size: 9px;
-      color: var(--text-muted);
-    }
-
-    .kt-session-list {
+    .world-clock-sessions {
       display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 2px;
-      scrollbar-width: thin;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .kt-session-list::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    .kt-session-list::-webkit-scrollbar-thumb {
-      background: #333;
-    }
-
-    .kt-session-pill {
-      min-width: 72px;
-      padding: 3px 6px;
-      border-radius: 6px;
-      background: rgba(255, 191, 0, 0.05);
+    .session-tag {
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 191, 0, 0.06);
       border: 1px solid rgba(255, 191, 0, 0.25);
       font-size: 10px;
       display: flex;
       flex-direction: column;
-      gap: 1px;
+      gap: 2px;
+      min-width: 60px;
     }
 
-    .kt-session-pill-header {
+    .session-header-line {
       display: flex;
       align-items: center;
       gap: 4px;
     }
 
-    .kt-session-status-dot {
+    .session-status-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: var(--danger);
-      box-shadow: 0 0 4px rgba(255, 75, 75, 0.9);
+      background: var(--danger); /* default: close = merah */
+      box-shadow: 0 0 5px rgba(255, 75, 75, 0.9);
+      flex-shrink: 0;
     }
 
-    .kt-session-status-dot.open {
+    .session-status-dot.open {
       background: var(--success);
-      box-shadow: 0 0 4px rgba(29, 215, 91, 0.9);
+      box-shadow: 0 0 5px rgba(29, 215, 91, 0.9);
     }
 
-    .kt-session-label {
+    .session-label {
       color: var(--amber);
       text-transform: uppercase;
     }
 
-    .kt-session-time {
+    .session-time {
       color: var(--text-muted);
       font-size: 10px;
     }
 
-    /* ===== MODULE TABS (TOP, MOBILE-FRIENDLY) ===== */
-    .kt-module-tabs {
+    /* Menu bar */
+    .menu-bar {
       display: flex;
-      gap: 6px;
-      padding: 6px 8px 4px;
+      align-items: stretch;
+      gap: 2px;
+      padding: 4px 6px;
+      border-bottom: 1px solid var(--border-muted);
+      background: linear-gradient(180deg, #181818 0, #111111 100%);
       overflow-x: auto;
-      background: #111111;
-      border-bottom: 1px solid var(--border-soft);
+      overflow-y: hidden;
       scrollbar-width: thin;
+      flex-shrink: 0;
     }
 
-    .kt-module-tabs::-webkit-scrollbar {
+    .menu-bar::-webkit-scrollbar {
       height: 4px;
     }
 
-    .kt-module-tab {
-      flex: 0 0 auto;
-      padding: 5px 10px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      background: rgba(0, 0, 0, 0.4);
-      color: var(--text-muted);
-      font-size: 10px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      white-space: nowrap;
+    .menu-bar::-webkit-scrollbar-thumb {
+      background: #333;
     }
 
-    .kt-module-tab-index {
-      font-size: 9px;
+    .menu-item {
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 4px 10px 3px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+      user-select: none;
+      transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease,
+        box-shadow 0.1s ease;
+      flex-shrink: 0;
+    }
+
+    .menu-item-key {
+      font-size: 10px;
       color: var(--amber);
       opacity: 0.8;
     }
 
-    .kt-module-tab-label {
+    .menu-item-label {
       text-transform: uppercase;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.12em;
     }
 
-    .kt-module-tab.active {
-      border-color: rgba(255, 191, 0, 0.9);
+    .menu-item:hover {
+      background: rgba(255, 191, 0, 0.06);
+      border-color: rgba(255, 191, 0, 0.4);
+      color: var(--text-primary);
+    }
+
+    .menu-item.active {
       background: rgba(255, 191, 0, 0.18);
+      border-color: rgba(255, 191, 0, 0.9);
       color: #000;
-      box-shadow: 0 0 16px rgba(255, 191, 0, 0.45);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 191, 0, 0.5);
     }
 
-    .kt-module-tab.active .kt-module-tab-index {
+    .menu-item.active .menu-item-key {
       color: #000;
     }
 
-    /* ===== MAIN CONTENT AREA ===== */
-    .kt-main {
+    /* Main content */
+    .main {
       flex: 1;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background: radial-gradient(circle at 0 0, #262626 0, #151515 40%, #050505 100%);
       min-height: 0;
-      background: radial-gradient(circle at top left, #242424 0, #111111 50%, #050505 100%);
+      overflow: hidden;
     }
 
-    .kt-main-inner {
-      flex: 1;
-      padding: 8px 10px 6px;
+    .top-strip {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      min-height: 0;
-    }
-
-    .kt-screen-header {
-      display: flex;
+      align-items: center;
       justify-content: space-between;
+      padding: 6px 12px;
+      font-size: 11px;
+      border-bottom: 1px solid var(--border-muted);
+      background: rgba(0, 0, 0, 0.35);
+      flex-shrink: 0;
+    }
+
+    .top-strip-left {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .tag-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      border: 1px solid var(--border-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .top-strip-right {
+      display: flex;
       align-items: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .kt-screen-title-group {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .kt-screen-title {
-      font-size: 12px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--amber);
-    }
-
-    .kt-screen-subtitle {
-      font-size: 9px;
-      color: var(--text-muted);
-    }
-
-    .kt-search-box {
+    .search-box {
       display: flex;
       align-items: center;
       gap: 6px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 6px;
+      border: 1px solid var(--border-muted);
       padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid var(--border-soft);
-      background: rgba(0, 0, 0, 0.6);
-      font-size: 10px;
-      min-width: 160px;
+      min-width: 0;
     }
 
-    .kt-search-box span {
+    .search-box span {
       color: var(--text-muted);
     }
 
-    .kt-search-input {
+    .search-box input {
       background: transparent;
       border: none;
       outline: none;
-      color: var(--text-main);
-      font-size: 10px;
-      flex: 1;
+      color: var(--text-primary);
+      font-size: 11px;
+      min-width: 80px;
+      width: 100%;
     }
 
-    .kt-search-input::placeholder {
+    .search-box input::placeholder {
       color: var(--text-muted);
     }
 
-    .kt-search-hint {
+    .search-key-hint {
+      font-size: 9px;
       padding: 1px 4px;
-      border-radius: 4px;
-      border: 1px solid var(--border-soft);
-      font-size: 8px;
+      border-radius: 3px;
+      border: 1px solid var(--border-muted);
       color: var(--text-muted);
+      white-space: nowrap;
     }
 
-    /* ===== CARD GRID ===== */
-    .kt-screen-content {
-      flex: 1;
+    .content-area {
+      padding: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
       min-height: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr);
-      gap: 8px;
     }
 
-    .kt-card {
-      background: var(--bg-card);
-      border-radius: 10px;
-      border: 1px solid var(--border-soft);
+    .section {
+      display: none;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .section.active {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--border-muted);
+      padding-bottom: 4px;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--amber);
+    }
+
+    .section-subtitle {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 2.2fr 1.1fr;
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .panel {
+      background: radial-gradient(circle at 10% 0, #272727 0, #181818 40%, #101010 100%);
+      border-radius: 8px;
+      border: 1px solid var(--border-muted);
       padding: 8px;
       display: flex;
       flex-direction: column;
       gap: 6px;
+      overflow: hidden;
+      flex: 1 1 auto;
       min-height: 0;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
     }
 
-    .kt-card-header {
+    .panel-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      flex-shrink: 0;
     }
 
-    .kt-card-title {
-      font-size: 10px;
+    .panel-title {
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.16em;
       color: var(--text-muted);
     }
 
-    .kt-card-meta {
-      font-size: 9px;
-      color: var(--text-muted);
-    }
-
-    .kt-card-body {
-      flex: 1;
-      min-height: 0;
-      overflow: auto;
+    .panel-meta {
       font-size: 10px;
       color: var(--text-muted);
+      white-space: nowrap;
+      margin-left: 8px;
     }
 
-    .kt-mini-table {
+    .panel-body {
+      flex: 1 1 auto;
+      overflow: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+      min-height: 0;
+    }
+
+    .mini-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 10px;
+      font-size: 11px;
+      margin-top: 4px;
     }
 
-    .kt-mini-table th,
-    .kt-mini-table td {
+    .mini-table th,
+    .mini-table td {
       padding: 3px 4px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      white-space: nowrap;
       text-align: left;
+      white-space: nowrap;
     }
 
-    .kt-mini-table th {
+    .mini-table th {
       color: var(--amber);
+      font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.09em;
-      font-weight: 500;
     }
 
-    .kt-chip-row {
+    .chip-row {
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
       margin-top: 6px;
     }
 
-    .kt-chip {
-      font-size: 9px;
+    .chip {
+      font-size: 10px;
       padding: 2px 6px;
       border-radius: 999px;
-      border: 1px solid var(--border-soft);
-      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--border-muted);
       color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.4);
+      white-space: nowrap;
     }
 
-    .kt-chip.accent {
-      border-color: rgba(255, 191, 0, 0.8);
+    .chip.accent {
+      border-color: rgba(255, 191, 0, 0.7);
       color: var(--amber);
-      background: rgba(255, 191, 0, 0.1);
+      background: rgba(255, 191, 0, 0.06);
     }
 
-    .kt-pill-green {
+    .pill-green {
       color: var(--success);
     }
 
-    .kt-pill-red {
+    .pill-red {
       color: var(--danger);
     }
 
-    .kt-chart-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-template-rows: repeat(2, minmax(0, 120px));
-      gap: 6px;
+    /* Charts fullscreen */
+    .charts-fullscreen .content-area {
+      padding: 0;
     }
 
-    .kt-chart-placeholder {
-      border-radius: 8px;
+    .charts-fullscreen .section#section-charts .panel {
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      height: 100%;
+    }
+
+    .chart-placeholder {
+      border-radius: 6px;
       border: 1px dashed rgba(255, 191, 0, 0.5);
-      background: radial-gradient(circle at 10% 0, #252525 0, #111111 70%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 9px;
+      font-size: 10px;
       color: var(--text-muted);
+      background: radial-gradient(circle at 10% 0, #262626 0, #111111 60%);
+      text-align: center;
+      padding: 6px;
     }
 
-    .kt-chart-label {
+    .chart-label {
       text-transform: uppercase;
       letter-spacing: 0.14em;
       margin-bottom: 2px;
       color: var(--amber);
-      font-size: 9px;
     }
 
-    /* News iframe */
-    .kt-news-frame-wrap {
-      flex: 1;
+    /* NEWS iframe menyatu */
+    .news-frame-wrapper {
+      flex: 1 1 auto;
       min-height: 0;
       overflow: hidden;
     }
 
-    .kt-news-frame {
+    .news-frame {
       width: 100%;
       height: 100%;
       border: none;
@@ -498,380 +559,551 @@
       background: transparent;
     }
 
-    /* Screens */
-    .kt-screen {
-      display: none;
-      flex-direction: column;
-      gap: 8px;
-      min-height: 0;
-    }
-
-    .kt-screen.active {
-      display: flex;
-    }
-
-    /* ===== BOTTOM STATUS ===== */
-    .kt-status-bar {
-      padding: 4px 8px 6px;
-      border-top: 1px solid var(--border-soft);
-      background: rgba(0, 0, 0, 0.9);
-      font-size: 9px;
+    /* Bottom status bar */
+    .status-bar {
+      border-top: 1px solid var(--border-muted);
+      padding: 4px 10px;
+      font-size: 10px;
       color: var(--text-muted);
       display: flex;
       justify-content: space-between;
-      gap: 6px;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.7);
+      flex-shrink: 0;
+    }
+
+    .status-shortcuts {
+      display: flex;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
-    .kt-status-left span {
-      margin-right: 8px;
+    .status-shortcuts span {
       white-space: nowrap;
     }
 
-    /* ===== TOAST ===== */
-    .kt-toast-container {
+    .status-connection {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    /* Toast */
+    .toast-container {
       position: fixed;
-      right: 16px;
-      bottom: 70px;
+      right: 20px;
+      bottom: 20px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      z-index: 40;
+      z-index: 30;
       pointer-events: none;
     }
 
-    .kt-toast {
-      background: rgba(5, 5, 5, 0.96);
+    .toast {
+      background: rgba(6, 6, 6, 0.96);
       border-radius: 6px;
-      border: 1px solid var(--border-soft);
+      border: 1px solid var(--border-muted);
       padding: 6px 9px;
-      font-size: 10px;
-      color: var(--text-main);
+      font-size: 11px;
+      color: var(--text-primary);
       display: flex;
       align-items: baseline;
       gap: 6px;
       pointer-events: auto;
-      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75);
     }
 
-    .kt-toast-label {
-      font-size: 8px;
+    .toast-label {
+      font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 0.18em;
       color: var(--amber);
     }
 
-    /* ===== MODAL SHORTCUT ===== */
-    .kt-modal-overlay {
+    /* Shortcut modal */
+    .modal-overlay {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.8);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 45;
+      z-index: 40;
     }
 
-    .kt-modal-overlay.visible {
+    .modal-overlay.visible {
       display: flex;
     }
 
-    .kt-modal {
-      background: var(--bg-card);
+    .modal {
+      background: var(--bg-panel);
       border-radius: 10px;
-      border: 1px solid var(--border-soft);
+      border: 1px solid var(--border-muted);
       padding: 14px 16px;
       width: 560px;
-      max-width: 96%;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9);
-      font-size: 10px;
-      color: var(--text-muted);
+      max-width: 95%;
+      max-height: 90vh;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
     }
 
-    .kt-modal-header {
+    .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       margin-bottom: 8px;
+      flex-shrink: 0;
     }
 
-    .kt-modal-title {
-      font-size: 12px;
-      letter-spacing: 0.18em;
+    .modal-title {
+      font-size: 13px;
       text-transform: uppercase;
+      letter-spacing: 0.18em;
       color: var(--amber);
     }
 
-    .kt-shortcut-grid {
+    .modal-body {
+      font-size: 11px;
+      color: var(--text-muted);
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    .shortcut-grid {
       display: grid;
       grid-template-columns: 1.4fr 2.6fr;
       gap: 4px 14px;
-      margin-top: 6px;
+      margin-top: 8px;
     }
 
-    .kt-shortcut-key {
+    .shortcut-key {
+      font-size: 10px;
       padding: 2px 6px;
       border-radius: 4px;
-      border: 1px solid var(--border-soft);
-      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-muted);
       color: var(--amber);
-      font-size: 9px;
+      background: rgba(0, 0, 0, 0.4);
     }
 
-    .kt-modal-close-hint {
+    .shortcut-desc {
+      font-size: 11px;
+    }
+
+    .modal-close-hint {
       margin-top: 8px;
-      font-size: 9px;
+      font-size: 10px;
       color: var(--text-muted);
     }
 
-    /* ===== AI FLOATING ASSISTANT ===== */
-    .kt-ai-launcher {
+    /* ===== AI ASSISTANT FLOATING PANEL ===== */
+
+    .ai-launcher-btn {
       position: fixed;
-      right: 14px;
-      bottom: 14px;
+      right: 18px;
+      bottom: 18px;
       width: 42px;
       height: 42px;
       border-radius: 999px;
       border: 1px solid rgba(255, 191, 0, 0.9);
       background: radial-gradient(circle at 20% 0%, var(--amber), #604100 60%, #201600);
-      box-shadow: 0 0 16px rgba(255, 191, 0, 0.75);
+      color: #000;
+      font-size: 14px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: #000;
+      box-shadow: 0 0 14px rgba(255, 191, 0, 0.7);
       cursor: pointer;
-      z-index: 50;
+      z-index: 45;
     }
 
-    .kt-ai-panel {
+    .ai-launcher-btn span {
+      pointer-events: none;
+    }
+
+    .ai-panel {
       position: fixed;
-      right: 12px;
-      bottom: 64px;
+      right: 18px;
+      bottom: 70px;
       width: 360px;
       height: 480px;
       max-height: calc(100vh - 120px);
-      background: var(--bg-card);
-      border-radius: 12px;
-      border: 1px solid var(--border-soft);
-      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.95);
+      background: var(--bg-panel);
+      border-radius: 10px;
+      border: 1px solid var(--border-muted);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9);
       display: none;
       flex-direction: column;
       overflow: hidden;
-      z-index: 49;
+      z-index: 44;
     }
 
-    .kt-ai-panel.visible {
+    .ai-panel.visible {
       display: flex;
     }
 
-    .kt-ai-header {
+    .ai-panel-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       padding: 6px 10px;
-      border-bottom: 1px solid var(--border-soft);
-      background: #070707;
+      border-bottom: 1px solid var(--border-muted);
+      background: #090909;
+      flex-shrink: 0;
     }
 
-    .kt-ai-title {
-      font-size: 10px;
+    .ai-panel-title {
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.16em;
       color: var(--amber);
     }
 
-    .kt-ai-sub {
-      font-size: 9px;
+    .ai-panel-meta {
+      font-size: 10px;
       color: var(--text-muted);
     }
 
-    .kt-ai-close {
+    .ai-panel-close {
+      cursor: pointer;
+      font-size: 11px;
       padding: 2px 6px;
       border-radius: 4px;
-      border: 1px solid var(--border-soft);
-      font-size: 9px;
+      border: 1px solid var(--border-muted);
       color: var(--text-muted);
-      cursor: pointer;
     }
 
-    .kt-ai-body {
-      flex: 1;
+    .ai-panel-body {
+      flex: 1 1 auto;
       min-height: 0;
+      border-top: 1px solid #000;
     }
 
-    .kt-ai-iframe {
+    .ai-panel-iframe {
       width: 100%;
       height: 100%;
       border: none;
-      background: #000;
       display: block;
+      background: #000;
     }
 
-    /* ===== RESPONSIVE ===== */
+    /* ========= RESPONSIVE ========= */
+
     @media (max-width: 900px) {
-      .kt-screen-content {
-        grid-template-columns: minmax(0, 1fr);
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        min-height: 180px;
       }
     }
 
     @media (max-width: 768px) {
-      .kt-appbar {
-        padding-inline: 10px;
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 8px 10px;
       }
 
-      .kt-brand-text-main {
-        font-size: 13px;
+      .brand-text-main {
+        font-size: 14px;
       }
 
-      .kt-brand-text-sub {
-        font-size: 8px;
+      .brand-text-sub {
+        font-size: 9px;
       }
 
-      .kt-appbar-right {
+      .top-bar-right {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
         gap: 6px;
       }
 
-      .kt-screen-header {
-        flex-direction: column;
-        align-items: flex-start;
+      .world-clock {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .world-clock label {
+        display: none;
+      }
+
+      .world-clock-sessions {
+        flex-wrap: wrap;
         gap: 4px;
       }
 
-      .kt-search-box {
-        width: 100%;
-        justify-content: space-between;
+      .session-tag {
+        min-width: auto;
+        padding: 2px 4px;
+        font-size: 9px;
       }
 
-      .kt-main-inner {
+      .menu-bar {
+        padding-inline: 4px;
+      }
+
+      .menu-item {
         padding-inline: 8px;
+        font-size: 10px;
       }
 
-      .kt-status-bar {
+      .top-strip {
         flex-direction: column;
         align-items: flex-start;
+        gap: 4px;
+        padding: 6px 8px;
       }
 
-      .kt-ai-panel {
+      .content-area {
+        padding: 6px;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+      }
+
+      .section-title {
+        font-size: 12px;
+        letter-spacing: 0.14em;
+      }
+
+      .section-subtitle {
+        font-size: 9px;
+        text-align: left;
+      }
+
+      .panel {
+        border-radius: 6px;
+        padding: 6px;
+      }
+
+      .panel-title {
+        font-size: 10px;
+      }
+
+      .mini-table th,
+      .mini-table td {
+        font-size: 10px;
+        padding: 2px 3px;
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, minmax(140px, 1fr));
+      }
+
+      .status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 4px 8px 6px;
+      }
+
+      .status-shortcuts {
+        font-size: 9px;
+      }
+
+      .status-connection {
+        font-size: 9px;
+      }
+
+      .toast {
+        font-size: 10px;
+      }
+
+      .news-frame-wrapper {
+        min-height: 60vh;
+      }
+
+      /* khusus News: iframe benar-benar tinggi di mobile,
+         pakai tinggi relatif ke viewport agar tidak terpotong */
+      #section-news .news-frame-wrapper {
+        height: calc(100vh - 140px);
+      }
+
+      .ai-panel {
         right: 8px;
         left: 8px;
+        bottom: 70px;
         width: auto;
         height: 70vh;
-        bottom: 64px;
+        max-height: 70vh;
       }
 
-      .kt-ai-launcher {
-        right: 10px;
-        bottom: 10px;
+      .ai-launcher-btn {
+        right: 12px;
+        bottom: 12px;
+      }
+
+      .modal {
+        width: 95%;
+        padding: 10px 12px;
+      }
+
+      .shortcut-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .brand-text-main {
+        font-size: 13px;
+      }
+
+      .brand-logo {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+      }
+
+      .menu-item-key {
+        display: none;
+      }
+
+      .menu-item-label {
+        letter-spacing: 0.08em;
+      }
+
+      .tag-pill {
+        font-size: 9px;
+        letter-spacing: 0.12em;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      .section-title {
+        font-size: 11px;
+      }
+
+      .section-subtitle {
+        font-size: 8.5px;
+      }
+
+      .panel {
+        min-height: 160px;
+      }
+
+      .status-shortcuts span:nth-child(n+5) {
+        display: none;
       }
     }
   </style>
 </head>
 <body data-theme="dark">
-  <div class="kt-root" id="ktRoot">
-    <!-- TOP APP BAR -->
-    <header class="kt-appbar">
-      <div class="kt-brand">
-        <div class="kt-logo">KT</div>
+  <div class="app-shell" id="app">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="brand-block">
+        <div class="brand-logo">KT</div>
         <div>
-          <div class="kt-brand-text-main">Kuantara Terminal</div>
-          <div class="kt-brand-text-sub">Clarity Over Chaos</div>
+          <div class="brand-text-main">Kuantara Terminal</div>
+          <div class="brand-text-sub">Clarity Over Chaos</div>
         </div>
       </div>
-      <div class="kt-appbar-right">
-        <div class="kt-live-pill">
-          <div class="kt-live-dot"></div>
-          <span>LIVE</span>
+      <div class="top-bar-right">
+        <div class="status-pill">
+          <div class="status-dot"></div>
+          <div>LIVE FEED</div>
         </div>
-        <button class="kt-icon-btn" id="themeToggleBtn">☾</button>
+        <div class="world-clock">
+          <label>Market Session</label>
+          <div class="world-clock-sessions" id="worldClock"></div>
+        </div>
       </div>
-    </header>
+    </div>
 
-    <!-- MARKET SESSIONS (WORLD CLOCK) -->
-    <section class="kt-session-strip">
-      <div class="kt-session-header">
-        <div class="kt-session-title">Market Session</div>
-        <label>Forex core sessions (WIB-based)</label>
+    <!-- Menu bar -->
+    <div class="menu-bar" id="menuBar">
+      <div class="menu-item active" data-section="section-market-overview">
+        <span class="menu-item-key">Alt+0</span>
+        <span class="menu-item-label">Market Overview</span>
       </div>
-      <div class="kt-session-list" id="worldClock"></div>
-    </section>
+      <div class="menu-item" data-section="section-charts">
+        <span class="menu-item-key">Alt+1</span>
+        <span class="menu-item-label">Charts</span>
+      </div>
+      <div class="menu-item" data-section="section-macro">
+        <span class="menu-item-key">Alt+2</span>
+        <span class="menu-item-label">Macroeconomic Indicators</span>
+      </div>
+      <div class="menu-item" data-section="section-geo">
+        <span class="menu-item-key">Alt+3</span>
+        <span class="menu-item-label">Geo-Economic Indicators</span>
+      </div>
+      <div class="menu-item" data-section="section-snapshot">
+        <span class="menu-item-key">Alt+4</span>
+        <span class="menu-item-label">Global Market Snapshot</span>
+      </div>
+      <div class="menu-item" data-section="section-metrics">
+        <span class="menu-item-key">Alt+5</span>
+        <span class="menu-item-label">Market Metrics &amp; Sentiment</span>
+      </div>
+      <div class="menu-item" data-section="section-news">
+        <span class="menu-item-key">Alt+6</span>
+        <span class="menu-item-label">Market News &amp; Catalyst</span>
+      </div>
+      <div class="menu-item" data-section="section-research">
+        <span class="menu-item-key">Alt+7</span>
+        <span class="menu-item-label">Articles &amp; Market Research</span>
+      </div>
+      <div class="menu-item" data-section="section-quant">
+        <span class="menu-item-key">Alt+8</span>
+        <span class="menu-item-label">Quantitative &amp; Technical Tools</span>
+      </div>
+      <div class="menu-item" data-section="section-screener">
+        <span class="menu-item-key">Alt+9</span>
+        <span class="menu-item-label">Stocks Screener</span>
+      </div>
+    </div>
 
-    <!-- MODULE TABS -->
-    <nav class="kt-module-tabs" id="moduleTabs">
-      <div class="kt-module-tab active" data-view="view-overview">
-        <span class="kt-module-tab-index">0</span>
-        <span class="kt-module-tab-label">Overview</span>
+    <!-- Main -->
+    <div class="main">
+      <div class="top-strip">
+        <div class="top-strip-left">
+          <div class="tag-pill" id="currentModuleLabel">[0] Market Overview</div>
+          <div class="tag-pill">Beta · Local Mock Data</div>
+        </div>
+        <div class="top-strip-right">
+          <div class="search-box">
+            <span>▶</span>
+            <input
+              id="quickSearch"
+              type="text"
+              placeholder="Quick command / search (Ctrl+F)"
+            />
+            <span class="search-key-hint">ENTER</span>
+          </div>
+        </div>
       </div>
-      <div class="kt-module-tab" data-view="view-charts">
-        <span class="kt-module-tab-index">1</span>
-        <span class="kt-module-tab-label">Charts</span>
-      </div>
-      <div class="kt-module-tab" data-view="view-macro">
-        <span class="kt-module-tab-index">2</span>
-        <span class="kt-module-tab-label">Macro</span>
-      </div>
-      <div class="kt-module-tab" data-view="view-geo">
-        <span class="kt-module-tab-index">3</span>
-        <span class="kt-module-tab-label">Geo-Econ</span>
-      </div>
-      <div class="kt-module-tab" data-view="view-snapshot">
-        <span class="kt-module-tab-index">4</span>
-        <span class="kt-module-tab-label">Snapshot</span>
-      </div>
-      <div class="kt-module-tab" data-view="view-metrics">
-        <span class="kt-module-tab-index">5</span>
-        <span class="kt-module-tab-label">Metrics</span>
-      </div>
-      <div class="kt-module-tab" data-view="view-news">
-        <span class="kt-module-tab-index">6</span>
-        <span class="kt-module-tab-label">News</span>
-      </div>
-      <div class="kt-module-tab" data-view="view-research">
-        <span class="kt-module-tab-index">7</span>
-        <span class="kt-module-tab-label">Research</span>
-      </div>
-      <div class="kt-module-tab" data-view="view-quant">
-        <span class="kt-module-tab-index">8</span>
-        <span class="kt-module-tab-label">Quant</span>
-      </div>
-      <div class="kt-module-tab" data-view="view-screener">
-        <span class="kt-module-tab-index">9</span>
-        <span class="kt-module-tab-label">Screener</span>
-      </div>
-    </nav>
 
-    <!-- MAIN AREA -->
-    <main class="kt-main">
-      <div class="kt-main-inner">
+      <div class="content-area" id="contentArea">
         <!-- Market Overview -->
-        <section class="kt-screen active" id="view-overview">
-          <div class="kt-screen-header">
-            <div class="kt-screen-title-group">
-              <div class="kt-screen-title">Market Overview</div>
-              <div class="kt-screen-subtitle">
-                Lintas aset: saham, FX, komoditas, obligasi, kripto.
-              </div>
-            </div>
-            <div class="kt-search-box">
-              <span>▶</span>
-              <input
-                id="quickSearch"
-                class="kt-search-input"
-                type="text"
-                placeholder="Quick command / search (Ctrl+F)"
-              />
-              <span class="kt-search-hint">ENTER</span>
+        <div class="section active" id="section-market-overview">
+          <div class="section-header">
+            <div class="section-title">Market Overview</div>
+            <div class="section-subtitle">
+              Lintas aset: saham, FX, komoditas, obligasi, kripto.
             </div>
           </div>
-          <div class="kt-screen-content">
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Cross Asset Heatmap</div>
-                <div class="kt-card-meta">Mock · Daily % Change</div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Cross Asset Heatmap</div>
+                <div class="panel-meta">Mock · Daily % Change</div>
               </div>
-              <div class="kt-card-body">
-                <table class="kt-mini-table">
+              <div class="panel-body">
+                <table class="mini-table">
                   <thead>
                     <tr>
                       <th>Asset</th>
@@ -884,139 +1116,124 @@
                     <tr>
                       <td>NASDAQ 100</td>
                       <td>18,420</td>
-                      <td class="kt-pill-green">+1.8%</td>
+                      <td class="pill-green">+1.8%</td>
                       <td>US</td>
                     </tr>
                     <tr>
-                      <td>S&P 500</td>
+                      <td>S&amp;P 500</td>
                       <td>5,420</td>
-                      <td class="kt-pill-green">+0.9%</td>
+                      <td class="pill-green">+0.9%</td>
                       <td>US</td>
                     </tr>
                     <tr>
                       <td>DXY</td>
                       <td>102.4</td>
-                      <td class="kt-pill-red">-0.4%</td>
+                      <td class="pill-red">-0.4%</td>
                       <td>FX</td>
                     </tr>
                     <tr>
                       <td>XAUUSD</td>
                       <td>2,480</td>
-                      <td class="kt-pill-green">+0.7%</td>
+                      <td class="pill-green">+0.7%</td>
                       <td>COM</td>
                     </tr>
                     <tr>
                       <td>US10Y</td>
                       <td>3.95%</td>
-                      <td class="kt-pill-red">-5 bps</td>
+                      <td class="pill-red">-5 bps</td>
                       <td>FI</td>
                     </tr>
                     <tr>
                       <td>BTCUSD</td>
                       <td>76,200</td>
-                      <td class="kt-pill-green">+2.3%</td>
+                      <td class="pill-green">+2.3%</td>
                       <td>CRYPTO</td>
                     </tr>
                   </tbody>
                 </table>
-                <div class="kt-chip-row">
-                  <div class="kt-chip accent">Risk-On Bias</div>
-                  <div class="kt-chip">DXY Down</div>
-                  <div class="kt-chip">Gold Bid</div>
-                  <div class="kt-chip">US Curve Bull Steepening</div>
+                <div class="chip-row">
+                  <div class="chip accent">Risk-On Bias</div>
+                  <div class="chip">DXY Down</div>
+                  <div class="chip">Gold Bid</div>
+                  <div class="chip">US Curve Bull Steepening</div>
                 </div>
               </div>
-            </article>
-
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Macro Pulse & News</div>
-                <div class="kt-card-meta">Snapshot + live catalyst</div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Macro Pulse</div>
+                <div class="panel-meta">Snapshot · Kuantara View</div>
               </div>
-              <div class="kt-card-body" style="display:flex; flex-direction:column; gap:6px;">
-                <div>
-                  <ul style="list-style:none; padding-left:0;">
-                    <li>• <span class="kt-pill-green">Gold bullish</span>, liquidity back to normal.</li>
-                    <li>• <span class="kt-pill-green">Long risk assets</span> tetap preferensi utama.</li>
-                    <li>• <span class="kt-pill-green">AUD bullish</span> sebagai proksi China + komoditas.</li>
-                    <li>• <span class="kt-pill-red">USD mixed</span> — selektif, fokus cross & carry.</li>
-                  </ul>
-                </div>
-                <div class="kt-chip-row">
-                  <div class="kt-chip accent">Macro → Risk Assets</div>
-                  <div class="kt-chip">Liquidity Regime</div>
-                  <div class="kt-chip">FX Carry</div>
-                </div>
-                <div class="kt-news-frame-wrap" style="margin-top:6px; min-height:140px;">
-                  <iframe
-                    class="kt-news-frame"
-                    src="https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html"
-                    loading="lazy"
-                  ></iframe>
+              <div class="panel-body">
+                <ul style="list-style:none; padding-left:0;">
+                  <li>• <span class="pill-green">Gold bullish</span>, liquidity back to normal.</li>
+                  <li>• <span class="pill-green">Long risk assets</span> tetap preferensi utama.</li>
+                  <li>• <span class="pill-green">AUD bullish</span> sebagai proksi China + komoditas.</li>
+                  <li>• <span class="pill-red">USD mixed</span> — selektif, fokus cross &amp; carry.</li>
+                </ul>
+                <div class="chip-row" style="margin-top:8px;">
+                  <div class="chip accent">Macro → Risk Assets</div>
+                  <div class="chip">Liquidity Regime</div>
+                  <div class="chip">FX Carry</div>
                 </div>
               </div>
-            </article>
+            </div>
           </div>
-        </section>
+        </div>
 
         <!-- Charts -->
-        <section class="kt-screen" id="view-charts">
-          <div class="kt-screen-header">
-            <div class="kt-screen-title-group">
-              <div class="kt-screen-title">Charts</div>
-              <div class="kt-screen-subtitle">
-                Modul bergaya TradingView 1–4 jendela. Shift+1: fullscreen.
-              </div>
+        <div class="section" id="section-charts">
+          <div class="section-header">
+            <div class="section-title">Charts</div>
+            <div class="section-subtitle">
+              Modul bergaya TradingView (1–4 jendela). Shift+1: fullscreen mode.
             </div>
           </div>
-          <div class="kt-screen-content" style="grid-template-columns: minmax(0,1fr);">
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Multi-Chart Layout</div>
-                <div class="kt-card-meta">Embed library di sini</div>
-              </div>
-              <div class="kt-card-body">
-                <div class="kt-chart-grid">
-                  <div class="kt-chart-placeholder">
-                    <div class="kt-chart-label">Chart 1</div>
-                    <div>NASDAQ / XAU / DXY</div>
-                  </div>
-                  <div class="kt-chart-placeholder">
-                    <div class="kt-chart-label">Chart 2</div>
-                    <div>FX Majors</div>
-                  </div>
-                  <div class="kt-chart-placeholder">
-                    <div class="kt-chart-label">Chart 3</div>
-                    <div>Rates &amp; Curve</div>
-                  </div>
-                  <div class="kt-chart-placeholder">
-                    <div class="kt-chart-label">Chart 4</div>
-                    <div>Crypto / Watchlist</div>
-                  </div>
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">Multi-Chart Layout</div>
+              <div class="panel-meta">Mock · Plug your charting library here</div>
+            </div>
+            <div class="panel-body">
+              <div class="charts-grid">
+                <div class="chart-placeholder">
+                  <div class="chart-label">Chart 1</div>
+                  <div>Primary: <strong>NASDAQ / XAU / DXY</strong></div>
+                  <div>Embed TradingView / custom chart here.</div>
+                </div>
+                <div class="chart-placeholder">
+                  <div class="chart-label">Chart 2</div>
+                  <div>FX majors / cross-pairs.</div>
+                </div>
+                <div class="chart-placeholder">
+                  <div class="chart-label">Chart 3</div>
+                  <div>Rates &amp; yield curve.</div>
+                </div>
+                <div class="chart-placeholder">
+                  <div class="chart-label">Chart 4</div>
+                  <div>Crypto or custom watchlist.</div>
                 </div>
               </div>
-            </article>
-          </div>
-        </section>
-
-        <!-- Macro -->
-        <section class="kt-screen" id="view-macro">
-          <div class="kt-screen-header">
-            <div class="kt-screen-title-group">
-              <div class="kt-screen-title">Macroeconomic Indicators</div>
-              <div class="kt-screen-subtitle">
-                GDP, inflasi, suku bunga, PMI, neraca dagang.
-              </div>
             </div>
           </div>
-          <div class="kt-screen-content">
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Core Macro Dashboard</div>
-                <div class="kt-card-meta">US / G3 snapshot</div>
+        </div>
+
+        <!-- Macroeconomic Indicators -->
+        <div class="section" id="section-macro">
+          <div class="section-header">
+            <div class="section-title">Macroeconomic Indicators</div>
+            <div class="section-subtitle">
+              GDP, inflasi, suku bunga, PMI, neraca dagang, dsb.
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Core Macro Dashboard</div>
+                <div class="panel-meta">US / G3 snapshot</div>
               </div>
-              <div class="kt-card-body">
-                <table class="kt-mini-table">
+              <div class="panel-body">
+                <table class="mini-table">
                   <thead>
                     <tr>
                       <th>Country</th>
@@ -1026,386 +1243,457 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td>US</td><td>4.6%</td><td>3.0%</td><td>4.00%</td></tr>
-                    <tr><td>Euro Area</td><td>1.3%</td><td>2.4%</td><td>2.15%</td></tr>
-                    <tr><td>Japan</td><td>0.7%</td><td>2.1%</td><td>0.00%</td></tr>
-                    <tr><td>Australia</td><td>2.2%</td><td>3.6%</td><td>3.60%</td></tr>
+                    <tr>
+                      <td>US</td>
+                      <td>4.6%</td>
+                      <td>3.0%</td>
+                      <td>4.00%</td>
+                    </tr>
+                    <tr>
+                      <td>Euro Area</td>
+                      <td>1.3%</td>
+                      <td>2.4%</td>
+                      <td>2.15%</td>
+                    </tr>
+                    <tr>
+                      <td>Japan</td>
+                      <td>0.7%</td>
+                      <td>2.1%</td>
+                      <td>0.00%</td>
+                    </tr>
+                    <tr>
+                      <td>Australia</td>
+                      <td>2.2%</td>
+                      <td>3.6%</td>
+                      <td>3.60%</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
-            </article>
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Growth &amp; Inflation Map</div>
-                <div class="kt-card-meta">High-level regime</div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Growth &amp; Inflation Map</div>
+                <div class="panel-meta">High-level regime</div>
               </div>
-              <div class="kt-card-body">
-                <p>US: Soft-landing bias, inflasi moderat, growth stabil.</p>
-                <p>EU: Growth lemah, inflasi turun → ruang easing terbuka.</p>
-                <p>Asia: Divergen, komoditas &amp; re-opening jadi driver.</p>
-                <div class="kt-chip-row">
-                  <div class="kt-chip accent">Growth vs Inflation Quadrant</div>
-                  <div class="kt-chip">Stagflation risk ↓</div>
-                  <div class="kt-chip">Disinflation regime</div>
+              <div class="panel-body">
+                <div>US: Soft-landing bias, inflasi moderat, growth stabil.</div>
+                <div>EU: Growth lemah, inflasi turun → ruang easing terbuka.</div>
+                <div>Asia: Divergen, tetapi komoditas &amp; re-opening jadi driver.</div>
+                <div class="chip-row" style="margin-top:8px;">
+                  <div class="chip accent">Growth vs Inflation Quadrant</div>
+                  <div class="chip">Stagflation risk ↓</div>
+                  <div class="chip">Disinflation regime</div>
                 </div>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <!-- Geo-Econ -->
-        <section class="kt-screen" id="view-geo">
-          <div class="kt-screen-header">
-            <div class="kt-screen-title-group">
-              <div class="kt-screen-title">Geo-Economic Indicators</div>
-              <div class="kt-screen-subtitle">
-                Peta energi, perdagangan, demografi, jalur maritim.
               </div>
             </div>
           </div>
-          <div class="kt-screen-content">
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Energy &amp; Trade Routes</div>
-                <div class="kt-card-meta">Mock map placeholder</div>
-              </div>
-              <div class="kt-card-body">
-                <p>Integrasikan peta: shipping lanes, chokepoints, pipeline.</p>
-                <div class="kt-chip-row">
-                  <div class="kt-chip accent">Straits &amp; Chokepoints</div>
-                  <div class="kt-chip">Malacca</div>
-                  <div class="kt-chip">Hormuz</div>
-                  <div class="kt-chip">Panama</div>
-                </div>
-              </div>
-            </article>
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Demographics &amp; Demand</div>
-                <div class="kt-card-meta">Geo-demand lens</div>
-              </div>
-              <div class="kt-card-body">
-                <p>Plot demografi, urbanisasi, middle-class expansion.</p>
-                <div class="kt-chip-row">
-                  <div class="kt-chip accent">Asia demand engine</div>
-                  <div class="kt-chip">Commodity Importers</div>
-                  <div class="kt-chip">Manufacturing Hubs</div>
-                </div>
-              </div>
-            </article>
-          </div>
-        </section>
+        </div>
 
-        <!-- Snapshot -->
-        <section class="kt-screen" id="view-snapshot">
-          <div class="kt-screen-header">
-            <div class="kt-screen-title-group">
-              <div class="kt-screen-title">Global Market Snapshot</div>
-              <div class="kt-screen-subtitle">
-                DXY, yield curve, volatilitas, cross-asset.
+        <!-- Geo-Economic Indicators -->
+        <div class="section" id="section-geo">
+          <div class="section-header">
+            <div class="section-title">Geo-Economic Indicators</div>
+            <div class="section-subtitle">
+              Peta energi, perdagangan, demografi, jalur maritim.
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Energy &amp; Trade Routes</div>
+                <div class="panel-meta">Mock map placeholder</div>
+              </div>
+              <div class="panel-body">
+                <div>Integrasikan peta: shipping lanes, chokepoints, pipeline.</div>
+                <div class="chip-row" style="margin-top:8px;">
+                  <div class="chip accent">Straits &amp; Chokepoints</div>
+                  <div class="chip">Malacca</div>
+                  <div class="chip">Hormuz</div>
+                  <div class="chip">Panama</div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Demographics &amp; Demand</div>
+                <div class="panel-meta">Geo-demand lens</div>
+              </div>
+              <div class="panel-body">
+                <div>Plot demografi, urbanisasi, middle-class expansion.</div>
+                <div class="chip-row" style="margin-top:8px;">
+                  <div class="chip accent">Asia demand engine</div>
+                  <div class="chip">Commodity Importers</div>
+                  <div class="chip">Manufacturing Hubs</div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="kt-screen-content">
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">DXY / Yields / Vol</div>
-                <div class="kt-card-meta">Core risk gauges</div>
+        </div>
+
+        <!-- Global Market Snapshot -->
+        <div class="section" id="section-snapshot">
+          <div class="section-header">
+            <div class="section-title">Global Market Snapshot</div>
+            <div class="section-subtitle">
+              DXY, yield curve, volatilitas, cross-asset realtime.
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">DXY / Yields / Vol</div>
+                <div class="panel-meta">Core risk gauges</div>
               </div>
-              <div class="kt-card-body">
-                <table class="kt-mini-table">
+              <div class="panel-body">
+                <table class="mini-table">
                   <thead>
-                    <tr><th>Gauge</th><th>Level</th><th>ΔD</th></tr>
+                    <tr>
+                      <th>Gauge</th>
+                      <th>Level</th>
+                      <th>ΔD</th>
+                    </tr>
                   </thead>
                   <tbody>
-                    <tr><td>DXY</td><td>102.4</td><td class="kt-pill-red">-0.4%</td></tr>
-                    <tr><td>US 2s10s</td><td>+35 bps</td><td class="kt-pill-green">Steepen</td></tr>
-                    <tr><td>VIX</td><td>13.8</td><td class="kt-pill-red">-1.2</td></tr>
+                    <tr>
+                      <td>DXY</td>
+                      <td>102.4</td>
+                      <td class="pill-red">-0.4%</td>
+                    </tr>
+                    <tr>
+                      <td>US 2s10s</td>
+                      <td>+35 bps</td>
+                      <td class="pill-green">Steepen</td>
+                    </tr>
+                    <tr>
+                      <td>VIX</td>
+                      <td>13.8</td>
+                      <td class="pill-red">-1.2</td>
+                    </tr>
                   </tbody>
                 </table>
-                <div class="kt-chip-row">
-                  <div class="kt-chip accent">Risk-On Snapshot</div>
-                  <div class="kt-chip">Vol low</div>
-                  <div class="kt-chip">Dollar softer</div>
+                <div class="chip-row" style="margin-top:8px;">
+                  <div class="chip accent">Risk-On Snapshot</div>
+                  <div class="chip">Vol low</div>
+                  <div class="chip">Dollar softer</div>
                 </div>
               </div>
-            </article>
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Regime Tag</div>
-                <div class="kt-card-meta">Kuantara Macro Regime</div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Regime Tag</div>
+                <div class="panel-meta">Kuantara Macro Regime</div>
               </div>
-              <div class="kt-card-body">
-                <p>• Regime: <span class="kt-pill-green">Liquidity Normalization</span></p>
-                <p>• Bias: <span class="kt-pill-green">Pro-Risk (Equity, Credit, EM)</span></p>
-                <p>• FX: <span class="kt-pill-green">Long AUD vs USD &amp; JPY</span></p>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <!-- Metrics -->
-        <section class="kt-screen" id="view-metrics">
-          <div class="kt-screen-header">
-            <div class="kt-screen-title-group">
-              <div class="kt-screen-title">Market Metrics &amp; Sentiment</div>
-              <div class="kt-screen-subtitle">
-                COT, VIX, fund flows, breadth, sektor rotasi.
+              <div class="panel-body">
+                <div>• Regime: <span class="pill-green">Liquidity Normalization</span></div>
+                <div>• Bias: <span class="pill-green">Pro-Risk (Equity, Credit, EM)</span></div>
+                <div>• FX: <span class="pill-green">Long AUD vs USD &amp; JPY</span></div>
               </div>
             </div>
           </div>
-          <div class="kt-screen-content">
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Positioning</div>
-                <div class="kt-card-meta">COT &amp; flows</div>
+        </div>
+
+        <!-- Market Metrics & Sentiment -->
+        <div class="section" id="section-metrics">
+          <div class="section-header">
+            <div class="section-title">Market Metrics &amp; Sentiment</div>
+            <div class="section-subtitle">
+              COT, VIX, fund flows, breadth, sektor rotasi.
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Positioning</div>
+                <div class="panel-meta">COT &amp; flows</div>
               </div>
-              <div class="kt-card-body">
+              <div class="panel-body">
                 <ul style="list-style:none; padding-left:0;">
                   <li>• COT: Spec long di indeks equity naik.</li>
                   <li>• Credit spread tightening → risk taking naik.</li>
                   <li>• Fund flows: inflow ke tech, EM equity.</li>
                 </ul>
               </div>
-            </article>
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Sector Rotation</div>
-                <div class="kt-card-meta">RRG-style overview</div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Sector Rotation</div>
+                <div class="panel-meta">Mock RRG-style</div>
               </div>
-              <div class="kt-card-body">
-                <div class="kt-chip-row">
-                  <div class="kt-chip accent">Leadership: Tech, Comm Services</div>
-                  <div class="kt-chip">Lagging: Utilities, Staples</div>
-                  <div class="kt-chip">Improving: Financials</div>
-                  <div class="kt-chip">Weakening: Energy</div>
+              <div class="panel-body">
+                <div class="chip-row">
+                  <div class="chip accent">Leadership: Tech, Comm Services</div>
+                  <div class="chip">Lagging: Utilities, Staples</div>
+                  <div class="chip">Improving: Financials</div>
+                  <div class="chip">Weakening: Energy</div>
                 </div>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <!-- News full -->
-        <section class="kt-screen" id="view-news">
-          <div class="kt-screen-header">
-            <div class="kt-screen-title-group">
-              <div class="kt-screen-title">Market News &amp; Catalyst</div>
-              <div class="kt-screen-subtitle">
-                Kalender ekonomi, newswire, X feed, Catalyst Global Macro.
               </div>
             </div>
           </div>
-          <div class="kt-screen-content" style="grid-template-columns:minmax(0,1fr);">
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Integrated Feed</div>
-                <div class="kt-card-meta">Kuantara · External sources</div>
-              </div>
-              <div class="kt-card-body">
-                <div class="kt-news-frame-wrap" style="min-height:320px;">
-                  <iframe
-                    class="kt-news-frame"
-                    src="https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html"
-                    loading="lazy"
-                  ></iframe>
-                </div>
-              </div>
-            </article>
-          </div>
-        </section>
+        </div>
 
-        <!-- Research -->
-        <section class="kt-screen" id="view-research">
-          <div class="kt-screen-header">
-            <div class="kt-screen-title-group">
-              <div class="kt-screen-title">Articles &amp; Market Research</div>
-              <div class="kt-screen-subtitle">
-                Riset mingguan, thematic reports, analisis Kuantara.
-              </div>
+        <!-- Market News & Catalyst (iframe menyatu) -->
+        <div class="section" id="section-news">
+          <div class="section-header">
+            <div class="section-title">Market News &amp; Catalyst</div>
+            <div class="section-subtitle">
+              Kalender ekonomi, newswire, X feed, dan Catalyst Global Macro terintegrasi.
             </div>
           </div>
-          <div class="kt-screen-content" style="grid-template-columns:minmax(0,1fr);">
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Weekly Macro Wrap</div>
-                <div class="kt-card-meta">Kuantara Analytics</div>
-              </div>
-              <div class="kt-card-body">
-                <p>
-                  Tempat untuk render PDF viewer / HTML riset langsung di terminal:
-                </p>
+
+          <div class="news-frame-wrapper">
+            <iframe
+              class="news-frame"
+              src="https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html"
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
+
+        <!-- Articles & Market Research -->
+        <div class="section" id="section-research">
+          <div class="section-header">
+            <div class="section-title">Articles &amp; Market Research</div>
+            <div class="section-subtitle">
+              Riset mingguan, thematic reports, analisis Kuantara.
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">Weekly Macro Wrap</div>
+              <div class="panel-meta">Kuantara Analytics</div>
+            </div>
+            <div class="panel-body">
+              <div>
+                Gunakan panel ini untuk render PDF viewer / HTML riset langsung di terminal:
                 <ul style="list-style:none; padding-left:0; margin-top:4px;">
                   <li>• Global macro narrative.</li>
                   <li>• Scenario &amp; probability.</li>
                   <li>• Trade ideas &amp; invalidation.</li>
                 </ul>
               </div>
-            </article>
+            </div>
           </div>
-        </section>
+        </div>
 
-        <!-- Quant -->
-        <section class="kt-screen" id="view-quant">
-          <div class="kt-screen-header">
-            <div class="kt-screen-title-group">
-              <div class="kt-screen-title">Quantitative &amp; Technical Tools</div>
-              <div class="kt-screen-subtitle">
-                Screener, regression, pattern finder, backtest, AI tools.
+        <!-- Quantitative & Technical Tools -->
+        <div class="section" id="section-quant">
+          <div class="section-header">
+            <div class="section-title">Quantitative &amp; Technical Tools</div>
+            <div class="section-subtitle">
+              Screener, regression, pattern finder, backtest, AI tools.
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Tool Launcher</div>
+                <div class="panel-meta">Multi-asset quant</div>
+              </div>
+              <div class="panel-body">
+                <div class="chip-row">
+                  <div class="chip accent">Pattern Finder</div>
+                  <div class="chip accent">Backtest Engine</div>
+                  <div class="chip accent">Regression Model</div>
+                  <div class="chip accent">AI Macro Copilot</div>
+                  <div class="chip">Pairs &amp; Spread</div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Template</div>
+                <div class="panel-meta">Koneksikan ke backend Python / Node</div>
+              </div>
+              <div class="panel-body">
+                <div>Tempat untuk embed UI interaktif (React / Svelte / vanilla JS) untuk tools.</div>
               </div>
             </div>
           </div>
-          <div class="kt-screen-content">
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Tool Launcher</div>
-                <div class="kt-card-meta">Multi-asset quant</div>
-              </div>
-              <div class="kt-card-body">
-                <div class="kt-chip-row">
-                  <div class="kt-chip accent">Pattern Finder</div>
-                  <div class="kt-chip accent">Backtest Engine</div>
-                  <div class="kt-chip accent">Regression Model</div>
-                  <div class="kt-chip accent">AI Macro Copilot</div>
-                  <div class="kt-chip">Pairs &amp; Spread</div>
-                </div>
-              </div>
-            </article>
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Template</div>
-                <div class="kt-card-meta">Hubungkan ke backend</div>
-              </div>
-              <div class="kt-card-body">
-                <p>Tempat untuk embed UI interaktif (React / vanilla JS) untuk tools.</p>
-              </div>
-            </article>
-          </div>
-        </section>
+        </div>
 
-        <!-- Screener -->
-        <section class="kt-screen" id="view-screener">
-          <div class="kt-screen-header">
-            <div class="kt-screen-title-group">
-              <div class="kt-screen-title">Stocks Screener</div>
-              <div class="kt-screen-subtitle">
-                Filter saham: teknikal, fundamental, &amp; sentimen.
+        <!-- Stocks Screener -->
+        <div class="section" id="section-screener">
+          <div class="section-header">
+            <div class="section-title">Stocks Screener</div>
+            <div class="section-subtitle">
+              Filter saham berdasarkan teknikal, fundamental, &amp; sentimen.
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">Screener Template</div>
+              <div class="panel-meta">US / Global equities</div>
+            </div>
+            <div class="panel-body">
+              <table class="mini-table">
+                <thead>
+                  <tr>
+                    <th>Ticker</th>
+                    <th>Sector</th>
+                    <th>ΔD%</th>
+                    <th>PE</th>
+                    <th>Signal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>AAPL</td>
+                    <td>Tech</td>
+                    <td class="pill-green">+0.8%</td>
+                    <td>28x</td>
+                    <td>BUY</td>
+                  </tr>
+                  <tr>
+                    <td>NVDA</td>
+                    <td>Tech</td>
+                    <td class="pill-green">+2.3%</td>
+                    <td>35x</td>
+                    <td>BUY</td>
+                  </tr>
+                  <tr>
+                    <td>XOM</td>
+                    <td>Energy</td>
+                    <td class="pill-red">-0.4%</td>
+                    <td>11x</td>
+                    <td>HOLD</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="chip-row" style="margin-top:8px;">
+                <div class="chip accent">Macro-aligned Screener</div>
+                <div class="chip">Growth vs Value</div>
+                <div class="chip">Factor exposure</div>
               </div>
             </div>
           </div>
-          <div class="kt-screen-content" style="grid-template-columns:minmax(0,1fr);">
-            <article class="kt-card">
-              <div class="kt-card-header">
-                <div class="kt-card-title">Screener Template</div>
-                <div class="kt-card-meta">US / Global equities</div>
-              </div>
-              <div class="kt-card-body">
-                <table class="kt-mini-table">
-                  <thead>
-                    <tr><th>Ticker</th><th>Sector</th><th>ΔD%</th><th>PE</th><th>Signal</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>AAPL</td><td>Tech</td><td class="kt-pill-green">+0.8%</td><td>28x</td><td>BUY</td></tr>
-                    <tr><td>NVDA</td><td>Tech</td><td class="kt-pill-green">+2.3%</td><td>35x</td><td>BUY</td></tr>
-                    <tr><td>XOM</td><td>Energy</td><td class="kt-pill-red">-0.4%</td><td>11x</td><td>HOLD</td></tr>
-                  </tbody>
-                </table>
-                <div class="kt-chip-row">
-                  <div class="kt-chip accent">Macro-aligned Screener</div>
-                  <div class="kt-chip">Growth vs Value</div>
-                  <div class="kt-chip">Factor exposure</div>
-                </div>
-              </div>
-            </article>
-          </div>
-        </section>
+        </div>
       </div>
 
-      <!-- STATUS BAR -->
-      <footer class="kt-status-bar">
-        <div class="kt-status-left">
+      <!-- Status bar -->
+      <div class="status-bar">
+        <div class="status-shortcuts">
           <span>Alt+0–9: Modules</span>
           <span>Alt+A: AI assistant</span>
-          <span>Esc: Overview</span>
-          <span>Ctrl+R: Refresh</span>
-          <span>Ctrl+F: Search</span>
-          <span>Ctrl+L: Theme</span>
+          <span>Esc: Market Overview / Close</span>
+          <span>Ctrl+R: Refresh data</span>
+          <span>Ctrl+F: Quick search</span>
+          <span>Ctrl+L: Toggle theme</span>
+          <span>Ctrl+Shift+S: Save layout</span>
+          <span>F1: Shortcut help</span>
           <span>Shift+1: Charts fullscreen</span>
         </div>
-        <div>DATA: Mock · Ready</div>
-      </footer>
-    </main>
-  </div>
-
-  <!-- TOAST -->
-  <div class="kt-toast-container" id="toastContainer"></div>
-
-  <!-- SHORTCUT MODAL -->
-  <div class="kt-modal-overlay" id="shortcutModal">
-    <div class="kt-modal">
-      <div class="kt-modal-header">
-        <div class="kt-modal-title">Keyboard Navigation</div>
-        <div style="font-size:9px; color:var(--text-muted);">
-          Bloomberg-style hotkeys untuk Kuantara.
+        <div class="status-connection">
+          <span>DATA: Mock · Ready</span>
         </div>
       </div>
-      <div class="kt-shortcut-grid">
-        <div class="kt-shortcut-key">Alt + 0–9</div>
-        <div>Loncat antar modul Overview → Screener.</div>
+    </div>
+  </div>
 
-        <div class="kt-shortcut-key">Alt + A</div>
-        <div>Toggle AI assistant (floating).</div>
+  <!-- Toast container -->
+  <div class="toast-container" id="toastContainer"></div>
 
-        <div class="kt-shortcut-key">Esc</div>
-        <div>Tutup AI / modal, lalu kembali ke Overview.</div>
-
-        <div class="kt-shortcut-key">Ctrl + R</div>
-        <div>Refresh data (mock, tanpa reload halaman).</div>
-
-        <div class="kt-shortcut-key">Ctrl + F</div>
-        <div>Fokus ke Quick Search.</div>
-
-        <div class="kt-shortcut-key">Ctrl + L</div>
-        <div>Toggle tema Light / Dark.</div>
-
-        <div class="kt-shortcut-key">Ctrl + Shift + S</div>
-        <div>Reserve untuk “save layout”.</div>
-
-        <div class="kt-shortcut-key">F1</div>
-        <div>Buka / tutup panel shortcut ini.</div>
-
-        <div class="kt-shortcut-key">Shift + 1</div>
-        <div>Mode chart fullscreen (saat modul Charts).</div>
+  <!-- Shortcut modal -->
+  <div class="modal-overlay" id="shortcutModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Keyboard Navigation</div>
+        <div style="font-size:10px; color:var(--text-muted);">
+          Bloomberg-style workflow untuk Kuantara Terminal.
+        </div>
       </div>
-      <div class="kt-modal-close-hint">
-        Tekan <strong>F1</strong> atau <strong>Esc</strong> untuk menutup.
+      <div class="modal-body">
+        <div class="shortcut-grid">
+          <div class="shortcut-key">Alt + 0</div>
+          <div class="shortcut-desc">Market Overview (dashboard utama).</div>
+
+          <div class="shortcut-key">Alt + 1</div>
+          <div class="shortcut-desc">Charts (1–4 jendela chart).</div>
+
+          <div class="shortcut-key">Alt + 2</div>
+          <div class="shortcut-desc">Macroeconomic Indicators.</div>
+
+          <div class="shortcut-key">Alt + 3</div>
+          <div class="shortcut-desc">Geo-Economic Indicators.</div>
+
+          <div class="shortcut-key">Alt + 4</div>
+          <div class="shortcut-desc">Global Market Snapshot.</div>
+
+          <div class="shortcut-key">Alt + 5</div>
+          <div class="shortcut-desc">Market Metrics &amp; Sentiment.</div>
+
+          <div class="shortcut-key">Alt + 6</div>
+          <div class="shortcut-desc">Market News &amp; Catalyst.</div>
+
+          <div class="shortcut-key">Alt + 7</div>
+          <div class="shortcut-desc">Articles &amp; Market Research.</div>
+
+          <div class="shortcut-key">Alt + 8</div>
+          <div class="shortcut-desc">Quantitative &amp; Technical Tools.</div>
+
+          <div class="shortcut-key">Alt + 9</div>
+          <div class="shortcut-desc">Stocks Screener.</div>
+
+          <div class="shortcut-key">Alt + A</div>
+          <div class="shortcut-desc">Toggle AI assistant (floating panel).</div>
+
+          <div class="shortcut-key">Esc</div>
+          <div class="shortcut-desc">
+            Tutup AI / modal, lalu kembali ke Market Overview.
+          </div>
+
+          <div class="shortcut-key">Ctrl + R</div>
+          <div class="shortcut-desc">Refresh data (internal, tanpa reload halaman).</div>
+
+          <div class="shortcut-key">Ctrl + F</div>
+          <div class="shortcut-desc">Fokus ke Quick Search.</div>
+
+          <div class="shortcut-key">Ctrl + L</div>
+          <div class="shortcut-desc">Ganti tema Dark / Light.</div>
+
+          <div class="shortcut-key">Ctrl + Shift + S</div>
+          <div class="shortcut-desc">Simpan layout kerja (mock).</div>
+
+          <div class="shortcut-key">F1</div>
+          <div class="shortcut-desc">Buka panduan shortcut ini.</div>
+
+          <div class="shortcut-key">Shift + 1</div>
+          <div class="shortcut-desc">Aktifkan / matikan mode chart fullscreen.</div>
+        </div>
+        <div class="modal-close-hint">
+          Tekan <strong>F1</strong> lagi atau <strong>Esc</strong> untuk menutup.
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- AI ASSISTANT -->
-  <div class="kt-ai-panel" id="aiPanel">
-    <div class="kt-ai-header">
+  <!-- AI Assistant floating -->
+  <div class="ai-panel" id="aiPanel">
+    <div class="ai-panel-header">
       <div>
-        <div class="kt-ai-title">Kuantara AI Assistant</div>
-        <div class="kt-ai-sub">Macro · Quant · Trading Research</div>
+        <div class="ai-panel-title">Kuantara AI Assistant</div>
+        <div class="ai-panel-meta">Macro · Quant · Trading Research</div>
       </div>
-      <button class="kt-ai-close" id="aiCloseBtn">ESC</button>
+      <div class="ai-panel-close" id="aiPanelClose">ESC</div>
     </div>
-    <div class="kt-ai-body">
+    <div class="ai-panel-body">
       <iframe
-        class="kt-ai-iframe"
+        class="ai-panel-iframe"
         id="aiFrame"
         src="about:blank"
         loading="lazy"
         title="Kuantara AI Assistant"
       ></iframe>
-      <!-- ganti src di atas ke URL AI iframe kamu -->
+      <!-- Ganti src di atas dengan URL iframe AI kamu -->
     </div>
   </div>
-  <button class="kt-ai-launcher" id="aiLauncher">AI</button>
+
+  <div class="ai-launcher-btn" id="aiLauncher">
+    <span>AI</span>
+  </div>
 
   <script>
-    /* ==== WORLD CLOCK + SESSION STATUS (WIB-based) ==== */
+    // World clock config: label + timezone
     const clockConfig = [
       { label: "NY",  tz: "America/New_York" },
       { label: "LDN", tz: "Europe/London" },
@@ -1414,56 +1702,57 @@
       { label: "JKT", tz: "Asia/Jakarta" }
     ];
 
-    // Jam sesi forex dalam WIB (GMT+7) sesuai gambar
+    // Forex session hours in WIB (GMT+7)
     const forexScheduleWIB = {
       SYD: { openMin: 5 * 60,  closeMin: 14 * 60 },      // 05–14
       TKY: { openMin: 7 * 60,  closeMin: 16 * 60 },      // 07–16
       LDN: { openMin: 15 * 60, closeMin: 24 * 60 },      // 15–24
       NY:  { openMin: 20 * 60, closeMin: 28 * 60 },      // 20–04 (next day)
-      JKT: { openMin: 9 * 60,  closeMin: 16 * 60 }       // Local equity session
+      JKT: { openMin: 9 * 60,  closeMin: 16 * 60 }       // custom for JKT
     };
 
     function isSessionOpenWIB(label, dayWib, minutesWib) {
       const s = forexScheduleWIB[label];
       if (!s) return false;
-      // weekend off
+
+      // Weekend off (Sabtu & Minggu)
       if (dayWib === 0 || dayWib === 6) return false;
 
       const open = s.openMin;
       const close = s.closeMin;
 
       if (close <= 24 * 60) {
-        // normal
         if (close < open) {
           return minutesWib >= open || minutesWib < close;
         } else {
           return minutesWib >= open && minutesWib < close;
         }
-      } else {
-        // close > 24:00, contoh NY 20–04
-        const closeNext = close - 24 * 60;
-        return minutesWib >= open || minutesWib < closeNext;
       }
+
+      const closeNext = close - 24 * 60;
+      return minutesWib >= open || minutesWib < closeNext;
     }
 
     function initWorldClock() {
       const container = document.getElementById("worldClock");
       container.innerHTML = "";
       clockConfig.forEach((cfg) => {
-        const pill = document.createElement("div");
-        pill.className = "kt-session-pill";
-        pill.innerHTML = `
-          <div class="kt-session-pill-header">
-            <span class="kt-session-status-dot" data-label="${cfg.label}"></span>
-            <span class="kt-session-label">${cfg.label}</span>
+        const div = document.createElement("div");
+        div.className = "session-tag";
+        div.innerHTML = `
+          <div class="session-header-line">
+            <span class="session-status-dot" data-label="${cfg.label}"></span>
+            <span class="session-label">${cfg.label}</span>
           </div>
-          <div class="kt-session-time" data-label="${cfg.label}" data-tz="${cfg.tz}">--:--</div>
+          <div class="session-time" data-tz="${cfg.tz}" data-label="${cfg.label}">--:--</div>
         `;
-        container.appendChild(pill);
+        container.appendChild(div);
       });
 
-      const update = () => {
+      const updateTime = () => {
         const now = new Date();
+
+        // Waktu Jakarta untuk cek sesi open/close
         const nowJakarta = new Date(
           now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
         );
@@ -1471,10 +1760,12 @@
         const minutesWib =
           nowJakarta.getHours() * 60 + nowJakarta.getMinutes();
 
-        const timeEls = container.querySelectorAll(".kt-session-time");
-        timeEls.forEach((el) => {
+        const times = container.querySelectorAll(".session-time");
+        times.forEach((el) => {
           const tz = el.getAttribute("data-tz");
           const label = el.getAttribute("data-label");
+
+          // Local time display
           const local = new Date(
             now.toLocaleString("en-US", { timeZone: tz })
           );
@@ -1485,175 +1776,205 @@
           });
           el.textContent = formatted;
 
+          const isOpen = isSessionOpenWIB(label, dayWib, minutesWib);
           const dot = container.querySelector(
-            '.kt-session-status-dot[data-label="' + label + '"]'
+            '.session-status-dot[data-label="' + label + '"]'
           );
-          const open = isSessionOpenWIB(label, dayWib, minutesWib);
           if (dot) {
-            dot.classList.toggle("open", open);
+            if (isOpen) {
+              dot.classList.add("open");
+            } else {
+              dot.classList.remove("open");
+            }
           }
         });
       };
 
-      update();
-      setInterval(update, 1000);
+      updateTime();
+      setInterval(updateTime, 1000);
     }
 
-    /* ==== NAVIGATION ==== */
+    // Section handling
     const sectionMap = {
-      0: "view-overview",
-      1: "view-charts",
-      2: "view-macro",
-      3: "view-geo",
-      4: "view-snapshot",
-      5: "view-metrics",
-      6: "view-news",
-      7: "view-research",
-      8: "view-quant",
-      9: "view-screener"
+      0: "section-market-overview",
+      1: "section-charts",
+      2: "section-macro",
+      3: "section-geo",
+      4: "section-snapshot",
+      5: "section-metrics",
+      6: "section-news",
+      7: "section-research",
+      8: "section-quant",
+      9: "section-screener"
     };
 
-    function setActiveView(viewId) {
-      document
-        .querySelectorAll(".kt-screen")
-        .forEach((s) => s.classList.remove("active"));
-      const target = document.getElementById(viewId);
+    function setActiveSection(sectionId) {
+      const sections = document.querySelectorAll(".section");
+      sections.forEach((s) => s.classList.remove("active"));
+      const target = document.getElementById(sectionId);
       if (target) target.classList.add("active");
 
-      document
-        .querySelectorAll(".kt-module-tab")
-        .forEach((t) =>
-          t.classList.toggle("active", t.getAttribute("data-view") === viewId)
+      const menuItems = document.querySelectorAll(".menu-item");
+      menuItems.forEach((m) => {
+        m.classList.toggle(
+          "active",
+          m.getAttribute("data-section") === sectionId
         );
+      });
+
+      const label = document.getElementById("currentModuleLabel");
+      const index = Object.values(sectionMap).indexOf(sectionId);
+      const labelText =
+        index >= 0
+          ? `[${index}] ${
+              document.querySelector(
+                '.menu-item[data-section="' + sectionId + '"] .menu-item-label'
+              ).textContent.trim()
+            }`
+          : document.title;
+      label.textContent = labelText;
     }
 
-    document.querySelectorAll(".kt-module-tab").forEach((tab) => {
-      tab.addEventListener("click", () => {
-        const viewId = tab.getAttribute("data-view");
-        setActiveView(viewId);
-
-        const idx = Object.values(sectionMap).indexOf(viewId);
-        if (idx >= 0) {
-          const label =
-            tab.querySelector(".kt-module-tab-label").textContent.trim();
-          showToast("View [" + idx + "] " + label, "NAV");
-        }
-      });
-    });
-
-    /* ==== TOAST ==== */
+    // Toast
     const toastContainer = document.getElementById("toastContainer");
-    function showToast(message, label = "INFO") {
-      const node = document.createElement("div");
-      node.className = "kt-toast";
-      node.innerHTML = `
-        <div class="kt-toast-label">${label}</div>
+    function showToast(message, label = "ACTION") {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.innerHTML = `
+        <div class="toast-label">${label}</div>
         <div>${message}</div>
       `;
-      toastContainer.appendChild(node);
+      toastContainer.appendChild(toast);
       setTimeout(() => {
-        node.style.opacity = "0";
-        setTimeout(() => node.remove(), 220);
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 200);
       }, 2200);
     }
 
-    /* ==== THEME TOGGLE ==== */
-    const themeToggleBtn = document.getElementById("themeToggleBtn");
+    // Theme toggle
     function toggleTheme() {
-      const current = document.body.getAttribute("data-theme") || "dark";
+      const body = document.body;
+      const current = body.getAttribute("data-theme") || "dark";
       const next = current === "dark" ? "light" : "dark";
-      document.body.setAttribute("data-theme", next);
-      showToast("Theme: " + next, "THEME");
-    }
-    themeToggleBtn.addEventListener("click", toggleTheme);
-
-    /* ==== AI ASSISTANT ==== */
-    const aiPanel = document.getElementById("aiPanel");
-    const aiLauncher = document.getElementById("aiLauncher");
-    const aiCloseBtn = document.getElementById("aiCloseBtn");
-    let aiVisible = false;
-
-    function setAiVisible(v) {
-      aiVisible = v;
-      aiPanel.classList.toggle("visible", v);
+      body.setAttribute("data-theme", next);
+      showToast(`Theme switched to ${next}`, "THEME");
     }
 
-    function toggleAi() {
-      setAiVisible(!aiVisible);
-      showToast(aiVisible ? "AI assistant opened" : "AI assistant closed", "AI");
-    }
-
-    aiLauncher.addEventListener("click", toggleAi);
-    aiCloseBtn.addEventListener("click", () => setAiVisible(false));
-
-    /* ==== SHORTCUT MODAL ==== */
-    const shortcutModal = document.getElementById("shortcutModal");
-    let shortcutVisible = false;
-    function toggleShortcutModal(force) {
-      if (typeof force === "boolean") {
-        shortcutVisible = force;
-      } else {
-        shortcutVisible = !shortcutVisible;
+    // Charts fullscreen
+    const app = document.getElementById("app");
+    function toggleChartsFullscreen() {
+      const isChartsActive = document
+        .getElementById("section-charts")
+        .classList.contains("active");
+      if (!isChartsActive) {
+        showToast("Charts fullscreen hanya saat modul Charts aktif.", "INFO");
+        return;
       }
-      shortcutModal.classList.toggle("visible", shortcutVisible);
+      app.classList.toggle("charts-fullscreen");
+      showToast(
+        app.classList.contains("charts-fullscreen")
+          ? "Charts fullscreen ON"
+          : "Charts fullscreen OFF",
+        "CHARTS"
+      );
     }
+
+    // Shortcut modal
+    const shortcutModal = document.getElementById("shortcutModal");
+    let shortcutModalVisible = false;
+
+    function toggleShortcutModal(forceState) {
+      if (typeof forceState === "boolean") {
+        shortcutModalVisible = forceState;
+      } else {
+        shortcutModalVisible = !shortcutModalVisible;
+      }
+      shortcutModal.classList.toggle("visible", shortcutModalVisible);
+    }
+
     shortcutModal.addEventListener("click", (e) => {
-      if (e.target === shortcutModal) toggleShortcutModal(false);
+      if (e.target === shortcutModal) {
+        toggleShortcutModal(false);
+      }
     });
 
-    /* ==== KEYBOARD SHORTCUTS ==== */
+    // AI assistant panel
+    const aiPanel = document.getElementById("aiPanel");
+    const aiLauncher = document.getElementById("aiLauncher");
+    const aiPanelClose = document.getElementById("aiPanelClose");
+    let aiPanelVisible = false;
+
+    function setAiPanelVisible(visible) {
+      aiPanelVisible = visible;
+      aiPanel.classList.toggle("visible", visible);
+    }
+
+    function toggleAiPanel() {
+      setAiPanelVisible(!aiPanelVisible);
+      if (aiPanelVisible) {
+        showToast("AI assistant opened.", "AI");
+      } else {
+        showToast("AI assistant closed.", "AI");
+      }
+    }
+
+    aiLauncher.addEventListener("click", toggleAiPanel);
+    aiPanelClose.addEventListener("click", () => setAiPanelVisible(false));
+
+    // Keyboard navigation
     const quickSearch = document.getElementById("quickSearch");
+
     document.addEventListener("keydown", (e) => {
       const key = e.key;
 
-      // Alt + digit
+      // Alt + number: section
       if (e.altKey && !e.ctrlKey && /^[0-9]$/.test(key)) {
         e.preventDefault();
         const idx = parseInt(key, 10);
-        const viewId = sectionMap[idx];
-        if (viewId) {
-          setActiveView(viewId);
-          const tab = document.querySelector(
-            '.kt-module-tab[data-view="' + viewId + '"]'
+        const sectionId = sectionMap[idx];
+        if (sectionId) {
+          setActiveSection(sectionId);
+          showToast(
+            `Navigated to [${idx}] ${
+              document.querySelector(
+                '.menu-item[data-section="' + sectionId + '"] .menu-item-label'
+              ).textContent
+            }`,
+            "NAV"
           );
-          const label = tab
-            ? tab.querySelector(".kt-module-tab-label").textContent.trim()
-            : viewId;
-          showToast("View [" + idx + "] " + label, "NAV");
         }
         return;
       }
 
-      // Alt + A → AI
+      // Alt + A: AI assistant
       if (e.altKey && !e.ctrlKey && (key === "a" || key === "A")) {
         e.preventDefault();
-        toggleAi();
+        toggleAiPanel();
         return;
       }
 
-      // Esc: close AI / modal / go overview
+      // Esc: close AI / modal / go home
       if (key === "Escape") {
-        if (aiVisible) {
-          setAiVisible(false);
+        if (aiPanelVisible) {
+          setAiPanelVisible(false);
           return;
         }
-        if (shortcutVisible) {
+        if (shortcutModalVisible) {
           toggleShortcutModal(false);
-          return;
+        } else {
+          setActiveSection(sectionMap[0]);
+          showToast("Back to Market Overview", "NAV");
         }
-        setActiveView("view-overview");
         return;
       }
 
-      // Ctrl+R mock refresh
-      if (e.ctrlKey && !e.altKey && !e.shiftKey && key.toLowerCase() === "r") {
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && key.toLowerCase() === "r") {
         e.preventDefault();
         showToast("Data refresh triggered (mock).", "REFRESH");
         return;
       }
 
-      // Ctrl+F search focus
-      if (e.ctrlKey && !e.altKey && !e.shiftKey && key.toLowerCase() === "f") {
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && key.toLowerCase() === "f") {
         e.preventDefault();
         quickSearch.focus();
         quickSearch.select();
@@ -1661,42 +1982,48 @@
         return;
       }
 
-      // Ctrl+L theme
-      if (e.ctrlKey && !e.altKey && !e.shiftKey && key.toLowerCase() === "l") {
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && key.toLowerCase() === "l") {
         e.preventDefault();
         toggleTheme();
         return;
       }
 
-      // Ctrl+Shift+S save layout (mock)
       if (e.ctrlKey && e.shiftKey && !e.altKey && key.toLowerCase() === "s") {
         e.preventDefault();
         showToast("Layout saved (mock).", "LAYOUT");
         return;
       }
 
-      // F1 open shortcut modal
       if (!e.ctrlKey && !e.altKey && !e.metaKey && key === "F1") {
         e.preventDefault();
         toggleShortcutModal();
         return;
       }
 
-      // Shift+1 charts fullscreen indicator (visual only di toast)
       if (e.shiftKey && !e.ctrlKey && !e.altKey && key === "!") {
         e.preventDefault();
-        const chartsActive = document
-          .getElementById("view-charts")
-          .classList.contains("active");
-        if (!chartsActive) {
-          showToast("Fullscreen hanya saat modul Charts aktif.", "CHARTS");
-        } else {
-          showToast("Toggle Charts fullscreen (implementasi bebas).", "CHARTS");
-        }
+        toggleChartsFullscreen();
+        return;
       }
     });
 
-    // INIT
+    // Menu click
+    document.querySelectorAll(".menu-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const sectionId = item.getAttribute("data-section");
+        setActiveSection(sectionId);
+        const index = Object.values(sectionMap).indexOf(sectionId);
+        if (index >= 0) {
+          showToast(
+            `Navigated to [${index}] ${
+              item.querySelector(".menu-item-label").textContent
+            }`,
+            "NAV"
+          );
+        }
+      });
+    });
+
     initWorldClock();
   </script>
 </body>
