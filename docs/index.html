@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara Terminal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Fira Code -->
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"
+  />
+  <style>
+    :root {
+      --amber: #ffbf00;
+      --bg-dark: #050505;
+      --bg-dark-alt: #111111;
+      --bg-panel: #181818;
+      --border-muted: #2a2a2a;
+      --text-primary: #f5f5f5;
+      --text-muted: #9b9b9b;
+      --accent: #ffbf00;
+      --danger: #ff4b4b;
+      --success: #1dd75b;
+    }
+
+    body[data-theme="light"] {
+      --bg-dark: #f5f5f5;
+      --bg-dark-alt: #ffffff;
+      --bg-panel: #ffffff;
+      --border-muted: #d0d0d0;
+      --text-primary: #111111;
+      --text-muted: #555555;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Fira Code", monospace;
+      background: radial-gradient(circle at top, #222222 0, var(--bg-dark) 55%);
+      color: var(--text-primary);
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .app-shell {
+      background: var(--bg-dark-alt);
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background: linear-gradient(90deg, #000000, #151515);
+      border-bottom: 1px solid var(--border-muted);
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 26px;
+      height: 26px;
+      border-radius: 4px;
+      border: 1px solid var(--amber);
+      background: radial-gradient(circle at 20% 0%, var(--amber), #654200 55%, #201600);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 1px;
+      color: #000;
+      box-shadow: 0 0 12px rgba(255, 191, 0, 0.4);
+    }
+
+    .brand-text-main {
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--amber);
+    }
+
+    .brand-text-sub {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.16em;
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .status-pill {
+      border-radius: 999px;
+      border: 1px solid var(--border-muted);
+      padding: 3px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 6px rgba(29, 215, 91, 0.8);
+    }
+
+    .world-clock {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .world-clock label {
+      color: var(--text-muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .world-clock-sessions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .session-tag {
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 191, 0, 0.06);
+      border: 1px solid rgba(255, 191, 0, 0.25);
+      font-size: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 72px;
+    }
+
+    .session-label {
+      color: var(--amber);
+      text-transform: uppercase;
+    }
+
+    .session-time {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    /* Menu bar */
+    .menu-bar {
+      display: flex;
+      align-items: stretch;
+      gap: 2px;
+      padding: 4px 6px;
+      border-bottom: 1px solid var(--border-muted);
+      background: linear-gradient(180deg, #181818 0, #111111 100%);
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .menu-item {
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 4px 10px 3px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+      user-select: none;
+      transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease,
+        box-shadow 0.1s ease;
+    }
+
+    .menu-item-key {
+      font-size: 10px;
+      color: var(--amber);
+      opacity: 0.8;
+    }
+
+    .menu-item-label {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 191, 0, 0.06);
+      border-color: rgba(255, 191, 0, 0.4);
+      color: var(--text-primary);
+    }
+
+    .menu-item.active {
+      background: rgba(255, 191, 0, 0.18);
+      border-color: rgba(255, 191, 0, 0.9);
+      color: #000;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 191, 0, 0.5);
+    }
+
+    .menu-item.active .menu-item-key {
+      color: #000;
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background: radial-gradient(circle at 0 0, #262626 0, #151515 40%, #050505 100%);
+    }
+
+    .top-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 12px;
+      font-size: 11px;
+      border-bottom: 1px solid var(--border-muted);
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .top-strip-left {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .tag-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      border: 1px solid var(--border-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .top-strip-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 6px;
+      border: 1px solid var(--border-muted);
+      padding: 3px 8px;
+    }
+
+    .search-box span {
+      color: var(--text-muted);
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 11px;
+      min-width: 160px;
+    }
+
+    .search-box input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-key-hint {
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      border: 1px solid var(--border-muted);
+      color: var(--text-muted);
+    }
+
+    .content-area {
+      padding: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+    }
+
+    .section {
+      display: none;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .section.active {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--border-muted);
+      padding-bottom: 4px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--amber);
+    }
+
+    .section-subtitle {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 2.2fr 1.1fr;
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .panel {
+      background: radial-gradient(circle at 10% 0, #272727 0, #181818 40%, #101010 100%);
+      border-radius: 8px;
+      border: 1px solid var(--border-muted);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: hidden;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .panel-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .panel-meta {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .panel-body {
+      flex: 1 1 auto;
+      overflow: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+      min-height: 0;
+    }
+
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .mini-table th,
+    .mini-table td {
+      padding: 3px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .mini-table th {
+      color: var(--amber);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .chip {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border-muted);
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .chip.accent {
+      border-color: rgba(255, 191, 0, 0.7);
+      color: var(--amber);
+      background: rgba(255, 191, 0, 0.06);
+    }
+
+    .pill-green {
+      color: var(--success);
+    }
+
+    .pill-red {
+      color: var(--danger);
+    }
+
+    /* Charts fullscreen */
+    .charts-fullscreen .content-area {
+      padding: 0;
+    }
+
+    .charts-fullscreen .section#section-charts .panel {
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      height: 100%;
+    }
+
+    .chart-placeholder {
+      border-radius: 6px;
+      border: 1px dashed rgba(255, 191, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--text-muted);
+      background: radial-gradient(circle at 10% 0, #262626 0, #111111 60%);
+    }
+
+    .chart-label {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 2px;
+      color: var(--amber);
+    }
+
+    /* === NEWS IFRAME TANPA PANEL === */
+    .news-frame-wrapper {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+      /* background mengikuti main; tidak ada border/padding */
+    }
+
+    .news-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: transparent;
+    }
+
+    /* Bottom status bar */
+    .status-bar {
+      border-top: 1px solid var(--border-muted);
+      padding: 4px 10px;
+      font-size: 10px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .status-shortcuts {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-shortcuts span {
+      white-space: nowrap;
+    }
+
+    .status-connection {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: rgba(6, 6, 6, 0.96);
+      border-radius: 6px;
+      border: 1px solid var(--border-muted);
+      padding: 6px 9px;
+      font-size: 11px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      pointer-events: auto;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75);
+    }
+
+    .toast-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--amber);
+    }
+
+    /* Shortcut modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+    }
+
+    .modal-overlay.visible {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-panel);
+      border-radius: 10px;
+      border: 1px solid var(--border-muted);
+      padding: 14px 16px;
+      width: 560px;
+      max-width: 95%;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .modal-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--amber);
+    }
+
+    .modal-body {
+      font-size: 11px;
+      color: var(--text-muted);
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    .shortcut-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 2.6fr;
+      gap: 4px 14px;
+      margin-top: 8px;
+    }
+
+    .shortcut-key {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-muted);
+      color: var(--amber);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .shortcut-desc {
+      font-size: 11px;
+    }
+
+    .modal-close-hint {
+      margin-top: 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <div class="app-shell" id="app">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="brand-block">
+        <div class="brand-logo">KT</div>
+        <div>
+          <div class="brand-text-main">Kuantara Terminal</div>
+          <div class="brand-text-sub">Clarity Over Chaos</div>
+        </div>
+      </div>
+      <div class="top-bar-right">
+        <div class="status-pill">
+          <div class="status-dot"></div>
+          <div>LIVE FEED</div>
+        </div>
+        <div class="world-clock">
+          <label>Market Session</label>
+          <div class="world-clock-sessions" id="worldClock"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu bar -->
+    <div class="menu-bar" id="menuBar">
+      <div class="menu-item active" data-section="section-market-overview">
+        <span class="menu-item-key">Alt+0</span>
+        <span class="menu-item-label">Market Overview</span>
+      </div>
+      <div class="menu-item" data-section="section-charts">
+        <span class="menu-item-key">Alt+1</span>
+        <span class="menu-item-label">Charts</span>
+      </div>
+      <div class="menu-item" data-section="section-macro">
+        <span class="menu-item-key">Alt+2</span>
+        <span class="menu-item-label">Macroeconomic Indicators</span>
+      </div>
+      <div class="menu-item" data-section="section-geo">
+        <span class="menu-item-key">Alt+3</span>
+        <span class="menu-item-label">Geo-Economic Indicators</span>
+      </div>
+      <div class="menu-item" data-section="section-snapshot">
+        <span class="menu-item-key">Alt+4</span>
+        <span class="menu-item-label">Global Market Snapshot</span>
+      </div>
+      <div class="menu-item" data-section="section-metrics">
+        <span class="menu-item-key">Alt+5</span>
+        <span class="menu-item-label">Market Metrics &amp; Sentiment</span>
+      </div>
+      <div class="menu-item" data-section="section-news">
+        <span class="menu-item-key">Alt+6</span>
+        <span class="menu-item-label">Market News &amp; Catalyst</span>
+      </div>
+      <div class="menu-item" data-section="section-research">
+        <span class="menu-item-key">Alt+7</span>
+        <span class="menu-item-label">Articles &amp; Market Research</span>
+      </div>
+      <div class="menu-item" data-section="section-quant">
+        <span class="menu-item-key">Alt+8</span>
+        <span class="menu-item-label">Quantitative &amp; Technical Tools</span>
+      </div>
+      <div class="menu-item" data-section="section-screener">
+        <span class="menu-item-key">Alt+9</span>
+        <span class="menu-item-label">Stocks Screener</span>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+      <div class="top-strip">
+        <div class="top-strip-left">
+          <div class="tag-pill" id="currentModuleLabel">[0] Market Overview</div>
+          <div class="tag-pill">Beta · Local Mock Data</div>
+        </div>
+        <div class="top-strip-right">
+          <div class="search-box">
+            <span>▶</span>
+            <input
+              id="quickSearch"
+              type="text"
+              placeholder="Quick command / search (Ctrl+F)"
+            />
+            <span class="search-key-hint">ENTER</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-area" id="contentArea">
+        <!-- Market Overview -->
+        <div class="section active" id="section-market-overview">
+          <div class="section-header">
+            <div class="section-title">Market Overview</div>
+            <div class="section-subtitle">
+              Lintas aset: saham, FX, komoditas, obligasi, kripto.
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Cross Asset Heatmap</div>
+                <div class="panel-meta">Mock · Daily % Change</div>
+              </div>
+              <div class="panel-body">
+                <table class="mini-table">
+                  <thead>
+                    <tr>
+                      <th>Asset</th>
+                      <th>Last</th>
+                      <th>ΔD%</th>
+                      <th>Session</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>NASDAQ 100</td>
+                      <td>18,420</td>
+                      <td class="pill-green">+1.8%</td>
+                      <td>US</td>
+                    </tr>
+                    <tr>
+                      <td>S&amp;P 500</td>
+                      <td>5,420</td>
+                      <td class="pill-green">+0.9%</td>
+                      <td>US</td>
+                    </tr>
+                    <tr>
+                      <td>DXY</td>
+                      <td>102.4</td>
+                      <td class="pill-red">-0.4%</td>
+                      <td>FX</td>
+                    </tr>
+                    <tr>
+                      <td>XAUUSD</td>
+                      <td>2,480</td>
+                      <td class="pill-green">+0.7%</td>
+                      <td>COM</td>
+                    </tr>
+                    <tr>
+                      <td>US10Y</td>
+                      <td>3.95%</td>
+                      <td class="pill-red">-5 bps</td>
+                      <td>FI</td>
+                    </tr>
+                    <tr>
+                      <td>BTCUSD</td>
+                      <td>76,200</td>
+                      <td class="pill-green">+2.3%</td>
+                      <td>CRYPTO</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="chip-row">
+                  <div class="chip accent">Risk-On Bias</div>
+                  <div class="chip">DXY Down</div>
+                  <div class="chip">Gold Bid</div>
+                  <div class="chip">US Curve Bull Steepening</div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Macro Pulse</div>
+                <div class="panel-meta">Snapshot · Kuantara View</div>
+              </div>
+              <div class="panel-body">
+                <ul style="list-style:none; padding-left:0;">
+                  <li>• <span class="pill-green">Gold bullish</span>, liquidity back to normal.</li>
+                  <li>• <span class="pill-green">Long risk assets</span> tetap preferensi utama.</li>
+                  <li>• <span class="pill-green">AUD bullish</span> sebagai proksi China + komoditas.</li>
+                  <li>• <span class="pill-red">USD mixed</span> — selektif, fokus cross &amp; carry.</li>
+                </ul>
+                <div class="chip-row" style="margin-top:8px;">
+                  <div class="chip accent">Macro → Risk Assets</div>
+                  <div class="chip">Liquidity Regime</div>
+                  <div class="chip">FX Carry</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="section" id="section-charts">
+          <div class="section-header">
+            <div class="section-title">Charts</div>
+            <div class="section-subtitle">
+              Modul bergaya TradingView (1–4 jendela). Shift+1: fullscreen mode.
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">Multi-Chart Layout</div>
+              <div class="panel-meta">Mock · Plug your charting library here</div>
+            </div>
+            <div class="panel-body">
+              <div class="charts-grid">
+                <div class="chart-placeholder">
+                  <div class="chart-label">Chart 1</div>
+                  <div>Primary: <strong>NASDAQ / XAU / DXY</strong></div>
+                  <div>Embed TradingView / custom chart here.</div>
+                </div>
+                <div class="chart-placeholder">
+                  <div class="chart-label">Chart 2</div>
+                  <div>FX majors / cross-pairs.</div>
+                </div>
+                <div class="chart-placeholder">
+                  <div class="chart-label">Chart 3</div>
+                  <div>Rates &amp; yield curve.</div>
+                </div>
+                <div class="chart-placeholder">
+                  <div class="chart-label">Chart 4</div>
+                  <div>Crypto or custom watchlist.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Macroeconomic Indicators -->
+        <div class="section" id="section-macro">
+          <div class="section-header">
+            <div class="section-title">Macroeconomic Indicators</div>
+            <div class="section-subtitle">
+              GDP, inflasi, suku bunga, PMI, neraca dagang, dsb.
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Core Macro Dashboard</div>
+                <div class="panel-meta">US / G3 snapshot</div>
+              </div>
+              <div class="panel-body">
+                <table class="mini-table">
+                  <thead>
+                    <tr>
+                      <th>Country</th>
+                      <th>GDP YoY</th>
+                      <th>CPI YoY</th>
+                      <th>Policy Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>US</td>
+                      <td>4.6%</td>
+                      <td>3.0%</td>
+                      <td>4.00%</td>
+                    </tr>
+                    <tr>
+                      <td>Euro Area</td>
+                      <td>1.3%</td>
+                      <td>2.4%</td>
+                      <td>2.15%</td>
+                    </tr>
+                    <tr>
+                      <td>Japan</td>
+                      <td>0.7%</td>
+                      <td>2.1%</td>
+                      <td>0.00%</td>
+                    </tr>
+                    <tr>
+                      <td>Australia</td>
+                      <td>2.2%</td>
+                      <td>3.6%</td>
+                      <td>3.60%</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Growth &amp; Inflation Map</div>
+                <div class="panel-meta">High-level regime</div>
+              </div>
+              <div class="panel-body">
+                <div>US: Soft-landing bias, inflasi moderat, growth stabil.</div>
+                <div>EU: Growth lemah, inflasi turun → ruang easing terbuka.</div>
+                <div>Asia: Divergen, tetapi komoditas &amp; re-opening jadi driver.</div>
+                <div class="chip-row" style="margin-top:8px;">
+                  <div class="chip accent">Growth vs Inflation Quadrant</div>
+                  <div class="chip">Stagflation risk ↓</div>
+                  <div class="chip">Disinflation regime</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Geo-Economic Indicators -->
+        <div class="section" id="section-geo">
+          <div class="section-header">
+            <div class="section-title">Geo-Economic Indicators</div>
+            <div class="section-subtitle">
+              Peta energi, perdagangan, demografi, jalur maritim.
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Energy &amp; Trade Routes</div>
+                <div class="panel-meta">Mock map placeholder</div>
+              </div>
+              <div class="panel-body">
+                <div>Integrasikan peta: shipping lanes, chokepoints, pipeline.</div>
+                <div class="chip-row" style="margin-top:8px;">
+                  <div class="chip accent">Straits &amp; Chokepoints</div>
+                  <div class="chip">Malacca</div>
+                  <div class="chip">Hormuz</div>
+                  <div class="chip">Panama</div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Demographics &amp; Demand</div>
+                <div class="panel-meta">Geo-demand lens</div>
+              </div>
+              <div class="panel-body">
+                <div>Plot demografi, urbanisasi, middle-class expansion.</div>
+                <div class="chip-row" style="margin-top:8px;">
+                  <div class="chip accent">Asia demand engine</div>
+                  <div class="chip">Commodity Importers</div>
+                  <div class="chip">Manufacturing Hubs</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Global Market Snapshot -->
+        <div class="section" id="section-snapshot">
+          <div class="section-header">
+            <div class="section-title">Global Market Snapshot</div>
+            <div class="section-subtitle">
+              DXY, yield curve, volatilitas, cross-asset realtime.
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">DXY / Yields / Vol</div>
+                <div class="panel-meta">Core risk gauges</div>
+              </div>
+              <div class="panel-body">
+                <table class="mini-table">
+                  <thead>
+                    <tr>
+                      <th>Gauge</th>
+                      <th>Level</th>
+                      <th>ΔD</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>DXY</td>
+                      <td>102.4</td>
+                      <td class="pill-red">-0.4%</td>
+                    </tr>
+                    <tr>
+                      <td>US 2s10s</td>
+                      <td>+35 bps</td>
+                      <td class="pill-green">Steepen</td>
+                    </tr>
+                    <tr>
+                      <td>VIX</td>
+                      <td>13.8</td>
+                      <td class="pill-red">-1.2</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="chip-row" style="margin-top:8px;">
+                  <div class="chip accent">Risk-On Snapshot</div>
+                  <div class="chip">Vol low</div>
+                  <div class="chip">Dollar softer</div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Regime Tag</div>
+                <div class="panel-meta">Kuantara Macro Regime</div>
+              </div>
+              <div class="panel-body">
+                <div>• Regime: <span class="pill-green">Liquidity Normalization</span></div>
+                <div>• Bias: <span class="pill-green">Pro-Risk (Equity, Credit, EM)</span></div>
+                <div>• FX: <span class="pill-green">Long AUD vs USD &amp; JPY</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Market Metrics & Sentiment -->
+        <div class="section" id="section-metrics">
+          <div class="section-header">
+            <div class="section-title">Market Metrics &amp; Sentiment</div>
+            <div class="section-subtitle">
+              COT, VIX, fund flows, breadth, sektor rotasi.
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Positioning</div>
+                <div class="panel-meta">COT &amp; flows</div>
+              </div>
+              <div class="panel-body">
+                <ul style="list-style:none; padding-left:0;">
+                  <li>• COT: Spec long di indeks equity naik.</li>
+                  <li>• Credit spread tightening → risk taking naik.</li>
+                  <li>• Fund flows: inflow ke tech, EM equity.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Sector Rotation</div>
+                <div class="panel-meta">Mock RRG-style</div>
+              </div>
+              <div class="panel-body">
+                <div class="chip-row">
+                  <div class="chip accent">Leadership: Tech, Comm Services</div>
+                  <div class="chip">Lagging: Utilities, Staples</div>
+                  <div class="chip">Improving: Financials</div>
+                  <div class="chip">Weakening: Energy</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Market News & Catalyst (iframe menyatu) -->
+        <div class="section" id="section-news">
+          <div class="section-header">
+            <div class="section-title">Market News &amp; Catalyst</div>
+            <div class="section-subtitle">
+              Kalender ekonomi, newswire, X feed, dan Catalyst Global Macro terintegrasi.
+            </div>
+          </div>
+
+          <div class="news-frame-wrapper">
+            <iframe
+              class="news-frame"
+              src="https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html"
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
+
+        <!-- Articles & Market Research -->
+        <div class="section" id="section-research">
+          <div class="section-header">
+            <div class="section-title">Articles &amp; Market Research</div>
+            <div class="section-subtitle">
+              Riset mingguan, thematic reports, analisis Kuantara.
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">Weekly Macro Wrap</div>
+              <div class="panel-meta">Kuantara Analytics</div>
+            </div>
+            <div class="panel-body">
+              <div>
+                Gunakan panel ini untuk render PDF viewer / HTML riset langsung di terminal:
+                <ul style="list-style:none; padding-left:0; margin-top:4px;">
+                  <li>• Global macro narrative.</li>
+                  <li>• Scenario &amp; probability.</li>
+                  <li>• Trade ideas &amp; invalidation.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quantitative & Technical Tools -->
+        <div class="section" id="section-quant">
+          <div class="section-header">
+            <div class="section-title">Quantitative &amp; Technical Tools</div>
+            <div class="section-subtitle">
+              Screener, regression, pattern finder, backtest, AI tools.
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Tool Launcher</div>
+                <div class="panel-meta">Multi-asset quant</div>
+              </div>
+              <div class="panel-body">
+                <div class="chip-row">
+                  <div class="chip accent">Pattern Finder</div>
+                  <div class="chip accent">Backtest Engine</div>
+                  <div class="chip accent">Regression Model</div>
+                  <div class="chip accent">AI Macro Copilot</div>
+                  <div class="chip">Pairs &amp; Spread</div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Template</div>
+                <div class="panel-meta">Koneksikan ke backend Python / Node</div>
+              </div>
+              <div class="panel-body">
+                <div>Tempat untuk embed UI interaktif (React / Svelte / vanilla JS) untuk tools.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stocks Screener -->
+        <div class="section" id="section-screener">
+          <div class="section-header">
+            <div class="section-title">Stocks Screener</div>
+            <div class="section-subtitle">
+              Filter saham berdasarkan teknikal, fundamental, &amp; sentimen.
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">Screener Template</div>
+              <div class="panel-meta">US / Global equities</div>
+            </div>
+            <div class="panel-body">
+              <table class="mini-table">
+                <thead>
+                  <tr>
+                    <th>Ticker</th>
+                    <th>Sector</th>
+                    <th>ΔD%</th>
+                    <th>PE</th>
+                    <th>Signal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>AAPL</td>
+                    <td>Tech</td>
+                    <td class="pill-green">+0.8%</td>
+                    <td>28x</td>
+                    <td>BUY</td>
+                  </tr>
+                  <tr>
+                    <td>NVDA</td>
+                    <td>Tech</td>
+                    <td class="pill-green">+2.3%</td>
+                    <td>35x</td>
+                    <td>BUY</td>
+                  </tr>
+                  <tr>
+                    <td>XOM</td>
+                    <td>Energy</td>
+                    <td class="pill-red">-0.4%</td>
+                    <td>11x</td>
+                    <td>HOLD</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="chip-row" style="margin-top:8px;">
+                <div class="chip accent">Macro-aligned Screener</div>
+                <div class="chip">Growth vs Value</div>
+                <div class="chip">Factor exposure</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status bar -->
+      <div class="status-bar">
+        <div class="status-shortcuts">
+          <span>Alt+0–9: Modules</span>
+          <span>Esc: Market Overview</span>
+          <span>Ctrl+R: Refresh data</span>
+          <span>Ctrl+F: Quick search</span>
+          <span>Ctrl+L: Toggle theme</span>
+          <span>Ctrl+Shift+S: Save layout</span>
+          <span>F1: Shortcut help</span>
+          <span>Shift+1: Charts fullscreen</span>
+        </div>
+        <div class="status-connection">
+          <span>DATA: Mock · Ready</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Shortcut modal -->
+  <div class="modal-overlay" id="shortcutModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Keyboard Navigation</div>
+        <div style="font-size:10px; color:var(--text-muted);">
+          Bloomberg-style workflow untuk Kuantara Terminal.
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="shortcut-grid">
+          <div class="shortcut-key">Alt + 0</div>
+          <div class="shortcut-desc">Market Overview (dashboard utama).</div>
+
+          <div class="shortcut-key">Alt + 1</div>
+          <div class="shortcut-desc">Charts (1–4 jendela chart).</div>
+
+          <div class="shortcut-key">Alt + 2</div>
+          <div class="shortcut-desc">Macroeconomic Indicators.</div>
+
+          <div class="shortcut-key">Alt + 3</div>
+          <div class="shortcut-desc">Geo-Economic Indicators.</div>
+
+          <div class="shortcut-key">Alt + 4</div>
+          <div class="shortcut-desc">Global Market Snapshot.</div>
+
+          <div class="shortcut-key">Alt + 5</div>
+          <div class="shortcut-desc">Market Metrics &amp; Sentiment.</div>
+
+          <div class="shortcut-key">Alt + 6</div>
+          <div class="shortcut-desc">Market News &amp; Catalyst.</div>
+
+          <div class="shortcut-key">Alt + 7</div>
+          <div class="shortcut-desc">Articles &amp; Market Research.</div>
+
+          <div class="shortcut-key">Alt + 8</div>
+          <div class="shortcut-desc">Quantitative &amp; Technical Tools.</div>
+
+          <div class="shortcut-key">Alt + 9</div>
+          <div class="shortcut-desc">Stocks Screener.</div>
+
+          <div class="shortcut-key">Esc</div>
+          <div class="shortcut-desc">Kembali ke Market Overview.</div>
+
+          <div class="shortcut-key">Ctrl + R</div>
+          <div class="shortcut-desc">Refresh data (internal, tanpa reload halaman).</div>
+
+          <div class="shortcut-key">Ctrl + F</div>
+          <div class="shortcut-desc">Fokus ke Quick Search.</div>
+
+          <div class="shortcut-key">Ctrl + L</div>
+          <div class="shortcut-desc">Ganti tema Dark / Light.</div>
+
+          <div class="shortcut-key">Ctrl + Shift + S</div>
+          <div class="shortcut-desc">Simpan layout kerja (mock).</div>
+
+          <div class="shortcut-key">F1</div>
+          <div class="shortcut-desc">Buka panduan shortcut ini.</div>
+
+          <div class="shortcut-key">Shift + 1</div>
+          <div class="shortcut-desc">Aktifkan / matikan mode chart fullscreen.</div>
+        </div>
+        <div class="modal-close-hint">
+          Tekan <strong>F1</strong> lagi atau <strong>Esc</strong> untuk menutup.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // World clock
+    const clockConfig = [
+      { label: "NY", tz: "America/New_York" },
+      { label: "LDN", tz: "Europe/London" },
+      { label: "TKY", tz: "Asia/Tokyo" },
+      { label: "SYD", tz: "Australia/Sydney" },
+      { label: "JKT", tz: "Asia/Jakarta" }
+    ];
+
+    function initWorldClock() {
+      const container = document.getElementById("worldClock");
+      container.innerHTML = "";
+      clockConfig.forEach((cfg) => {
+        const div = document.createElement("div");
+        div.className = "session-tag";
+        div.innerHTML = `
+          <div class="session-label">${cfg.label}</div>
+          <div class="session-time" data-tz="${cfg.tz}">--:--</div>
+        `;
+        container.appendChild(div);
+      });
+
+      const updateTime = () => {
+        const times = container.querySelectorAll(".session-time");
+        const now = new Date();
+        times.forEach((el) => {
+          const tz = el.getAttribute("data-tz");
+          const formatted = now.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+            timeZone: tz
+          });
+          el.textContent = formatted;
+        });
+      };
+
+      updateTime();
+      setInterval(updateTime, 1000);
+    }
+
+    // Section handling
+    const sectionMap = {
+      0: "section-market-overview",
+      1: "section-charts",
+      2: "section-macro",
+      3: "section-geo",
+      4: "section-snapshot",
+      5: "section-metrics",
+      6: "section-news",
+      7: "section-research",
+      8: "section-quant",
+      9: "section-screener"
+    };
+
+    function setActiveSection(sectionId) {
+      const sections = document.querySelectorAll(".section");
+      sections.forEach((s) => s.classList.remove("active"));
+      const target = document.getElementById(sectionId);
+      if (target) target.classList.add("active");
+
+      const menuItems = document.querySelectorAll(".menu-item");
+      menuItems.forEach((m) => {
+        m.classList.toggle(
+          "active",
+          m.getAttribute("data-section") === sectionId
+        );
+      });
+
+      const label = document.getElementById("currentModuleLabel");
+      const index = Object.values(sectionMap).indexOf(sectionId);
+      const labelText =
+        index >= 0
+          ? `[${index}] ${
+              document.querySelector(
+                '.menu-item[data-section="' + sectionId + '"] .menu-item-label'
+              ).textContent.trim()
+            }`
+          : document.title;
+      label.textContent = labelText;
+    }
+
+    // Toast
+    const toastContainer = document.getElementById("toastContainer");
+    function showToast(message, label = "ACTION") {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.innerHTML = `
+        <div class="toast-label">${label}</div>
+        <div>${message}</div>
+      `;
+      toastContainer.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 200);
+      }, 2200);
+    }
+
+    // Theme toggle
+    function toggleTheme() {
+      const body = document.body;
+      const current = body.getAttribute("data-theme") || "dark";
+      const next = current === "dark" ? "light" : "dark";
+      body.setAttribute("data-theme", next);
+      showToast(`Theme switched to ${next}`, "THEME");
+    }
+
+    // Charts fullscreen
+    const app = document.getElementById("app");
+    function toggleChartsFullscreen() {
+      const isChartsActive = document
+        .getElementById("section-charts")
+        .classList.contains("active");
+      if (!isChartsActive) {
+        showToast("Charts fullscreen hanya saat modul Charts aktif.", "INFO");
+        return;
+      }
+      app.classList.toggle("charts-fullscreen");
+      showToast(
+        app.classList.contains("charts-fullscreen")
+          ? "Charts fullscreen ON"
+          : "Charts fullscreen OFF",
+        "CHARTS"
+      );
+    }
+
+    // Shortcut modal
+    const shortcutModal = document.getElementById("shortcutModal");
+    let shortcutModalVisible = false;
+
+    function toggleShortcutModal(forceState) {
+      if (typeof forceState === "boolean") {
+        shortcutModalVisible = forceState;
+      } else {
+        shortcutModalVisible = !shortcutModalVisible;
+      }
+      shortcutModal.classList.toggle("visible", shortcutModalVisible);
+    }
+
+    shortcutModal.addEventListener("click", (e) => {
+      if (e.target === shortcutModal) {
+        toggleShortcutModal(false);
+      }
+    });
+
+    // Keyboard navigation
+    const quickSearch = document.getElementById("quickSearch");
+
+    document.addEventListener("keydown", (e) => {
+      const key = e.key;
+
+      if (e.altKey && !e.ctrlKey && /^[0-9]$/.test(key)) {
+        e.preventDefault();
+        const idx = parseInt(key, 10);
+        const sectionId = sectionMap[idx];
+        if (sectionId) {
+          setActiveSection(sectionId);
+          showToast(
+            `Navigated to [${idx}] ${
+              document.querySelector(
+                '.menu-item[data-section="' + sectionId + '"] .menu-item-label'
+              ).textContent
+            }`,
+            "NAV"
+          );
+        }
+        return;
+      }
+
+      if (key === "Escape") {
+        if (shortcutModalVisible) {
+          toggleShortcutModal(false);
+        } else {
+          setActiveSection(sectionMap[0]);
+          showToast("Back to Market Overview", "NAV");
+        }
+        return;
+      }
+
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && key.toLowerCase() === "r") {
+        e.preventDefault();
+        showToast("Data refresh triggered (mock).", "REFRESH");
+        return;
+      }
+
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && key.toLowerCase() === "f") {
+        e.preventDefault();
+        quickSearch.focus();
+        quickSearch.select();
+        showToast("Quick search focused.", "SEARCH");
+        return;
+      }
+
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && key.toLowerCase() === "l") {
+        e.preventDefault();
+        toggleTheme();
+        return;
+      }
+
+      if (e.ctrlKey && e.shiftKey && !e.altKey && key.toLowerCase() === "s") {
+        e.preventDefault();
+        showToast("Layout saved (mock).", "LAYOUT");
+        return;
+      }
+
+      if (!e.ctrlKey && !e.altKey && !e.metaKey && key === "F1") {
+        e.preventDefault();
+        toggleShortcutModal();
+        return;
+      }
+
+      if (e.shiftKey && !e.ctrlKey && !e.altKey && key === "!") {
+        e.preventDefault();
+        toggleChartsFullscreen();
+        return;
+      }
+    });
+
+    // Menu click
+    document.querySelectorAll(".menu-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const sectionId = item.getAttribute("data-section");
+        setActiveSection(sectionId);
+        const index = Object.values(sectionMap).indexOf(sectionId);
+        if (index >= 0) {
+          showToast(
+            `Navigated to [${index}] ${
+              item.querySelector(".menu-item-label").textContent
+            }`,
+            "NAV"
+          );
+        }
+      });
+    });
+
+    initWorldClock();
+  </script>
+</body>
+</html>
