@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Kuantara Terminal</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <!-- Fira Code -->
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
   <style>
     :root {
       --amber: #ffbf00;
@@ -32,16 +28,8 @@
       --text-muted: #555555;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html,
-    body {
-      height: 100%;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
 
     body {
       font-family: "Fira Code", monospace;
@@ -73,11 +61,7 @@
       flex-shrink: 0;
     }
 
-    .brand-block {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .brand-block { display: flex; align-items: center; gap: 10px; }
 
     .brand-logo {
       width: 26px;
@@ -140,12 +124,7 @@
       flex-shrink: 0;
     }
 
-    .world-clock {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    .world-clock { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
     .world-clock label {
       color: var(--text-muted);
@@ -155,11 +134,7 @@
       white-space: nowrap;
     }
 
-    .world-clock-sessions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .world-clock-sessions { display: flex; gap: 8px; flex-wrap: wrap; }
 
     .session-tag {
       padding: 2px 6px;
@@ -173,17 +148,13 @@
       min-width: 60px;
     }
 
-    .session-header-line {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
+    .session-header-line { display: flex; align-items: center; gap: 4px; }
 
     .session-status-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: var(--danger); /* default: close = merah */
+      background: var(--danger);
       box-shadow: 0 0 5px rgba(255, 75, 75, 0.9);
       flex-shrink: 0;
     }
@@ -193,15 +164,8 @@
       box-shadow: 0 0 5px rgba(29, 215, 91, 0.9);
     }
 
-    .session-label {
-      color: var(--amber);
-      text-transform: uppercase;
-    }
-
-    .session-time {
-      color: var(--text-muted);
-      font-size: 10px;
-    }
+    .session-label { color: var(--amber); text-transform: uppercase; }
+    .session-time  { color: var(--text-muted); font-size: 10px; }
 
     /* Menu bar */
     .menu-bar {
@@ -217,13 +181,8 @@
       flex-shrink: 0;
     }
 
-    .menu-bar::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    .menu-bar::-webkit-scrollbar-thumb {
-      background: #333;
-    }
+    .menu-bar::-webkit-scrollbar { height: 4px; }
+    .menu-bar::-webkit-scrollbar-thumb { background: #333; }
 
     .menu-item {
       cursor: pointer;
@@ -242,16 +201,8 @@
       flex-shrink: 0;
     }
 
-    .menu-item-key {
-      font-size: 10px;
-      color: var(--amber);
-      opacity: 0.8;
-    }
-
-    .menu-item-label {
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-    }
+    .menu-item-key   { font-size: 10px; color: var(--amber); opacity: 0.8; }
+    .menu-item-label { text-transform: uppercase; letter-spacing: 0.12em; }
 
     .menu-item:hover {
       background: rgba(255, 191, 0, 0.06);
@@ -266,9 +217,7 @@
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 191, 0, 0.5);
     }
 
-    .menu-item.active .menu-item-key {
-      color: #000;
-    }
+    .menu-item.active .menu-item-key { color: #000; }
 
     /* Main content */
     .main {
@@ -309,12 +258,7 @@
       white-space: nowrap;
     }
 
-    .top-strip-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    .top-strip-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
     .search-box {
       display: flex;
@@ -327,9 +271,7 @@
       min-width: 0;
     }
 
-    .search-box span {
-      color: var(--text-muted);
-    }
+    .search-box span { color: var(--text-muted); }
 
     .search-box input {
       background: transparent;
@@ -341,9 +283,7 @@
       width: 100%;
     }
 
-    .search-box input::placeholder {
-      color: var(--text-muted);
-    }
+    .search-box input::placeholder { color: var(--text-muted); }
 
     .search-key-hint {
       font-size: 9px;
@@ -495,30 +435,173 @@
       background: rgba(255, 191, 0, 0.06);
     }
 
-    .pill-green {
-      color: var(--success);
+    .pill-green { color: var(--success); }
+    .pill-red   { color: var(--danger); }
+
+    /* ===== MARKET OVERVIEW GRID ===== */
+    .market-grid {
+      display: grid;
+      grid-template-columns: 2.2fr 1.3fr 1.3fr;
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
     }
 
-    .pill-red {
-      color: var(--danger);
+    .market-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
     }
 
-    /* Charts fullscreen */
-    .charts-fullscreen .content-area {
-      padding: 0;
+    .market-col .panel { min-height: 0; }
+
+    /* ===== RISK GAUGE (SVG) ===== */
+    .gauge-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2 / 1;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
     }
 
-    .charts-fullscreen .section#section-charts .panel {
-      border-radius: 0;
-      border-left: none;
-      border-right: none;
-      border-bottom: none;
+    .gauge-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
     }
 
+    .gauge-track {
+      fill: none;
+      stroke: #252525;
+      stroke-width: 10;
+      stroke-linecap: round;
+    }
+
+    .gauge-segment-danger,
+    .gauge-segment-neutral,
+    .gauge-segment-success {
+      fill: none;
+      stroke-width: 8;
+      stroke-linecap: round;
+    }
+
+    .gauge-segment-danger  { stroke: var(--danger); }
+    .gauge-segment-neutral { stroke: var(--amber); }
+    .gauge-segment-success { stroke: var(--success); }
+
+    .gauge-needle {
+      stroke: var(--amber);
+      stroke-width: 2;
+      stroke-linecap: round;
+      transform-origin: 100px 100px;
+      transform-box: fill-box;
+      transform: rotate(10deg);
+      filter: drop-shadow(0 0 4px rgba(255,191,0,0.7));
+    }
+
+    .gauge-pivot {
+      fill: #000;
+      stroke: var(--amber);
+      stroke-width: 2;
+    }
+
+    .gauge-center {
+      position: absolute;
+      left: 50%;
+      bottom: 2%;
+      transform: translate(-50%, 40%);
+      width: 70%;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #333, #000);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+      border: 1px solid #262626;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gauge-center span:first-child {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .gauge-center span:last-child {
+      font-size: 13px;
+      color: var(--amber);
+      margin-top: 2px;
+    }
+
+    .gauge-scale {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text-muted);
+    }
+
+    /* Economic calendar table */
+    .calendar-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    .calendar-table th,
+    .calendar-table td {
+      padding: 3px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    .calendar-table th {
+      color: var(--amber);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Catalyst / KMD lists */
+    .bullet-list {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 4px;
+      font-size: 11px;
+    }
+
+    .bullet-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .bullet-dot {
+      margin-top: 4px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--amber);
+      flex-shrink: 0;
+    }
+
+    .bullet-content-main { color: var(--text-primary); }
+    .bullet-meta         { font-size: 10px; color: var(--text-muted); }
+
+    /* Charts generic */
     .charts-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: minmax(0, 1fr);
       gap: 6px;
       height: 100%;
     }
@@ -544,22 +627,9 @@
       color: var(--amber);
     }
 
-    /* NEWS iframe menyatu */
-    .news-frame-wrapper {
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow: hidden;
-    }
+    .news-frame-wrapper { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+    .news-frame          { width: 100%; height: 100%; border: none; display: block; background: transparent; }
 
-    .news-frame {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-      background: transparent;
-    }
-
-    /* Bottom status bar */
     .status-bar {
       border-top: 1px solid var(--border-muted);
       padding: 4px 10px;
@@ -572,15 +642,8 @@
       flex-shrink: 0;
     }
 
-    .status-shortcuts {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .status-shortcuts span {
-      white-space: nowrap;
-    }
+    .status-shortcuts { display: flex; gap: 10px; flex-wrap: wrap; }
+    .status-shortcuts span { white-space: nowrap; }
 
     .status-connection {
       display: flex;
@@ -589,7 +652,6 @@
       white-space: nowrap;
     }
 
-    /* Toast */
     .toast-container {
       position: fixed;
       right: 20px;
@@ -622,7 +684,6 @@
       color: var(--amber);
     }
 
-    /* Shortcut modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -633,9 +694,7 @@
       z-index: 40;
     }
 
-    .modal-overlay.visible {
-      display: flex;
-    }
+    .modal-overlay.visible { display: flex; }
 
     .modal {
       background: var(--bg-panel);
@@ -688,17 +747,8 @@
       background: rgba(0, 0, 0, 0.4);
     }
 
-    .shortcut-desc {
-      font-size: 11px;
-    }
-
-    .modal-close-hint {
-      margin-top: 8px;
-      font-size: 10px;
-      color: var(--text-muted);
-    }
-
-    /* ===== AI ASSISTANT FLOATING PANEL ===== */
+    .shortcut-desc { font-size: 11px; }
+    .modal-close-hint { margin-top: 8px; font-size: 10px; color: var(--text-muted); }
 
     .ai-launcher-btn {
       position: fixed;
@@ -720,9 +770,7 @@
       z-index: 45;
     }
 
-    .ai-launcher-btn span {
-      pointer-events: none;
-    }
+    .ai-launcher-btn span { pointer-events: none; }
 
     .ai-panel {
       position: fixed;
@@ -741,9 +789,7 @@
       z-index: 44;
     }
 
-    .ai-panel.visible {
-      display: flex;
-    }
+    .ai-panel.visible { display: flex; }
 
     .ai-panel-header {
       display: flex;
@@ -762,10 +808,7 @@
       color: var(--amber);
     }
 
-    .ai-panel-meta {
-      font-size: 10px;
-      color: var(--text-muted);
-    }
+    .ai-panel-meta { font-size: 10px; color: var(--text-muted); }
 
     .ai-panel-close {
       cursor: pointer;
@@ -776,29 +819,282 @@
       color: var(--text-muted);
     }
 
-    .ai-panel-body {
-      flex: 1 1 auto;
+    .ai-panel-body { flex: 1 1 auto; min-height: 0; border-top: 1px solid #000; }
+    .ai-panel-iframe { width: 100%; height: 100%; border: none; display: block; background: #000; }
+
+    /* ===== MACRO PAGE LAYOUT ===== */
+    .macro-grid {
+      display: grid;
+      grid-template-columns: 2.2fr 1.5fr;
+      gap: 8px;
+      height: 100%;
       min-height: 0;
-      border-top: 1px solid #000;
     }
 
-    .ai-panel-iframe {
+    .macro-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .macro-col .panel { min-height: 0; }
+
+    .macro-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    .macro-table th,
+    .macro-table td {
+      padding: 3px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .macro-table th {
+      color: var(--amber);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .macro-table tbody tr:nth-child(odd) {
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .macro-tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .macro-tag {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border-muted);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .macro-tag.accent {
+      border-color: rgba(255,191,0,0.7);
+      color: var(--amber);
+    }
+
+    .macro-us-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .macro-us-card {
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.04);
+      padding: 6px;
+      background: radial-gradient(circle at 10% 0, #262626 0, #141414 60%);
+      font-size: 10px;
+    }
+
+    .macro-us-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--amber);
+      margin-bottom: 3px;
+    }
+
+    .macro-us-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    .macro-us-label { color: var(--text-muted); }
+    .macro-us-value { color: var(--text-primary); }
+
+    .macro-us-value.green { color: var(--success); }
+    .macro-us-value.red   { color: var(--danger); }
+
+    .macro-chart-grid {
+      display: grid;
+      grid-template-rows: repeat(4, minmax(60px, 1fr));
+      gap: 6px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .macro-chart-placeholder {
+      border-radius: 6px;
+      border: 1px solid rgba(255, 191, 0, 0.18);
+      background: radial-gradient(circle at 10% 0, #232323 0, #111111 70%);
+      padding: 6px 8px;
+      font-size: 9px;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .macro-chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .macro-chart-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--amber);
+    }
+
+    .macro-chart-note { font-size: 9px; color: var(--text-muted); }
+
+    .macro-chart-canvas {
+      flex: 1;
+      border-radius: 4px;
+      border: 1px dashed rgba(255,255,255,0.08);
+      margin-top: 2px;
+      background-image: linear-gradient(
+          rgba(255,255,255,0.04) 1px,
+          transparent 1px
+        );
+      background-size: 100% 12px;
+    }
+
+    /* ===== GEO-ECONOMIC LAYOUT ===== */
+    .geo-grid {
+      display: grid;
+      grid-template-columns: 2.2fr 1.4fr;
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .geo-right {
+      display: grid;
+      grid-template-rows: 1.1fr 1.1fr;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .geo-right-top {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .geo-right .panel,
+    .geo-grid .panel {
+      min-height: 0;
+    }
+
+    .geo-iframe-shell {
       width: 100%;
       height: 100%;
-      border: none;
-      display: block;
-      background: #000;
+      border-radius: 6px;
+      border: 1px dashed rgba(255, 191, 0, 0.45);
+      background: radial-gradient(circle at 10% 0, #252525 0, #111111 65%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 6px;
     }
 
-    /* ========= RESPONSIVE ========= */
+    /* ===== GLOBAL MARKET FLOW GRID (NEW) ===== */
+    .flow-grid {
+      display: grid;
+      grid-template-columns: 2.2fr 1.4fr 1.0fr; /* kiri besar, kolom tengah, kolom kanan slim */
+      grid-template-rows: 1.3fr 1.1fr;          /* baris atas & bawah */
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+    }
 
+    .flow-left-main {
+      grid-column: 1 / 2;
+      grid-row: 1 / 3;   /* span full height */
+      display: grid;
+      grid-template-rows: 1.1fr 1.0fr;  /* atas: intraday, bawah: risk/safe */
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .flow-mid-top {
+      grid-column: 2 / 3;
+      grid-row: 1 / 2;
+      display: grid;
+      grid-template-rows: 1.1fr 1.0fr; /* crypto & commodities */
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .flow-mid-bottom {
+      grid-column: 2 / 3;
+      grid-row: 2 / 3;
+      display: grid;
+      grid-template-columns: 1.0fr; /* forex strength (1 panel penuh) */
+      min-height: 0;
+    }
+
+    .flow-right-main {
+      grid-column: 3 / 4;
+      grid-row: 1 / 3;   /* line chart full tinggi */
+      min-height: 0;
+    }
+
+    .flow-grid .panel { min-height: 0; }
+
+    .flow-chart-slot {
+      width: 100%;
+      height: 100%;
+      border-radius: 4px;
+      border: 1px dashed rgba(255, 255, 255, 0.14);
+      background: radial-gradient(circle at 10% 0, #262626 0, #111111 70%);
+    }
+
+    .flow-chart-note {
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Charts fullscreen behaviour */
+    .charts-fullscreen .content-area { padding: 0; }
+    .charts-fullscreen .section#section-charts .panel {
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    /* ===== RESPONSIVE ===== */
     @media (max-width: 900px) {
-      .grid-2 {
+      .grid-2     { grid-template-columns: 1fr; }
+      .panel      { min-height: 180px; }
+      .market-grid{ grid-template-columns: 1fr; }
+      .macro-grid { grid-template-columns: 1fr; }
+      .geo-grid   { grid-template-columns: 1fr; }
+      .flow-grid  {
         grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, minmax(160px, 1fr));
       }
-
-      .panel {
-        min-height: 180px;
+      .flow-left-main,
+      .flow-mid-top,
+      .flow-mid-bottom,
+      .flow-right-main {
+        grid-column: auto;
+        grid-row: auto;
       }
     }
 
@@ -810,13 +1106,8 @@
         padding: 8px 10px;
       }
 
-      .brand-text-main {
-        font-size: 14px;
-      }
-
-      .brand-text-sub {
-        font-size: 9px;
-      }
+      .brand-text-main { font-size: 14px; }
+      .brand-text-sub  { font-size: 9px; }
 
       .top-bar-right {
         width: 100%;
@@ -825,34 +1116,18 @@
         gap: 6px;
       }
 
-      .world-clock {
-        width: 100%;
-        justify-content: flex-end;
-      }
+      .world-clock { width: 100%; justify-content: flex-end; }
+      .world-clock label { display: none; }
 
-      .world-clock label {
-        display: none;
-      }
-
-      .world-clock-sessions {
-        flex-wrap: wrap;
-        gap: 4px;
-      }
-
+      .world-clock-sessions { flex-wrap: wrap; gap: 4px; }
       .session-tag {
         min-width: auto;
         padding: 2px 4px;
         font-size: 9px;
       }
 
-      .menu-bar {
-        padding-inline: 4px;
-      }
-
-      .menu-item {
-        padding-inline: 8px;
-        font-size: 10px;
-      }
+      .menu-bar { padding-inline: 4px; }
+      .menu-item { padding-inline: 8px; font-size: 10px; }
 
       .top-strip {
         flex-direction: column;
@@ -861,9 +1136,7 @@
         padding: 6px 8px;
       }
 
-      .content-area {
-        padding: 6px;
-      }
+      .content-area { padding: 6px; }
 
       .section-header {
         flex-direction: column;
@@ -871,24 +1144,11 @@
         gap: 2px;
       }
 
-      .section-title {
-        font-size: 12px;
-        letter-spacing: 0.14em;
-      }
+      .section-title    { font-size: 12px; letter-spacing: 0.14em; }
+      .section-subtitle { font-size: 9px; text-align: left; }
 
-      .section-subtitle {
-        font-size: 9px;
-        text-align: left;
-      }
-
-      .panel {
-        border-radius: 6px;
-        padding: 6px;
-      }
-
-      .panel-title {
-        font-size: 10px;
-      }
+      .panel { border-radius: 6px; padding: 6px; }
+      .panel-title { font-size: 10px; }
 
       .mini-table th,
       .mini-table td {
@@ -898,7 +1158,7 @@
 
       .charts-grid {
         grid-template-columns: 1fr;
-        grid-template-rows: repeat(4, minmax(140px, 1fr));
+        grid-template-rows: repeat(2, minmax(140px, 1fr));
       }
 
       .status-bar {
@@ -908,27 +1168,10 @@
         padding: 4px 8px 6px;
       }
 
-      .status-shortcuts {
-        font-size: 9px;
-      }
+      .status-shortcuts { font-size: 9px; }
+      .status-connection{ font-size: 9px; }
 
-      .status-connection {
-        font-size: 9px;
-      }
-
-      .toast {
-        font-size: 10px;
-      }
-
-      .news-frame-wrapper {
-        min-height: 60vh;
-      }
-
-      /* khusus News: iframe benar-benar tinggi di mobile,
-         pakai tinggi relatif ke viewport agar tidak terpotong */
-      #section-news .news-frame-wrapper {
-        height: calc(100vh - 140px);
-      }
+      .toast { font-size: 10px; }
 
       .ai-panel {
         right: 8px;
@@ -949,15 +1192,11 @@
         padding: 10px 12px;
       }
 
-      .shortcut-grid {
-        grid-template-columns: 1fr;
-      }
+      .shortcut-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 480px) {
-      .brand-text-main {
-        font-size: 13px;
-      }
+      .brand-text-main { font-size: 13px; }
 
       .brand-logo {
         width: 24px;
@@ -965,38 +1204,22 @@
         font-size: 12px;
       }
 
-      .menu-item-key {
-        display: none;
-      }
-
-      .menu-item-label {
-        letter-spacing: 0.08em;
-      }
+      .menu-item-key { display: none; }
+      .menu-item-label { letter-spacing: 0.08em; }
 
       .tag-pill {
         font-size: 9px;
         letter-spacing: 0.12em;
       }
 
-      .search-box {
-        width: 100%;
-      }
+      .search-box { width: 100%; }
 
-      .section-title {
-        font-size: 11px;
-      }
+      .section-title    { font-size: 11px; }
+      .section-subtitle { font-size: 8.5px; }
 
-      .section-subtitle {
-        font-size: 8.5px;
-      }
+      .panel { min-height: 160px; }
 
-      .panel {
-        min-height: 160px;
-      }
-
-      .status-shortcuts span:nth-child(n+5) {
-        display: none;
-      }
+      .status-shortcuts span:nth-child(n+5) { display: none; }
     }
   </style>
 </head>
@@ -1008,7 +1231,7 @@
         <div class="brand-logo">KT</div>
         <div>
           <div class="brand-text-main">Kuantara Terminal</div>
-          <div class="brand-text-sub">Clarity Over Chaos</div>
+          <div class="brand-text-sub">Turning Chaos Into Clarity</div>
         </div>
       </div>
       <div class="top-bar-right">
@@ -1043,7 +1266,7 @@
       </div>
       <div class="menu-item" data-section="section-snapshot">
         <span class="menu-item-key">Alt+4</span>
-        <span class="menu-item-label">Global Market Snapshot</span>
+        <span class="menu-item-label">Global Market Flow</span>
       </div>
       <div class="menu-item" data-section="section-metrics">
         <span class="menu-item-key">Alt+5</span>
@@ -1077,18 +1300,14 @@
         <div class="top-strip-right">
           <div class="search-box">
             <span>▶</span>
-            <input
-              id="quickSearch"
-              type="text"
-              placeholder="Quick command / search (Ctrl+F)"
-            />
+            <input id="quickSearch" type="text" placeholder="Quick command / search (Ctrl+F)">
             <span class="search-key-hint">ENTER</span>
           </div>
         </div>
       </div>
 
       <div class="content-area" id="contentArea">
-        <!-- Market Overview -->
+        <!-- ===== MARKET OVERVIEW ===== -->
         <div class="section active" id="section-market-overview">
           <div class="section-header">
             <div class="section-title">Market Overview</div>
@@ -1096,129 +1315,343 @@
               Lintas aset: saham, FX, komoditas, obligasi, kripto.
             </div>
           </div>
-          <div class="grid-2">
-            <div class="panel">
-              <div class="panel-header">
-                <div class="panel-title">Cross Asset Heatmap</div>
-                <div class="panel-meta">Mock · Daily % Change</div>
-              </div>
-              <div class="panel-body">
-                <table class="mini-table">
-                  <thead>
-                    <tr>
-                      <th>Asset</th>
-                      <th>Last</th>
-                      <th>ΔD%</th>
-                      <th>Session</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>NASDAQ 100</td>
-                      <td>18,420</td>
-                      <td class="pill-green">+1.8%</td>
-                      <td>US</td>
-                    </tr>
-                    <tr>
-                      <td>S&amp;P 500</td>
-                      <td>5,420</td>
-                      <td class="pill-green">+0.9%</td>
-                      <td>US</td>
-                    </tr>
-                    <tr>
-                      <td>DXY</td>
-                      <td>102.4</td>
-                      <td class="pill-red">-0.4%</td>
-                      <td>FX</td>
-                    </tr>
-                    <tr>
-                      <td>XAUUSD</td>
-                      <td>2,480</td>
-                      <td class="pill-green">+0.7%</td>
-                      <td>COM</td>
-                    </tr>
-                    <tr>
-                      <td>US10Y</td>
-                      <td>3.95%</td>
-                      <td class="pill-red">-5 bps</td>
-                      <td>FI</td>
-                    </tr>
-                    <tr>
-                      <td>BTCUSD</td>
-                      <td>76,200</td>
-                      <td class="pill-green">+2.3%</td>
-                      <td>CRYPTO</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div class="chip-row">
-                  <div class="chip accent">Risk-On Bias</div>
-                  <div class="chip">DXY Down</div>
-                  <div class="chip">Gold Bid</div>
-                  <div class="chip">US Curve Bull Steepening</div>
+
+          <div class="market-grid">
+            <!-- LEFT: FULL MARKET SNAPSHOT -->
+            <div class="market-col">
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Cross-Asset Market Snapshot</div>
+                  <div class="panel-meta">Global indices · FX · Commodities · Rates · Crypto</div>
+                </div>
+                <div class="panel-body">
+                  <table class="mini-table">
+                    <thead>
+                      <tr>
+                        <th>Asset</th>
+                        <th>Ticker</th>
+                        <th>Last</th>
+                        <th>Δ D</th>
+                        <th>%D</th>
+                        <th>YTD%</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>S&amp;P 500</td>
+                        <td>SPX</td>
+                        <td>5,120</td>
+                        <td class="pill-green">+18</td>
+                        <td class="pill-green">+0.35%</td>
+                        <td class="pill-green">+14.2%</td>
+                      </tr>
+                      <tr>
+                        <td>Nasdaq 100</td>
+                        <td>NDX</td>
+                        <td>18,920</td>
+                        <td class="pill-green">+72</td>
+                        <td class="pill-green">+0.38%</td>
+                        <td class="pill-green">+19.8%</td>
+                      </tr>
+                      <tr>
+                        <td>Euro Stoxx 50</td>
+                        <td>STOXX50E</td>
+                        <td>4,280</td>
+                        <td class="pill-red">-12</td>
+                        <td class="pill-red">-0.28%</td>
+                        <td class="pill-green">+7.3%</td>
+                      </tr>
+                      <tr>
+                        <td>DXY Dollar Index</td>
+                        <td>DXY</td>
+                        <td>104.2</td>
+                        <td class="pill-red">-0.4</td>
+                        <td class="pill-red">-0.36%</td>
+                        <td>+1.1%</td>
+                      </tr>
+                      <tr>
+                        <td>US 10Y Yield</td>
+                        <td>US10Y</td>
+                        <td>4.18%</td>
+                        <td class="pill-green">+3bp</td>
+                        <td class="pill-green">+0.07%</td>
+                        <td>+32bp</td>
+                      </tr>
+                      <tr>
+                        <td>Gold</td>
+                        <td>XAUUSD</td>
+                        <td>2,345</td>
+                        <td class="pill-red">-12</td>
+                        <td class="pill-red">-0.51%</td>
+                        <td class="pill-green">+9.4%</td>
+                      </tr>
+                      <tr>
+                        <td>Brent Crude</td>
+                        <td>BRN</td>
+                        <td>83.40</td>
+                        <td class="pill-green">+0.82</td>
+                        <td class="pill-green">+0.99%</td>
+                        <td class="pill-green">+4.7%</td>
+                      </tr>
+                      <tr>
+                        <td>Bitcoin</td>
+                        <td>BTCUSD</td>
+                        <td>63,500</td>
+                        <td class="pill-red">-850</td>
+                        <td class="pill-red">-1.32%</td>
+                        <td class="pill-green">+42.0%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">Universe: 100+ aset</div>
+                    <div class="chip">Filter: Global index</div>
+                    <div class="chip">Filter: FX major &amp; commodity</div>
+                    <div class="chip">Filter: Rates &amp; crypto</div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="panel">
-              <div class="panel-header">
-                <div class="panel-title">Macro Pulse</div>
-                <div class="panel-meta">Snapshot · Kuantara View</div>
+
+            <!-- CENTER: GAUGE + ECONOMIC CALENDAR -->
+            <div class="market-col">
+              <!-- Risk On / Risk Off Gauge -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Risk Regime Gauge</div>
+                  <div class="panel-meta">Equity · Credit · FX · Volatility composite</div>
+                </div>
+                <div class="panel-body">
+                  <div class="gauge-wrapper">
+                    <svg class="gauge-svg" viewBox="0 0 200 110">
+                      <path class="gauge-track" d="M 20 100 A 80 80 0 0 1 180 100" />
+                      <path class="gauge-segment-danger"  d="M 20 100 A 80 80 0 0 1 80 28" />
+                      <path class="gauge-segment-neutral" d="M 80 28 A 80 80 0 0 1 120 28" />
+                      <path class="gauge-segment-success" d="M 120 28 A 80 80 0 0 1 180 100" />
+                      <line  id="riskNeedle" class="gauge-needle" x1="100" y1="100" x2="100" y2="26" />
+                      <circle class="gauge-pivot" cx="100" cy="100" r="5" />
+                    </svg>
+
+                    <div class="gauge-center">
+                      <span>Current regime</span>
+                      <span id="riskLabel">Mild Risk-On</span>
+                    </div>
+                  </div>
+
+                  <div class="gauge-scale">
+                    <span>Max Risk-Off</span>
+                    <span>Neutral</span>
+                    <span>Max Risk-On</span>
+                  </div>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">Input: SPX, HYG, VIX, DXY</div>
+                    <div class="chip">Bias: &lt; 0 = Risk-Off</div>
+                    <div class="chip">Bias: &gt; 0 = Risk-On</div>
+                  </div>
+                </div>
               </div>
-              <div class="panel-body">
-                <ul style="list-style:none; padding-left:0;">
-                  <li>• <span class="pill-green">Gold bullish</span>, liquidity back to normal.</li>
-                  <li>• <span class="pill-green">Long risk assets</span> tetap preferensi utama.</li>
-                  <li>• <span class="pill-green">AUD bullish</span> sebagai proksi China + komoditas.</li>
-                  <li>• <span class="pill-red">USD mixed</span> — selektif, fokus cross &amp; carry.</li>
-                </ul>
-                <div class="chip-row" style="margin-top:8px;">
-                  <div class="chip accent">Macro → Risk Assets</div>
-                  <div class="chip">Liquidity Regime</div>
-                  <div class="chip">FX Carry</div>
+
+              <!-- Economic Calendar -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Economic Calendar · Next 24–72h</div>
+                  <div class="panel-meta">High impact only</div>
+                </div>
+                <div class="panel-body">
+                  <table class="calendar-table">
+                    <thead>
+                      <tr>
+                        <th>Time</th>
+                        <th>Country</th>
+                        <th>Event</th>
+                        <th>Imp</th>
+                        <th>Act</th>
+                        <th>Fcst</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>21:00</td>
+                        <td>US</td>
+                        <td>ISM Services PMI</td>
+                        <td>★★★</td>
+                        <td>—</td>
+                        <td>52.1</td>
+                      </tr>
+                      <tr>
+                        <td>14:30</td>
+                        <td>UK</td>
+                        <td>BoE Rate Decision</td>
+                        <td>★★★</td>
+                        <td>—</td>
+                        <td>5.00%</td>
+                      </tr>
+                      <tr>
+                        <td>11:00</td>
+                        <td>EU</td>
+                        <td>Eurozone CPI (YoY)</td>
+                        <td>★★★</td>
+                        <td>—</td>
+                        <td>2.5%</td>
+                      </tr>
+                      <tr>
+                        <td>07:30</td>
+                        <td>AU</td>
+                        <td>RBA Gov Speech</td>
+                        <td>★★</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>
+                      <tr>
+                        <td>Tomorrow</td>
+                        <td>US</td>
+                        <td>Non-Farm Payrolls</td>
+                        <td>★★★</td>
+                        <td>—</td>
+                        <td>185k</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">Filter: High impact</div>
+                    <div class="chip">Timezone: WIB</div>
+                    <div class="chip">Source: Kuantara / Fastbull / MQL5</div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+
+            <!-- RIGHT: CATALYST + KEY MARKET DRIVERS -->
+            <div class="market-col">
+              <!-- Catalyst -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Market Catalyst</div>
+                  <div class="panel-meta">Top headline &amp; event risk</div>
+                </div>
+                <div class="panel-body">
+                  <ul class="bullet-list">
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          Fed signalling slower pace of future cuts; real yields stay elevated.
+                        </div>
+                        <div class="bullet-meta">
+                          Rates · USD · Growth vs Value · Last 12h
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          Tech mega-cap earnings beat, but guidance mixed — volatility clustered in Nasdaq.
+                        </div>
+                        <div class="bullet-meta">
+                          Equities · Earnings season · AI theme
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          Middle East supply headline keeps crude in higher range; energy names outperform.
+                        </div>
+                        <div class="bullet-meta">
+                          Commodities · Energy · Inflation expectations
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          CN credit impulse stabilising, but property data masih rapuh — EM/Asia FX mixed.
+                        </div>
+                        <div class="bullet-meta">
+                          China · EM FX · Global growth
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">Daily Top 3–5 catalyst</div>
+                    <div class="chip">Sumber: Newswire + Kuantara Notes</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Key Market Drivers -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Key Market Drivers</div>
+                  <div class="panel-meta">Macro regime &amp; positioning</div>
+                </div>
+                <div class="panel-body">
+                  <ul class="bullet-list">
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          US Growth vs Inflation: soft-landing baseline, tapi downside risk dari labour cooling.
+                        </div>
+                        <div class="bullet-meta">
+                          Data focus: NFP, ISM, core PCE
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          Rates &amp; Curve: 2s10s masih inverted, steepening trades mulai crowded.
+                        </div>
+                        <div class="bullet-meta">
+                          Trade ideas: curve steepener, growth vs defensives
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          USD &amp; Liquidity: DXY sedikit melemah seiring risk appetite, tapi funding stress belum hilang.
+                        </div>
+                        <div class="bullet-meta">
+                          Cross-asset: EM FX, gold, crypto beta
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          Positioning &amp; Sentiment: equity sentiment optimis, hedging melalui vol masih rendah.
+                        </div>
+                        <div class="bullet-meta">
+                          Signal: asymmetry jika ada shock negatif
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">Timeframe: tactical 1–4 minggu</div>
+                    <div class="chip">Mix: data hard, survey, COT</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> <!-- end market-grid -->
         </div>
 
-        <!-- Charts -->
-        <div class="section" id="section-charts">
-          <div class="section-header">
-            <div class="section-title">Charts</div>
-            <div class="section-subtitle">
-              Modul bergaya TradingView (1–4 jendela). Shift+1: fullscreen mode.
-            </div>
-          </div>
-          <div class="panel">
-            <div class="panel-header">
-              <div class="panel-title">Multi-Chart Layout</div>
-              <div class="panel-meta">Mock · Plug your charting library here</div>
-            </div>
-            <div class="panel-body">
-              <div class="charts-grid">
-                <div class="chart-placeholder">
-                  <div class="chart-label">Chart 1</div>
-                  <div>Primary: <strong>NASDAQ / XAU / DXY</strong></div>
-                  <div>Embed TradingView / custom chart here.</div>
-                </div>
-                <div class="chart-placeholder">
-                  <div class="chart-label">Chart 2</div>
-                  <div>FX majors / cross-pairs.</div>
-                </div>
-                <div class="chart-placeholder">
-                  <div class="chart-label">Chart 3</div>
-                  <div>Rates &amp; yield curve.</div>
-                </div>
-                <div class="chart-placeholder">
-                  <div class="chart-label">Chart 4</div>
-                  <div>Crypto or custom watchlist.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Macroeconomic Indicators -->
+        <!-- ===== MACROECONOMIC INDICATORS ===== -->
         <div class="section" id="section-macro">
           <div class="section-header">
             <div class="section-title">Macroeconomic Indicators</div>
@@ -1226,71 +1659,244 @@
               GDP, inflasi, suku bunga, PMI, neraca dagang, dsb.
             </div>
           </div>
-          <div class="grid-2">
-            <div class="panel">
-              <div class="panel-header">
-                <div class="panel-title">Core Macro Dashboard</div>
-                <div class="panel-meta">US / G3 snapshot</div>
-              </div>
-              <div class="panel-body">
-                <table class="mini-table">
-                  <thead>
-                    <tr>
-                      <th>Country</th>
-                      <th>GDP YoY</th>
-                      <th>CPI YoY</th>
-                      <th>Policy Rate</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>US</td>
-                      <td>4.6%</td>
-                      <td>3.0%</td>
-                      <td>4.00%</td>
-                    </tr>
-                    <tr>
-                      <td>Euro Area</td>
-                      <td>1.3%</td>
-                      <td>2.4%</td>
-                      <td>2.15%</td>
-                    </tr>
-                    <tr>
-                      <td>Japan</td>
-                      <td>0.7%</td>
-                      <td>2.1%</td>
-                      <td>0.00%</td>
-                    </tr>
-                    <tr>
-                      <td>Australia</td>
-                      <td>2.2%</td>
-                      <td>3.6%</td>
-                      <td>3.60%</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div class="panel">
-              <div class="panel-header">
-                <div class="panel-title">Growth &amp; Inflation Map</div>
-                <div class="panel-meta">High-level regime</div>
-              </div>
-              <div class="panel-body">
-                <div>US: Soft-landing bias, inflasi moderat, growth stabil.</div>
-                <div>EU: Growth lemah, inflasi turun → ruang easing terbuka.</div>
-                <div>Asia: Divergen, tetapi komoditas &amp; re-opening jadi driver.</div>
-                <div class="chip-row" style="margin-top:8px;">
-                  <div class="chip accent">Growth vs Inflation Quadrant</div>
-                  <div class="chip">Stagflation risk ↓</div>
-                  <div class="chip">Disinflation regime</div>
+
+          <div class="macro-grid">
+            <!-- LEFT: GLOBAL MACRO DB -->
+            <div class="macro-col">
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Global Macroeconomic Database</div>
+                  <div class="panel-meta">75 negara · 100+ indikator tiap negara</div>
+                </div>
+                <div class="panel-body">
+                  <table class="macro-table">
+                    <thead>
+                      <tr>
+                        <th>Country</th>
+                        <th>Region</th>
+                        <th>Real GDP YoY</th>
+                        <th>CPI YoY</th>
+                        <th>Policy Rate</th>
+                        <th>PMI</th>
+                        <th>Unempl.</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>United States</td>
+                        <td>DM · Americas</td>
+                        <td>2.1%</td>
+                        <td>2.7%</td>
+                        <td>5.25%</td>
+                        <td>52.4</td>
+                        <td>3.9%</td>
+                      </tr>
+                      <tr>
+                        <td>Euro Area</td>
+                        <td>DM · Europe</td>
+                        <td>0.8%</td>
+                        <td>2.4%</td>
+                        <td>3.75%</td>
+                        <td>49.8</td>
+                        <td>6.5%</td>
+                      </tr>
+                      <tr>
+                        <td>Japan</td>
+                        <td>DM · Asia</td>
+                        <td>1.0%</td>
+                        <td>2.0%</td>
+                        <td>0.10%</td>
+                        <td>50.6</td>
+                        <td>2.5%</td>
+                      </tr>
+                      <tr>
+                        <td>China</td>
+                        <td>EM · Asia</td>
+                        <td>4.6%</td>
+                        <td>0.8%</td>
+                        <td>3.45%</td>
+                        <td>51.2</td>
+                        <td>5.1%</td>
+                      </tr>
+                      <tr>
+                        <td>India</td>
+                        <td>EM · Asia</td>
+                        <td>6.5%</td>
+                        <td>4.3%</td>
+                        <td>6.50%</td>
+                        <td>55.0</td>
+                        <td>7.2%</td>
+                      </tr>
+                      <tr>
+                        <td>Indonesia</td>
+                        <td>EM · Asia</td>
+                        <td>5.1%</td>
+                        <td>2.9%</td>
+                        <td>6.00%</td>
+                        <td>51.8</td>
+                        <td>5.8%</td>
+                      </tr>
+                      <tr>
+                        <td>Brazil</td>
+                        <td>EM · LatAm</td>
+                        <td>1.8%</td>
+                        <td>4.0%</td>
+                        <td>10.75%</td>
+                        <td>49.1</td>
+                        <td>7.5%</td>
+                      </tr>
+                      <tr>
+                        <td>United Kingdom</td>
+                        <td>DM · Europe</td>
+                        <td>0.6%</td>
+                        <td>2.9%</td>
+                        <td>4.50%</td>
+                        <td>49.5</td>
+                        <td>4.4%</td>
+                      </tr>
+                      <tr>
+                        <td>Germany</td>
+                        <td>DM · Europe</td>
+                        <td>0.3%</td>
+                        <td>2.2%</td>
+                        <td>3.75%</td>
+                        <td>47.9</td>
+                        <td>5.9%</td>
+                      </tr>
+                      <tr>
+                        <td>South Africa</td>
+                        <td>EM · Africa</td>
+                        <td>1.2%</td>
+                        <td>5.3%</td>
+                        <td>8.25%</td>
+                        <td>49.0</td>
+                        <td>32.0%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="macro-tag-row">
+                    <div class="macro-tag accent">Universe: 75 negara</div>
+                    <div class="macro-tag">Freq: Q / M</div>
+                    <div class="macro-tag">FX: Lokal / USD</div>
+                    <div class="macro-tag">Panel: Growth · Inflation · Labour · Rates · External</div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+
+            <!-- RIGHT: US MACRO + COMPARISON CHARTS -->
+            <div class="macro-col">
+              <!-- US MACRO -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">US Macroeconomics Dashboard</div>
+                  <div class="panel-meta">Focus: growth · inflation · labour · Fed</div>
+                </div>
+                <div class="panel-body">
+                  <div class="macro-us-grid">
+                    <div class="macro-us-card">
+                      <div class="macro-us-title">Growth &amp; Inflation</div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">Real GDP (YoY)</span>
+                        <span class="macro-us-value">2.1%</span>
+                      </div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">GDP Nowcast (q/q saar)</span>
+                        <span class="macro-us-value green">2.4%</span>
+                      </div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">Core PCE (YoY)</span>
+                        <span class="macro-us-value">2.8%</span>
+                      </div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">Headline CPI (YoY)</span>
+                        <span class="macro-us-value">2.7%</span>
+                      </div>
+                    </div>
+
+                    <div class="macro-us-card">
+                      <div class="macro-us-title">Labour &amp; Fed Policy</div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">Unemployment rate</span>
+                        <span class="macro-us-value">3.9%</span>
+                      </div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">NFP 3M avg</span>
+                        <span class="macro-us-value">205k</span>
+                      </div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">Fed Funds upper</span>
+                        <span class="macro-us-value red">5.50%</span>
+                      </div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">Market pricing (12m)</span>
+                        <span class="macro-us-value">-75bp cuts</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">Source: BEA, BLS, Fed, ISM</div>
+                    <div class="chip">Horizon: last 10–20 tahun</div>
+                    <div class="chip">Toggle: Historical / Forward</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MACRO COMPARISON CHARTS -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Macro Comparison Dashboard</div>
+                  <div class="panel-meta">Multi-country panel charts</div>
+                </div>
+                <div class="panel-body">
+                  <div class="macro-chart-grid">
+                    <div class="macro-chart-placeholder">
+                      <div class="macro-chart-header">
+                        <div class="macro-chart-title">Real GDP Growth (%)</div>
+                        <div class="macro-chart-note">USA · GBR · JPN · CHE · AUS · NZL · CAN · DEU · FRA</div>
+                      </div>
+                      <div class="macro-chart-canvas"></div>
+                    </div>
+
+                    <div class="macro-chart-placeholder">
+                      <div class="macro-chart-header">
+                        <div class="macro-chart-title">Inflation (CPI, % YoY)</div>
+                        <div class="macro-chart-note">Core vs headline · DM vs EM</div>
+                      </div>
+                      <div class="macro-chart-canvas"></div>
+                    </div>
+
+                    <div class="macro-chart-placeholder">
+                      <div class="macro-chart-header">
+                        <div class="macro-chart-title">Unemployment (%)</div>
+                        <div class="macro-chart-note">Labour slack &amp; cyclical risk</div>
+                      </div>
+                      <div class="macro-chart-canvas"></div>
+                    </div>
+
+                    <div class="macro-chart-placeholder">
+                      <div class="macro-chart-header">
+                        <div class="macro-chart-title">Central Bank Policy Rate (%)</div>
+                        <div class="macro-chart-note">Fed · ECB · BoE · BoJ · RBA · BoC · SNB</div>
+                      </div>
+                      <div class="macro-chart-canvas"></div>
+                    </div>
+                  </div>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">View: Historical only / With forecast</div>
+                    <div class="chip">Timeframe: 2005–2025</div>
+                    <div class="chip">Overlay: recession bands, policy shocks</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> <!-- end macro-grid -->
         </div>
 
-        <!-- Geo-Economic Indicators -->
+        <!-- ===== GEO-ECONOMIC INDICATORS ===== -->
         <div class="section" id="section-geo">
           <div class="section-header">
             <div class="section-title">Geo-Economic Indicators</div>
@@ -1298,102 +1904,177 @@
               Peta energi, perdagangan, demografi, jalur maritim.
             </div>
           </div>
-          <div class="grid-2">
+
+          <div class="geo-grid">
+            <!-- KIRI: panel besar -->
             <div class="panel">
               <div class="panel-header">
-                <div class="panel-title">Energy &amp; Trade Routes</div>
-                <div class="panel-meta">Mock map placeholder</div>
+                <div class="panel-title">Global Geo-Economic Map</div>
+                <div class="panel-meta">Energy · Trade · Shipping lanes · Demographics</div>
               </div>
               <div class="panel-body">
-                <div>Integrasikan peta: shipping lanes, chokepoints, pipeline.</div>
-                <div class="chip-row" style="margin-top:8px;">
-                  <div class="chip accent">Straits &amp; Chokepoints</div>
-                  <div class="chip">Malacca</div>
-                  <div class="chip">Hormuz</div>
-                  <div class="chip">Panama</div>
+                <div class="geo-iframe-shell">
+                  World / regional geoeconomic map iframe placeholder
                 </div>
               </div>
             </div>
-            <div class="panel">
-              <div class="panel-header">
-                <div class="panel-title">Demographics &amp; Demand</div>
-                <div class="panel-meta">Geo-demand lens</div>
+
+            <!-- KANAN: kolom kanan -->
+            <div class="geo-right">
+              <!-- Atas: dua panel sejajar -->
+              <div class="geo-right-top">
+                <div class="panel">
+                  <div class="panel-header">
+                    <div class="panel-title">Energy &amp; Commodity Flows</div>
+                    <div class="panel-meta">Oil · Gas · Metals · Grid</div>
+                  </div>
+                  <div class="panel-body">
+                    <div class="geo-iframe-shell">
+                      Energy flows / pipeline map iframe placeholder
+                    </div>
+                  </div>
+                </div>
+
+                <div class="panel">
+                  <div class="panel-header">
+                    <div class="panel-title">Trade &amp; Shipping Routes</div>
+                    <div class="panel-meta">Ports · Chokepoints · Freight</div>
+                  </div>
+                  <div class="panel-body">
+                    <div class="geo-iframe-shell">
+                      Trade &amp; shipping lanes iframe placeholder
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="panel-body">
-                <div>Plot demografi, urbanisasi, middle-class expansion.</div>
-                <div class="chip-row" style="margin-top:8px;">
-                  <div class="chip accent">Asia demand engine</div>
-                  <div class="chip">Commodity Importers</div>
-                  <div class="chip">Manufacturing Hubs</div>
+
+              <!-- Bawah: satu panel lebar -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Geo-Demographics &amp; Risk Dashboard</div>
+                  <div class="panel-meta">Population · Politics · Conflict risk</div>
+                </div>
+                <div class="panel-body">
+                  <div class="geo-iframe-shell">
+                    Demographics / geopolitical risk iframe placeholder
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Global Market Snapshot -->
+        <!-- ===== GLOBAL MARKET FLOW (NEW LAYOUT) ===== -->
         <div class="section" id="section-snapshot">
           <div class="section-header">
-            <div class="section-title">Global Market Snapshot</div>
+            <div class="section-title">Global Market Flow</div>
             <div class="section-subtitle">
               DXY, yield curve, volatilitas, cross-asset realtime.
             </div>
           </div>
-          <div class="grid-2">
-            <div class="panel">
-              <div class="panel-header">
-                <div class="panel-title">DXY / Yields / Vol</div>
-                <div class="panel-meta">Core risk gauges</div>
+
+          <div class="flow-grid">
+            <!-- LEFT MAIN: 2 ROWS (INTRADAY SNAPSHOT + RISK/SAFE) -->
+            <div class="flow-left-main">
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Cross-Asset Intraday Flow</div>
+                  <div class="panel-meta">Intraday Snapshot — % vs prior close</div>
+                </div>
+                <div class="panel-body">
+                  <!-- pyecharts horizontal bar snapshot -->
+                  <div id="flow_intraday_snapshot" class="flow-chart-slot"></div>
+                  <div class="flow-chart-note">
+                    Contoh: sektor ETF (XOP, XLP, XLE, XLU, QQQ, TLT, dll) seperti gambar "Intraday Snapshot".
+                    Websocket akan meng-update chart ini secara realtime.
+                  </div>
+                </div>
               </div>
-              <div class="panel-body">
-                <table class="mini-table">
-                  <thead>
-                    <tr>
-                      <th>Gauge</th>
-                      <th>Level</th>
-                      <th>ΔD</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>DXY</td>
-                      <td>102.4</td>
-                      <td class="pill-red">-0.4%</td>
-                    </tr>
-                    <tr>
-                      <td>US 2s10s</td>
-                      <td>+35 bps</td>
-                      <td class="pill-green">Steepen</td>
-                    </tr>
-                    <tr>
-                      <td>VIX</td>
-                      <td>13.8</td>
-                      <td class="pill-red">-1.2</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div class="chip-row" style="margin-top:8px;">
-                  <div class="chip accent">Risk-On Snapshot</div>
-                  <div class="chip">Vol low</div>
-                  <div class="chip">Dollar softer</div>
+
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Risk / Safe Netflow Proxy</div>
+                  <div class="panel-meta">QQQ · IBIT · HYG vs UUP · LQD · GLD · FXY</div>
+                </div>
+                <div class="panel-body">
+                  <!-- pyecharts bar chart risk/safe -->
+                  <div id="flow_risk_safe_proxy" class="flow-chart-slot"></div>
+                  <div class="flow-chart-note">
+                    Bar horizontal risk-asset vs safe-haven seperti contoh "Risk/Safe Netflow Proxy".
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="panel">
-              <div class="panel-header">
-                <div class="panel-title">Regime Tag</div>
-                <div class="panel-meta">Kuantara Macro Regime</div>
+
+            <!-- MID TOP: CRYPTO + COMMODITIES STRENGTH -->
+            <div class="flow-mid-top">
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Crypto Strength Meter (15m)</div>
+                  <div class="panel-meta">Top movers vs USD</div>
+                </div>
+                <div class="panel-body">
+                  <!-- pyecharts horizontal bar crypto -->
+                  <div id="flow_crypto_strength" class="flow-chart-slot"></div>
+                  <div class="flow-chart-note">
+                    Bar horizontal kiri-kanan seperti contoh "Crypto Strength Meter" (hijau &amp; merah).
+                  </div>
+                </div>
               </div>
-              <div class="panel-body">
-                <div>• Regime: <span class="pill-green">Liquidity Normalization</span></div>
-                <div>• Bias: <span class="pill-green">Pro-Risk (Equity, Credit, EM)</span></div>
-                <div>• FX: <span class="pill-green">Long AUD vs USD &amp; JPY</span></div>
+
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Commodities Strength Meter (15m)</div>
+                  <div class="panel-meta">Energy · Metals · Agri</div>
+                </div>
+                <div class="panel-body">
+                  <!-- pyecharts horizontal bar commodities -->
+                  <div id="flow_commod_strength" class="flow-chart-slot"></div>
+                  <div class="flow-chart-note">
+                    Bar horizontal NatGas, HeatingOil, WTI, Gold, Silver, dsb seperti contoh "Commodities Strength".
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- MID BOTTOM: FOREX STRENGTH -->
+            <div class="flow-mid-bottom">
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Forex Strength Meter (15m)</div>
+                  <div class="panel-meta">G10 currencies vs USD basket</div>
+                </div>
+                <div class="panel-body">
+                  <!-- pyecharts horizontal bar FX -->
+                  <div id="flow_fx_strength" class="flow-chart-slot"></div>
+                  <div class="flow-chart-note">
+                    Bar horizontal GBP, CHF, EUR, CAD, JPY, USD, AUD, NZD seperti contoh "Forex Strength Meter".
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT MAIN: LINE CHART (USD vs G10 ETF) -->
+            <div class="flow-right-main">
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">USD vs G10 FX ETF Relative Performance</div>
+                  <div class="panel-meta">UUP vs FXY, FXE, FXB, FXA, FXF · 3h / 4h</div>
+                </div>
+                <div class="panel-body">
+                  <!-- pyecharts multi-line chart -->
+                  <div id="flow_usd_g10_line" class="flow-chart-slot"></div>
+                  <div class="flow-chart-note">
+                    Line chart multipel seperti screenshot UUP (ungu) vs ETF FX lain (biru).
+                    Websocket bisa feed data harga ke pyecharts/ECharts option di sini.
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Market Metrics & Sentiment -->
+        <!-- ===== MARKET METRICS & SENTIMENT ===== -->
         <div class="section" id="section-metrics">
           <div class="section-header">
             <div class="section-title">Market Metrics &amp; Sentiment</div>
@@ -1401,38 +2082,9 @@
               COT, VIX, fund flows, breadth, sektor rotasi.
             </div>
           </div>
-          <div class="grid-2">
-            <div class="panel">
-              <div class="panel-header">
-                <div class="panel-title">Positioning</div>
-                <div class="panel-meta">COT &amp; flows</div>
-              </div>
-              <div class="panel-body">
-                <ul style="list-style:none; padding-left:0;">
-                  <li>• COT: Spec long di indeks equity naik.</li>
-                  <li>• Credit spread tightening → risk taking naik.</li>
-                  <li>• Fund flows: inflow ke tech, EM equity.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="panel">
-              <div class="panel-header">
-                <div class="panel-title">Sector Rotation</div>
-                <div class="panel-meta">Mock RRG-style</div>
-              </div>
-              <div class="panel-body">
-                <div class="chip-row">
-                  <div class="chip accent">Leadership: Tech, Comm Services</div>
-                  <div class="chip">Lagging: Utilities, Staples</div>
-                  <div class="chip">Improving: Financials</div>
-                  <div class="chip">Weakening: Energy</div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
-        <!-- Market News & Catalyst (iframe menyatu) -->
+        <!-- ===== MARKET NEWS & CATALYST ===== -->
         <div class="section" id="section-news">
           <div class="section-header">
             <div class="section-title">Market News &amp; Catalyst</div>
@@ -1440,17 +2092,9 @@
               Kalender ekonomi, newswire, X feed, dan Catalyst Global Macro terintegrasi.
             </div>
           </div>
-
-          <div class="news-frame-wrapper">
-            <iframe
-              class="news-frame"
-              src="https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html"
-              loading="lazy"
-            ></iframe>
-          </div>
         </div>
 
-        <!-- Articles & Market Research -->
+        <!-- ===== ARTICLES & MARKET RESEARCH ===== -->
         <div class="section" id="section-research">
           <div class="section-header">
             <div class="section-title">Articles &amp; Market Research</div>
@@ -1458,25 +2102,9 @@
               Riset mingguan, thematic reports, analisis Kuantara.
             </div>
           </div>
-          <div class="panel">
-            <div class="panel-header">
-              <div class="panel-title">Weekly Macro Wrap</div>
-              <div class="panel-meta">Kuantara Analytics</div>
-            </div>
-            <div class="panel-body">
-              <div>
-                Gunakan panel ini untuk render PDF viewer / HTML riset langsung di terminal:
-                <ul style="list-style:none; padding-left:0; margin-top:4px;">
-                  <li>• Global macro narrative.</li>
-                  <li>• Scenario &amp; probability.</li>
-                  <li>• Trade ideas &amp; invalidation.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
         </div>
 
-        <!-- Quantitative & Technical Tools -->
+        <!-- ===== QUANT & TECHNICAL TOOLS ===== -->
         <div class="section" id="section-quant">
           <div class="section-header">
             <div class="section-title">Quantitative &amp; Technical Tools</div>
@@ -1484,35 +2112,10 @@
               Screener, regression, pattern finder, backtest, AI tools.
             </div>
           </div>
-          <div class="grid-2">
-            <div class="panel">
-              <div class="panel-header">
-                <div class="panel-title">Tool Launcher</div>
-                <div class="panel-meta">Multi-asset quant</div>
-              </div>
-              <div class="panel-body">
-                <div class="chip-row">
-                  <div class="chip accent">Pattern Finder</div>
-                  <div class="chip accent">Backtest Engine</div>
-                  <div class="chip accent">Regression Model</div>
-                  <div class="chip accent">AI Macro Copilot</div>
-                  <div class="chip">Pairs &amp; Spread</div>
-                </div>
-              </div>
-            </div>
-            <div class="panel">
-              <div class="panel-header">
-                <div class="panel-title">Template</div>
-                <div class="panel-meta">Koneksikan ke backend Python / Node</div>
-              </div>
-              <div class="panel-body">
-                <div>Tempat untuk embed UI interaktif (React / Svelte / vanilla JS) untuk tools.</div>
-              </div>
-            </div>
-          </div>
+          <div class="grid-2"></div>
         </div>
 
-        <!-- Stocks Screener -->
+        <!-- ===== STOCKS SCREENER ===== -->
         <div class="section" id="section-screener">
           <div class="section-header">
             <div class="section-title">Stocks Screener</div>
@@ -1520,71 +2123,6 @@
               Filter saham berdasarkan teknikal, fundamental, &amp; sentimen.
             </div>
           </div>
-          <div class="panel">
-            <div class="panel-header">
-              <div class="panel-title">Screener Template</div>
-              <div class="panel-meta">US / Global equities</div>
-            </div>
-            <div class="panel-body">
-              <table class="mini-table">
-                <thead>
-                  <tr>
-                    <th>Ticker</th>
-                    <th>Sector</th>
-                    <th>ΔD%</th>
-                    <th>PE</th>
-                    <th>Signal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>AAPL</td>
-                    <td>Tech</td>
-                    <td class="pill-green">+0.8%</td>
-                    <td>28x</td>
-                    <td>BUY</td>
-                  </tr>
-                  <tr>
-                    <td>NVDA</td>
-                    <td>Tech</td>
-                    <td class="pill-green">+2.3%</td>
-                    <td>35x</td>
-                    <td>BUY</td>
-                  </tr>
-                  <tr>
-                    <td>XOM</td>
-                    <td>Energy</td>
-                    <td class="pill-red">-0.4%</td>
-                    <td>11x</td>
-                    <td>HOLD</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div class="chip-row" style="margin-top:8px;">
-                <div class="chip accent">Macro-aligned Screener</div>
-                <div class="chip">Growth vs Value</div>
-                <div class="chip">Factor exposure</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Status bar -->
-      <div class="status-bar">
-        <div class="status-shortcuts">
-          <span>Alt+0–9: Modules</span>
-          <span>Alt+A: AI assistant</span>
-          <span>Esc: Market Overview / Close</span>
-          <span>Ctrl+R: Refresh data</span>
-          <span>Ctrl+F: Quick search</span>
-          <span>Ctrl+L: Toggle theme</span>
-          <span>Ctrl+Shift+S: Save layout</span>
-          <span>F1: Shortcut help</span>
-          <span>Shift+1: Charts fullscreen</span>
-        </div>
-        <div class="status-connection">
-          <span>DATA: Mock · Ready</span>
         </div>
       </div>
     </div>
@@ -1604,61 +2142,24 @@
       </div>
       <div class="modal-body">
         <div class="shortcut-grid">
-          <div class="shortcut-key">Alt + 0</div>
-          <div class="shortcut-desc">Market Overview (dashboard utama).</div>
-
-          <div class="shortcut-key">Alt + 1</div>
-          <div class="shortcut-desc">Charts (1–4 jendela chart).</div>
-
-          <div class="shortcut-key">Alt + 2</div>
-          <div class="shortcut-desc">Macroeconomic Indicators.</div>
-
-          <div class="shortcut-key">Alt + 3</div>
-          <div class="shortcut-desc">Geo-Economic Indicators.</div>
-
-          <div class="shortcut-key">Alt + 4</div>
-          <div class="shortcut-desc">Global Market Snapshot.</div>
-
-          <div class="shortcut-key">Alt + 5</div>
-          <div class="shortcut-desc">Market Metrics &amp; Sentiment.</div>
-
-          <div class="shortcut-key">Alt + 6</div>
-          <div class="shortcut-desc">Market News &amp; Catalyst.</div>
-
-          <div class="shortcut-key">Alt + 7</div>
-          <div class="shortcut-desc">Articles &amp; Market Research.</div>
-
-          <div class="shortcut-key">Alt + 8</div>
-          <div class="shortcut-desc">Quantitative &amp; Technical Tools.</div>
-
-          <div class="shortcut-key">Alt + 9</div>
-          <div class="shortcut-desc">Stocks Screener.</div>
-
-          <div class="shortcut-key">Alt + A</div>
-          <div class="shortcut-desc">Toggle AI assistant (floating panel).</div>
-
-          <div class="shortcut-key">Esc</div>
-          <div class="shortcut-desc">
-            Tutup AI / modal, lalu kembali ke Market Overview.
-          </div>
-
-          <div class="shortcut-key">Ctrl + R</div>
-          <div class="shortcut-desc">Refresh data (internal, tanpa reload halaman).</div>
-
-          <div class="shortcut-key">Ctrl + F</div>
-          <div class="shortcut-desc">Fokus ke Quick Search.</div>
-
-          <div class="shortcut-key">Ctrl + L</div>
-          <div class="shortcut-desc">Ganti tema Dark / Light.</div>
-
-          <div class="shortcut-key">Ctrl + Shift + S</div>
-          <div class="shortcut-desc">Simpan layout kerja (mock).</div>
-
-          <div class="shortcut-key">F1</div>
-          <div class="shortcut-desc">Buka panduan shortcut ini.</div>
-
-          <div class="shortcut-key">Shift + 1</div>
-          <div class="shortcut-desc">Aktifkan / matikan mode chart fullscreen.</div>
+          <div class="shortcut-key">Alt + 0</div><div class="shortcut-desc">Market Overview (dashboard utama).</div>
+          <div class="shortcut-key">Alt + 1</div><div class="shortcut-desc">Charts (1–2 jendela chart).</div>
+          <div class="shortcut-key">Alt + 2</div><div class="shortcut-desc">Macroeconomic Indicators.</div>
+          <div class="shortcut-key">Alt + 3</div><div class="shortcut-desc">Geo-Economic Indicators.</div>
+          <div class="shortcut-key">Alt + 4</div><div class="shortcut-desc">Global Market Snapshot.</div>
+          <div class="shortcut-key">Alt + 5</div><div class="shortcut-desc">Market Metrics &amp; Sentiment.</div>
+          <div class="shortcut-key">Alt + 6</div><div class="shortcut-desc">Market News &amp; Catalyst.</div>
+          <div class="shortcut-key">Alt + 7</div><div class="shortcut-desc">Articles &amp; Market Research.</div>
+          <div class="shortcut-key">Alt + 8</div><div class="shortcut-desc">Quantitative &amp; Technical Tools.</div>
+          <div class="shortcut-key">Alt + 9</div><div class="shortcut-desc">Stocks Screener.</div>
+          <div class="shortcut-key">Alt + A</div><div class="shortcut-desc">Toggle AI assistant (floating panel).</div>
+          <div class="shortcut-key">Esc</div><div class="shortcut-desc">Tutup AI / modal, lalu kembali ke Market Overview.</div>
+          <div class="shortcut-key">Ctrl + R</div><div class="shortcut-desc">Refresh data (internal, tanpa reload halaman).</div>
+          <div class="shortcut-key">Ctrl + F</div><div class="shortcut-desc">Fokus ke Quick Search.</div>
+          <div class="shortcut-key">Ctrl + L</div><div class="shortcut-desc">Ganti tema Dark / Light.</div>
+          <div class="shortcut-key">Ctrl + Shift + S</div><div class="shortcut-desc">Simpan layout kerja (mock).</div>
+          <div class="shortcut-key">F1</div><div class="shortcut-desc">Buka panduan shortcut ini.</div>
+          <div class="shortcut-key">Shift + 1</div><div class="shortcut-desc">Aktifkan / matikan mode chart fullscreen.</div>
         </div>
         <div class="modal-close-hint">
           Tekan <strong>F1</strong> lagi atau <strong>Esc</strong> untuk menutup.
@@ -1677,14 +2178,7 @@
       <div class="ai-panel-close" id="aiPanelClose">ESC</div>
     </div>
     <div class="ai-panel-body">
-      <iframe
-        class="ai-panel-iframe"
-        id="aiFrame"
-        src="about:blank"
-        loading="lazy"
-        title="Kuantara AI Assistant"
-      ></iframe>
-      <!-- Ganti src di atas dengan URL iframe AI kamu -->
+      <iframe class="ai-panel-iframe" id="aiFrame" src="about:blank" loading="lazy" title="Kuantara AI Assistant"></iframe>
     </div>
   </div>
 
@@ -1692,8 +2186,11 @@
     <span>AI</span>
   </div>
 
+  <!-- ECharts (for pyecharts output) -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script async type="text/javascript" data-type="calendar-widget" src="https://www.tradays.com/c/js/widgets/calendar/widget.js?v=15"></script>
+
   <script>
-    // World clock config: label + timezone
     const clockConfig = [
       { label: "NY",  tz: "America/New_York" },
       { label: "LDN", tz: "Europe/London" },
@@ -1702,31 +2199,25 @@
       { label: "JKT", tz: "Asia/Jakarta" }
     ];
 
-    // Forex session hours in WIB (GMT+7)
     const forexScheduleWIB = {
-      SYD: { openMin: 5 * 60,  closeMin: 14 * 60 },      // 05–14
-      TKY: { openMin: 7 * 60,  closeMin: 16 * 60 },      // 07–16
-      LDN: { openMin: 15 * 60, closeMin: 24 * 60 },      // 15–24
-      NY:  { openMin: 20 * 60, closeMin: 28 * 60 },      // 20–04 (next day)
-      JKT: { openMin: 9 * 60,  closeMin: 16 * 60 }       // custom for JKT
+      SYD: { openMin: 5 * 60,  closeMin: 14 * 60 },
+      TKY: { openMin: 7 * 60,  closeMin: 16 * 60 },
+      LDN: { openMin: 15 * 60, closeMin: 24 * 60 },
+      NY:  { openMin: 20 * 60, closeMin: 28 * 60 },
+      JKT: { openMin: 9 * 60,  closeMin: 16 * 60 }
     };
 
     function isSessionOpenWIB(label, dayWib, minutesWib) {
       const s = forexScheduleWIB[label];
       if (!s) return false;
-
-      // Weekend off (Sabtu & Minggu)
       if (dayWib === 0 || dayWib === 6) return false;
 
       const open = s.openMin;
       const close = s.closeMin;
 
       if (close <= 24 * 60) {
-        if (close < open) {
-          return minutesWib >= open || minutesWib < close;
-        } else {
-          return minutesWib >= open && minutesWib < close;
-        }
+        if (close < open) return minutesWib >= open || minutesWib < close;
+        return minutesWib >= open && minutesWib < close;
       }
 
       const closeNext = close - 24 * 60;
@@ -1751,21 +2242,17 @@
 
       const updateTime = () => {
         const now = new Date();
-
-        // Waktu Jakarta untuk cek sesi open/close
         const nowJakarta = new Date(
           now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
         );
         const dayWib = nowJakarta.getDay();
-        const minutesWib =
-          nowJakarta.getHours() * 60 + nowJakarta.getMinutes();
+        const minutesWib = nowJakarta.getHours() * 60 + nowJakarta.getMinutes();
 
         const times = container.querySelectorAll(".session-time");
         times.forEach((el) => {
           const tz = el.getAttribute("data-tz");
           const label = el.getAttribute("data-label");
 
-          // Local time display
           const local = new Date(
             now.toLocaleString("en-US", { timeZone: tz })
           );
@@ -1781,11 +2268,8 @@
             '.session-status-dot[data-label="' + label + '"]'
           );
           if (dot) {
-            if (isOpen) {
-              dot.classList.add("open");
-            } else {
-              dot.classList.remove("open");
-            }
+            if (isOpen) dot.classList.add("open");
+            else dot.classList.remove("open");
           }
         });
       };
@@ -1794,7 +2278,6 @@
       setInterval(updateTime, 1000);
     }
 
-    // Section handling
     const sectionMap = {
       0: "section-market-overview",
       1: "section-charts",
@@ -1835,7 +2318,6 @@
       label.textContent = labelText;
     }
 
-    // Toast
     const toastContainer = document.getElementById("toastContainer");
     function showToast(message, label = "ACTION") {
       const toast = document.createElement("div");
@@ -1851,7 +2333,6 @@
       }, 2200);
     }
 
-    // Theme toggle
     function toggleTheme() {
       const body = document.body;
       const current = body.getAttribute("data-theme") || "dark";
@@ -1860,8 +2341,7 @@
       showToast(`Theme switched to ${next}`, "THEME");
     }
 
-    // Charts fullscreen
-    const app = document.getElementById("app");
+    const appRoot = document.getElementById("app");
     function toggleChartsFullscreen() {
       const isChartsActive = document
         .getElementById("section-charts")
@@ -1870,16 +2350,15 @@
         showToast("Charts fullscreen hanya saat modul Charts aktif.", "INFO");
         return;
       }
-      app.classList.toggle("charts-fullscreen");
+      appRoot.classList.toggle("charts-fullscreen");
       showToast(
-        app.classList.contains("charts-fullscreen")
+        appRoot.classList.contains("charts-fullscreen")
           ? "Charts fullscreen ON"
           : "Charts fullscreen OFF",
         "CHARTS"
       );
     }
 
-    // Shortcut modal
     const shortcutModal = document.getElementById("shortcutModal");
     let shortcutModalVisible = false;
 
@@ -1893,12 +2372,9 @@
     }
 
     shortcutModal.addEventListener("click", (e) => {
-      if (e.target === shortcutModal) {
-        toggleShortcutModal(false);
-      }
+      if (e.target === shortcutModal) toggleShortcutModal(false);
     });
 
-    // AI assistant panel
     const aiPanel = document.getElementById("aiPanel");
     const aiLauncher = document.getElementById("aiLauncher");
     const aiPanelClose = document.getElementById("aiPanelClose");
@@ -1911,23 +2387,18 @@
 
     function toggleAiPanel() {
       setAiPanelVisible(!aiPanelVisible);
-      if (aiPanelVisible) {
-        showToast("AI assistant opened.", "AI");
-      } else {
-        showToast("AI assistant closed.", "AI");
-      }
+      if (aiPanelVisible) showToast("AI assistant opened.", "AI");
+      else showToast("AI assistant closed.", "AI");
     }
 
     aiLauncher.addEventListener("click", toggleAiPanel);
     aiPanelClose.addEventListener("click", () => setAiPanelVisible(false));
 
-    // Keyboard navigation
     const quickSearch = document.getElementById("quickSearch");
 
     document.addEventListener("keydown", (e) => {
       const key = e.key;
 
-      // Alt + number: section
       if (e.altKey && !e.ctrlKey && /^[0-9]$/.test(key)) {
         e.preventDefault();
         const idx = parseInt(key, 10);
@@ -1946,14 +2417,12 @@
         return;
       }
 
-      // Alt + A: AI assistant
       if (e.altKey && !e.ctrlKey && (key === "a" || key === "A")) {
         e.preventDefault();
         toggleAiPanel();
         return;
       }
 
-      // Esc: close AI / modal / go home
       if (key === "Escape") {
         if (aiPanelVisible) {
           setAiPanelVisible(false);
@@ -2007,7 +2476,6 @@
       }
     });
 
-    // Menu click
     document.querySelectorAll(".menu-item").forEach((item) => {
       item.addEventListener("click", () => {
         const sectionId = item.getAttribute("data-section");
@@ -2024,7 +2492,32 @@
       });
     });
 
+    function setRiskGauge(score) {
+      const s = Math.max(-1, Math.min(1, score));
+      const angle = s * 70;
+
+      const needle = document.getElementById("riskNeedle");
+      const label  = document.getElementById("riskLabel");
+
+      if (needle) {
+        needle.style.transform = `rotate(${angle}deg)`;
+      }
+
+      if (label) {
+        if (s < -0.4) label.textContent = "Risk-Off";
+        else if (s < -0.1) label.textContent = "Mild Risk-Off";
+        else if (s <= 0.1) label.textContent = "Neutral";
+        else if (s <= 0.4) label.textContent = "Mild Risk-On";
+        else label.textContent = "Risk-On";
+      }
+    }
+
     initWorldClock();
+    setRiskGauge(0.25);
+
+    /* ====== Placeholder init for pyecharts containers (optional demo) ======
+       Nanti backend websocket + pyecharts bisa langsung panggil
+       echarts.init(document.getElementById('flow_crypto_strength')) dst. */
   </script>
 </body>
 </html>
