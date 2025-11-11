@@ -90,14 +90,6 @@
       font-size: 10px;
     }
 
-    .kt-topbar-pill {
-      padding: 2px 6px;
-      border-radius: 2px;
-      background: #101010;
-      border: 1px solid var(--border-soft);
-      white-space: nowrap;
-    }
-
     .kt-topbar-status {
       white-space: nowrap;
     }
@@ -240,12 +232,7 @@
     }
 
     .kt-header-right {
-      display: flex;
-      gap: 8px;
-      color: var(--text-muted);
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      font-size: 10px;
+      display: none; /* semua teks fungsi dihilangkan */
     }
 
     .kt-content-body {
@@ -255,34 +242,16 @@
       overflow: auto;
     }
 
-    /* STATUS BAR (above bottom nav) */
+    /* STATUS BAR – hanya status, tanpa keterangan key */
     .kt-statusbar {
       border-top: 1px solid var(--border-soft);
       padding: 4px 10px 6px;
       font-size: 10px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       background: #050505;
       color: var(--text-muted);
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .kt-status-keys {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .kt-key {
-      padding: 1px 6px;
-      border-radius: 2px;
-      border: 1px solid var(--border-soft);
-      font-size: 10px;
-      background: #101010;
-      color: var(--text-muted);
-      white-space: nowrap;
     }
 
     .kt-status-msg {
@@ -290,7 +259,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 40%;
+      max-width: 100%;
     }
 
     /* BOTTOM NAV (0–4) */
@@ -470,7 +439,6 @@
       cursor: default;
     }
 
-    /* DESKTOP: top tag visible, konten punya padding bawah lebih kecil */
     @media (min-width: 900px) {
       .kt-topbar-tag {
         display: inline-block;
@@ -501,8 +469,6 @@
       </div>
       <div class="kt-topbar-right">
         <div class="kt-topbar-status">PROFILE: GUEST</div>
-        <div class="kt-topbar-pill">TAB · Profile</div>
-        <div class="kt-topbar-pill">ESC · Main Menu</div>
       </div>
     </header>
 
@@ -632,24 +598,14 @@
             <span class="kt-breadcrumb-main" id="breadcrumb-main">0 · Markets</span>
             <span class="kt-breadcrumb-sub" id="breadcrumb-sub">Overview</span>
           </div>
-          <div class="kt-header-right">
-            <span>Shift · Keyboard Functions</span>
-            <span>Ctrl + F · Search</span>
-          </div>
+          <div class="kt-header-right"></div>
         </div>
 
         <div class="kt-content-body" id="kt-content-body">
-          <!-- Nanti diisi iframe: -->
-          <!-- <iframe src="..." class="kt-iframe" loading="lazy"></iframe> -->
+          <!-- Nanti diisi iframe -->
         </div>
 
         <div class="kt-statusbar">
-          <div class="kt-status-keys">
-            <div class="kt-key">Alt + 0–9 · Main Menu</div>
-            <div class="kt-key">Ctrl + 0–9 · Sub Menu</div>
-            <div class="kt-key">Esc · Back to Markets (0)</div>
-            <div class="kt-key">TAB · Profile</div>
-          </div>
           <div class="kt-status-msg" id="kt-status-msg">READY</div>
         </div>
       </section>
@@ -733,7 +689,6 @@
       function setActiveMenu(menuIndex) {
         activeMenu = menuIndex;
 
-        // top main buttons
         mainButtons.forEach((btn) => {
           btn.classList.toggle(
             "active",
@@ -741,7 +696,6 @@
           );
         });
 
-        // bottom nav 0–4
         bottomItems.forEach((item) => {
           item.classList.toggle(
             "active",
@@ -749,7 +703,6 @@
           );
         });
 
-        // show submenu group
         submenuGroups.forEach((group) => {
           group.classList.toggle(
             "active",
@@ -757,7 +710,6 @@
           );
         });
 
-        // update breadcrumb main
         const activeMain = document.querySelector(
           '.kt-mainmenu-btn[data-menu="' + menuIndex + '"] span:nth-child(2)'
         );
@@ -766,7 +718,6 @@
             menuIndex + " · " + activeMain.textContent.trim();
         }
 
-        // default sub 0 if ada
         const firstSub = document.querySelector(
           '.kt-submenu-btn[data-menu="' + menuIndex + '"][data-sub-index="0"]'
         );
@@ -805,7 +756,6 @@
         }
       }
 
-      // top main menu click
       mainButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
           const idx = Number(btn.getAttribute("data-menu"));
@@ -813,7 +763,6 @@
         });
       });
 
-      // bottom nav click
       bottomItems.forEach((item) => {
         item.addEventListener("click", () => {
           const idx = Number(item.getAttribute("data-menu-bottom"));
@@ -821,7 +770,6 @@
         });
       });
 
-      // submenu click
       submenuButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
           const menuIndex = Number(btn.getAttribute("data-menu"));
@@ -830,7 +778,7 @@
         });
       });
 
-      // keyboard shortcuts tetap jalan
+      // Keyboard shortcuts tetap aktif meski keterangannya dihapus
       window.addEventListener("keydown", (e) => {
         const key = e.key;
 
@@ -862,7 +810,6 @@
         }
       });
 
-      // AI panel toggle
       function toggleAiPanel(forceState) {
         const isOpen = aiPanel.style.display === "flex";
         const nextState =
@@ -878,7 +825,6 @@
         toggleAiPanel(false);
       });
 
-      // initial
       setActiveMenu(0);
       setActiveSub(0, 0);
     })();
