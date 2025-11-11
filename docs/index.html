@@ -1,0 +1,3302 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <title>Kuantara Terminal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+  <style>
+    :root {
+      --amber: #ffbf00;
+      --bg-dark: #050505;
+      --bg-dark-alt: #111111;
+      --bg-panel: #181818;
+      --border-muted: #2a2a2a;
+      --text-primary: #f5f5f5;
+      --text-muted: #9b9b9b;
+      --accent: #ffbf00;
+      --danger: #ff4b4b;
+      --success: #1dd75b;
+    }
+
+    body[data-theme="light"] {
+      --bg-dark: #f5f5f5;
+      --bg-dark-alt: #ffffff;
+      --bg-panel: #ffffff;
+      --border-muted: #d0d0d0;
+      --text-primary: #111111;
+      --text-muted: #555555;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: "Fira Code", monospace;
+      background: radial-gradient(circle at top, #222222 0, var(--bg-dark) 55%);
+      color: var(--text-primary);
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .app-shell {
+      background: var(--bg-dark-alt);
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background: linear-gradient(90deg, #000000, #151515);
+      border-bottom: 1px solid var(--border-muted);
+      flex-shrink: 0;
+    }
+
+    .brand-block { display: flex; align-items: center; gap: 10px; }
+
+    .brand-logo {
+      width: 26px;
+      height: 26px;
+      border-radius: 4px;
+      border: 1px solid var(--amber);
+      background: radial-gradient(circle at 20% 0%, var(--amber), #654200 55%, #201600);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 1px;
+      color: #000;
+      box-shadow: 0 0 12px rgba(255, 191, 0, 0.4);
+      flex-shrink: 0;
+    }
+
+    .brand-text-main {
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--amber);
+    }
+
+    .brand-text-sub {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.16em;
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .status-pill {
+      border-radius: 999px;
+      border: 1px solid var(--border-muted);
+      padding: 3px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.5);
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 6px rgba(29, 215, 91, 0.8);
+      flex-shrink: 0;
+    }
+
+    .world-clock { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .world-clock label {
+      color: var(--text-muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+    }
+
+    .world-clock-sessions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .session-tag {
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 191, 0, 0.06);
+      border: 1px solid rgba(255, 191, 0, 0.25);
+      font-size: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 60px;
+    }
+
+    .session-header-line { display: flex; align-items: center; gap: 4px; }
+
+    .session-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--danger);
+      box-shadow: 0 0 5px rgba(255, 75, 75, 0.9);
+      flex-shrink: 0;
+    }
+
+    .session-status-dot.open {
+      background: var(--success);
+      box-shadow: 0 0 5px rgba(29, 215, 91, 0.9);
+    }
+
+    .session-label { color: var(--amber); text-transform: uppercase; }
+    .session-time  { color: var(--text-muted); font-size: 10px; }
+
+    /* Menu bar */
+    .menu-bar {
+      display: flex;
+      align-items: stretch;
+      gap: 2px;
+      padding: 4px 6px;
+      border-bottom: 1px solid var(--border-muted);
+      background: linear-gradient(180deg, #181818 0, #111111 100%);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: thin;
+      flex-shrink: 0;
+    }
+
+    .menu-bar::-webkit-scrollbar { height: 4px; }
+    .menu-bar::-webkit-scrollbar-thumb { background: #333; }
+
+    .menu-item {
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 4px 10px 3px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+      user-select: none;
+      transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease,
+        box-shadow 0.1s ease;
+      flex-shrink: 0;
+    }
+
+    .menu-item-key   { font-size: 10px; color: var(--amber); opacity: 0.8; }
+    .menu-item-label { text-transform: uppercase; letter-spacing: 0.12em; }
+
+    .menu-item:hover {
+      background: rgba(255, 191, 0, 0.06);
+      border-color: rgba(255, 191, 0, 0.4);
+      color: var(--text-primary);
+    }
+
+    .menu-item.active {
+      background: rgba(255, 191, 0, 0.18);
+      border-color: rgba(255, 191, 0, 0.9);
+      color: #000;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 191, 0, 0.5);
+    }
+
+    .menu-item.active .menu-item-key { color: #000; }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background: radial-gradient(circle at 0 0, #262626 0, #151515 40%, #050505 100%);
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .top-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 12px;
+      font-size: 11px;
+      border-bottom: 1px solid var(--border-muted);
+      background: rgba(0, 0, 0, 0.35);
+      flex-shrink: 0;
+    }
+
+    .top-strip-left {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .tag-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      border: 1px solid var(--border-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .top-strip-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 6px;
+      border: 1px solid var(--border-muted);
+      padding: 3px 8px;
+      min-width: 0;
+    }
+
+    .search-box span { color: var(--text-muted); }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 11px;
+      min-width: 80px;
+      width: 100%;
+    }
+
+    .search-box input::placeholder { color: var(--text-muted); }
+
+    .search-key-hint {
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      border: 1px solid var(--border-muted);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .content-area {
+      padding: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .section {
+      display: none;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .section.active {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--border-muted);
+      padding-bottom: 4px;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--amber);
+    }
+
+    .section-subtitle {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 2.2fr 1.1fr;
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .panel {
+      background: radial-gradient(circle at 10% 0, #272727 0, #181818 40%, #101010 100%);
+      border-radius: 8px;
+      border: 1px solid var(--border-muted);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: hidden;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      flex-shrink: 0;
+    }
+
+    .panel-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .panel-meta {
+      font-size: 10px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      margin-left: 8px;
+    }
+
+    .panel-body {
+      flex: 1 1 auto;
+      overflow: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+      min-height: 0;
+    }
+
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .mini-table th,
+    .mini-table td {
+      padding: 3px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .mini-table th {
+      color: var(--amber);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .chip {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border-muted);
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.4);
+      white-space: nowrap;
+    }
+
+    .chip.accent {
+      border-color: rgba(255, 191, 0, 0.7);
+      color: var(--amber);
+      background: rgba(255, 191, 0, 0.06);
+    }
+
+    .pill-green { color: var(--success); }
+    .pill-red   { color: var(--danger); }
+
+    /* ===== MARKET OVERVIEW GRID ===== */
+    .market-grid {
+      display: grid;
+      grid-template-columns: 2.2fr 1.3fr 1.3fr;
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .market-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .market-col .panel { min-height: 0; }
+
+    /* ===== RISK GAUGE (SVG) ===== */
+    .gauge-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2 / 1;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .gauge-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .gauge-track {
+      fill: none;
+      stroke: #252525;
+      stroke-width: 10;
+      stroke-linecap: round;
+    }
+
+    .gauge-segment-danger,
+    .gauge-segment-neutral,
+    .gauge-segment-success {
+      fill: none;
+      stroke-width: 8;
+      stroke-linecap: round;
+    }
+
+    .gauge-segment-danger  { stroke: var(--danger); }
+    .gauge-segment-neutral { stroke: var(--amber); }
+    .gauge-segment-success { stroke: var(--success); }
+
+    .gauge-needle {
+      stroke: var(--amber);
+      stroke-width: 2;
+      stroke-linecap: round;
+      transform-origin: 100px 100px;
+      transform-box: fill-box;
+      transform: rotate(10deg);
+      filter: drop-shadow(0 0 4px rgba(255,191,0,0.7));
+    }
+
+    .gauge-pivot {
+      fill: #000;
+      stroke: var(--amber);
+      stroke-width: 2;
+    }
+
+    .gauge-center {
+      position: absolute;
+      left: 50%;
+      bottom: 2%;
+      transform: translate(-50%, 40%);
+      width: 70%;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #333, #000);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+      border: 1px solid #262626;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gauge-center span:first-child {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .gauge-center span:last-child {
+      font-size: 13px;
+      color: var(--amber);
+      margin-top: 2px;
+    }
+
+    .gauge-scale {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text-muted);
+    }
+
+    /* Economic calendar table */
+    .calendar-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    .calendar-table th,
+    .calendar-table td {
+      padding: 3px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    .calendar-table th {
+      color: var(--amber);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Catalyst / KMD lists */
+    .bullet-list {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 4px;
+      font-size: 11px;
+    }
+
+    .bullet-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .bullet-dot {
+      margin-top: 4px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--amber);
+      flex-shrink: 0;
+    }
+
+    .bullet-content-main { color: var(--text-primary); }
+    .bullet-meta         { font-size: 10px; color: var(--text-muted); }
+
+    /* Charts generic */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: minmax(0, 1fr);
+      gap: 6px;
+      height: 100%;
+    }
+
+    .chart-placeholder {
+      border-radius: 6px;
+      border: 1px dashed rgba(255, 191, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--text-muted);
+      background: radial-gradient(circle at 10% 0, #262626 0, #111111 60%);
+      text-align: center;
+      padding: 6px;
+    }
+
+    .chart-label {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 2px;
+      color: var(--amber);
+    }
+
+    .news-frame-wrapper { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+    .news-frame          { width: 100%; height: 100%; border: none; display: block; background: transparent; }
+
+    .status-bar {
+      border-top: 1px solid var(--border-muted);
+      padding: 4px 10px;
+      font-size: 10px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.7);
+      flex-shrink: 0;
+    }
+
+    .status-shortcuts { display: flex; gap: 10px; flex-wrap: wrap; }
+    .status-shortcuts span { white-space: nowrap; }
+
+    .status-connection {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .toast-container {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: rgba(6, 6, 6, 0.96);
+      border-radius: 6px;
+      border: 1px solid var(--border-muted);
+      padding: 6px 9px;
+      font-size: 11px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      pointer-events: auto;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75);
+    }
+
+    .toast-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--amber);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+    }
+
+    .modal-overlay.visible { display: flex; }
+
+    .modal {
+      background: var(--bg-panel);
+      border-radius: 10px;
+      border: 1px solid var(--border-muted);
+      padding: 14px 16px;
+      width: 560px;
+      max-width: 95%;
+      max-height: 90vh;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .modal-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--amber);
+    }
+
+    .modal-body {
+      font-size: 11px;
+      color: var(--text-muted);
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    .shortcut-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 2.6fr;
+      gap: 4px 14px;
+      margin-top: 8px;
+    }
+
+    .shortcut-key {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-muted);
+      color: var(--amber);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .shortcut-desc { font-size: 11px; }
+    .modal-close-hint { margin-top: 8px; font-size: 10px; color: var(--text-muted); }
+
+    .ai-launcher-btn {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 191, 0, 0.9);
+      background: radial-gradient(circle at 20% 0%, var(--amber), #604100 60%, #201600);
+      color: #000;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 14px rgba(255, 191, 0, 0.7);
+      cursor: pointer;
+      z-index: 45;
+    }
+
+    .ai-launcher-btn span { pointer-events: none; }
+
+    .ai-panel {
+      position: fixed;
+      right: 18px;
+      bottom: 70px;
+      width: 360px;
+      height: 480px;
+      max-height: calc(100vh - 120px);
+      background: var(--bg-panel);
+      border-radius: 10px;
+      border: 1px solid var(--border-muted);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 44;
+    }
+
+    .ai-panel.visible { display: flex; }
+
+    .ai-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border-muted);
+      background: #090909;
+      flex-shrink: 0;
+    }
+
+    .ai-panel-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--amber);
+    }
+
+    .ai-panel-meta { font-size: 10px; color: var(--text-muted); }
+
+    .ai-panel-close {
+      cursor: pointer;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-muted);
+      color: var(--text-muted);
+    }
+
+    .ai-panel-body { flex: 1 1 auto; min-height: 0; border-top: 1px solid #000; }
+    .ai-panel-iframe { width: 100%; height: 100%; border: none; display: block; background: #000; }
+
+    /* ===== MACRO PAGE LAYOUT ===== */
+    .macro-grid {
+      display: grid;
+      grid-template-columns: 2.2fr 1.5fr;
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .macro-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .macro-col .panel { min-height: 0; }
+
+    .macro-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    .macro-table th,
+    .macro-table td {
+      padding: 3px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .macro-table th {
+      color: var(--amber);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .macro-table tbody tr:nth-child(odd) {
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .macro-tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .macro-tag {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border-muted);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .macro-tag.accent {
+      border-color: rgba(255,191,0,0.7);
+      color: var(--amber);
+    }
+
+    .macro-us-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .macro-us-card {
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.04);
+      padding: 6px;
+      background: radial-gradient(circle at 10% 0, #262626 0, #141414 60%);
+      font-size: 10px;
+    }
+
+    .macro-us-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--amber);
+      margin-bottom: 3px;
+    }
+
+    .macro-us-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    .macro-us-label { color: var(--text-muted); }
+    .macro-us-value { color: var(--text-primary); }
+
+    .macro-us-value.green { color: var(--success); }
+    .macro-us-value.red   { color: var(--danger); }
+
+    .macro-chart-grid {
+      display: grid;
+      grid-template-rows: repeat(4, minmax(60px, 1fr));
+      gap: 6px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .macro-chart-placeholder {
+      border-radius: 6px;
+      border: 1px solid rgba(255, 191, 0, 0.18);
+      background: radial-gradient(circle at 10% 0, #232323 0, #111111 70%);
+      padding: 6px 8px;
+      font-size: 9px;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .macro-chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .macro-chart-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--amber);
+    }
+
+    .macro-chart-note { font-size: 9px; color: var(--text-muted); }
+
+    .macro-chart-canvas {
+      flex: 1;
+      border-radius: 4px;
+      border: 1px dashed rgba(255,255,255,0.08);
+      margin-top: 2px;
+      background-image: linear-gradient(
+          rgba(255,255,255,0.04) 1px,
+          transparent 1px
+        );
+      background-size: 100% 12px;
+    }
+
+    /* ===== GEO-ECONOMIC LAYOUT (UPDATED, 4 PANEL SAMA BESAR) ===== */
+    .geo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: minmax(180px, 1fr);
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .geo-grid .panel {
+      min-height: 0;
+    }
+
+    .geo-iframe-shell {
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      border: 1px dashed rgba(255, 191, 0, 0.45);
+      background: radial-gradient(circle at 10% 0, #252525 0, #111111 65%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 6px;
+    }
+
+    /* ===== GLOBAL MARKET FLOW GRID (UPDATED) ===== */
+    .flow-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1.4fr 1.2fr;      /* kiri, tengah, kanan */
+      grid-template-rows: repeat(3, minmax(0, 1fr)); /* 3 baris sama tinggi */
+      grid-template-areas:
+        "p1 p3 p6"
+        "p2 p4 p7"
+        "p2 p5 p7";
+      gap: 8px;
+      flex: 1 1 auto;   /* isi tinggi section, hilangkan space kosong bawah */
+      min-height: 0;
+    }
+
+    .flow-panel-1 { grid-area: p1; }
+    .flow-panel-2 { grid-area: p2; }
+    .flow-panel-3 { grid-area: p3; }
+    .flow-panel-4 { grid-area: p4; }
+    .flow-panel-5 { grid-area: p5; }
+    .flow-panel-6 { grid-area: p6; }
+    .flow-panel-7 { grid-area: p7; }
+
+    .flow-grid .panel { min-height: 0; }
+
+    .flow-chart-slot {
+      width: 100%;
+      height: 100%;
+      border-radius: 4px;
+      border: 1px dashed rgba(255, 255, 255, 0.14);
+      background: radial-gradient(circle at 10% 0, #262626 0, #111111 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 10px;
+      color: var(--text-muted);
+      padding: 6px;
+    }
+
+    .flow-chart-note {
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Tabs / modes khusus GMF */
+    .gmf-tabs {
+      display: inline-flex;
+      gap: 4px;
+      border-radius: 999px;
+      padding: 2px;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border-muted);
+      flex-shrink: 0;
+    }
+
+    .gmf-tab {
+      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: transparent;
+    }
+
+    .gmf-tab.active {
+      background: rgba(255,191,0,0.14);
+      border-color: rgba(255,191,0,0.9);
+      color: var(--amber);
+    }
+
+    .gmf-mode {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .gmf-mode.active {
+      display: flex;
+    }
+
+    .gmf-mode-header {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .gmf-quad-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Charts fullscreen behaviour */
+    .charts-fullscreen .content-area { padding: 0; }
+    .charts-fullscreen .section#section-charts .panel {
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .grid-2     { grid-template-columns: 1fr; }
+      .panel      { min-height: 180px; }
+      .market-grid{ grid-template-columns: 1fr; }
+      .macro-grid { grid-template-columns: 1fr; }
+      .geo-grid   { grid-template-columns: 1fr; grid-auto-rows: minmax(160px, 1fr); }
+      .flow-grid  {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(7, minmax(160px, 1fr));
+        grid-template-areas:
+          "p1"
+          "p2"
+          "p3"
+          "p4"
+          "p5"
+          "p6"
+          "p7";
+      }
+    }
+
+    @media (max-width: 768px) {
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 8px 10px;
+      }
+
+      .brand-text-main { font-size: 14px; }
+      .brand-text-sub  { font-size: 9px; }
+
+      .top-bar-right {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .world-clock { width: 100%; justify-content: flex-end; }
+      .world-clock label { display: none; }
+
+      .world-clock-sessions { flex-wrap: wrap; gap: 4px; }
+      .session-tag {
+        min-width: auto;
+        padding: 2px 4px;
+        font-size: 9px;
+      }
+
+      .menu-bar { padding-inline: 4px; }
+      .menu-item { padding-inline: 8px; font-size: 10px; }
+
+      .top-strip {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 6px 8px;
+      }
+
+      .content-area { padding: 6px; }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+      }
+
+      .section-title    { font-size: 12px; letter-spacing: 0.14em; }
+      .section-subtitle { font-size: 9px; text-align: left; }
+
+      .panel { border-radius: 6px; padding: 6px; }
+
+      .mini-table th,
+      .mini-table td {
+        font-size: 10px;
+        padding: 2px 3px;
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(2, minmax(140px, 1fr));
+      }
+
+      .status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 4px 8px 6px;
+      }
+
+      .status-shortcuts { font-size: 9px; }
+      .status-connection{ font-size: 9px; }
+
+      .toast { font-size: 10px; }
+
+      .ai-panel {
+        right: 8px;
+        left: 8px;
+        bottom: 70px;
+        width: auto;
+        height: 70vh;
+        max-height: 70vh;
+      }
+
+      .ai-launcher-btn {
+        right: 12px;
+        bottom: 12px;
+      }
+
+      .modal {
+        width: 95%;
+        padding: 10px 12px;
+      }
+
+      .shortcut-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .brand-text-main { font-size: 13px; }
+
+      .brand-logo {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+      }
+
+      .menu-item-key { display: none; }
+      .menu-item-label { letter-spacing: 0.08em; }
+
+      .tag-pill {
+        font-size: 9px;
+        letter-spacing: 0.12em;
+      }
+
+      .search-box { width: 100%; }
+
+      .section-title    { font-size: 11px; }
+      .section-subtitle { font-size: 8.5px; }
+
+      .panel { min-height: 160px; }
+
+      .status-shortcuts span:nth-child(n+5) { display: none; }
+    }
+  </style>
+<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.immersive-translate-attach-loading::after {
+  content: " ";
+
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-2000%, -50%);
+  z-index: 100;
+}
+
+.immersive-translate-loading-spinner {
+  vertical-align: middle !important;
+  width: 10px !important;
+  height: 10px !important;
+  display: inline-block !important;
+  margin: 0 4px !important;
+  border: 2px rgba(221, 244, 255, 0.6) solid !important;
+  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+}
+
+@-webkit-keyframes immersive-translate-loading-animation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@keyframes immersive-translate-loading-animation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.immersive-translate-input-loading {
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+}
+
+@keyframes immersiveTranslateShadowRolling {
+  0% {
+    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  12% {
+    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  25% {
+    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  36% {
+    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
+      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  50% {
+    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
+      110px 0 var(--loading-color), 100px 0 var(--loading-color);
+  }
+
+  62% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
+      120px 0 var(--loading-color), 110px 0 var(--loading-color);
+  }
+
+  75% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      130px 0 var(--loading-color), 120px 0 var(--loading-color);
+  }
+
+  87% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
+  }
+
+  100% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.immersive-translate-toast {
+  display: flex;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  right: 0;
+  top: 1%;
+  width: fit-content;
+  padding: 12px 20px;
+  margin: auto;
+  overflow: auto;
+  background: #fef6f9;
+  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
+  font-size: 15px;
+  border-radius: 8px;
+  color: #333;
+}
+
+.immersive-translate-toast-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.immersive-translate-toast-hidden {
+  margin: 0 20px 0 72px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.immersive-translate-toast-close {
+  color: #666666;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-toast {
+    top: 0;
+    padding: 12px 0px 0 10px;
+  }
+  .immersive-translate-toast-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .immersive-translate-toast-hidden {
+    margin: 10px auto;
+  }
+}
+
+.immersive-translate-dialog {
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  display: flex;
+  width: 300px;
+  flex-direction: column;
+  align-items: center;
+  font-size: 15px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: fit-content;
+  border-radius: 20px;
+  background-color: #fff;
+}
+
+.immersive-translate-modal {
+  display: none;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  font-size: 15px;
+}
+
+.immersive-translate-modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 40px 24px 24px;
+  border-radius: 12px;
+  width: 350px;
+  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
+    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  position: relative;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-content {
+    margin: 25% auto !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .immersive-translate-modal-content {
+    width: 80vw !important;
+    margin: 20vh auto !important;
+    padding: 20px 12px 12px !important;
+  }
+
+  .immersive-translate-modal-title {
+    font-size: 14px !important;
+  }
+
+  .immersive-translate-modal-body {
+    font-size: 13px !important;
+    max-height: 60vh !important;
+  }
+
+  .immersive-translate-btn {
+    font-size: 13px !important;
+    padding: 8px 16px !important;
+    margin: 0 4px !important;
+  }
+
+  .immersive-translate-modal-footer {
+    gap: 6px !important;
+    margin-top: 16px !important;
+  }
+}
+
+.immersive-translate-modal .immersive-translate-modal-content-in-input {
+  max-width: 500px;
+}
+.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
+  text-align: left;
+  max-height: unset;
+}
+
+.immersive-translate-modal-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.immersive-translate-modal-body {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+  margin-top: 24px;
+  word-break: break-all;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-body {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+}
+
+.immersive-translate-close {
+  color: #666666;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.immersive-translate-close:hover,
+.immersive-translate-close:focus {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.immersive-translate-modal-footer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.immersive-translate-btn {
+  width: fit-content;
+  color: #fff;
+  background-color: #ea4c89;
+  border: none;
+  font-size: 14px;
+  margin: 0 8px;
+  padding: 9px 30px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.immersive-translate-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.immersive-translate-btn:hover {
+  background-color: #f082ac;
+}
+.immersive-translate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.immersive-translate-btn:disabled:hover {
+  background-color: #ea4c89;
+}
+
+.immersive-translate-link-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: none;
+  cursor: pointer;
+  height: 30px;
+  line-height: 30px;
+}
+
+.immersive-translate-cancel-btn {
+  /* gray color */
+  background-color: rgb(89, 107, 120);
+}
+
+.immersive-translate-cancel-btn:hover {
+  background-color: hsl(205, 20%, 32%);
+}
+
+.immersive-translate-action-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: 1px solid #ea4c89;
+}
+
+.immersive-translate-btn svg {
+  margin-right: 5px;
+}
+
+.immersive-translate-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-primary-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-modal input[type="radio"] {
+  margin: 0 6px;
+  cursor: pointer;
+}
+
+.immersive-translate-modal label {
+  cursor: pointer;
+}
+
+.immersive-translate-close-action {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  cursor: pointer;
+}
+
+.imt-image-status {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 16px !important;
+}
+.imt-image-status img,
+.imt-image-status svg,
+.imt-img-loading {
+  width: 28px !important;
+  height: 28px !important;
+  margin: 0 0 8px 0 !important;
+  min-height: 28px !important;
+  min-width: 28px !important;
+  position: relative !important;
+}
+.imt-img-loading {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
+  background-size: 28px 28px;
+  animation: image-loading-rotate 1s linear infinite !important;
+}
+
+.imt-image-status span {
+  color: var(--bg-2, #fff) !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+  font-weight: 500 !important;
+  font-family: "PingFang SC", Arial, sans-serif !important;
+}
+
+.imt-primary-button {
+  display: flex;
+  padding: 12px 80px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: #ea4c89;
+  color: #fff;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  border: none;
+  cursor: pointer;
+}
+
+.imt-retry-text {
+  color: #999;
+  text-align: center;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  cursor: pointer;
+}
+
+.imt-action-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.imt-modal-content-text {
+  text-align: left;
+  color: #333;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+@keyframes image-loading-rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.imt-linear-gradient-text {
+  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.imt-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imt-linear-black-btn {
+  border-radius: 50px;
+  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
+  height: 48px;
+  width: 100%;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: center;
+}
+</style></head>
+<body data-theme="dark">
+  <div class="app-shell" id="app">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="brand-block">
+        <div class="brand-logo">KT</div>
+        <div>
+          <div class="brand-text-main">Kuantara Terminal</div>
+          <div class="brand-text-sub">Turning Chaos Into Clarity</div>
+        </div>
+      </div>
+      <div class="top-bar-right">
+        <div class="status-pill">
+          <div class="status-dot"></div>
+          <div>LIVE FEED</div>
+        </div>
+        <div class="world-clock">
+          <label>Market Session</label>
+          <div class="world-clock-sessions" id="worldClock"><div class="session-tag">
+          <div class="session-header-line">
+            <span class="session-status-dot" data-label="NY"></span>
+            <span class="session-label">NY</span>
+          </div>
+          <div class="session-time" data-tz="America/New_York" data-label="NY">06:39</div>
+        </div><div class="session-tag">
+          <div class="session-header-line">
+            <span class="session-status-dot open" data-label="LDN"></span>
+            <span class="session-label">LDN</span>
+          </div>
+          <div class="session-time" data-tz="Europe/London" data-label="LDN">11:39</div>
+        </div><div class="session-tag">
+          <div class="session-header-line">
+            <span class="session-status-dot" data-label="TKY"></span>
+            <span class="session-label">TKY</span>
+          </div>
+          <div class="session-time" data-tz="Asia/Tokyo" data-label="TKY">20:39</div>
+        </div><div class="session-tag">
+          <div class="session-header-line">
+            <span class="session-status-dot" data-label="SYD"></span>
+            <span class="session-label">SYD</span>
+          </div>
+          <div class="session-time" data-tz="Australia/Sydney" data-label="SYD">22:39</div>
+        </div><div class="session-tag">
+          <div class="session-header-line">
+            <span class="session-status-dot" data-label="JKT"></span>
+            <span class="session-label">JKT</span>
+          </div>
+          <div class="session-time" data-tz="Asia/Jakarta" data-label="JKT">18:39</div>
+        </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu bar -->
+    <div class="menu-bar" id="menuBar">
+      <div class="menu-item active" data-section="section-market-overview">
+        <span class="menu-item-key">Alt+0</span>
+        <span class="menu-item-label">Market Overview</span>
+      </div>
+      <div class="menu-item" data-section="section-charts">
+        <span class="menu-item-key">Alt+1</span>
+        <span class="menu-item-label">Charts</span>
+      </div>
+      <div class="menu-item" data-section="section-macro">
+        <span class="menu-item-key">Alt+2</span>
+        <span class="menu-item-label">Macroeconomic Indicators</span>
+      </div>
+      <div class="menu-item" data-section="section-geo">
+        <span class="menu-item-key">Alt+3</span>
+        <span class="menu-item-label">Geo-Economic Indicators</span>
+      </div>
+      <div class="menu-item" data-section="section-snapshot">
+        <span class="menu-item-key">Alt+4</span>
+        <span class="menu-item-label">Global Market Flow</span>
+      </div>
+      <div class="menu-item" data-section="section-metrics">
+        <span class="menu-item-key">Alt+5</span>
+        <span class="menu-item-label">Market Metrics &amp; Sentiment</span>
+      </div>
+      <div class="menu-item" data-section="section-news">
+        <span class="menu-item-key">Alt+6</span>
+        <span class="menu-item-label">Market News &amp; Catalyst</span>
+      </div>
+      <div class="menu-item" data-section="section-research">
+        <span class="menu-item-key">Alt+7</span>
+        <span class="menu-item-label">Articles &amp; Market Research</span>
+      </div>
+      <div class="menu-item" data-section="section-quant">
+        <span class="menu-item-key">Alt+8</span>
+        <span class="menu-item-label">Quantitative &amp; Technical Tools</span>
+      </div>
+      <div class="menu-item" data-section="section-screener">
+        <span class="menu-item-key">Alt+9</span>
+        <span class="menu-item-label">Stocks Screener</span>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+      
+
+      <div class="content-area" id="contentArea">
+        <!-- ===== MARKET OVERVIEW ===== -->
+        <div class="section active" id="section-market-overview">
+          <div class="section-header">
+            <div class="section-title">Market Overview</div>
+            <div class="section-subtitle">
+              Lintas aset: saham, FX, komoditas, obligasi, kripto.
+            </div>
+          </div>
+
+          <div class="market-grid">
+            <!-- LEFT: FULL MARKET SNAPSHOT -->
+            <div class="market-col">
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Cross-Asset Market Snapshot</div>
+                  <div class="panel-meta">Global indices · FX · Commodities · Rates · Crypto</div>
+                </div>
+                <div class="panel-body">
+                  <table class="mini-table">
+                    <thead>
+                      <tr>
+                        <th>Asset</th>
+                        <th>Ticker</th>
+                        <th>Last</th>
+                        <th>Δ D</th>
+                        <th>%D</th>
+                        <th>YTD%</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>S&amp;P 500</td>
+                        <td>SPX</td>
+                        <td>5,120</td>
+                        <td class="pill-green">+18</td>
+                        <td class="pill-green">+0.35%</td>
+                        <td class="pill-green">+14.2%</td>
+                      </tr>
+                      <tr>
+                        <td>Nasdaq 100</td>
+                        <td>NDX</td>
+                        <td>18,920</td>
+                        <td class="pill-green">+72</td>
+                        <td class="pill-green">+0.38%</td>
+                        <td class="pill-green">+19.8%</td>
+                      </tr>
+                      <tr>
+                        <td>Euro Stoxx 50</td>
+                        <td>STOXX50E</td>
+                        <td>4,280</td>
+                        <td class="pill-red">-12</td>
+                        <td class="pill-red">-0.28%</td>
+                        <td class="pill-green">+7.3%</td>
+                      </tr>
+                      <tr>
+                        <td>DXY Dollar Index</td>
+                        <td>DXY</td>
+                        <td>104.2</td>
+                        <td class="pill-red">-0.4</td>
+                        <td class="pill-red">-0.36%</td>
+                        <td>+1.1%</td>
+                      </tr>
+                      <tr>
+                        <td>US 10Y Yield</td>
+                        <td>US10Y</td>
+                        <td>4.18%</td>
+                        <td class="pill-green">+3bp</td>
+                        <td class="pill-green">+0.07%</td>
+                        <td>+32bp</td>
+                      </tr>
+                      <tr>
+                        <td>Gold</td>
+                        <td>XAUUSD</td>
+                        <td>2,345</td>
+                        <td class="pill-red">-12</td>
+                        <td class="pill-red">-0.51%</td>
+                        <td class="pill-green">+9.4%</td>
+                      </tr>
+                      <tr>
+                        <td>Brent Crude</td>
+                        <td>BRN</td>
+                        <td>83.40</td>
+                        <td class="pill-green">+0.82</td>
+                        <td class="pill-green">+0.99%</td>
+                        <td class="pill-green">+4.7%</td>
+                      </tr>
+                      <tr>
+                        <td>Bitcoin</td>
+                        <td>BTCUSD</td>
+                        <td>63,500</td>
+                        <td class="pill-red">-850</td>
+                        <td class="pill-red">-1.32%</td>
+                        <td class="pill-green">+42.0%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">Universe: 100+ aset</div>
+                    <div class="chip">Filter: Global index</div>
+                    <div class="chip">Filter: FX major &amp; commodity</div>
+                    <div class="chip">Filter: Rates &amp; crypto</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CENTER: GAUGE + ECONOMIC CALENDAR -->
+            <div class="market-col">
+              <!-- Risk On / Risk Off Gauge -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Risk Regime Gauge</div>
+                  <div class="panel-meta">Equity · Credit · FX · Volatility composite</div>
+                </div>
+                <div class="panel-body">
+                  <div class="gauge-wrapper">
+                    <svg class="gauge-svg" viewBox="0 0 200 110">
+                      <path class="gauge-track" d="M 20 100 A 80 80 0 0 1 180 100"></path>
+                      <path class="gauge-segment-danger" d="M 20 100 A 80 80 0 0 1 80 28"></path>
+                      <path class="gauge-segment-neutral" d="M 80 28 A 80 80 0 0 1 120 28"></path>
+                      <path class="gauge-segment-success" d="M 120 28 A 80 80 0 0 1 180 100"></path>
+                      <line id="riskNeedle" class="gauge-needle" x1="100" y1="100" x2="100" y2="26" style="transform: rotate(17.5deg);"></line>
+                      <circle class="gauge-pivot" cx="100" cy="100" r="5"></circle>
+<!-- Code injected by live-server -->
+<script>
+  //   <-- For SVG support
+  if ('WebSocket' in window) {
+    (function () {
+      function refreshCSS() {
+        var sheets = [].slice.call(document.getElementsByTagName("link"));
+        var head = document.getElementsByTagName("head")[0];
+        for (var i = 0; i < sheets.length; ++i) {
+          var elem = sheets[i];
+          var parent = elem.parentElement || head;
+          parent.removeChild(elem);
+          var rel = elem.rel;
+          if (elem.href && (typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet")) {
+            var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+            elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+          }
+          parent.appendChild(elem);
+        }
+      }
+      var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+      var address = protocol + window.location.host + window.location.pathname + '/ws';
+      var socket = new WebSocket(address);
+      socket.onmessage = function (msg) {
+        if (msg.data == 'reload') window.location.reload();
+        else if (msg.data == 'refreshcss') refreshCSS();
+      };
+      if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+        console.log('Live reload enabled.');
+        sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+      }
+    })();
+  }
+  else {
+    console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+  }
+  // 
+</script>
+</svg>
+
+                    <div class="gauge-center">
+                      <span>Current regime</span>
+                      <span id="riskLabel">Mild Risk-On</span>
+                    </div>
+                  </div>
+
+                  <div class="gauge-scale">
+                    <span>Max Risk-Off</span>
+                    <span>Neutral</span>
+                    <span>Max Risk-On</span>
+                  </div>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">Input: SPX, HYG, VIX, DXY</div>
+                    <div class="chip">Bias: &lt; 0 = Risk-Off</div>
+                    <div class="chip">Bias: &gt; 0 = Risk-On</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Economic Calendar -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Economic Calendar · Next 24–72h</div>
+                  <div class="panel-meta">High impact only</div>
+                </div>
+                <div class="panel-body">
+                  <table class="calendar-table">
+                    <thead>
+                      <tr>
+                        <th>Time</th>
+                        <th>Country</th>
+                        <th>Event</th>
+                        <th>Imp</th>
+                        <th>Act</th>
+                        <th>Fcst</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>21:00</td>
+                        <td>US</td>
+                        <td>ISM Services PMI</td>
+                        <td>★★★</td>
+                        <td>—</td>
+                        <td>52.1</td>
+                      </tr>
+                      <tr>
+                        <td>14:30</td>
+                        <td>UK</td>
+                        <td>BoE Rate Decision</td>
+                        <td>★★★</td>
+                        <td>—</td>
+                        <td>5.00%</td>
+                      </tr>
+                      <tr>
+                        <td>11:00</td>
+                        <td>EU</td>
+                        <td>Eurozone CPI (YoY)</td>
+                        <td>★★★</td>
+                        <td>—</td>
+                        <td>2.5%</td>
+                      </tr>
+                      <tr>
+                        <td>07:30</td>
+                        <td>AU</td>
+                        <td>RBA Gov Speech</td>
+                        <td>★★</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>
+                      <tr>
+                        <td>Tomorrow</td>
+                        <td>US</td>
+                        <td>Non-Farm Payrolls</td>
+                        <td>★★★</td>
+                        <td>—</td>
+                        <td>185k</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">Filter: High impact</div>
+                    <div class="chip">Timezone: WIB</div>
+                    <div class="chip">Source: Kuantara / Fastbull / MQL5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT: CATALYST + KEY MARKET DRIVERS -->
+            <div class="market-col">
+              <!-- Catalyst -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Market Catalyst</div>
+                  <div class="panel-meta">Top headline &amp; event risk</div>
+                </div>
+                <div class="panel-body">
+                  <ul class="bullet-list">
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          Fed signalling slower pace of future cuts; real yields stay elevated.
+                        </div>
+                        <div class="bullet-meta">
+                          Rates · USD · Growth vs Value · Last 12h
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          Tech mega-cap earnings beat, but guidance mixed — volatility clustered in Nasdaq.
+                        </div>
+                        <div class="bullet-meta">
+                          Equities · Earnings season · AI theme
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          Middle East supply headline keeps crude in higher range; energy names outperform.
+                        </div>
+                        <div class="bullet-meta">
+                          Commodities · Energy · Inflation expectations
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          CN credit impulse stabilising, but property data masih rapuh — EM/Asia FX mixed.
+                        </div>
+                        <div class="bullet-meta">
+                          China · EM FX · Global growth
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">Daily Top 3–5 catalyst</div>
+                    <div class="chip">Sumber: Newswire + Kuantara Notes</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Key Market Drivers -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Key Market Drivers</div>
+                  <div class="panel-meta">Macro regime &amp; positioning</div>
+                </div>
+                <div class="panel-body">
+                  <ul class="bullet-list">
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          US Growth vs Inflation: soft-landing baseline, tapi downside risk dari labour cooling.
+                        </div>
+                        <div class="bullet-meta">
+                          Data focus: NFP, ISM, core PCE
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          Rates &amp; Curve: 2s10s masih inverted, steepening trades mulai crowded.
+                        </div>
+                        <div class="bullet-meta">
+                          Trade ideas: curve steepener, growth vs defensives
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          USD &amp; Liquidity: DXY sedikit melemah seiring risk appetite, tapi funding stress belum hilang.
+                        </div>
+                        <div class="bullet-meta">
+                          Cross-asset: EM FX, gold, crypto beta
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="bullet-dot"></div>
+                      <div>
+                        <div class="bullet-content-main">
+                          Positioning &amp; Sentiment: equity sentiment optimis, hedging melalui vol masih rendah.
+                        </div>
+                        <div class="bullet-meta">
+                          Signal: asymmetry jika ada shock negatif
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">Timeframe: tactical 1–4 minggu</div>
+                    <div class="chip">Mix: data hard, survey, COT</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> <!-- end market-grid -->
+        </div>
+
+        <!-- ===== CHARTS (placeholder) ===== -->
+        <div class="section" id="section-charts">
+          <div class="section-header">
+            <div class="section-title">Charts</div>
+            <div class="section-subtitle">
+              Area untuk multi-chart manual / workspace teknikal.
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Chart 1</div>
+                <div class="panel-meta">Placeholder</div>
+              </div>
+              <div class="panel-body">
+                <div class="chart-placeholder">
+                  <div class="chart-label">Chart window A</div>
+                  Area ini bisa di-embed TradingView / custom chart engine.
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Chart 2</div>
+                <div class="panel-meta">Placeholder</div>
+              </div>
+              <div class="panel-body">
+                <div class="chart-placeholder">
+                  <div class="chart-label">Chart window B</div>
+                  Jendela chart kedua (pair lain / timeframe lain).
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== MACROECONOMIC INDICATORS ===== -->
+        <div class="section" id="section-macro">
+          <div class="section-header">
+            <div class="section-title">Macroeconomic Indicators</div>
+            <div class="section-subtitle">
+              GDP, inflasi, suku bunga, PMI, neraca dagang, dsb.
+            </div>
+          </div>
+
+          <div class="macro-grid">
+            <!-- LEFT: GLOBAL MACRO DB -->
+            <div class="macro-col">
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Global Macroeconomic Database</div>
+                  <div class="panel-meta">75 negara · 100+ indikator tiap negara</div>
+                </div>
+                <div class="panel-body">
+                  <table class="macro-table">
+                    <thead>
+                      <tr>
+                        <th>Country</th>
+                        <th>Region</th>
+                        <th>Real GDP YoY</th>
+                        <th>CPI YoY</th>
+                        <th>Policy Rate</th>
+                        <th>PMI</th>
+                        <th>Unempl.</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>United States</td>
+                        <td>DM · Americas</td>
+                        <td>2.1%</td>
+                        <td>2.7%</td>
+                        <td>5.25%</td>
+                        <td>52.4</td>
+                        <td>3.9%</td>
+                      </tr>
+                      <tr>
+                        <td>Euro Area</td>
+                        <td>DM · Europe</td>
+                        <td>0.8%</td>
+                        <td>2.4%</td>
+                        <td>3.75%</td>
+                        <td>49.8</td>
+                        <td>6.5%</td>
+                      </tr>
+                      <tr>
+                        <td>Japan</td>
+                        <td>DM · Asia</td>
+                        <td>1.0%</td>
+                        <td>2.0%</td>
+                        <td>0.10%</td>
+                        <td>50.6</td>
+                        <td>2.5%</td>
+                      </tr>
+                      <tr>
+                        <td>China</td>
+                        <td>EM · Asia</td>
+                        <td>4.6%</td>
+                        <td>0.8%</td>
+                        <td>3.45%</td>
+                        <td>51.2</td>
+                        <td>5.1%</td>
+                      </tr>
+                      <tr>
+                        <td>India</td>
+                        <td>EM · Asia</td>
+                        <td>6.5%</td>
+                        <td>4.3%</td>
+                        <td>6.50%</td>
+                        <td>55.0</td>
+                        <td>7.2%</td>
+                      </tr>
+                      <tr>
+                        <td>Indonesia</td>
+                        <td>EM · Asia</td>
+                        <td>5.1%</td>
+                        <td>2.9%</td>
+                        <td>6.00%</td>
+                        <td>51.8</td>
+                        <td>5.8%</td>
+                      </tr>
+                      <tr>
+                        <td>Brazil</td>
+                        <td>EM · LatAm</td>
+                        <td>1.8%</td>
+                        <td>4.0%</td>
+                        <td>10.75%</td>
+                        <td>49.1</td>
+                        <td>7.5%</td>
+                      </tr>
+                      <tr>
+                        <td>United Kingdom</td>
+                        <td>DM · Europe</td>
+                        <td>0.6%</td>
+                        <td>2.9%</td>
+                        <td>4.50%</td>
+                        <td>49.5</td>
+                        <td>4.4%</td>
+                      </tr>
+                      <tr>
+                        <td>Germany</td>
+                        <td>DM · Europe</td>
+                        <td>0.3%</td>
+                        <td>2.2%</td>
+                        <td>3.75%</td>
+                        <td>47.9</td>
+                        <td>5.9%</td>
+                      </tr>
+                      <tr>
+                        <td>South Africa</td>
+                        <td>EM · Africa</td>
+                        <td>1.2%</td>
+                        <td>5.3%</td>
+                        <td>8.25%</td>
+                        <td>49.0</td>
+                        <td>32.0%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="macro-tag-row">
+                    <div class="macro-tag accent">Universe: 75 negara</div>
+                    <div class="macro-tag">Freq: Q / M</div>
+                    <div class="macro-tag">FX: Lokal / USD</div>
+                    <div class="macro-tag">Panel: Growth · Inflation · Labour · Rates · External</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT: US MACRO + COMPARISON CHARTS -->
+            <div class="macro-col">
+              <!-- US MACRO -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">US Macroeconomics Dashboard</div>
+                  <div class="panel-meta">Focus: growth · inflation · labour · Fed</div>
+                </div>
+                <div class="panel-body">
+                  <div class="macro-us-grid">
+                    <div class="macro-us-card">
+                      <div class="macro-us-title">Growth &amp; Inflation</div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">Real GDP (YoY)</span>
+                        <span class="macro-us-value">2.1%</span>
+                      </div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">GDP Nowcast (q/q saar)</span>
+                        <span class="macro-us-value green">2.4%</span>
+                      </div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">Core PCE (YoY)</span>
+                        <span class="macro-us-value">2.8%</span>
+                      </div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">Headline CPI (YoY)</span>
+                        <span class="macro-us-value">2.7%</span>
+                      </div>
+                    </div>
+
+                    <div class="macro-us-card">
+                      <div class="macro-us-title">Labour &amp; Fed Policy</div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">Unemployment rate</span>
+                        <span class="macro-us-value">3.9%</span>
+                      </div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">NFP 3M avg</span>
+                        <span class="macro-us-value">205k</span>
+                      </div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">Fed Funds upper</span>
+                        <span class="macro-us-value red">5.50%</span>
+                      </div>
+                      <div class="macro-us-item">
+                        <span class="macro-us-label">Market pricing (12m)</span>
+                        <span class="macro-us-value">-75bp cuts</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">Source: BEA, BLS, Fed, ISM</div>
+                    <div class="chip">Horizon: last 10–20 tahun</div>
+                    <div class="chip">Toggle: Historical / Forward</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MACRO COMPARISON CHARTS -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="panel-title">Macro Comparison Dashboard</div>
+                  <div class="panel-meta">Multi-country panel charts</div>
+                </div>
+                <div class="panel-body">
+                  <div class="macro-chart-grid">
+                    <div class="macro-chart-placeholder">
+                      <div class="macro-chart-header">
+                        <div class="macro-chart-title">Real GDP Growth (%)</div>
+                        <div class="macro-chart-note">USA · GBR · JPN · CHE · AUS · NZL · CAN · DEU · FRA</div>
+                      </div>
+                      <div class="macro-chart-canvas"></div>
+                    </div>
+
+                    <div class="macro-chart-placeholder">
+                      <div class="macro-chart-header">
+                        <div class="macro-chart-title">Inflation (CPI, % YoY)</div>
+                        <div class="macro-chart-note">Core vs headline · DM vs EM</div>
+                      </div>
+                      <div class="macro-chart-canvas"></div>
+                    </div>
+
+                    <div class="macro-chart-placeholder">
+                      <div class="macro-chart-header">
+                        <div class="macro-chart-title">Unemployment (%)</div>
+                        <div class="macro-chart-note">Labour slack &amp; cyclical risk</div>
+                      </div>
+                      <div class="macro-chart-canvas"></div>
+                    </div>
+
+                    <div class="macro-chart-placeholder">
+                      <div class="macro-chart-header">
+                        <div class="macro-chart-title">Central Bank Policy Rate (%)</div>
+                        <div class="macro-chart-note">Fed · ECB · BoE · BoJ · RBA · BoC · SNB</div>
+                      </div>
+                      <div class="macro-chart-canvas"></div>
+                    </div>
+                  </div>
+
+                  <div class="chip-row" style="margin-top:8px;">
+                    <div class="chip accent">View: Historical only / With forecast</div>
+                    <div class="chip">Timeframe: 2005–2025</div>
+                    <div class="chip">Overlay: recession bands, policy shocks</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> <!-- end macro-grid -->
+        </div>
+
+        <!-- ===== GEO-ECONOMIC INDICATORS (UPDATED) ===== -->
+        <div class="section" id="section-geo">
+          <div class="section-header">
+            <div class="section-title">Geo-Economic Indicators</div>
+            <div class="section-subtitle">
+              Peta energi, perdagangan, demografi, jalur maritim.
+            </div>
+          </div>
+
+          <div class="geo-grid">
+            <!-- Panel 1: Global map -->
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Global Geo-Economic Map</div>
+                <div class="panel-meta">Energy · Trade · Shipping lanes · Demographics</div>
+              </div>
+              <div class="panel-body">
+                <div class="geo-iframe-shell">
+                  World / regional geoeconomic map iframe placeholder
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 2: Energy & Commodity -->
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Energy &amp; Commodity Flows</div>
+                <div class="panel-meta">Oil · Gas · Metals · Grid</div>
+              </div>
+              <div class="panel-body">
+                <div class="geo-iframe-shell">
+                  Energy flows / pipeline map iframe placeholder
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 3: Trade & Shipping -->
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Trade &amp; Shipping Routes</div>
+                <div class="panel-meta">Ports · Chokepoints · Freight</div>
+              </div>
+              <div class="panel-body">
+                <div class="geo-iframe-shell">
+                  Trade &amp; shipping lanes iframe placeholder
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 4: Geo-Demographics & Risk -->
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Geo-Demographics &amp; Risk Dashboard</div>
+                <div class="panel-meta">Population · Politics · Conflict risk</div>
+              </div>
+              <div class="panel-body">
+                <div class="geo-iframe-shell">
+                  Demographics / geopolitical risk iframe placeholder
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== GLOBAL MARKET FLOW (7 PANEL, UPDATED) ===== -->
+        <div class="section" id="section-snapshot">
+          <div class="section-header">
+            <div class="section-title">Global Market Flow</div>
+            <div class="section-subtitle">
+              3 kolom · 7 panel: Market Flow, Macro, FX, Commodities, Crypto, Volatility, RRG.
+            </div>
+          </div>
+
+          <div class="flow-grid">
+            <!-- PANEL 1: KIRI ATAS -->
+            <div class="panel flow-panel-1">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">Market Flow Snapshot</div>
+                  
+                </div>
+                <div class="gmf-tabs" data-gmf-group="p1">
+                  <button class="gmf-tab active" data-gmf-target="p1-intraday">Major ETF</button>
+                  <button class="gmf-tab" data-gmf-target="p1-risksafe">Risk/Safe</button>
+                  <button class="gmf-tab" data-gmf-target="p1-country">Country</button>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="gmf-mode active" data-gmf-content="p1-intraday">
+                  <div class="gmf-mode-header">Intraday Snapshot — % vs Prior Close</div>
+                  <div class="flow-chart-slot">
+                    Placeholder chart:
+                    <br>Bar chart ETF / sektor (SPY, QQQ, XLE, XLF, ARKK, TLT, dll).
+                  </div>
+                  <div class="flow-chart-note">
+                    Nanti diisi chart intraday sektor/ETF seperti di contoh “Intraday Snapshot”.
+                  </div>
+                </div>
+
+                <div class="gmf-mode" data-gmf-content="p1-risksafe">
+                  <div class="gmf-mode-header">Risk / Safe Netflow Proxy</div>
+                  <div class="flow-chart-slot">
+                    Placeholder chart:
+                    <br>Bar horizontal Risk Asset (QQQ, IBIT, HYG, EEM) vs Safe Haven (UUP, LQD, GLD, FXY).
+                  </div>
+                  <div class="flow-chart-note">
+                    Layout bar risk vs safe seperti screenshot “Risk/Safe Netflow Proxy”.
+                  </div>
+                </div>
+
+                <div class="gmf-mode" data-gmf-content="p1-country">
+                  <div class="gmf-mode-header">Global Country / Region ETF Performance</div>
+                  <div class="flow-chart-slot">
+                    Placeholder chart:
+                    <br>Bar horizontal negara &amp; indeks (EWW, EWL, EZA, EIDO, EWJ, VGK, SPY, DIA, QQQ).
+                  </div>
+                  <div class="flow-chart-note">
+                    Ranking kinerja country ETF (DM / EM) seperti “Global Equity Heatmap/List”.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 2: KIRI BAWAH (SAMA TINGGI DENGAN 1) -->
+            <div class="panel flow-panel-2">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">Macro Benchmarks</div>
+                  
+                </div>
+                <div class="gmf-tabs" data-gmf-group="p2">
+                  <button class="gmf-tab active" data-gmf-target="p2-bench">Benchmarks</button>
+                  <button class="gmf-tab" data-gmf-target="p2-macro">Macro</button>
+                  <button class="gmf-tab" data-gmf-target="p2-sectors">Sectors</button>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="gmf-mode active" data-gmf-content="p2-bench">
+                  <div class="gmf-mode-header">Equity Benchmarks (SPY, QQQ, IWM, IWF, IWD)</div>
+                  <div class="flow-chart-slot">
+                    Placeholder chart:
+                    <br>Line chart multi-series indeks utama (YTD / 3M).
+                  </div>
+                  <div class="flow-chart-note">
+                    View utama untuk kinerja indeks broad market.
+                  </div>
+                </div>
+
+                <div class="gmf-mode" data-gmf-content="p2-macro">
+                  <div class="gmf-mode-header">Macro Multi-Asset (HYG, LQD, TLT, GLD, UUP, USO, ARKK)</div>
+                  <div class="flow-chart-slot">
+                    Placeholder chart:
+                    <br>Line chart lintas credit, rates, dollar, commodities, high-beta.
+                  </div>
+                  <div class="flow-chart-note">
+                    Membaca macro regime risk-on/off.
+                  </div>
+                </div>
+
+                <div class="gmf-mode" data-gmf-content="p2-sectors">
+                  <div class="gmf-mode-header">US Sector Performance (XLB–XLC)</div>
+                  <div class="flow-chart-slot">
+                    Placeholder chart:
+                    <br>Line chart sektor relatif terhadap SPY.
+                  </div>
+                  <div class="flow-chart-note">
+                    Menunjukkan sector rotation terhadap benchmark.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 3: TENGAH ATAS -->
+            <div class="panel flow-panel-3">
+              <div class="panel-header">
+                <div class="panel-title">Forex Strength Meter</div>
+                <div class="panel-meta">G10 currencies vs USD basket</div>
+              </div>
+              <div class="panel-body">
+                <div class="flow-chart-slot">
+                  Placeholder chart:
+                  <br>Bar horizontal AUD, CAD, GBP, EUR, NZD, CHF, USD, JPY
+                  <br>warna hijau/merah seperti “Forex Strength Meter”.
+                </div>
+                <div class="flow-chart-note">
+                  Panel tunggal, update berkala, membaca risk-on/off via FX.
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 4: TENGAH TENGAH -->
+            <div class="panel flow-panel-4">
+              <div class="panel-header">
+                <div class="panel-title">Commodities Strength Meter</div>
+                <div class="panel-meta">Energy · Metals · Agri</div>
+              </div>
+              <div class="panel-body">
+                <div class="flow-chart-slot">
+                  Placeholder chart:
+                  <br>Bar horizontal komoditas utama (Gold, Silver, Oil, NatGas, Copper, Corn, Wheat, dll).
+                </div>
+                <div class="flow-chart-note">
+                  Persis gaya chart “Commodities Strength Meter”.
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 5: TENGAH BAWAH -->
+            <div class="panel flow-panel-5">
+              <div class="panel-header">
+                <div class="panel-title">Crypto Strength Meter</div>
+                <div class="panel-meta">Top movers vs USD</div>
+              </div>
+              <div class="panel-body">
+                <div class="flow-chart-slot">
+                  Placeholder chart:
+                  <br>Bar horizontal panjang (BTC, ETH, SOL, BNB, ADA, NEAR, DOT, XRP, dll)
+                  <br>dengan range lebih lebar (±30–60%).
+                </div>
+                <div class="flow-chart-note">
+                  Mirip screenshot “Crypto Strength Meter” yang kamu kirim.
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 6: KANAN ATAS -->
+            <div class="panel flow-panel-6">
+              <div class="panel-header">
+                <div class="panel-title">Market Volatility</div>
+                <div class="panel-meta">VIX · VXN · GVZ · OVX · MOVE</div>
+              </div>
+              <div class="panel-body">
+                <div class="flow-chart-slot">
+                  Placeholder chart:
+                  <br>Multi-line chart indeks volatilitas lintas aset
+                  <br>(S&amp;P 500, Nasdaq, Gold, Oil, Bonds).
+                </div>
+                <div class="flow-chart-note">
+                  Ini yang kamu maksud: line chart kumpulan vol, tanpa composite.
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 7: KANAN BAWAH (DOUBLE HEIGHT) -->
+            <div class="panel flow-panel-7">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">RRG</div>
+                  
+                </div>
+                <div class="gmf-tabs" data-gmf-group="p7">
+                  <button class="gmf-tab active" data-gmf-target="p7-sectors">Sectors</button>
+                  <button class="gmf-tab" data-gmf-target="p7-fx">FX</button>
+                  <button class="gmf-tab" data-gmf-target="p7-commod">Commodities</button>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="gmf-mode active" data-gmf-content="p7-sectors">
+                  <div class="gmf-mode-header">RRG — US Equity Sectors vs SPY</div>
+                  <div class="flow-chart-slot">
+                    Placeholder chart:
+                    <br>Scatter plot RS-Ratio vs RS-Momentum
+                    <br>XLB, XLE, XLF, XLK, XLI, XLP, XLU, XLV, XLY, XLRE, XLC
+                    <br>dengan 4 kuadran: Improving, Leading, Weakening, Lagging.
+                  </div>
+                  <div class="gmf-quad-labels">
+                    <span>Improving</span>
+                    <span>Leading</span>
+                    <span>Weakening</span>
+                    <span>Lagging</span>
+                  </div>
+                </div>
+
+                <div class="gmf-mode" data-gmf-content="p7-fx">
+                  <div class="gmf-mode-header">RRG — FX Majors vs DXY</div>
+                  <div class="flow-chart-slot">
+                    Placeholder chart:
+                    <br>Scatter plot RS-Ratio / Momentum
+                    <br>EUR, GBP, AUD, NZD, JPY, CAD, CHF relatif ke DXY.
+                  </div>
+                  <div class="gmf-quad-labels">
+                    <span>Improving</span>
+                    <span>Leading</span>
+                    <span>Weakening</span>
+                    <span>Lagging</span>
+                  </div>
+                </div>
+
+                <div class="gmf-mode" data-gmf-content="p7-commod">
+                  <div class="gmf-mode-header">RRG — Commodities vs DBC</div>
+                  <div class="flow-chart-slot">
+                    Placeholder chart:
+                    <br>Scatter plot RS-Ratio / Momentum komoditas (Gold, Oil, Copper, NatGas, Wheat, dll) relatif ke DBC.
+                  </div>
+                  <div class="gmf-quad-labels">
+                    <span>Improving</span>
+                    <span>Leading</span>
+                    <span>Weakening</span>
+                    <span>Lagging</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> <!-- end flow-grid -->
+        </div>
+
+        <!-- ===== MARKET METRICS & SENTIMENT ===== -->
+        <div class="section" id="section-metrics">
+          <div class="section-header">
+            <div class="section-title">Market Metrics &amp; Sentiment</div>
+            <div class="section-subtitle">
+              COT, VIX, fund flows, breadth, sektor rotasi.
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== MARKET NEWS & CATALYST ===== -->
+        <div class="section" id="section-news">
+          <div class="section-header">
+            <div class="section-title">Market News &amp; Catalyst</div>
+            <div class="section-subtitle">
+              Kalender ekonomi, newswire, X feed, dan Catalyst Global Macro terintegrasi.
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== ARTICLES & MARKET RESEARCH ===== -->
+        <div class="section" id="section-research">
+          <div class="section-header">
+            <div class="section-title">Articles &amp; Market Research</div>
+            <div class="section-subtitle">
+              Riset mingguan, thematic reports, analisis Kuantara.
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== QUANT & TECHNICAL TOOLS ===== -->
+        <div class="section" id="section-quant">
+          <div class="section-header">
+            <div class="section-title">Quantitative &amp; Technical Tools</div>
+            <div class="section-subtitle">
+              Screener, regression, pattern finder, backtest, AI tools.
+            </div>
+          </div>
+          <div class="grid-2"></div>
+        </div>
+
+        <!-- ===== STOCKS SCREENER ===== -->
+        <div class="section" id="section-screener">
+          <div class="section-header">
+            <div class="section-title">Stocks Screener</div>
+            <div class="section-subtitle">
+              Filter saham berdasarkan teknikal, fundamental, &amp; sentimen.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Shortcut modal -->
+  <div class="modal-overlay" id="shortcutModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Keyboard Navigation</div>
+        <div style="font-size:10px; color:var(--text-muted);">
+          Bloomberg-style workflow untuk Kuantara Terminal.
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="shortcut-grid">
+          <div class="shortcut-key">Alt + 0</div><div class="shortcut-desc">Market Overview (dashboard utama).</div>
+          <div class="shortcut-key">Alt + 1</div><div class="shortcut-desc">Charts (1–2 jendela chart).</div>
+          <div class="shortcut-key">Alt + 2</div><div class="shortcut-desc">Macroeconomic Indicators.</div>
+          <div class="shortcut-key">Alt + 3</div><div class="shortcut-desc">Geo-Economic Indicators.</div>
+          <div class="shortcut-key">Alt + 4</div><div class="shortcut-desc">Global Market Flow.</div>
+          <div class="shortcut-key">Alt + 5</div><div class="shortcut-desc">Market Metrics &amp; Sentiment.</div>
+          <div class="shortcut-key">Alt + 6</div><div class="shortcut-desc">Market News &amp; Catalyst.</div>
+          <div class="shortcut-key">Alt + 7</div><div class="shortcut-desc">Articles &amp; Market Research.</div>
+          <div class="shortcut-key">Alt + 8</div><div class="shortcut-desc">Quantitative &amp; Technical Tools.</div>
+          <div class="shortcut-key">Alt + 9</div><div class="shortcut-desc">Stocks Screener.</div>
+          <div class="shortcut-key">Alt + A</div><div class="shortcut-desc">Toggle AI assistant (floating panel).</div>
+          <div class="shortcut-key">Esc</div><div class="shortcut-desc">Tutup AI / modal, lalu kembali ke Market Overview.</div>
+          <div class="shortcut-key">Ctrl + R</div><div class="shortcut-desc">Refresh data (internal, tanpa reload halaman).</div>
+          <div class="shortcut-key">Ctrl + F</div><div class="shortcut-desc">Fokus ke Quick Search.</div>
+          <div class="shortcut-key">Ctrl + L</div><div class="shortcut-desc">Ganti tema Dark / Light.</div>
+          <div class="shortcut-key">Ctrl + Shift + S</div><div class="shortcut-desc">Simpan layout kerja (mock).</div>
+          <div class="shortcut-key">F1</div><div class="shortcut-desc">Buka panduan shortcut ini.</div>
+          <div class="shortcut-key">Shift + 1</div><div class="shortcut-desc">Aktifkan / matikan mode chart fullscreen.</div>
+        </div>
+        <div class="modal-close-hint">
+          Tekan <strong>F1</strong> lagi atau <strong>Esc</strong> untuk menutup.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Assistant floating -->
+  <div class="ai-panel" id="aiPanel">
+    <div class="ai-panel-header">
+      <div>
+        <div class="ai-panel-title">Kuantara AI Assistant</div>
+        <div class="ai-panel-meta">Macro · Quant · Trading Research</div>
+      </div>
+      <div class="ai-panel-close" id="aiPanelClose">ESC</div>
+    </div>
+    <div class="ai-panel-body">
+      <iframe class="ai-panel-iframe" id="aiFrame" src="about:blank" loading="lazy" title="Kuantara AI Assistant"></iframe>
+    </div>
+  </div>
+
+  <div class="ai-launcher-btn" id="aiLauncher">
+    <span>AI</span>
+  </div>
+
+  <script>
+    const clockConfig = [
+      { label: "NY",  tz: "America/New_York" },
+      { label: "LDN", tz: "Europe/London" },
+      { label: "TKY", tz: "Asia/Tokyo" },
+      { label: "SYD", tz: "Australia/Sydney" },
+      { label: "JKT", tz: "Asia/Jakarta" }
+    ];
+
+    const forexScheduleWIB = {
+      SYD: { openMin: 5 * 60,  closeMin: 14 * 60 },
+      TKY: { openMin: 7 * 60,  closeMin: 16 * 60 },
+      LDN: { openMin: 15 * 60, closeMin: 24 * 60 },
+      NY:  { openMin: 20 * 60, closeMin: 28 * 60 },
+      JKT: { openMin: 9 * 60,  closeMin: 16 * 60 }
+    };
+
+    function isSessionOpenWIB(label, dayWib, minutesWib) {
+      const s = forexScheduleWIB[label];
+      if (!s) return false;
+      if (dayWib === 0 || dayWib === 6) return false;
+
+      const open = s.openMin;
+      const close = s.closeMin;
+
+      if (close <= 24 * 60) {
+        if (close < open) return minutesWib >= open || minutesWib < close;
+        return minutesWib >= open && minutesWib < close;
+      }
+
+      const closeNext = close - 24 * 60;
+      return minutesWib >= open || minutesWib < closeNext;
+    }
+
+    function initWorldClock() {
+      const container = document.getElementById("worldClock");
+      container.innerHTML = "";
+      clockConfig.forEach((cfg) => {
+        const div = document.createElement("div");
+        div.className = "session-tag";
+        div.innerHTML = `
+          <div class="session-header-line">
+            <span class="session-status-dot" data-label="${cfg.label}"></span>
+            <span class="session-label">${cfg.label}</span>
+          </div>
+          <div class="session-time" data-tz="${cfg.tz}" data-label="${cfg.label}">--:--</div>
+        `;
+        container.appendChild(div);
+      });
+
+      const updateTime = () => {
+        const now = new Date();
+        const nowJakarta = new Date(
+          now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+        );
+        const dayWib = nowJakarta.getDay();
+        const minutesWib = nowJakarta.getHours() * 60 + nowJakarta.getMinutes();
+
+        const times = container.querySelectorAll(".session-time");
+        times.forEach((el) => {
+          const tz = el.getAttribute("data-tz");
+          const label = el.getAttribute("data-label");
+
+          const local = new Date(
+            now.toLocaleString("en-US", { timeZone: tz })
+          );
+          const formatted = local.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false
+          });
+          el.textContent = formatted;
+
+          const isOpen = isSessionOpenWIB(label, dayWib, minutesWib);
+          const dot = container.querySelector(
+            '.session-status-dot[data-label="' + label + '"]'
+          );
+          if (dot) {
+            if (isOpen) dot.classList.add("open");
+            else dot.classList.remove("open");
+          }
+        });
+      };
+
+      updateTime();
+      setInterval(updateTime, 1000);
+    }
+
+    const sectionMap = {
+      0: "section-market-overview",
+      1: "section-charts",
+      2: "section-macro",
+      3: "section-geo",
+      4: "section-snapshot",
+      5: "section-metrics",
+      6: "section-news",
+      7: "section-research",
+      8: "section-quant",
+      9: "section-screener"
+    };
+
+    function setActiveSection(sectionId) {
+      const sections = document.querySelectorAll(".section");
+      sections.forEach((s) => s.classList.remove("active"));
+      const target = document.getElementById(sectionId);
+      if (target) target.classList.add("active");
+
+      const menuItems = document.querySelectorAll(".menu-item");
+      menuItems.forEach((m) => {
+        m.classList.toggle(
+          "active",
+          m.getAttribute("data-section") === sectionId
+        );
+      });
+
+      const label = document.getElementById("currentModuleLabel");
+      const index = Object.values(sectionMap).indexOf(sectionId);
+      const labelText =
+        index >= 0
+          ? `[${index}] ${
+              document.querySelector(
+                '.menu-item[data-section="' + sectionId + '"] .menu-item-label'
+              ).textContent.trim()
+            }`
+          : document.title;
+      label.textContent = labelText;
+    }
+
+    const toastContainer = document.getElementById("toastContainer");
+    function showToast(message, label = "ACTION") {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.innerHTML = `
+        <div class="toast-label">${label}</div>
+        <div>${message}</div>
+      `;
+      toastContainer.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 200);
+      }, 2200);
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      const current = body.getAttribute("data-theme") || "dark";
+      const next = current === "dark" ? "light" : "dark";
+      body.setAttribute("data-theme", next);
+      showToast(`Theme switched to ${next}`, "THEME");
+    }
+
+    const appRoot = document.getElementById("app");
+    function toggleChartsFullscreen() {
+      const isChartsActive = document
+        .getElementById("section-charts")
+        .classList.contains("active");
+      if (!isChartsActive) {
+        showToast("Charts fullscreen hanya saat modul Charts aktif.", "INFO");
+        return;
+      }
+      appRoot.classList.toggle("charts-fullscreen");
+      showToast(
+        appRoot.classList.contains("charts-fullscreen")
+          ? "Charts fullscreen ON"
+          : "Charts fullscreen OFF",
+        "CHARTS"
+      );
+    }
+
+    const shortcutModal = document.getElementById("shortcutModal");
+    let shortcutModalVisible = false;
+
+    function toggleShortcutModal(forceState) {
+      if (typeof forceState === "boolean") {
+        shortcutModalVisible = forceState;
+      } else {
+        shortcutModalVisible = !shortcutModalVisible;
+      }
+      shortcutModal.classList.toggle("visible", shortcutModalVisible);
+    }
+
+    shortcutModal.addEventListener("click", (e) => {
+      if (e.target === shortcutModal) toggleShortcutModal(false);
+    });
+
+    const aiPanel = document.getElementById("aiPanel");
+    const aiLauncher = document.getElementById("aiLauncher");
+    const aiPanelClose = document.getElementById("aiPanelClose");
+    let aiPanelVisible = false;
+
+    function setAiPanelVisible(visible) {
+      aiPanelVisible = visible;
+      aiPanel.classList.toggle("visible", visible);
+    }
+
+    function toggleAiPanel() {
+      setAiPanelVisible(!aiPanelVisible);
+      if (aiPanelVisible) showToast("AI assistant opened.", "AI");
+      else showToast("AI assistant closed.", "AI");
+    }
+
+    aiLauncher.addEventListener("click", toggleAiPanel);
+    aiPanelClose.addEventListener("click", () => setAiPanelVisible(false));
+
+    const quickSearch = document.getElementById("quickSearch");
+
+    document.addEventListener("keydown", (e) => {
+      const key = e.key;
+
+      if (e.altKey && !e.ctrlKey && /^[0-9]$/.test(key)) {
+        e.preventDefault();
+        const idx = parseInt(key, 10);
+        const sectionId = sectionMap[idx];
+        if (sectionId) {
+          setActiveSection(sectionId);
+          showToast(
+            `Navigated to [${idx}] ${
+              document.querySelector(
+                '.menu-item[data-section="' + sectionId + '"] .menu-item-label'
+              ).textContent
+            }`,
+            "NAV"
+          );
+        }
+        return;
+      }
+
+      if (e.altKey && !e.ctrlKey && (key === "a" || key === "A")) {
+        e.preventDefault();
+        toggleAiPanel();
+        return;
+      }
+
+      if (key === "Escape") {
+        if (aiPanelVisible) {
+          setAiPanelVisible(false);
+          return;
+        }
+        if (shortcutModalVisible) {
+          toggleShortcutModal(false);
+        } else {
+          setActiveSection(sectionMap[0]);
+          showToast("Back to Market Overview", "NAV");
+        }
+        return;
+      }
+
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && key.toLowerCase() === "r") {
+        e.preventDefault();
+        showToast("Data refresh triggered (mock).", "REFRESH");
+        return;
+      }
+
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && key.toLowerCase() === "f") {
+        e.preventDefault();
+        quickSearch.focus();
+        quickSearch.select();
+        showToast("Quick search focused.", "SEARCH");
+        return;
+      }
+
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && key.toLowerCase() === "l") {
+        e.preventDefault();
+        toggleTheme();
+        return;
+      }
+
+      if (e.ctrlKey && e.shiftKey && !e.altKey && key.toLowerCase() === "s") {
+        e.preventDefault();
+        showToast("Layout saved (mock).", "LAYOUT");
+        return;
+      }
+
+      if (!e.ctrlKey && !e.altKey && !e.metaKey && key === "F1") {
+        e.preventDefault();
+        toggleShortcutModal();
+        return;
+      }
+
+      if (e.shiftKey && !e.ctrlKey && !e.altKey && key === "!") {
+        e.preventDefault();
+        toggleChartsFullscreen();
+        return;
+      }
+    });
+
+    document.querySelectorAll(".menu-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const sectionId = item.getAttribute("data-section");
+        setActiveSection(sectionId);
+        const index = Object.values(sectionMap).indexOf(sectionId);
+        if (index >= 0) {
+          showToast(
+            `Navigated to [${index}] ${
+              item.querySelector(".menu-item-label").textContent
+            }`,
+            "NAV"
+          );
+        }
+      });
+    });
+
+    function setRiskGauge(score) {
+      const s = Math.max(-1, Math.min(1, score));
+      const angle = s * 70;
+
+      const needle = document.getElementById("riskNeedle");
+      const label  = document.getElementById("riskLabel");
+
+      if (needle) {
+        needle.style.transform = `rotate(${angle}deg)`;
+      }
+
+      if (label) {
+        if (s < -0.4) label.textContent = "Risk-Off";
+        else if (s < -0.1) label.textContent = "Mild Risk-Off";
+        else if (s <= 0.1) label.textContent = "Neutral";
+        else if (s <= 0.4) label.textContent = "Mild Risk-On";
+        else label.textContent = "Risk-On";
+      }
+    }
+
+    /* TAB SWITCHING UNTUK PANEL 1, 2, 7 DI GLOBAL MARKET FLOW */
+    document.addEventListener("click", (e) => {
+      const tab = e.target.closest(".gmf-tab");
+      if (!tab) return;
+      const groupEl = tab.closest(".gmf-tabs");
+      if (!groupEl) return;
+
+      const target = tab.getAttribute("data-gmf-target");
+
+      // toggle tab active
+      groupEl.querySelectorAll(".gmf-tab").forEach(btn => {
+        btn.classList.toggle("active", btn === tab);
+      });
+
+      // toggle konten dalam panel yang sama
+      const panel = groupEl.closest(".panel");
+      if (!panel) return;
+      panel.querySelectorAll(".gmf-mode").forEach(mode => {
+        const key = mode.getAttribute("data-gmf-content");
+        mode.classList.toggle("active", key === target);
+      });
+    });
+
+    initWorldClock();
+    setRiskGauge(0.25);
+  </script></body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
