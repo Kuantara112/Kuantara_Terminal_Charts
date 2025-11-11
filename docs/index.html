@@ -45,87 +45,6 @@
       height: 100vh;
     }
 
-    /* TOP BAR */
-    .kt-topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #070707;
-      border-bottom: 1px solid var(--border-soft);
-      padding: 6px 10px;
-      font-size: 11px;
-      z-index: 20;
-    }
-
-    .kt-topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .kt-logo {
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      font-size: 12px;
-      color: var(--amber);
-      white-space: nowrap;
-    }
-
-    .kt-session-clock {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      align-items: center;
-      font-size: 9px;
-      color: var(--text-muted);
-    }
-
-    .kt-session-item {
-      display: inline-flex;
-      gap: 2px;
-      align-items: baseline;
-      white-space: nowrap;
-      padding: 1px 4px;
-      border-radius: 2px;
-      background: #101010;
-      border: 1px solid #151515;
-    }
-
-    .kt-session-label {
-      color: var(--amber);
-      font-size: 9px;
-    }
-
-    .kt-session-time {
-      font-size: 9px;
-    }
-
-    .kt-topbar-tag {
-      padding: 2px 6px;
-      border: 1px solid var(--border-soft);
-      background: #101010;
-      font-size: 10px;
-      color: var(--text-muted);
-      white-space: nowrap;
-      display: none;
-    }
-
-    .kt-topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--text-muted);
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      font-size: 10px;
-    }
-
-    .kt-topbar-status {
-      white-space: nowrap;
-    }
-
     /* MAIN LAYOUT */
     .kt-main {
       flex: 1;
@@ -269,7 +188,8 @@
 
     .kt-content-body {
       flex: 1;
-      padding: 8px 10px 52px; /* space for bottom nav */
+      /* space for down bar (~32px) + bottom nav (46px) + sedikit ekstra */
+      padding: 8px 10px 90px;
       background: var(--bg-main);
       overflow: auto;
     }
@@ -331,11 +251,98 @@
       color: var(--amber);
     }
 
+    /* DOWN BAR (dulu top bar, sekarang di bawah) */
+    .kt-downbar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 46px; /* tepat di atas bottom nav */
+      background: #070707;
+      border-top: 1px solid var(--border-soft);
+      padding: 4px 10px;
+      font-size: 10px;
+      z-index: 16;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .kt-downbar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .kt-logo {
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: var(--amber);
+      white-space: nowrap;
+    }
+
+    .kt-session-clock {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    .kt-session-item {
+      display: inline-flex;
+      gap: 2px;
+      align-items: baseline;
+      white-space: nowrap;
+      padding: 1px 4px;
+      border-radius: 2px;
+      background: #101010;
+      border: 1px solid #151515;
+    }
+
+    .kt-session-label {
+      color: var(--amber);
+      font-size: 9px;
+    }
+
+    .kt-session-time {
+      font-size: 9px;
+    }
+
+    .kt-downbar-tag {
+      padding: 1px 6px;
+      border: 1px solid var(--border-soft);
+      background: #101010;
+      font-size: 9px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      display: none;
+    }
+
+    .kt-downbar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .kt-downbar-status {
+      white-space: nowrap;
+    }
+
     /* FLOATING AI BUTTON */
     .kt-ai-fab {
       position: fixed;
       right: 16px;
-      bottom: 60px; /* di atas bottom nav */
+      bottom: 60px; /* di atas bottom nav, sedikit overlap dengan downbar */
       width: 48px;
       height: 48px;
       border-radius: 50%;
@@ -470,64 +477,36 @@
       cursor: default;
     }
 
+    /* DESKTOP: konten downbar disimetris tengah */
     @media (min-width: 900px) {
-      .kt-topbar-tag {
-        display: inline-block;
-      }
       .kt-content-body {
-        padding-bottom: 40px;
+        padding-bottom: 90px;
       }
-      .kt-bottom-nav {
-        position: static;
-        height: 40px;
+
+      .kt-downbar {
+        justify-content: center;
       }
-      .kt-ai-fab {
-        bottom: 70px;
+
+      .kt-downbar-left,
+      .kt-downbar-right {
+        flex: 0 0 auto;
       }
-      .kt-ai-panel {
-        bottom: 120px;
+
+      .kt-downbar-inner {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .kt-downbar-tag {
+        display: inline-flex;
       }
     }
   </style>
 </head>
 <body>
   <div class="kt-root">
-    <!-- TOP BAR -->
-    <header class="kt-topbar">
-      <div class="kt-topbar-left">
-        <div class="kt-logo">KUANTARA TERMINAL</div>
-
-        <!-- MARKET SESSION CLOCK -->
-        <div class="kt-session-clock" id="kt-session-clock">
-          <div class="kt-session-item">
-            <span class="kt-session-label">JKT</span>
-            <span class="kt-session-time" data-tz="7"></span>
-          </div>
-          <div class="kt-session-item">
-            <span class="kt-session-label">SYD</span>
-            <span class="kt-session-time" data-tz="10"></span>
-          </div>
-          <div class="kt-session-item">
-            <span class="kt-session-label">TYO</span>
-            <span class="kt-session-time" data-tz="9"></span>
-          </div>
-          <div class="kt-session-item">
-            <span class="kt-session-label">LDN</span>
-            <span class="kt-session-time" data-tz="0"></span>
-          </div>
-          <div class="kt-session-item">
-            <span class="kt-session-label">NYC</span>
-            <span class="kt-session-time" data-tz="-5"></span>
-          </div>
-        </div>
-
-        <div class="kt-topbar-tag">MARKET INTELLIGENCE · MACRO · QUANT</div>
-      </div>
-      <div class="kt-topbar-right">
-        <div class="kt-topbar-status">PROFILE: GUEST</div>
-      </div>
-    </header>
-
+    <!-- MAIN (tanpa top bar lagi) -->
     <div class="kt-main">
       <!-- MAIN MENU STRIP (0–9) -->
       <nav class="kt-mainmenu-strip" id="kt-mainmenu-strip">
@@ -665,6 +644,39 @@
           <div class="kt-status-msg" id="kt-status-msg">READY</div>
         </div>
       </section>
+    </div>
+  </div>
+
+  <!-- DOWN BAR (KUANTARA + CLOCK + PROFILE) -->
+  <div class="kt-downbar">
+    <div class="kt-downbar-left kt-downbar-inner">
+      <div class="kt-logo">KUANTARA TERMINAL</div>
+      <div class="kt-session-clock" id="kt-session-clock">
+        <div class="kt-session-item">
+          <span class="kt-session-label">JKT</span>
+          <span class="kt-session-time" data-tz="7"></span>
+        </div>
+        <div class="kt-session-item">
+          <span class="kt-session-label">SYD</span>
+          <span class="kt-session-time" data-tz="10"></span>
+        </div>
+        <div class="kt-session-item">
+          <span class="kt-session-label">TYO</span>
+          <span class="kt-session-time" data-tz="9"></span>
+        </div>
+        <div class="kt-session-item">
+          <span class="kt-session-label">LDN</span>
+          <span class="kt-session-time" data-tz="0"></span>
+        </div>
+        <div class="kt-session-item">
+          <span class="kt-session-label">NYC</span>
+          <span class="kt-session-time" data-tz="-5"></span>
+        </div>
+      </div>
+      <div class="kt-downbar-tag">MARKET INTELLIGENCE · MACRO · QUANT</div>
+    </div>
+    <div class="kt-downbar-right">
+      <div class="kt-downbar-status">PROFILE: GUEST</div>
     </div>
   </div>
 
@@ -904,7 +916,7 @@
           ":" +
           pad2(now.getUTCSeconds()) +
           "Z";
-        const base = new Date(utc); // clean UTC
+        const base = new Date(utc);
 
         sessionTimes.forEach((el) => {
           const offset = Number(el.getAttribute("data-tz")) || 0;
