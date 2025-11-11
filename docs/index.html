@@ -45,6 +45,89 @@
       height: 100vh;
     }
 
+    /* TOP BAR (KUANTARA + CLOCK + PROFILE) */
+    .kt-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #070707;
+      border-bottom: 1px solid var(--border-soft);
+      padding: 6px 10px;
+      font-size: 10px;
+      z-index: 10;
+    }
+
+    .kt-topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .kt-logo {
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: var(--amber);
+      white-space: nowrap;
+    }
+
+    .kt-session-clock {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    .kt-session-item {
+      display: inline-flex;
+      gap: 2px;
+      align-items: baseline;
+      white-space: nowrap;
+      padding: 1px 4px;
+      border-radius: 2px;
+      background: #101010;
+      border: 1px solid #151515;
+    }
+
+    .kt-session-label {
+      color: var(--amber);
+      font-size: 9px;
+    }
+
+    .kt-session-time {
+      font-size: 9px;
+    }
+
+    .kt-topbar-tag {
+      padding: 1px 6px;
+      border: 1px solid var(--border-soft);
+      background: #101010;
+      font-size: 9px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      display: none;
+    }
+
+    .kt-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .kt-topbar-status {
+      white-space: nowrap;
+    }
+
     /* MAIN LAYOUT */
     .kt-main {
       flex: 1;
@@ -54,7 +137,7 @@
       min-height: 0;
     }
 
-    /* TOP MAIN MENU (0–9, scrollable) */
+    /* MAIN MENU (0–9) */
     .kt-mainmenu-strip {
       display: flex;
       gap: 4px;
@@ -105,49 +188,13 @@
       color: #000;
     }
 
-    /* SUBMENU STRIP */
-    .kt-submenu-strip {
-      border-bottom: 1px solid var(--border-soft);
-      background: #090909;
-      padding: 4px 6px 4px 8px;
-      min-height: 32px;
-    }
-
-    .kt-submenu-group {
-      display: none;
-      gap: 4px;
-      overflow-x: auto;
-      padding-bottom: 2px;
-    }
-
-    .kt-submenu-group.active {
-      display: flex;
-    }
-
-    .kt-submenu-btn {
-      flex: 0 0 auto;
-      padding: 3px 8px;
-      border-radius: 3px;
-      border: 1px solid var(--border-soft);
-      background: #101010;
-      color: var(--text-muted);
-      font-size: 10px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .kt-submenu-btn.active {
-      background: var(--amber);
-      color: #000;
-      border-color: #f0f0f0;
-    }
-
     /* CONTENT AREA */
     .kt-content {
       display: flex;
       flex-direction: column;
       background: var(--bg-main);
       min-height: 0;
+      flex: 1;
     }
 
     .kt-content-header {
@@ -188,10 +235,46 @@
 
     .kt-content-body {
       flex: 1;
-      /* space for down bar (~32px) + bottom nav (46px) + sedikit ekstra */
-      padding: 8px 10px 90px;
+      padding: 8px 10px 8px;
       background: var(--bg-main);
       overflow: auto;
+    }
+
+    /* SUB MENU STRIP (DI BAWAH KONTEN) */
+    .kt-submenu-strip {
+      border-top: 1px solid var(--border-soft);
+      background: #090909;
+      padding: 4px 6px 4px 8px;
+      min-height: 32px;
+    }
+
+    .kt-submenu-group {
+      display: none;
+      gap: 4px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .kt-submenu-group.active {
+      display: flex;
+    }
+
+    .kt-submenu-btn {
+      flex: 0 0 auto;
+      padding: 3px 8px;
+      border-radius: 3px;
+      border: 1px solid var(--border-soft);
+      background: #101010;
+      color: var(--text-muted);
+      font-size: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .kt-submenu-btn.active {
+      background: var(--amber);
+      color: #000;
+      border-color: #f0f0f0;
     }
 
     /* STATUS BAR – hanya status */
@@ -251,98 +334,11 @@
       color: var(--amber);
     }
 
-    /* DOWN BAR (dulu top bar, sekarang di bawah) */
-    .kt-downbar {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 46px; /* tepat di atas bottom nav */
-      background: #070707;
-      border-top: 1px solid var(--border-soft);
-      padding: 4px 10px;
-      font-size: 10px;
-      z-index: 16;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .kt-downbar-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .kt-logo {
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      font-size: 12px;
-      color: var(--amber);
-      white-space: nowrap;
-    }
-
-    .kt-session-clock {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      align-items: center;
-      font-size: 9px;
-      color: var(--text-muted);
-    }
-
-    .kt-session-item {
-      display: inline-flex;
-      gap: 2px;
-      align-items: baseline;
-      white-space: nowrap;
-      padding: 1px 4px;
-      border-radius: 2px;
-      background: #101010;
-      border: 1px solid #151515;
-    }
-
-    .kt-session-label {
-      color: var(--amber);
-      font-size: 9px;
-    }
-
-    .kt-session-time {
-      font-size: 9px;
-    }
-
-    .kt-downbar-tag {
-      padding: 1px 6px;
-      border: 1px solid var(--border-soft);
-      background: #101010;
-      font-size: 9px;
-      color: var(--text-muted);
-      white-space: nowrap;
-      display: none;
-    }
-
-    .kt-downbar-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--text-muted);
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      font-size: 10px;
-      white-space: nowrap;
-    }
-
-    .kt-downbar-status {
-      white-space: nowrap;
-    }
-
     /* FLOATING AI BUTTON */
     .kt-ai-fab {
       position: fixed;
       right: 16px;
-      bottom: 60px; /* di atas bottom nav, sedikit overlap dengan downbar */
+      bottom: 60px; /* di atas bottom nav */
       width: 48px;
       height: 48px;
       border-radius: 50%;
@@ -477,13 +473,8 @@
       cursor: default;
     }
 
-    /* DESKTOP: menu & downbar disimetris tengah */
+    /* DESKTOP: center main menu + sub menu, show tagline */
     @media (min-width: 900px) {
-      .kt-content-body {
-        padding-bottom: 90px;
-      }
-
-      /* center main menu bar di desktop */
       .kt-mainmenu-strip {
         justify-content: center;
       }
@@ -491,10 +482,9 @@
       .kt-mainmenu-strip::before,
       .kt-mainmenu-strip::after {
         content: "";
-        flex: 0 0 8px; /* sedikit padding kiri/kanan agar tidak nempel */
+        flex: 0 0 8px;
       }
 
-      /* center submenu group aktif di desktop */
       .kt-submenu-strip {
         display: flex;
         justify-content: center;
@@ -508,30 +498,52 @@
         justify-content: center;
       }
 
-      .kt-downbar {
-        justify-content: center;
-      }
-
-      .kt-downbar-left,
-      .kt-downbar-right {
-        flex: 0 0 auto;
-      }
-
-      .kt-downbar-inner {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-
-      .kt-downbar-tag {
+      .kt-topbar-tag {
         display: inline-flex;
+      }
+
+      .kt-topbar-left {
+        flex-wrap: nowrap;
       }
     }
   </style>
 </head>
 <body>
   <div class="kt-root">
-    <!-- MAIN (tanpa top bar lagi) -->
+    <!-- TOP BAR -->
+    <header class="kt-topbar">
+      <div class="kt-topbar-left">
+        <div class="kt-logo">KUANTARA TERMINAL</div>
+        <div class="kt-session-clock" id="kt-session-clock">
+          <div class="kt-session-item">
+            <span class="kt-session-label">JKT</span>
+            <span class="kt-session-time" data-tz="7"></span>
+          </div>
+          <div class="kt-session-item">
+            <span class="kt-session-label">SYD</span>
+            <span class="kt-session-time" data-tz="10"></span>
+          </div>
+          <div class="kt-session-item">
+            <span class="kt-session-label">TYO</span>
+            <span class="kt-session-time" data-tz="9"></span>
+          </div>
+          <div class="kt-session-item">
+            <span class="kt-session-label">LDN</span>
+            <span class="kt-session-time" data-tz="0"></span>
+          </div>
+          <div class="kt-session-item">
+            <span class="kt-session-label">NYC</span>
+            <span class="kt-session-time" data-tz="-5"></span>
+          </div>
+        </div>
+        <div class="kt-topbar-tag">MARKET INTELLIGENCE · MACRO · QUANT</div>
+      </div>
+      <div class="kt-topbar-right">
+        <div class="kt-topbar-status">PROFILE: GUEST</div>
+      </div>
+    </header>
+
+    <!-- MAIN -->
     <div class="kt-main">
       <!-- MAIN MENU STRIP (0–9) -->
       <nav class="kt-mainmenu-strip" id="kt-mainmenu-strip">
@@ -567,7 +579,22 @@
         </button>
       </nav>
 
-      <!-- SUB MENU STRIP -->
+      <!-- CONTENT -->
+      <section class="kt-content">
+        <div class="kt-content-header">
+          <div class="kt-breadcrumb">
+            <span class="kt-breadcrumb-main" id="breadcrumb-main">0 · Markets</span>
+            <span class="kt-breadcrumb-sub" id="breadcrumb-sub">Overview</span>
+          </div>
+          <div class="kt-header-right"></div>
+        </div>
+
+        <div class="kt-content-body" id="kt-content-body">
+          <!-- nanti diisi iframe sesuai modul -->
+        </div>
+      </section>
+
+      <!-- SUB MENU STRIP (DI BAWAH KONTEN) -->
       <nav class="kt-submenu-strip">
         <!-- 0. Markets -->
         <div class="kt-submenu-group active" data-menu-sub="0">
@@ -606,7 +633,7 @@
           <button class="kt-submenu-btn" data-menu="4" data-sub-index="0">Macro</button>
           <button class="kt-submenu-btn" data-menu="4" data-sub-index="1">Sentiment</button>
           <button class="kt-submenu-btn" data-menu="4" data-sub-index="2">Seasonality</button>
-          <button class="kt-submenu-btn" data-menu-sub="4" data-sub-index="3">Flows</button>
+          <button class="kt-submenu-btn" data-menu="4" data-sub-index="3">Flows</button>
           <button class="kt-submenu-btn" data-menu="4" data-sub-index="4">Regimes</button>
         </div>
 
@@ -651,57 +678,10 @@
         </div>
       </nav>
 
-      <!-- CONTENT -->
-      <section class="kt-content">
-        <div class="kt-content-header">
-          <div class="kt-breadcrumb">
-            <span class="kt-breadcrumb-main" id="breadcrumb-main">0 · Markets</span>
-            <span class="kt-breadcrumb-sub" id="breadcrumb-sub">Overview</span>
-          </div>
-          <div class="kt-header-right"></div>
-        </div>
-
-        <div class="kt-content-body" id="kt-content-body">
-          <!-- iframe data nanti di sini -->
-        </div>
-
-        <div class="kt-statusbar">
-          <div class="kt-status-msg" id="kt-status-msg">READY</div>
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <!-- DOWN BAR (KUANTARA + CLOCK + PROFILE) -->
-  <div class="kt-downbar">
-    <div class="kt-downbar-left kt-downbar-inner">
-      <div class="kt-logo">KUANTARA TERMINAL</div>
-      <div class="kt-session-clock" id="kt-session-clock">
-        <div class="kt-session-item">
-          <span class="kt-session-label">JKT</span>
-          <span class="kt-session-time" data-tz="7"></span>
-        </div>
-        <div class="kt-session-item">
-          <span class="kt-session-label">SYD</span>
-          <span class="kt-session-time" data-tz="10"></span>
-        </div>
-        <div class="kt-session-item">
-          <span class="kt-session-label">TYO</span>
-          <span class="kt-session-time" data-tz="9"></span>
-        </div>
-        <div class="kt-session-item">
-          <span class="kt-session-label">LDN</span>
-          <span class="kt-session-time" data-tz="0"></span>
-        </div>
-        <div class="kt-session-item">
-          <span class="kt-session-label">NYC</span>
-          <span class="kt-session-time" data-tz="-5"></span>
-        </div>
+      <!-- STATUS BAR -->
+      <div class="kt-statusbar">
+        <div class="kt-status-msg" id="kt-status-msg">READY</div>
       </div>
-      <div class="kt-downbar-tag">MARKET INTELLIGENCE · MACRO · QUANT</div>
-    </div>
-    <div class="kt-downbar-right">
-      <div class="kt-downbar-status">PROFILE: GUEST</div>
     </div>
   </div>
 
@@ -851,6 +831,7 @@
         }
       }
 
+      // main menu click
       mainButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
           const idx = Number(btn.getAttribute("data-menu"));
@@ -858,6 +839,7 @@
         });
       });
 
+      // bottom nav click (0–4)
       bottomItems.forEach((item) => {
         item.addEventListener("click", () => {
           const idx = Number(item.getAttribute("data-menu-bottom"));
@@ -865,6 +847,7 @@
         });
       });
 
+      // submenu click
       submenuButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
           const menuIndex = Number(btn.getAttribute("data-menu"));
@@ -873,7 +856,7 @@
         });
       });
 
-      // Keyboard shortcuts (tetap aktif)
+      // keyboard shortcuts tetap aktif
       window.addEventListener("keydown", (e) => {
         const key = e.key;
 
