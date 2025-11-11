@@ -44,11 +44,12 @@
       height: 100vh;
     }
 
-    /* TOP BAR – KUANTARA TERMINAL */
+    /* TOP BAR – KUANTARA TERMINAL (CENTERED) */
     .kt-topbar {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;          /* center content */
+      position: relative;              /* allow right block absolute */
       background: #070707;
       border-bottom: 1px solid var(--border-soft);
       padding: 8px 12px;
@@ -60,6 +61,7 @@
     .kt-topbar-left {
       display: flex;
       align-items: center;
+      justify-content: center;         /* center logo + clocks */
       gap: 8px;
       min-width: 0;
       flex-wrap: wrap;
@@ -110,6 +112,10 @@
       color: var(--text-muted);
       font-size: 10px;
       white-space: nowrap;
+      position: absolute;             /* tetap di kanan, tanpa ganggu center */
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
     }
 
     /* MAIN LAYOUT */
@@ -207,8 +213,7 @@
       padding: 8px 10px;
       overflow: auto;
       background: #111111;
-      /* space for fixed submenu + bottom nav */
-      padding-bottom: 110px;
+      padding-bottom: 110px; /* space for fixed submenu + bottom nav */
     }
 
     /* STATUS BAR */
@@ -231,7 +236,7 @@
       max-width: 100%;
     }
 
-    /* SUB MENU – SEKARANG FIXED DI DOWN BAR, DI ATAS BOTTOM NAV */
+    /* SUB MENU – FIXED, DI ATAS BOTTOM NAV */
     .kt-submenu-strip {
       position: fixed;
       left: 0;
@@ -442,10 +447,7 @@
       <div class="kt-topbar-left">
         <div class="kt-logo">KUANTARA TERMINAL</div>
         <div class="kt-session-clock" id="kt-session-clock">
-          <div class="kt-session-item">
-            <span class="kt-session-label">JKT</span>
-            <span class="kt-session-time" data-tz="7"></span>
-          </div>
+          <!-- JKT DIHAPUS, SISANYA TETAP -->
           <div class="kt-session-item">
             <span class="kt-session-label">SYD</span>
             <span class="kt-session-time" data-tz="10"></span>
