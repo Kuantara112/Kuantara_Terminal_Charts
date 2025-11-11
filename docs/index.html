@@ -20,8 +20,6 @@
       --border-soft: #2b2b2b;
       --text-main: #f5f5f5;
       --text-muted: #9b9b9b;
-      --danger: #ff4b4b;
-      --success: #1dd75b;
     }
 
     * {
@@ -38,13 +36,17 @@
       overflow: hidden;
     }
 
+    body.sidebar-open {
+      overflow: hidden;
+    }
+
     .kt-root {
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
 
-    /* TOP BAR (Bloomberg-like strip) */
+    /* TOP BAR */
     .kt-topbar {
       display: flex;
       align-items: center;
@@ -53,12 +55,15 @@
       border-bottom: 1px solid var(--border-soft);
       padding: 6px 10px;
       font-size: 11px;
+      z-index: 30;
+      position: relative;
     }
 
     .kt-topbar-left {
       display: flex;
       align-items: center;
       gap: 8px;
+      min-width: 0;
     }
 
     .kt-logo {
@@ -77,6 +82,17 @@
       font-size: 10px;
       color: var(--text-muted);
       white-space: nowrap;
+      display: none;
+    }
+
+    .kt-menu-toggle {
+      border-radius: 2px;
+      border: 1px solid var(--border-soft);
+      background: #101010;
+      color: var(--amber);
+      font-size: 13px;
+      padding: 2px 8px;
+      cursor: pointer;
     }
 
     .kt-topbar-right {
@@ -86,11 +102,7 @@
       color: var(--text-muted);
       flex-wrap: wrap;
       justify-content: flex-end;
-    }
-
-    .kt-topbar-status {
       font-size: 10px;
-      white-space: nowrap;
     }
 
     .kt-topbar-pill {
@@ -98,7 +110,10 @@
       border-radius: 2px;
       background: #101010;
       border: 1px solid var(--border-soft);
-      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .kt-topbar-status {
       white-space: nowrap;
     }
 
@@ -109,17 +124,41 @@
       flex-direction: column;
       background: var(--bg-main);
       min-height: 0;
+      position: relative;
     }
 
-    /* SIDEBAR MENU – top block on mobile */
+    /* OVERLAY FOR SIDEBAR ON MOBILE */
+    .kt-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 35;
+      display: none;
+    }
+    body.sidebar-open .kt-overlay {
+      display: block;
+    }
+
+    /* SIDEBAR – drawer on mobile */
     .kt-sidebar {
-      border-bottom: 1px solid var(--border-soft);
+      position: fixed;
+      top: 30px; /* approx topbar height */
+      bottom: 0;
+      left: 0;
+      width: 260px;
+      max-width: 86vw;
       background: #050505;
+      border-right: 1px solid var(--border-soft);
       display: flex;
       flex-direction: column;
       font-size: 12px;
-      max-height: 230px;
-      min-height: 140px;
+      transform: translateX(-100%);
+      transition: transform 0.22s ease-out;
+      z-index: 40;
+    }
+
+    body.sidebar-open .kt-sidebar {
+      transform: translateX(0);
     }
 
     .kt-sidebar-header {
@@ -267,14 +306,7 @@
       overflow: auto;
     }
 
-    /* Placeholder for future iframe content */
-    .kt-iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    /* STATUS BAR (keyboard hints) */
+    /* STATUS BAR */
     .kt-statusbar {
       border-top: 1px solid var(--border-soft);
       padding: 4px 10px;
@@ -312,7 +344,7 @@
       max-width: 40%;
     }
 
-    /* Simple scrollbar */
+    /* SCROLLBAR */
     .kt-menu-scroll::-webkit-scrollbar {
       width: 6px;
     }
@@ -323,7 +355,7 @@
       background: #333333;
     }
 
-    /* FLOATING AI BUTTON (FAB) */
+    /* FLOATING AI BUTTON */
     .kt-ai-fab {
       position: fixed;
       right: 16px;
@@ -459,16 +491,12 @@
       border-color: #f0f0f0;
     }
 
-    .kt-ai-btn.primary:hover {
-      filter: brightness(1.08);
-    }
-
     .kt-ai-btn:disabled {
       opacity: 0.4;
       cursor: default;
     }
 
-    /* DESKTOP LAYOUT OVERRIDES */
+    /* DESKTOP LAYOUT */
     @media (min-width: 900px) {
       .kt-main {
         display: grid;
@@ -477,13 +505,27 @@
       }
 
       .kt-sidebar {
-        border-right: 1px solid var(--border-soft);
-        border-bottom: none;
-        max-height: none;
+        position: relative;
+        top: 0;
+        bottom: 0;
+        transform: translateX(0);
+        max-width: none;
       }
 
-      .kt-content-body {
-        padding: 10px 12px;
+      .kt-overlay {
+        display: none !important;
+      }
+
+      body {
+        overflow: hidden;
+      }
+
+      .kt-menu-toggle {
+        display: none;
+      }
+
+      .kt-topbar-tag {
+        display: inline-block;
       }
 
       .kt-status-msg {
@@ -494,9 +536,13 @@
 </head>
 <body>
   <div class="kt-root">
+    <!-- OVERLAY FOR SIDEBAR -->
+    <div class="kt-overlay" id="kt-overlay"></div>
+
     <!-- TOP BAR -->
     <header class="kt-topbar">
       <div class="kt-topbar-left">
+        <button class="kt-menu-toggle" id="kt-menu-toggle">☰</button>
         <div class="kt-logo">KUANTARA TERMINAL</div>
         <div class="kt-topbar-tag">MARKET INTELLIGENCE · MACRO · QUANT</div>
       </div>
@@ -810,7 +856,7 @@
         </div>
       </aside>
 
-      <!-- CONTENT AREA -->
+      <!-- CONTENT -->
       <section class="kt-content">
         <div class="kt-content-header">
           <div class="kt-breadcrumb">
@@ -823,12 +869,8 @@
           </div>
         </div>
 
-        <!-- BLANK WORKSPACE (future: iframe-based data per menu/sub-menu) -->
         <div class="kt-content-body" id="kt-content-body">
-          <!--
-          Contoh ke depan:
-          <iframe src="https://your-data-source" class="kt-iframe" loading="lazy"></iframe>
-          -->
+          <!-- nanti bisa diisi: <iframe src="..." class="kt-iframe"></iframe> -->
         </div>
 
         <div class="kt-statusbar">
@@ -838,9 +880,7 @@
             <div class="kt-key">Esc · Back to Markets (0)</div>
             <div class="kt-key">TAB · Profile</div>
           </div>
-          <div class="kt-status-msg" id="kt-status-msg">
-            READY
-          </div>
+          <div class="kt-status-msg" id="kt-status-msg">READY</div>
         </div>
       </section>
     </div>
@@ -853,22 +893,22 @@
     <div class="kt-ai-panel-header">
       <div class="kt-ai-panel-title">
         <span>Kuantara AI Assistant</span>
-        <span>Data diambil dari iframe masing-masing modul.</span>
+        <span>Data nanti dibaca dari iframe modul aktif.</span>
       </div>
       <div class="kt-ai-panel-close" id="kt-ai-close">✕</div>
     </div>
     <div class="kt-ai-panel-body">
-      <div>Context-aware helper untuk menjelaskan data di layar.</div>
+      <div>Prototype panel AI untuk menjelaskan data di layar.</div>
       <div class="kt-ai-hint">
-        Nantinya AI bisa membaca data dari iframe (Markets, Macro, Geo-Economic, dll) lalu menjelaskan narasi, risk, dan trade idea.
+        Ke depan: AI akan membaca data dari iframe (Markets, Macro, Geo-Economic, dll) lalu memberikan insight, narasi, dan skenario trading.
       </div>
       <textarea
         class="kt-ai-input"
-        placeholder="Tulis pertanyaan, misalnya: &#10;• Jelaskan kondisi likuiditas global dari panel Macro.&#10;• Apa implikasi yield curve saat ini ke risk assets?"
+        placeholder="Contoh prompt:&#10;• Jelaskan kondisi risk-on / risk-off berdasarkan panel Metrics.&#10;• Apa implikasi yield curve di panel Bonds untuk saham growth?"
         disabled
       ></textarea>
       <div class="kt-ai-hint">
-        (Prototype UI · koneksi ke engine AI & iframe data akan ditambahkan di backend)
+        (UI saja · integrasi ke backend AI & sumber iframe dikerjakan di layer lain)
       </div>
     </div>
     <div class="kt-ai-footer">
@@ -885,12 +925,36 @@
       const breadcrumbSub = document.getElementById("breadcrumb-sub");
       const statusMsg = document.getElementById("kt-status-msg");
 
+      const menuToggle = document.getElementById("kt-menu-toggle");
+      const overlay = document.getElementById("kt-overlay");
+      const sidebar = document.querySelector(".kt-sidebar");
+
       const aiFab = document.getElementById("kt-ai-fab");
       const aiPanel = document.getElementById("kt-ai-panel");
       const aiClose = document.getElementById("kt-ai-close");
 
       let activeMenu = 0;
       let activeSubIndex = 0;
+
+      function isDesktop() {
+        return window.innerWidth >= 900;
+      }
+
+      function openSidebar() {
+        document.body.classList.add("sidebar-open");
+      }
+
+      function closeSidebar() {
+        document.body.classList.remove("sidebar-open");
+      }
+
+      function toggleSidebar() {
+        if (document.body.classList.contains("sidebar-open")) {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
+      }
 
       function setActiveMenu(menuIndex) {
         activeMenu = menuIndex;
@@ -906,7 +970,8 @@
           '.kt-menu-main[data-menu="' + menuIndex + '"] span:nth-child(2)'
         );
         if (activeMain) {
-          breadcrumbMain.textContent = menuIndex + " · " + activeMain.textContent.trim();
+          breadcrumbMain.textContent =
+            menuIndex + " · " + activeMain.textContent.trim();
         }
 
         const firstSub = document.querySelector(
@@ -952,6 +1017,10 @@
         } else if (fromKey) {
           statusMsg.textContent = "NO SUB MENU FOR CTRL + " + subIndex;
         }
+
+        if (!isDesktop()) {
+          closeSidebar();
+        }
       }
 
       // Click handlers main
@@ -959,6 +1028,7 @@
         btn.addEventListener("click", () => {
           const menuIndex = Number(btn.getAttribute("data-menu"));
           setActiveMenu(menuIndex);
+          if (!isDesktop()) openSidebar(); // keep drawer visible to choose sub
         });
       });
 
@@ -971,11 +1041,11 @@
         });
       });
 
-      // Keyboard handlers
+      // Keyboard handlers (desktop focus)
       window.addEventListener("keydown", (e) => {
         const key = e.key;
 
-        // ESCAPE = Alt + 0 (back to Markets)
+        // ESCAPE = Alt + 0
         if (key === "Escape") {
           e.preventDefault();
           setActiveMenu(0);
@@ -984,13 +1054,11 @@
           return;
         }
 
-        // Ctrl + F reserved for Search (just status text for now)
         if (e.ctrlKey && !e.altKey && key.toLowerCase() === "f") {
           statusMsg.textContent = "SEARCH FUNCTION (Ctrl + F) TRIGGERED";
           return;
         }
 
-        // Alt + digit → Main Menu
         if (e.altKey && !e.ctrlKey && /^[0-9]$/.test(key)) {
           e.preventDefault();
           const menuIndex = Number(key);
@@ -998,7 +1066,6 @@
           return;
         }
 
-        // Ctrl + digit → Sub Menu of active menu
         if (e.ctrlKey && !e.altKey && /^[0-9]$/.test(key)) {
           e.preventDefault();
           const subIndex = Number(key);
@@ -1006,6 +1073,10 @@
           return;
         }
       });
+
+      // Sidebar toggle buttons
+      menuToggle.addEventListener("click", toggleSidebar);
+      overlay.addEventListener("click", closeSidebar);
 
       // AI FAB behavior
       function toggleAiPanel(forceState) {
@@ -1023,10 +1094,17 @@
         toggleAiPanel(false);
       });
 
+      // Close sidebar when switching to desktop resize
+      window.addEventListener("resize", () => {
+        if (isDesktop()) {
+          closeSidebar();
+        }
+      });
+
       // Initial state
       setActiveMenu(0);
       setActiveSub(0, 0);
     })();
   </script>
 </body>
-  </html>
+                </html>
