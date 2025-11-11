@@ -477,10 +477,35 @@
       cursor: default;
     }
 
-    /* DESKTOP: konten downbar disimetris tengah */
+    /* DESKTOP: menu & downbar disimetris tengah */
     @media (min-width: 900px) {
       .kt-content-body {
         padding-bottom: 90px;
+      }
+
+      /* center main menu bar di desktop */
+      .kt-mainmenu-strip {
+        justify-content: center;
+      }
+
+      .kt-mainmenu-strip::before,
+      .kt-mainmenu-strip::after {
+        content: "";
+        flex: 0 0 8px; /* sedikit padding kiri/kanan agar tidak nempel */
+      }
+
+      /* center submenu group aktif di desktop */
+      .kt-submenu-strip {
+        display: flex;
+        justify-content: center;
+      }
+
+      .kt-submenu-group {
+        max-width: 980px;
+      }
+
+      .kt-submenu-group.active {
+        justify-content: center;
       }
 
       .kt-downbar {
@@ -581,7 +606,7 @@
           <button class="kt-submenu-btn" data-menu="4" data-sub-index="0">Macro</button>
           <button class="kt-submenu-btn" data-menu="4" data-sub-index="1">Sentiment</button>
           <button class="kt-submenu-btn" data-menu="4" data-sub-index="2">Seasonality</button>
-          <button class="kt-submenu-btn" data-menu="4" data-sub-index="3">Flows</button>
+          <button class="kt-submenu-btn" data-menu-sub="4" data-sub-index="3">Flows</button>
           <button class="kt-submenu-btn" data-menu="4" data-sub-index="4">Regimes</button>
         </div>
 
