@@ -44,7 +44,7 @@
       height: 100vh;
     }
 
-    /* TOP BAR – KUANTARA TERMINAL PASTI MUNCUL DI SINI */
+    /* TOP BAR – KUANTARA TERMINAL */
     .kt-topbar {
       display: flex;
       align-items: center;
@@ -54,7 +54,7 @@
       padding: 8px 12px;
       font-size: 10px;
       z-index: 10;
-      border-bottom: 2px solid var(--amber); /* biar makin kelihatan */
+      border-bottom: 2px solid var(--amber);
     }
 
     .kt-topbar-left {
@@ -207,14 +207,41 @@
       padding: 8px 10px;
       overflow: auto;
       background: #111111;
+      /* space for fixed submenu + bottom nav */
+      padding-bottom: 110px;
     }
 
-    /* SUB MENU DI BAWAH KONTEN – TETAP MUNCUL */
+    /* STATUS BAR */
+    .kt-statusbar {
+      border-top: 1px solid var(--border-soft);
+      padding: 4px 10px 6px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      background: #050505;
+      color: var(--text-muted);
+    }
+
+    .kt-status-msg {
+      font-size: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* SUB MENU – SEKARANG FIXED DI DOWN BAR, DI ATAS BOTTOM NAV */
     .kt-submenu-strip {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 46px; /* tepat di atas bottom nav */
       border-top: 1px solid var(--border-soft);
       background: #090909;
       padding: 4px 6px 4px 8px;
       min-height: 32px;
+      z-index: 14;
     }
 
     .kt-submenu-group {
@@ -246,27 +273,7 @@
       border-color: #f0f0f0;
     }
 
-    /* STATUS BAR */
-    .kt-statusbar {
-      border-top: 1px solid var(--border-soft);
-      padding: 4px 10px 6px;
-      font-size: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      background: #050505;
-      color: var(--text-muted);
-    }
-
-    .kt-status-msg {
-      font-size: 10px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
-    }
-
-    /* BOTTOM NAV */
+    /* BOTTOM NAV (0–4) */
     .kt-bottom-nav {
       position: fixed;
       left: 0;
@@ -307,7 +314,7 @@
     .kt-ai-fab {
       position: fixed;
       right: 16px;
-      bottom: 60px;
+      bottom: 90px; /* di atas submenu strip */
       width: 48px;
       height: 48px;
       border-radius: 50%;
@@ -328,7 +335,7 @@
     .kt-ai-panel {
       position: fixed;
       right: 16px;
-      bottom: 110px;
+      bottom: 140px;
       width: min(360px, 92vw);
       max-height: 60vh;
       background: #111111;
@@ -416,6 +423,8 @@
       .kt-submenu-strip {
         display: flex;
         justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
       }
       .kt-submenu-group {
         max-width: 980px;
@@ -485,94 +494,10 @@
           </div>
         </div>
         <div class="kt-content-body" id="kt-content-body">
-          <!-- nanti diisi iframe -->
+          <!-- Nanti iframe data di sini -->
           <p>Area konten (iframe) di sini.</p>
         </div>
       </section>
-
-      <!-- SUB MENU -->
-      <nav class="kt-submenu-strip">
-        <!-- 0. Markets -->
-        <div class="kt-submenu-group active" data-menu-sub="0">
-          <button class="kt-submenu-btn active" data-menu="0" data-sub-index="0">Overview</button>
-          <button class="kt-submenu-btn" data-menu="0" data-sub-index="1">Forex</button>
-          <button class="kt-submenu-btn" data-menu="0" data-sub-index="2">Commodities</button>
-          <button class="kt-submenu-btn" data-menu="0" data-sub-index="3">Bonds</button>
-          <button class="kt-submenu-btn" data-menu="0" data-sub-index="4">Stocks</button>
-          <button class="kt-submenu-btn" data-menu="0" data-sub-index="5">Crypto</button>
-          <button class="kt-submenu-btn" data-menu="0" data-sub-index="6">ETF</button>
-        </div>
-
-        <!-- 1. News -->
-        <div class="kt-submenu-group" data-menu-sub="1">
-          <button class="kt-submenu-btn" data-menu="1" data-sub-index="0">Global</button>
-          <button class="kt-submenu-btn" data-menu="1" data-sub-index="1">Indonesia</button>
-        </div>
-
-        <!-- 2. Macroeconomic -->
-        <div class="kt-submenu-group" data-menu-sub="2">
-          <button class="kt-submenu-btn" data-menu="2" data-sub-index="0">Core Macro</button>
-          <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">Central Bank</button>
-          <button class="kt-submenu-btn" data-menu="2" data-sub-index="2">Details</button>
-        </div>
-
-        <!-- 3. Geo-Economic -->
-        <div class="kt-submenu-group" data-menu-sub="3">
-          <button class="kt-submenu-btn" data-menu="3" data-sub-index="0">Trade &amp; Shipping</button>
-          <button class="kt-submenu-btn" data-menu="3" data-sub-index="1">Supply Chain</button>
-          <button class="kt-submenu-btn" data-menu="3" data-sub-index="2">Demographics</button>
-          <button class="kt-submenu-btn" data-menu="3" data-sub-index="3">Sources</button>
-        </div>
-
-        <!-- 4. Metrics -->
-        <div class="kt-submenu-group" data-menu-sub="4">
-          <button class="kt-submenu-btn" data-menu="4" data-sub-index="0">Macro</button>
-          <button class="kt-submenu-btn" data-menu="4" data-sub-index="1">Sentiment</button>
-          <button class="kt-submenu-btn" data-menu="4" data-sub-index="2">Seasonality</button>
-          <button class="kt-submenu-btn" data-menu="4" data-sub-index="3">Flows</button>
-          <button class="kt-submenu-btn" data-menu="4" data-sub-index="4">Regimes</button>
-        </div>
-
-        <!-- 5. Companies -->
-        <div class="kt-submenu-group" data-menu-sub="5">
-          <button class="kt-submenu-btn" data-menu="5" data-sub-index="0">United States</button>
-          <button class="kt-submenu-btn" data-menu="5" data-sub-index="1">Indonesia</button>
-          <button class="kt-submenu-btn" data-menu="5" data-sub-index="2">Blockchain Projects</button>
-        </div>
-
-        <!-- 6. Charts -->
-        <div class="kt-submenu-group" data-menu-sub="6">
-          <button class="kt-submenu-btn" data-menu="6" data-sub-index="0">Technical</button>
-          <button class="kt-submenu-btn" data-menu="6" data-sub-index="1">Fundamental</button>
-          <button class="kt-submenu-btn" data-menu="6" data-sub-index="2">Metric</button>
-        </div>
-
-        <!-- 7. Quantitative -->
-        <div class="kt-submenu-group" data-menu-sub="7">
-          <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">Regression</button>
-          <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">Random Walk</button>
-          <button class="kt-submenu-btn" data-menu="7" data-sub-index="2">ARIMA</button>
-          <button class="kt-submenu-btn" data-menu="7" data-sub-index="3">LSTM</button>
-          <button class="kt-submenu-btn" data-menu="7" data-sub-index="4">Portfolio</button>
-          <button class="kt-submenu-btn" data-menu="7" data-sub-index="5">Correlation</button>
-        </div>
-
-        <!-- 8. Research -->
-        <div class="kt-submenu-group" data-menu-sub="8">
-          <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Internal</button>
-          <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Institutions</button>
-          <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Articles</button>
-          <button class="kt-submenu-btn" data-menu="8" data-sub-index="3">Reports</button>
-        </div>
-
-        <!-- 9. Tools -->
-        <div class="kt-submenu-group" data-menu-sub="9">
-          <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Stocks Screener</button>
-          <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Journaling</button>
-          <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Deepnote Page</button>
-          <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Education</button>
-        </div>
-      </nav>
 
       <!-- STATUS -->
       <div class="kt-statusbar">
@@ -580,6 +505,90 @@
       </div>
     </div>
   </div>
+
+  <!-- SUB MENU: FIXED, DI ATAS BOTTOM NAV -->
+  <nav class="kt-submenu-strip">
+    <!-- 0. Markets -->
+    <div class="kt-submenu-group active" data-menu-sub="0">
+      <button class="kt-submenu-btn active" data-menu="0" data-sub-index="0">Overview</button>
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="1">Forex</button>
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="2">Commodities</button>
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="3">Bonds</button>
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="4">Stocks</button>
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="5">Crypto</button>
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="6">ETF</button>
+    </div>
+
+    <!-- 1. News -->
+    <div class="kt-submenu-group" data-menu-sub="1">
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="0">Global</button>
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="1">Indonesia</button>
+    </div>
+
+    <!-- 2. Macroeconomic -->
+    <div class="kt-submenu-group" data-menu-sub="2">
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="0">Core Macro</button>
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">Central Bank</button>
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="2">Details</button>
+    </div>
+
+    <!-- 3. Geo-Economic -->
+    <div class="kt-submenu-group" data-menu-sub="3">
+      <button class="kt-submenu-btn" data-menu="3" data-sub-index="0">Trade &amp; Shipping</button>
+      <button class="kt-submenu-btn" data-menu="3" data-sub-index="1">Supply Chain</button>
+      <button class="kt-submenu-btn" data-menu="3" data-sub-index="2">Demographics</button>
+      <button class="kt-submenu-btn" data-menu="3" data-sub-index="3">Sources</button>
+    </div>
+
+    <!-- 4. Metrics -->
+    <div class="kt-submenu-group" data-menu-sub="4">
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="0">Macro</button>
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="1">Sentiment</button>
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="2">Seasonality</button>
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="3">Flows</button>
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="4">Regimes</button>
+    </div>
+
+    <!-- 5. Companies -->
+    <div class="kt-submenu-group" data-menu-sub="5">
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="0">United States</button>
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="1">Indonesia</button>
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="2">Blockchain Projects</button>
+    </div>
+
+    <!-- 6. Charts -->
+    <div class="kt-submenu-group" data-menu-sub="6">
+      <button class="kt-submenu-btn" data-menu="6" data-sub-index="0">Technical</button>
+      <button class="kt-submenu-btn" data-menu="6" data-sub-index="1">Fundamental</button>
+      <button class="kt-submenu-btn" data-menu="6" data-sub-index="2">Metric</button>
+    </div>
+
+    <!-- 7. Quantitative -->
+    <div class="kt-submenu-group" data-menu-sub="7">
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">Regression</button>
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">Random Walk</button>
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="2">ARIMA</button>
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="3">LSTM</button>
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="4">Portfolio</button>
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="5">Correlation</button>
+    </div>
+
+    <!-- 8. Research -->
+    <div class="kt-submenu-group" data-menu-sub="8">
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Internal</button>
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Institutions</button>
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Articles</button>
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="3">Reports</button>
+    </div>
+
+    <!-- 9. Tools -->
+    <div class="kt-submenu-group" data-menu-sub="9">
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Stocks Screener</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Journaling</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Deepnote Page</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Education</button>
+    </div>
+  </nav>
 
   <!-- BOTTOM NAV -->
   <nav class="kt-bottom-nav">
@@ -590,7 +599,7 @@
     <div class="kt-bottom-item" data-menu-bottom="4"><span>4</span><span>Metrics</span></div>
   </nav>
 
-  <!-- AI FAB & PANEL (dummy) -->
+  <!-- AI FAB & PANEL -->
   <div class="kt-ai-fab" id="kt-ai-fab">AI</div>
   <div class="kt-ai-panel" id="kt-ai-panel">
     <div class="kt-ai-panel-header">
