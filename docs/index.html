@@ -36,10 +36,6 @@
       overflow: hidden;
     }
 
-    body.sidebar-open {
-      overflow: hidden;
-    }
-
     .kt-root {
       display: flex;
       flex-direction: column;
@@ -55,8 +51,7 @@
       border-bottom: 1px solid var(--border-soft);
       padding: 6px 10px;
       font-size: 11px;
-      z-index: 30;
-      position: relative;
+      z-index: 20;
     }
 
     .kt-topbar-left {
@@ -85,16 +80,6 @@
       display: none;
     }
 
-    .kt-menu-toggle {
-      border-radius: 2px;
-      border: 1px solid var(--border-soft);
-      background: #101010;
-      color: var(--amber);
-      font-size: 13px;
-      padding: 2px 8px;
-      cursor: pointer;
-    }
-
     .kt-topbar-right {
       display: flex;
       align-items: center;
@@ -117,137 +102,101 @@
       white-space: nowrap;
     }
 
-    /* MAIN LAYOUT – MOBILE FIRST */
+    /* MAIN LAYOUT */
     .kt-main {
       flex: 1;
       display: flex;
       flex-direction: column;
       background: var(--bg-main);
       min-height: 0;
-      position: relative;
     }
 
-    /* OVERLAY FOR SIDEBAR ON MOBILE */
-    .kt-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 35;
-      display: none;
-    }
-    body.sidebar-open .kt-overlay {
-      display: block;
-    }
-
-    /* SIDEBAR – drawer on mobile */
-    .kt-sidebar {
-      position: fixed;
-      top: 30px; /* approx topbar height */
-      bottom: 0;
-      left: 0;
-      width: 260px;
-      max-width: 86vw;
+    /* TOP MAIN MENU (0–9, scrollable) */
+    .kt-mainmenu-strip {
+      display: flex;
+      gap: 4px;
+      padding: 6px 8px;
       background: #050505;
-      border-right: 1px solid var(--border-soft);
-      display: flex;
-      flex-direction: column;
-      font-size: 12px;
-      transform: translateX(-100%);
-      transition: transform 0.22s ease-out;
-      z-index: 40;
-    }
-
-    body.sidebar-open .kt-sidebar {
-      transform: translateX(0);
-    }
-
-    .kt-sidebar-header {
-      padding: 8px 10px;
       border-bottom: 1px solid var(--border-soft);
-      color: var(--amber);
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-size: 10px;
+      overflow-x: auto;
+      scrollbar-width: thin;
     }
 
-    .kt-menu-scroll {
-      flex: 1;
-      overflow-y: auto;
+    .kt-mainmenu-strip::-webkit-scrollbar {
+      height: 5px;
+    }
+    .kt-mainmenu-strip::-webkit-scrollbar-track {
+      background: #050505;
+    }
+    .kt-mainmenu-strip::-webkit-scrollbar-thumb {
+      background: #333333;
     }
 
-    .kt-menu-block {
-      border-bottom: 1px solid var(--border-soft);
-    }
-
-    .kt-menu-main {
-      width: 100%;
-      text-align: left;
-      padding: 7px 10px;
-      background: transparent;
-      border: none;
-      color: var(--text-main);
-      font-size: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-    }
-
-    .kt-menu-main:hover {
-      background: #141414;
-    }
-
-    .kt-menu-main.active {
-      background: #1f1f1f;
-      border-left: 2px solid var(--amber);
-      padding-left: 8px;
-    }
-
-    .kt-menu-main-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .kt-menu-index {
-      color: var(--amber);
-      min-width: 14px;
-    }
-
-    .kt-menu-hint {
+    .kt-mainmenu-btn {
+      flex: 0 0 auto;
+      padding: 4px 8px;
+      border-radius: 3px;
+      border: 1px solid var(--border-soft);
+      background: #101010;
       color: var(--text-muted);
-      font-size: 10px;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
       white-space: nowrap;
     }
 
-    .kt-submenu {
-      padding: 4px 0 6px 24px;
-      background: #050505;
-      border-top: 1px solid #111111;
-    }
-
-    .kt-submenu-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 3px 10px 3px 0;
-      cursor: pointer;
-      color: var(--text-muted);
-      font-size: 11px;
-    }
-
-    .kt-submenu-item:hover {
-      color: var(--text-main);
-    }
-
-    .kt-submenu-item.active {
+    .kt-mainmenu-btn span:first-child {
       color: var(--amber);
+      font-weight: 500;
     }
 
-    .kt-submenu-hint {
-      font-size: 10px;
+    .kt-mainmenu-btn.active {
+      background: var(--amber);
+      color: #000;
+      border-color: #f0f0f0;
+    }
+
+    .kt-mainmenu-btn.active span:first-child {
+      color: #000;
+    }
+
+    /* SUBMENU STRIP */
+    .kt-submenu-strip {
+      border-bottom: 1px solid var(--border-soft);
+      background: #090909;
+      padding: 4px 6px 4px 8px;
+      min-height: 32px;
+    }
+
+    .kt-submenu-group {
+      display: none;
+      gap: 4px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .kt-submenu-group.active {
+      display: flex;
+    }
+
+    .kt-submenu-btn {
+      flex: 0 0 auto;
+      padding: 3px 8px;
+      border-radius: 3px;
+      border: 1px solid var(--border-soft);
+      background: #101010;
       color: var(--text-muted);
+      font-size: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .kt-submenu-btn.active {
+      background: var(--amber);
+      color: #000;
+      border-color: #f0f0f0;
     }
 
     /* CONTENT AREA */
@@ -301,15 +250,15 @@
 
     .kt-content-body {
       flex: 1;
-      padding: 8px 10px;
+      padding: 8px 10px 52px; /* space for bottom nav */
       background: var(--bg-main);
       overflow: auto;
     }
 
-    /* STATUS BAR */
+    /* STATUS BAR (above bottom nav) */
     .kt-statusbar {
       border-top: 1px solid var(--border-soft);
-      padding: 4px 10px;
+      padding: 4px 10px 6px;
       font-size: 10px;
       display: flex;
       align-items: center;
@@ -344,22 +293,48 @@
       max-width: 40%;
     }
 
-    /* SCROLLBAR */
-    .kt-menu-scroll::-webkit-scrollbar {
-      width: 6px;
-    }
-    .kt-menu-scroll::-webkit-scrollbar-track {
+    /* BOTTOM NAV (0–4) */
+    .kt-bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 46px;
       background: #050505;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      justify-content: space-around;
+      align-items: stretch;
+      font-size: 10px;
+      z-index: 15;
     }
-    .kt-menu-scroll::-webkit-scrollbar-thumb {
-      background: #333333;
+
+    .kt-bottom-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      gap: 1px;
+    }
+
+    .kt-bottom-item span:first-child {
+      font-size: 9px;
+      color: var(--amber);
+    }
+
+    .kt-bottom-item.active {
+      background: #151515;
+      color: var(--amber);
     }
 
     /* FLOATING AI BUTTON */
     .kt-ai-fab {
       position: fixed;
       right: 16px;
-      bottom: 16px;
+      bottom: 60px; /* di atas bottom nav */
       width: 48px;
       height: 48px;
       border-radius: 50%;
@@ -372,7 +347,7 @@
       font-weight: 700;
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
       cursor: pointer;
-      z-index: 50;
+      z-index: 30;
       border: 1px solid #f0f0f0;
       user-select: none;
     }
@@ -381,11 +356,10 @@
       filter: brightness(1.08);
     }
 
-    /* FLOATING AI PANEL */
     .kt-ai-panel {
       position: fixed;
       right: 16px;
-      bottom: 72px;
+      bottom: 110px;
       width: min(360px, 92vw);
       max-height: 60vh;
       background: #111111;
@@ -395,7 +369,7 @@
       display: none;
       flex-direction: column;
       overflow: hidden;
-      z-index: 49;
+      z-index: 29;
     }
 
     .kt-ai-panel-header {
@@ -496,53 +470,32 @@
       cursor: default;
     }
 
-    /* DESKTOP LAYOUT */
+    /* DESKTOP: top tag visible, konten punya padding bawah lebih kecil */
     @media (min-width: 900px) {
-      .kt-main {
-        display: grid;
-        grid-template-columns: 260px minmax(0, 1fr);
-        height: calc(100vh - 30px);
-      }
-
-      .kt-sidebar {
-        position: relative;
-        top: 0;
-        bottom: 0;
-        transform: translateX(0);
-        max-width: none;
-      }
-
-      .kt-overlay {
-        display: none !important;
-      }
-
-      body {
-        overflow: hidden;
-      }
-
-      .kt-menu-toggle {
-        display: none;
-      }
-
       .kt-topbar-tag {
         display: inline-block;
       }
-
-      .kt-status-msg {
-        max-width: 60%;
+      .kt-content-body {
+        padding-bottom: 40px;
+      }
+      .kt-bottom-nav {
+        position: static;
+        height: 40px;
+      }
+      .kt-ai-fab {
+        bottom: 70px;
+      }
+      .kt-ai-panel {
+        bottom: 120px;
       }
     }
   </style>
 </head>
 <body>
   <div class="kt-root">
-    <!-- OVERLAY FOR SIDEBAR -->
-    <div class="kt-overlay" id="kt-overlay"></div>
-
     <!-- TOP BAR -->
     <header class="kt-topbar">
       <div class="kt-topbar-left">
-        <button class="kt-menu-toggle" id="kt-menu-toggle">☰</button>
         <div class="kt-logo">KUANTARA TERMINAL</div>
         <div class="kt-topbar-tag">MARKET INTELLIGENCE · MACRO · QUANT</div>
       </div>
@@ -553,308 +506,124 @@
       </div>
     </header>
 
-    <!-- MAIN LAYOUT -->
     <div class="kt-main">
-      <!-- SIDEBAR -->
-      <aside class="kt-sidebar">
-        <div class="kt-sidebar-header">MAIN MENU (Alt + 0–9)</div>
+      <!-- MAIN MENU STRIP (0–9) -->
+      <nav class="kt-mainmenu-strip" id="kt-mainmenu-strip">
+        <button class="kt-mainmenu-btn active" data-menu="0">
+          <span>0</span><span>Markets</span>
+        </button>
+        <button class="kt-mainmenu-btn" data-menu="1">
+          <span>1</span><span>News</span>
+        </button>
+        <button class="kt-mainmenu-btn" data-menu="2">
+          <span>2</span><span>Macroeconomic</span>
+        </button>
+        <button class="kt-mainmenu-btn" data-menu="3">
+          <span>3</span><span>Geo-Economic</span>
+        </button>
+        <button class="kt-mainmenu-btn" data-menu="4">
+          <span>4</span><span>Metrics</span>
+        </button>
+        <button class="kt-mainmenu-btn" data-menu="5">
+          <span>5</span><span>Companies</span>
+        </button>
+        <button class="kt-mainmenu-btn" data-menu="6">
+          <span>6</span><span>Charts</span>
+        </button>
+        <button class="kt-mainmenu-btn" data-menu="7">
+          <span>7</span><span>Quantitative</span>
+        </button>
+        <button class="kt-mainmenu-btn" data-menu="8">
+          <span>8</span><span>Research</span>
+        </button>
+        <button class="kt-mainmenu-btn" data-menu="9">
+          <span>9</span><span>Tools</span>
+        </button>
+      </nav>
 
-        <div class="kt-menu-scroll">
-          <!-- 0. MARKETS -->
-          <div class="kt-menu-block" data-menu="0">
-            <button class="kt-menu-main active" data-menu="0">
-              <span class="kt-menu-main-label">
-                <span class="kt-menu-index">0</span>
-                <span>Markets</span>
-              </span>
-              <span class="kt-menu-hint">Alt+0</span>
-            </button>
-            <div class="kt-submenu" data-menu-sub="0">
-              <div class="kt-submenu-item active" data-menu="0" data-sub-index="0">
-                <span>Overview</span>
-                <span class="kt-submenu-hint">Ctrl+0</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="0" data-sub-index="1">
-                <span>Forex</span>
-                <span class="kt-submenu-hint">Ctrl+1</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="0" data-sub-index="2">
-                <span>Commodities</span>
-                <span class="kt-submenu-hint">Ctrl+2</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="0" data-sub-index="3">
-                <span>Bonds</span>
-                <span class="kt-submenu-hint">Ctrl+3</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="0" data-sub-index="4">
-                <span>Stocks</span>
-                <span class="kt-submenu-hint">Ctrl+4</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="0" data-sub-index="5">
-                <span>Crypto</span>
-                <span class="kt-submenu-hint">Ctrl+5</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="0" data-sub-index="6">
-                <span>ETF</span>
-                <span class="kt-submenu-hint">Ctrl+6</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 1. NEWS -->
-          <div class="kt-menu-block" data-menu="1">
-            <button class="kt-menu-main" data-menu="1">
-              <span class="kt-menu-main-label">
-                <span class="kt-menu-index">1</span>
-                <span>News</span>
-              </span>
-              <span class="kt-menu-hint">Alt+1</span>
-            </button>
-            <div class="kt-submenu" data-menu-sub="1">
-              <div class="kt-submenu-item" data-menu="1" data-sub-index="0">
-                <span>Global</span>
-                <span class="kt-submenu-hint">Ctrl+0</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="1" data-sub-index="1">
-                <span>Indonesia</span>
-                <span class="kt-submenu-hint">Ctrl+1</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 2. MACROECONOMIC -->
-          <div class="kt-menu-block" data-menu="2">
-            <button class="kt-menu-main" data-menu="2">
-              <span class="kt-menu-main-label">
-                <span class="kt-menu-index">2</span>
-                <span>Macroeconomic</span>
-              </span>
-              <span class="kt-menu-hint">Alt+2</span>
-            </button>
-            <div class="kt-submenu" data-menu-sub="2">
-              <div class="kt-submenu-item" data-menu="2" data-sub-index="0">
-                <span>Core Macro</span>
-                <span class="kt-submenu-hint">Ctrl+0</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="2" data-sub-index="1">
-                <span>Central Bank</span>
-                <span class="kt-submenu-hint">Ctrl+1</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="2" data-sub-index="2">
-                <span>Details</span>
-                <span class="kt-submenu-hint">Ctrl+2</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 3. GEO-ECONOMIC -->
-          <div class="kt-menu-block" data-menu="3">
-            <button class="kt-menu-main" data-menu="3">
-              <span class="kt-menu-main-label">
-                <span class="kt-menu-index">3</span>
-                <span>Geo-Economic</span>
-              </span>
-              <span class="kt-menu-hint">Alt+3</span>
-            </button>
-            <div class="kt-submenu" data-menu-sub="3">
-              <div class="kt-submenu-item" data-menu="3" data-sub-index="0">
-                <span>Trade &amp; Shipping</span>
-                <span class="kt-submenu-hint">Ctrl+0</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="3" data-sub-index="1">
-                <span>Supply Chain</span>
-                <span class="kt-submenu-hint">Ctrl+1</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="3" data-sub-index="2">
-                <span>Demographics</span>
-                <span class="kt-submenu-hint">Ctrl+2</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="3" data-sub-index="3">
-                <span>Sources</span>
-                <span class="kt-submenu-hint">Ctrl+3</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 4. METRICS -->
-          <div class="kt-menu-block" data-menu="4">
-            <button class="kt-menu-main" data-menu="4">
-              <span class="kt-menu-main-label">
-                <span class="kt-menu-index">4</span>
-                <span>Metrics</span>
-              </span>
-              <span class="kt-menu-hint">Alt+4</span>
-            </button>
-            <div class="kt-submenu" data-menu-sub="4">
-              <div class="kt-submenu-item" data-menu="4" data-sub-index="0">
-                <span>Macro</span>
-                <span class="kt-submenu-hint">Ctrl+0</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="4" data-sub-index="1">
-                <span>Sentiment</span>
-                <span class="kt-submenu-hint">Ctrl+1</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="4" data-sub-index="2">
-                <span>Seasonality</span>
-                <span class="kt-submenu-hint">Ctrl+2</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="4" data-sub-index="3">
-                <span>Flows</span>
-                <span class="kt-submenu-hint">Ctrl+3</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="4" data-sub-index="4">
-                <span>Regimes</span>
-                <span class="kt-submenu-hint">Ctrl+4</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 5. COMPANIES -->
-          <div class="kt-menu-block" data-menu="5">
-            <button class="kt-menu-main" data-menu="5">
-              <span class="kt-menu-main-label">
-                <span class="kt-menu-index">5</span>
-                <span>Companies</span>
-              </span>
-              <span class="kt-menu-hint">Alt+5</span>
-            </button>
-            <div class="kt-submenu" data-menu-sub="5">
-              <div class="kt-submenu-item" data-menu="5" data-sub-index="0">
-                <span>United States</span>
-                <span class="kt-submenu-hint">Ctrl+0</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="5" data-sub-index="1">
-                <span>Indonesia</span>
-                <span class="kt-submenu-hint">Ctrl+1</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="5" data-sub-index="2">
-                <span>Blockchain Projects</span>
-                <span class="kt-submenu-hint">Ctrl+2</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 6. CHARTS -->
-          <div class="kt-menu-block" data-menu="6">
-            <button class="kt-menu-main" data-menu="6">
-              <span class="kt-menu-main-label">
-                <span class="kt-menu-index">6</span>
-                <span>Charts</span>
-              </span>
-              <span class="kt-menu-hint">Alt+6</span>
-            </button>
-            <div class="kt-submenu" data-menu-sub="6">
-              <div class="kt-submenu-item" data-menu="6" data-sub-index="0">
-                <span>Technical</span>
-                <span class="kt-submenu-hint">Ctrl+0</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="6" data-sub-index="1">
-                <span>Fundamental</span>
-                <span class="kt-submenu-hint">Ctrl+1</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="6" data-sub-index="2">
-                <span>Metric</span>
-                <span class="kt-submenu-hint">Ctrl+2</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 7. QUANTITATIVE -->
-          <div class="kt-menu-block" data-menu="7">
-            <button class="kt-menu-main" data-menu="7">
-              <span class="kt-menu-main-label">
-                <span class="kt-menu-index">7</span>
-                <span>Quantitative</span>
-              </span>
-              <span class="kt-menu-hint">Alt+7</span>
-            </button>
-            <div class="kt-submenu" data-menu-sub="7">
-              <div class="kt-submenu-item" data-menu="7" data-sub-index="0">
-                <span>Regression</span>
-                <span class="kt-submenu-hint">Ctrl+0</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="7" data-sub-index="1">
-                <span>Random Walk</span>
-                <span class="kt-submenu-hint">Ctrl+1</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="7" data-sub-index="2">
-                <span>ARIMA</span>
-                <span class="kt-submenu-hint">Ctrl+2</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="7" data-sub-index="3">
-                <span>LSTM</span>
-                <span class="kt-submenu-hint">Ctrl+3</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="7" data-sub-index="4">
-                <span>Portfolio</span>
-                <span class="kt-submenu-hint">Ctrl+4</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="7" data-sub-index="5">
-                <span>Correlation</span>
-                <span class="kt-submenu-hint">Ctrl+5</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 8. RESEARCH -->
-          <div class="kt-menu-block" data-menu="8">
-            <button class="kt-menu-main" data-menu="8">
-              <span class="kt-menu-main-label">
-                <span class="kt-menu-index">8</span>
-                <span>Research</span>
-              </span>
-              <span class="kt-menu-hint">Alt+8</span>
-            </button>
-            <div class="kt-submenu" data-menu-sub="8">
-              <div class="kt-submenu-item" data-menu="8" data-sub-index="0">
-                <span>Internal</span>
-                <span class="kt-submenu-hint">Ctrl+0</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="8" data-sub-index="1">
-                <span>Institutions</span>
-                <span class="kt-submenu-hint">Ctrl+1</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="8" data-sub-index="2">
-                <span>Articles</span>
-                <span class="kt-submenu-hint">Ctrl+2</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="8" data-sub-index="3">
-                <span>Reports</span>
-                <span class="kt-submenu-hint">Ctrl+3</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 9. TOOLS -->
-          <div class="kt-menu-block" data-menu="9">
-            <button class="kt-menu-main" data-menu="9">
-              <span class="kt-menu-main-label">
-                <span class="kt-menu-index">9</span>
-                <span>Tools</span>
-              </span>
-              <span class="kt-menu-hint">Alt+9</span>
-            </button>
-            <div class="kt-submenu" data-menu-sub="9">
-              <div class="kt-submenu-item" data-menu="9" data-sub-index="0">
-                <span>Stocks Screener</span>
-                <span class="kt-submenu-hint">Ctrl+0</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="9" data-sub-index="1">
-                <span>Journaling</span>
-                <span class="kt-submenu-hint">Ctrl+1</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="9" data-sub-index="2">
-                <span>Deepnote Page</span>
-                <span class="kt-submenu-hint">Ctrl+2</span>
-              </div>
-              <div class="kt-submenu-item" data-menu="9" data-sub-index="3">
-                <span>Education</span>
-                <span class="kt-submenu-hint">Ctrl+3</span>
-              </div>
-            </div>
-          </div>
+      <!-- SUB MENU STRIP -->
+      <nav class="kt-submenu-strip">
+        <!-- 0. Markets -->
+        <div class="kt-submenu-group active" data-menu-sub="0">
+          <button class="kt-submenu-btn active" data-menu="0" data-sub-index="0">Overview</button>
+          <button class="kt-submenu-btn" data-menu="0" data-sub-index="1">Forex</button>
+          <button class="kt-submenu-btn" data-menu="0" data-sub-index="2">Commodities</button>
+          <button class="kt-submenu-btn" data-menu="0" data-sub-index="3">Bonds</button>
+          <button class="kt-submenu-btn" data-menu="0" data-sub-index="4">Stocks</button>
+          <button class="kt-submenu-btn" data-menu="0" data-sub-index="5">Crypto</button>
+          <button class="kt-submenu-btn" data-menu="0" data-sub-index="6">ETF</button>
         </div>
-      </aside>
+
+        <!-- 1. News -->
+        <div class="kt-submenu-group" data-menu-sub="1">
+          <button class="kt-submenu-btn" data-menu="1" data-sub-index="0">Global</button>
+          <button class="kt-submenu-btn" data-menu="1" data-sub-index="1">Indonesia</button>
+        </div>
+
+        <!-- 2. Macroeconomic -->
+        <div class="kt-submenu-group" data-menu-sub="2">
+          <button class="kt-submenu-btn" data-menu="2" data-sub-index="0">Core Macro</button>
+          <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">Central Bank</button>
+          <button class="kt-submenu-btn" data-menu="2" data-sub-index="2">Details</button>
+        </div>
+
+        <!-- 3. Geo-Economic -->
+        <div class="kt-submenu-group" data-menu-sub="3">
+          <button class="kt-submenu-btn" data-menu="3" data-sub-index="0">Trade &amp; Shipping</button>
+          <button class="kt-submenu-btn" data-menu="3" data-sub-index="1">Supply Chain</button>
+          <button class="kt-submenu-btn" data-menu="3" data-sub-index="2">Demographics</button>
+          <button class="kt-submenu-btn" data-menu="3" data-sub-index="3">Sources</button>
+        </div>
+
+        <!-- 4. Metrics -->
+        <div class="kt-submenu-group" data-menu-sub="4">
+          <button class="kt-submenu-btn" data-menu="4" data-sub-index="0">Macro</button>
+          <button class="kt-submenu-btn" data-menu="4" data-sub-index="1">Sentiment</button>
+          <button class="kt-submenu-btn" data-menu="4" data-sub-index="2">Seasonality</button>
+          <button class="kt-submenu-btn" data-menu="4" data-sub-index="3">Flows</button>
+          <button class="kt-submenu-btn" data-menu="4" data-sub-index="4">Regimes</button>
+        </div>
+
+        <!-- 5. Companies -->
+        <div class="kt-submenu-group" data-menu-sub="5">
+          <button class="kt-submenu-btn" data-menu="5" data-sub-index="0">United States</button>
+          <button class="kt-submenu-btn" data-menu="5" data-sub-index="1">Indonesia</button>
+          <button class="kt-submenu-btn" data-menu="5" data-sub-index="2">Blockchain Projects</button>
+        </div>
+
+        <!-- 6. Charts -->
+        <div class="kt-submenu-group" data-menu-sub="6">
+          <button class="kt-submenu-btn" data-menu="6" data-sub-index="0">Technical</button>
+          <button class="kt-submenu-btn" data-menu="6" data-sub-index="1">Fundamental</button>
+          <button class="kt-submenu-btn" data-menu="6" data-sub-index="2">Metric</button>
+        </div>
+
+        <!-- 7. Quantitative -->
+        <div class="kt-submenu-group" data-menu-sub="7">
+          <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">Regression</button>
+          <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">Random Walk</button>
+          <button class="kt-submenu-btn" data-menu="7" data-sub-index="2">ARIMA</button>
+          <button class="kt-submenu-btn" data-menu="7" data-sub-index="3">LSTM</button>
+          <button class="kt-submenu-btn" data-menu="7" data-sub-index="4">Portfolio</button>
+          <button class="kt-submenu-btn" data-menu="7" data-sub-index="5">Correlation</button>
+        </div>
+
+        <!-- 8. Research -->
+        <div class="kt-submenu-group" data-menu-sub="8">
+          <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Internal</button>
+          <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Institutions</button>
+          <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Articles</button>
+          <button class="kt-submenu-btn" data-menu="8" data-sub-index="3">Reports</button>
+        </div>
+
+        <!-- 9. Tools -->
+        <div class="kt-submenu-group" data-menu-sub="9">
+          <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Stocks Screener</button>
+          <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Journaling</button>
+          <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Deepnote Page</button>
+          <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Education</button>
+        </div>
+      </nav>
 
       <!-- CONTENT -->
       <section class="kt-content">
@@ -870,7 +639,8 @@
         </div>
 
         <div class="kt-content-body" id="kt-content-body">
-          <!-- nanti bisa diisi: <iframe src="..." class="kt-iframe"></iframe> -->
+          <!-- Nanti diisi iframe: -->
+          <!-- <iframe src="..." class="kt-iframe" loading="lazy"></iframe> -->
         </div>
 
         <div class="kt-statusbar">
@@ -886,6 +656,30 @@
     </div>
   </div>
 
+  <!-- BOTTOM NAV (0–4) -->
+  <nav class="kt-bottom-nav">
+    <div class="kt-bottom-item active" data-menu-bottom="0">
+      <span>0</span>
+      <span>Markets</span>
+    </div>
+    <div class="kt-bottom-item" data-menu-bottom="1">
+      <span>1</span>
+      <span>News</span>
+    </div>
+    <div class="kt-bottom-item" data-menu-bottom="2">
+      <span>2</span>
+      <span>Macro</span>
+    </div>
+    <div class="kt-bottom-item" data-menu-bottom="3">
+      <span>3</span>
+      <span>Geo</span>
+    </div>
+    <div class="kt-bottom-item" data-menu-bottom="4">
+      <span>4</span>
+      <span>Metrics</span>
+    </div>
+  </nav>
+
   <!-- FLOATING AI FAB & PANEL -->
   <div class="kt-ai-fab" id="kt-ai-fab">AI</div>
 
@@ -900,15 +694,16 @@
     <div class="kt-ai-panel-body">
       <div>Prototype panel AI untuk menjelaskan data di layar.</div>
       <div class="kt-ai-hint">
-        Ke depan: AI akan membaca data dari iframe (Markets, Macro, Geo-Economic, dll) lalu memberikan insight, narasi, dan skenario trading.
+        Ke depan: AI akan membaca data dari iframe (Markets, Macro, Geo-Economic, dll) lalu
+        memberikan insight & skenario trading.
       </div>
       <textarea
         class="kt-ai-input"
-        placeholder="Contoh prompt:&#10;• Jelaskan kondisi risk-on / risk-off berdasarkan panel Metrics.&#10;• Apa implikasi yield curve di panel Bonds untuk saham growth?"
+        placeholder="Contoh prompt:&#10;• Jelaskan kondisi risk-on / risk-off di panel Metrics.&#10;• Apa implikasi data yield bonds ke saham growth?"
         disabled
       ></textarea>
       <div class="kt-ai-hint">
-        (UI saja · integrasi ke backend AI & sumber iframe dikerjakan di layer lain)
+        (UI saja · integrasi ke backend AI & iframe dikerjakan terpisah)
       </div>
     </div>
     <div class="kt-ai-footer">
@@ -919,15 +714,14 @@
 
   <script>
     (function () {
-      const mainButtons = document.querySelectorAll(".kt-menu-main");
-      const subItems = document.querySelectorAll(".kt-submenu-item");
+      const mainButtons = document.querySelectorAll(".kt-mainmenu-btn");
+      const submenuGroups = document.querySelectorAll(".kt-submenu-group");
+      const submenuButtons = document.querySelectorAll(".kt-submenu-btn");
+      const bottomItems = document.querySelectorAll(".kt-bottom-item");
+
       const breadcrumbMain = document.getElementById("breadcrumb-main");
       const breadcrumbSub = document.getElementById("breadcrumb-sub");
       const statusMsg = document.getElementById("kt-status-msg");
-
-      const menuToggle = document.getElementById("kt-menu-toggle");
-      const overlay = document.getElementById("kt-overlay");
-      const sidebar = document.querySelector(".kt-sidebar");
 
       const aiFab = document.getElementById("kt-ai-fab");
       const aiPanel = document.getElementById("kt-ai-panel");
@@ -936,29 +730,10 @@
       let activeMenu = 0;
       let activeSubIndex = 0;
 
-      function isDesktop() {
-        return window.innerWidth >= 900;
-      }
-
-      function openSidebar() {
-        document.body.classList.add("sidebar-open");
-      }
-
-      function closeSidebar() {
-        document.body.classList.remove("sidebar-open");
-      }
-
-      function toggleSidebar() {
-        if (document.body.classList.contains("sidebar-open")) {
-          closeSidebar();
-        } else {
-          openSidebar();
-        }
-      }
-
       function setActiveMenu(menuIndex) {
         activeMenu = menuIndex;
 
+        // top main buttons
         mainButtons.forEach((btn) => {
           btn.classList.toggle(
             "active",
@@ -966,16 +741,34 @@
           );
         });
 
+        // bottom nav 0–4
+        bottomItems.forEach((item) => {
+          item.classList.toggle(
+            "active",
+            Number(item.getAttribute("data-menu-bottom")) === menuIndex
+          );
+        });
+
+        // show submenu group
+        submenuGroups.forEach((group) => {
+          group.classList.toggle(
+            "active",
+            Number(group.getAttribute("data-menu-sub")) === menuIndex
+          );
+        });
+
+        // update breadcrumb main
         const activeMain = document.querySelector(
-          '.kt-menu-main[data-menu="' + menuIndex + '"] span:nth-child(2)'
+          '.kt-mainmenu-btn[data-menu="' + menuIndex + '"] span:nth-child(2)'
         );
         if (activeMain) {
           breadcrumbMain.textContent =
             menuIndex + " · " + activeMain.textContent.trim();
         }
 
+        // default sub 0 if ada
         const firstSub = document.querySelector(
-          '.kt-submenu-item[data-menu="' + menuIndex + '"][data-sub-index="0"]'
+          '.kt-submenu-btn[data-menu="' + menuIndex + '"][data-sub-index="0"]'
         );
         if (firstSub) {
           setActiveSub(menuIndex, 0, false);
@@ -990,25 +783,18 @@
         activeMenu = menuIndex;
         activeSubIndex = subIndex;
 
-        mainButtons.forEach((btn) => {
-          btn.classList.toggle(
-            "active",
-            Number(btn.getAttribute("data-menu")) === menuIndex
-          );
-        });
-
-        subItems.forEach((item) => {
-          const m = Number(item.getAttribute("data-menu"));
-          const s = Number(item.getAttribute("data-sub-index"));
-          item.classList.toggle("active", m === menuIndex && s === subIndex);
+        submenuButtons.forEach((btn) => {
+          const m = Number(btn.getAttribute("data-menu"));
+          const s = Number(btn.getAttribute("data-sub-index"));
+          btn.classList.toggle("active", m === menuIndex && s === subIndex);
         });
 
         const sub = document.querySelector(
-          '.kt-submenu-item[data-menu="' +
+          '.kt-submenu-btn[data-menu="' +
             menuIndex +
             '"][data-sub-index="' +
             subIndex +
-            '"] span:first-child'
+            '"]'
         );
         if (sub) {
           breadcrumbSub.textContent = sub.textContent.trim();
@@ -1017,35 +803,37 @@
         } else if (fromKey) {
           statusMsg.textContent = "NO SUB MENU FOR CTRL + " + subIndex;
         }
-
-        if (!isDesktop()) {
-          closeSidebar();
-        }
       }
 
-      // Click handlers main
+      // top main menu click
       mainButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
-          const menuIndex = Number(btn.getAttribute("data-menu"));
-          setActiveMenu(menuIndex);
-          if (!isDesktop()) openSidebar(); // keep drawer visible to choose sub
+          const idx = Number(btn.getAttribute("data-menu"));
+          setActiveMenu(idx);
         });
       });
 
-      // Click handlers sub
-      subItems.forEach((item) => {
+      // bottom nav click
+      bottomItems.forEach((item) => {
         item.addEventListener("click", () => {
-          const menuIndex = Number(item.getAttribute("data-menu"));
-          const subIndex = Number(item.getAttribute("data-sub-index"));
+          const idx = Number(item.getAttribute("data-menu-bottom"));
+          setActiveMenu(idx);
+        });
+      });
+
+      // submenu click
+      submenuButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const menuIndex = Number(btn.getAttribute("data-menu"));
+          const subIndex = Number(btn.getAttribute("data-sub-index"));
           setActiveSub(menuIndex, subIndex);
         });
       });
 
-      // Keyboard handlers (desktop focus)
+      // keyboard shortcuts tetap jalan
       window.addEventListener("keydown", (e) => {
         const key = e.key;
 
-        // ESCAPE = Alt + 0
         if (key === "Escape") {
           e.preventDefault();
           setActiveMenu(0);
@@ -1074,11 +862,7 @@
         }
       });
 
-      // Sidebar toggle buttons
-      menuToggle.addEventListener("click", toggleSidebar);
-      overlay.addEventListener("click", closeSidebar);
-
-      // AI FAB behavior
+      // AI panel toggle
       function toggleAiPanel(forceState) {
         const isOpen = aiPanel.style.display === "flex";
         const nextState =
@@ -1094,17 +878,10 @@
         toggleAiPanel(false);
       });
 
-      // Close sidebar when switching to desktop resize
-      window.addEventListener("resize", () => {
-        if (isDesktop()) {
-          closeSidebar();
-        }
-      });
-
-      // Initial state
+      // initial
       setActiveMenu(0);
       setActiveSub(0, 0);
     })();
   </script>
 </body>
-                </html>
+</html>
