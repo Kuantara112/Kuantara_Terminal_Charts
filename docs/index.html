@@ -51,66 +51,75 @@
       justify-content: space-between;
       background: #070707;
       border-bottom: 1px solid var(--border-soft);
-      padding: 6px 14px;
-      font-size: 12px;
+      padding: 6px 10px;
+      font-size: 11px;
     }
 
     .kt-topbar-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
 
     .kt-logo {
       font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--amber);
+      white-space: nowrap;
     }
 
     .kt-topbar-tag {
       padding: 2px 6px;
       border: 1px solid var(--border-soft);
       background: #101010;
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-muted);
+      white-space: nowrap;
     }
 
     .kt-topbar-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
       color: var(--text-muted);
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .kt-topbar-status {
-      font-size: 11px;
+      font-size: 10px;
+      white-space: nowrap;
     }
 
     .kt-topbar-pill {
-      padding: 2px 8px;
+      padding: 2px 6px;
       border-radius: 2px;
       background: #101010;
       border: 1px solid var(--border-soft);
-      font-size: 11px;
+      font-size: 10px;
+      white-space: nowrap;
     }
 
-    /* MAIN LAYOUT */
+    /* MAIN LAYOUT – MOBILE FIRST */
     .kt-main {
-      display: grid;
-      grid-template-columns: 260px minmax(0, 1fr);
-      height: calc(100vh - 30px);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       background: var(--bg-main);
+      min-height: 0;
     }
 
-    /* SIDEBAR MENU */
+    /* SIDEBAR MENU – top block on mobile */
     .kt-sidebar {
-      border-right: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--border-soft);
       background: #050505;
       display: flex;
       flex-direction: column;
       font-size: 12px;
+      max-height: 230px;
+      min-height: 140px;
     }
 
     .kt-sidebar-header {
@@ -120,7 +129,7 @@
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      font-size: 11px;
+      font-size: 10px;
     }
 
     .kt-menu-scroll {
@@ -135,7 +144,7 @@
     .kt-menu-main {
       width: 100%;
       text-align: left;
-      padding: 6px 10px;
+      padding: 7px 10px;
       background: transparent;
       border: none;
       color: var(--text-main);
@@ -170,6 +179,7 @@
     .kt-menu-hint {
       color: var(--text-muted);
       font-size: 10px;
+      white-space: nowrap;
     }
 
     .kt-submenu {
@@ -206,43 +216,62 @@
       display: flex;
       flex-direction: column;
       background: var(--bg-main);
+      min-height: 0;
     }
 
     .kt-content-header {
       border-bottom: 1px solid var(--border-soft);
-      padding: 6px 12px;
+      padding: 6px 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 11px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .kt-breadcrumb {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: baseline;
+      min-width: 0;
     }
 
     .kt-breadcrumb-main {
       color: var(--amber);
       font-weight: 500;
+      white-space: nowrap;
     }
 
     .kt-breadcrumb-sub {
       color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 160px;
     }
 
     .kt-header-right {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       color: var(--text-muted);
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      font-size: 10px;
     }
 
     .kt-content-body {
       flex: 1;
-      padding: 10px 12px;
+      padding: 8px 10px;
       background: var(--bg-main);
-      /* intentionally left empty for now (blank workspace) */
+      overflow: auto;
+    }
+
+    /* Placeholder for future iframe content */
+    .kt-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
 
     /* STATUS BAR (keyboard hints) */
@@ -255,11 +284,14 @@
       justify-content: space-between;
       background: #050505;
       color: var(--text-muted);
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .kt-status-keys {
       display: flex;
-      gap: 10px;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
     .kt-key {
@@ -269,10 +301,15 @@
       font-size: 10px;
       background: #101010;
       color: var(--text-muted);
+      white-space: nowrap;
     }
 
     .kt-status-msg {
       font-size: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 40%;
     }
 
     /* Simple scrollbar */
@@ -284,6 +321,174 @@
     }
     .kt-menu-scroll::-webkit-scrollbar-thumb {
       background: #333333;
+    }
+
+    /* FLOATING AI BUTTON (FAB) */
+    .kt-ai-fab {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--amber);
+      color: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+      z-index: 50;
+      border: 1px solid #f0f0f0;
+      user-select: none;
+    }
+
+    .kt-ai-fab:hover {
+      filter: brightness(1.08);
+    }
+
+    /* FLOATING AI PANEL */
+    .kt-ai-panel {
+      position: fixed;
+      right: 16px;
+      bottom: 72px;
+      width: min(360px, 92vw);
+      max-height: 60vh;
+      background: #111111;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.8);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 49;
+    }
+
+    .kt-ai-panel-header {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    .kt-ai-panel-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .kt-ai-panel-title span:first-child {
+      color: var(--amber);
+      font-weight: 500;
+      font-size: 11px;
+    }
+
+    .kt-ai-panel-title span:last-child {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .kt-ai-panel-close {
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    .kt-ai-panel-close:hover {
+      background: #222222;
+    }
+
+    .kt-ai-panel-body {
+      padding: 8px 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .kt-ai-hint {
+      font-size: 10px;
+    }
+
+    .kt-ai-input {
+      margin-top: 4px;
+      padding: 6px 7px;
+      background: #050505;
+      border: 1px solid var(--border-soft);
+      border-radius: 3px;
+      color: var(--text-main);
+      font-family: "Fira Code", monospace;
+      font-size: 11px;
+      width: 100%;
+      resize: none;
+      min-height: 60px;
+    }
+
+    .kt-ai-input::placeholder {
+      color: #555555;
+    }
+
+    .kt-ai-footer {
+      padding: 6px 10px 8px;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .kt-ai-btn {
+      padding: 4px 10px;
+      border-radius: 3px;
+      font-size: 11px;
+      border: 1px solid var(--border-soft);
+      background: #181818;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .kt-ai-btn.primary {
+      background: var(--amber);
+      color: #000;
+      border-color: #f0f0f0;
+    }
+
+    .kt-ai-btn.primary:hover {
+      filter: brightness(1.08);
+    }
+
+    .kt-ai-btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    /* DESKTOP LAYOUT OVERRIDES */
+    @media (min-width: 900px) {
+      .kt-main {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        height: calc(100vh - 30px);
+      }
+
+      .kt-sidebar {
+        border-right: 1px solid var(--border-soft);
+        border-bottom: none;
+        max-height: none;
+      }
+
+      .kt-content-body {
+        padding: 10px 12px;
+      }
+
+      .kt-status-msg {
+        max-width: 60%;
+      }
     }
   </style>
 </head>
@@ -613,14 +818,17 @@
             <span class="kt-breadcrumb-sub" id="breadcrumb-sub">Overview</span>
           </div>
           <div class="kt-header-right">
-            <span>Shift · Keyboard Functions Information</span>
+            <span>Shift · Keyboard Functions</span>
             <span>Ctrl + F · Search</span>
           </div>
         </div>
 
-        <!-- BLANK WORKSPACE (intentionally empty for now) -->
+        <!-- BLANK WORKSPACE (future: iframe-based data per menu/sub-menu) -->
         <div class="kt-content-body" id="kt-content-body">
-          <!-- content will be added later; currently kept clean/empty -->
+          <!--
+          Contoh ke depan:
+          <iframe src="https://your-data-source" class="kt-iframe" loading="lazy"></iframe>
+          -->
         </div>
 
         <div class="kt-statusbar">
@@ -638,6 +846,37 @@
     </div>
   </div>
 
+  <!-- FLOATING AI FAB & PANEL -->
+  <div class="kt-ai-fab" id="kt-ai-fab">AI</div>
+
+  <div class="kt-ai-panel" id="kt-ai-panel">
+    <div class="kt-ai-panel-header">
+      <div class="kt-ai-panel-title">
+        <span>Kuantara AI Assistant</span>
+        <span>Data diambil dari iframe masing-masing modul.</span>
+      </div>
+      <div class="kt-ai-panel-close" id="kt-ai-close">✕</div>
+    </div>
+    <div class="kt-ai-panel-body">
+      <div>Context-aware helper untuk menjelaskan data di layar.</div>
+      <div class="kt-ai-hint">
+        Nantinya AI bisa membaca data dari iframe (Markets, Macro, Geo-Economic, dll) lalu menjelaskan narasi, risk, dan trade idea.
+      </div>
+      <textarea
+        class="kt-ai-input"
+        placeholder="Tulis pertanyaan, misalnya: &#10;• Jelaskan kondisi likuiditas global dari panel Macro.&#10;• Apa implikasi yield curve saat ini ke risk assets?"
+        disabled
+      ></textarea>
+      <div class="kt-ai-hint">
+        (Prototype UI · koneksi ke engine AI & iframe data akan ditambahkan di backend)
+      </div>
+    </div>
+    <div class="kt-ai-footer">
+      <button class="kt-ai-btn" disabled>History</button>
+      <button class="kt-ai-btn primary" disabled>Ask AI</button>
+    </div>
+  </div>
+
   <script>
     (function () {
       const mainButtons = document.querySelectorAll(".kt-menu-main");
@@ -645,6 +884,10 @@
       const breadcrumbMain = document.getElementById("breadcrumb-main");
       const breadcrumbSub = document.getElementById("breadcrumb-sub");
       const statusMsg = document.getElementById("kt-status-msg");
+
+      const aiFab = document.getElementById("kt-ai-fab");
+      const aiPanel = document.getElementById("kt-ai-panel");
+      const aiClose = document.getElementById("kt-ai-close");
 
       let activeMenu = 0;
       let activeSubIndex = 0;
@@ -659,7 +902,6 @@
           );
         });
 
-        // Update breadcrumb main
         const activeMain = document.querySelector(
           '.kt-menu-main[data-menu="' + menuIndex + '"] span:nth-child(2)'
         );
@@ -667,7 +909,6 @@
           breadcrumbMain.textContent = menuIndex + " · " + activeMain.textContent.trim();
         }
 
-        // Default sub: 0 if exists
         const firstSub = document.querySelector(
           '.kt-submenu-item[data-menu="' + menuIndex + '"][data-sub-index="0"]'
         );
@@ -684,7 +925,6 @@
         activeMenu = menuIndex;
         activeSubIndex = subIndex;
 
-        // Ensure main is active if sub called directly
         mainButtons.forEach((btn) => {
           btn.classList.toggle(
             "active",
@@ -765,6 +1005,22 @@
           setActiveSub(activeMenu, subIndex);
           return;
         }
+      });
+
+      // AI FAB behavior
+      function toggleAiPanel(forceState) {
+        const isOpen = aiPanel.style.display === "flex";
+        const nextState =
+          typeof forceState === "boolean" ? forceState : !isOpen;
+        aiPanel.style.display = nextState ? "flex" : "none";
+      }
+
+      aiFab.addEventListener("click", () => {
+        toggleAiPanel();
+      });
+
+      aiClose.addEventListener("click", () => {
+        toggleAiPanel(false);
       });
 
       // Initial state
