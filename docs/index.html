@@ -26,13 +26,16 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      font-family: "Fira Code", monospace !important;
+    }
+
+    html, body {
+      height: 100%;
     }
 
     body {
-      font-family: "Fira Code", monospace;
       background-color: var(--bg-root);
       color: var(--text-main);
-      height: 100vh;
       overflow: hidden;
     }
 
@@ -68,6 +71,35 @@
       font-size: 12px;
       color: var(--amber);
       white-space: nowrap;
+    }
+
+    .kt-session-clock {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    .kt-session-item {
+      display: inline-flex;
+      gap: 2px;
+      align-items: baseline;
+      white-space: nowrap;
+      padding: 1px 4px;
+      border-radius: 2px;
+      background: #101010;
+      border: 1px solid #151515;
+    }
+
+    .kt-session-label {
+      color: var(--amber);
+      font-size: 9px;
+    }
+
+    .kt-session-time {
+      font-size: 9px;
     }
 
     .kt-topbar-tag {
@@ -232,7 +264,7 @@
     }
 
     .kt-header-right {
-      display: none; /* semua teks fungsi dihilangkan */
+      display: none;
     }
 
     .kt-content-body {
@@ -242,7 +274,7 @@
       overflow: auto;
     }
 
-    /* STATUS BAR – hanya status, tanpa keterangan key */
+    /* STATUS BAR – hanya status */
     .kt-statusbar {
       border-top: 1px solid var(--border-soft);
       padding: 4px 10px 6px;
@@ -399,7 +431,6 @@
       border: 1px solid var(--border-soft);
       border-radius: 3px;
       color: var(--text-main);
-      font-family: "Fira Code", monospace;
       font-size: 11px;
       width: 100%;
       resize: none;
@@ -465,6 +496,31 @@
     <header class="kt-topbar">
       <div class="kt-topbar-left">
         <div class="kt-logo">KUANTARA TERMINAL</div>
+
+        <!-- MARKET SESSION CLOCK -->
+        <div class="kt-session-clock" id="kt-session-clock">
+          <div class="kt-session-item">
+            <span class="kt-session-label">JKT</span>
+            <span class="kt-session-time" data-tz="7"></span>
+          </div>
+          <div class="kt-session-item">
+            <span class="kt-session-label">SYD</span>
+            <span class="kt-session-time" data-tz="10"></span>
+          </div>
+          <div class="kt-session-item">
+            <span class="kt-session-label">TYO</span>
+            <span class="kt-session-time" data-tz="9"></span>
+          </div>
+          <div class="kt-session-item">
+            <span class="kt-session-label">LDN</span>
+            <span class="kt-session-time" data-tz="0"></span>
+          </div>
+          <div class="kt-session-item">
+            <span class="kt-session-label">NYC</span>
+            <span class="kt-session-time" data-tz="-5"></span>
+          </div>
+        </div>
+
         <div class="kt-topbar-tag">MARKET INTELLIGENCE · MACRO · QUANT</div>
       </div>
       <div class="kt-topbar-right">
@@ -602,7 +658,7 @@
         </div>
 
         <div class="kt-content-body" id="kt-content-body">
-          <!-- Nanti diisi iframe -->
+          <!-- iframe data nanti di sini -->
         </div>
 
         <div class="kt-statusbar">
@@ -682,6 +738,8 @@
       const aiFab = document.getElementById("kt-ai-fab");
       const aiPanel = document.getElementById("kt-ai-panel");
       const aiClose = document.getElementById("kt-ai-close");
+
+      const sessionTimes = document.querySelectorAll(".kt-session-time");
 
       let activeMenu = 0;
       let activeSubIndex = 0;
@@ -778,7 +836,7 @@
         });
       });
 
-      // Keyboard shortcuts tetap aktif meski keterangannya dihapus
+      // Keyboard shortcuts (tetap aktif)
       window.addEventListener("keydown", (e) => {
         const key = e.key;
 
@@ -810,6 +868,7 @@
         }
       });
 
+      // AI panel toggle
       function toggleAiPanel(forceState) {
         const isOpen = aiPanel.style.display === "flex";
         const nextState =
@@ -825,6 +884,42 @@
         toggleAiPanel(false);
       });
 
+      // MARKET SESSION CLOCK
+      function pad2(n) {
+        return n < 10 ? "0" + n : "" + n;
+      }
+
+      function updateSessions() {
+        const now = new Date();
+        const utc =
+          now.getUTCFullYear() +
+          "-" +
+          pad2(now.getUTCMonth() + 1) +
+          "-" +
+          pad2(now.getUTCDate()) +
+          "T" +
+          pad2(now.getUTCHours()) +
+          ":" +
+          pad2(now.getUTCMinutes()) +
+          ":" +
+          pad2(now.getUTCSeconds()) +
+          "Z";
+        const base = new Date(utc); // clean UTC
+
+        sessionTimes.forEach((el) => {
+          const offset = Number(el.getAttribute("data-tz")) || 0;
+          const localMs = base.getTime() + offset * 60 * 60 * 1000;
+          const d = new Date(localMs);
+          const hh = pad2(d.getUTCHours());
+          const mm = pad2(d.getUTCMinutes());
+          el.textContent = hh + ":" + mm;
+        });
+      }
+
+      updateSessions();
+      setInterval(updateSessions, 1000);
+
+      // initial state
       setActiveMenu(0);
       setActiveSub(0, 0);
     })();
