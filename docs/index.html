@@ -49,7 +49,7 @@
       display: flex;
       align-items: center;
       justify-content: center;          /* center content */
-      position: relative;              /* allow right block absolute */
+      position: relative;
       background: #070707;
       border-bottom: 1px solid var(--border-soft);
       padding: 8px 12px;
@@ -103,19 +103,6 @@
 
     .kt-session-time {
       font-size: 9px;
-    }
-
-    .kt-topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--text-muted);
-      font-size: 10px;
-      white-space: nowrap;
-      position: absolute;             /* tetap di kanan, tanpa ganggu center */
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
     }
 
     /* MAIN LAYOUT */
@@ -438,6 +425,27 @@
         justify-content: center;
       }
     }
+
+    /* Mobile – top bar lebih pendek */
+    @media (max-width: 600px) {
+      .kt-topbar {
+        padding: 4px 8px;
+      }
+      .kt-logo {
+        font-size: 12px;
+      }
+      .kt-session-clock {
+        gap: 2px;
+        font-size: 8px;
+      }
+      .kt-session-item {
+        padding: 0 3px;
+      }
+      .kt-session-label,
+      .kt-session-time {
+        font-size: 8px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -447,7 +455,7 @@
       <div class="kt-topbar-left">
         <div class="kt-logo">KUANTARA TERMINAL</div>
         <div class="kt-session-clock" id="kt-session-clock">
-          <!-- JKT DIHAPUS, SISANYA TETAP -->
+          <!-- Jam dunia (tanpa JKT) -->
           <div class="kt-session-item">
             <span class="kt-session-label">SYD</span>
             <span class="kt-session-time" data-tz="10"></span>
@@ -465,9 +473,6 @@
             <span class="kt-session-time" data-tz="-5"></span>
           </div>
         </div>
-      </div>
-      <div class="kt-topbar-right">
-        <div>PROFILE: GUEST</div>
       </div>
     </header>
 
