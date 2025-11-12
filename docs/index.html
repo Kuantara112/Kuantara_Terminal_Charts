@@ -19,6 +19,7 @@
       --border-soft: #2b2b2b;
       --text-main: #f5f5f5;
       --text-muted: #9b9b9b;
+      --overlay: rgba(0,0,0,0.6);
     }
 
     * {
@@ -28,423 +29,174 @@
       font-family: "Fira Code", monospace !important;
     }
 
-    html, body {
-      height: 100%;
-    }
-
+    html, body { height: 100%; }
     body {
       background-color: var(--bg-root);
       color: var(--text-main);
       overflow: hidden;
     }
 
-    .kt-root {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+    .kt-root { display: flex; flex-direction: column; height: 100vh; }
 
-    /* TOP BAR – KUANTARA TERMINAL (CENTERED) */
+    /* TOP BAR – centered title + world clocks */
     .kt-topbar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      background: #070707;
-      border-bottom: 1px solid var(--border-soft);
-      padding: 8px 12px;
-      font-size: 10px;
-      z-index: 10;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; background: #070707;
       border-bottom: 2px solid var(--amber);
+      padding: 8px 12px; font-size: 10px; z-index: 10;
     }
-
     .kt-topbar-left {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      min-width: 0;
-      flex-wrap: wrap;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; min-width: 0; flex-wrap: wrap;
     }
-
     .kt-logo {
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      font-size: 14px;
-      color: var(--amber);
-      white-space: nowrap;
+      font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      font-size: 14px; color: var(--amber); white-space: nowrap;
     }
-
     .kt-session-clock {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      align-items: center;
-      font-size: 9px;
-      color: var(--text-muted);
+      display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
+      font-size: 9px; color: var(--text-muted);
     }
-
     .kt-session-item {
-      display: inline-flex;
-      gap: 2px;
-      align-items: baseline;
-      white-space: nowrap;
-      padding: 1px 4px;
-      border-radius: 2px;
-      background: #101010;
-      border: 1px solid #151515;
+      display: inline-flex; gap: 2px; align-items: baseline; white-space: nowrap;
+      padding: 1px 4px; border-radius: 2px; background: #101010; border: 1px solid #151515;
     }
+    .kt-session-label { color: var(--amber); font-size: 9px; }
+    .kt-session-time { font-size: 9px; }
 
-    .kt-session-label {
-      color: var(--amber);
-      font-size: 9px;
-    }
-
-    .kt-session-time {
-      font-size: 9px;
-    }
-
-    /* MAIN LAYOUT */
-    .kt-main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: var(--bg-main);
-      min-height: 0;
-    }
+    /* MAIN */
+    .kt-main { flex: 1; display: flex; flex-direction: column; background: var(--bg-main); min-height: 0; }
 
     /* MAIN MENU (0–9) */
     .kt-mainmenu-strip {
-      display: flex;
-      gap: 4px;
-      padding: 6px 8px;
-      background: #050505;
-      border-bottom: 1px solid var(--border-soft);
-      overflow-x: auto;
-      scrollbar-width: thin;
+      display: flex; gap: 4px; padding: 6px 8px; background: #050505;
+      border-bottom: 1px solid var(--border-soft); overflow-x: auto; scrollbar-width: thin;
     }
-
     .kt-mainmenu-btn {
-      flex: 0 0 auto;
-      padding: 4px 8px;
-      border-radius: 3px;
-      border: 1px solid var(--border-soft);
-      background: #101010;
-      color: var(--text-muted);
-      font-size: 11px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      white-space: nowrap;
+      flex: 0 0 auto; padding: 4px 8px; border-radius: 3px; border: 1px solid var(--border-soft);
+      background: #101010; color: var(--text-muted); font-size: 11px; display: inline-flex; align-items: center; gap: 4px;
+      cursor: pointer; white-space: nowrap;
     }
-
-    .kt-mainmenu-btn span:first-child {
-      color: var(--amber);
-      font-weight: 500;
-    }
-
-    .kt-mainmenu-btn.active {
-      background: var(--amber);
-      color: #000;
-      border-color: #f0f0f0;
-    }
-
-    .kt-mainmenu-btn.active span:first-child {
-      color: #000;
-    }
+    .kt-mainmenu-btn span:first-child { color: var(--amber); font-weight: 500; }
+    .kt-mainmenu-btn.active { background: var(--amber); color: #000; border-color: #f0f0f0; }
+    .kt-mainmenu-btn.active span:first-child { color: #000; }
 
     /* CONTENT */
-    .kt-content {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-height: 0;
-    }
-
+    .kt-content { display: flex; flex-direction: column; flex: 1; min-height: 0; }
     .kt-content-header {
-      border-bottom: 1px solid var(--border-soft);
-      padding: 6px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      gap: 8px;
-      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border-soft); padding: 6px 10px; display: flex;
+      justify-content: space-between; align-items: center; font-size: 11px; gap: 8px; flex-wrap: wrap;
     }
-
-    .kt-breadcrumb {
-      display: flex;
-      gap: 6px;
-      align-items: baseline;
-      min-width: 0;
-    }
-
-    .kt-breadcrumb-main {
-      color: var(--amber);
-      font-weight: 500;
-      white-space: nowrap;
-    }
-
-    .kt-breadcrumb-sub {
-      color: var(--text-muted);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 160px;
-    }
-
+    .kt-breadcrumb { display: flex; gap: 6px; align-items: baseline; min-width: 0; }
+    .kt-breadcrumb-main { color: var(--amber); font-weight: 500; white-space: nowrap; }
+    .kt-breadcrumb-sub { color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
     .kt-content-body {
-      flex: 1;
-      padding: 8px 10px;
-      overflow: auto;
-      background: #111111;
-      padding-bottom: 110px; /* space for fixed submenu + bottom nav */
+      flex: 1; padding: 8px 10px; overflow: hidden; background: #111111;
+      padding-bottom: 110px; position: relative;
+    }
+
+    /* Embedded iframe wrapper fills the scrollable area */
+    .kt-embed-wrap {
+      position: absolute; inset: 8px 10px 120px 10px;  /* keep off edges & bottom bars */
+      display: flex; flex-direction: column;
+    }
+    .kt-embed {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #0b0b0b;
     }
 
     /* STATUS BAR */
-    .kt-statusbar {
-      border-top: 1px solid var(--border-soft);
-      padding: 4px 10px 6px;
-      font-size: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      background: #050505;
-      color: var(--text-muted);
-    }
+    .kt-statusbar { border-top: 1px solid var(--border-soft); padding: 4px 10px 6px; font-size: 10px; display: flex; align-items: center; background: #050505; color: var(--text-muted); }
+    .kt-status-msg { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
-    .kt-status-msg {
-      font-size: 10px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
-    }
-
-    /* SUB MENU – FIXED, DI ATAS BOTTOM NAV */
+    /* SUB MENU – fixed above bottom nav */
     .kt-submenu-strip {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 46px; /* tepat di atas bottom nav */
-      border-top: 1px solid var(--border-soft);
-      background: #090909;
-      padding: 4px 6px 4px 8px;
-      min-height: 32px;
-      z-index: 14;
+      position: fixed; left: 0; right: 0; bottom: 46px; border-top: 1px solid var(--border-soft);
+      background: #090909; padding: 4px 6px 4px 8px; min-height: 32px; z-index: 14;
     }
-
-    .kt-submenu-group {
-      display: none;
-      gap: 4px;
-      overflow-x: auto;
-      padding-bottom: 2px;
-    }
-
-    .kt-submenu-group.active {
-      display: flex;
-    }
-
+    .kt-submenu-group { display: none; gap: 4px; overflow-x: auto; padding-bottom: 2px; }
+    .kt-submenu-group.active { display: flex; }
     .kt-submenu-btn {
-      flex: 0 0 auto;
-      padding: 3px 8px;
-      border-radius: 3px;
-      border: 1px solid var(--border-soft);
-      background: #101010;
-      color: var(--text-muted);
-      font-size: 10px;
-      cursor: pointer;
-      white-space: nowrap;
+      flex: 0 0 auto; padding: 3px 8px; border-radius: 3px; border: 1px solid var(--border-soft);
+      background: #101010; color: var(--text-muted); font-size: 10px; cursor: pointer; white-space: nowrap;
     }
-
-    .kt-submenu-btn.active {
-      background: var(--amber);
-      color: #000;
-      border-color: #f0f0f0;
-    }
+    .kt-submenu-btn.active { background: var(--amber); color: #000; border-color: #f0f0f0; }
 
     /* BOTTOM NAV (0–4) */
     .kt-bottom-nav {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 46px;
-      background: #050505;
-      border-top: 1px solid var(--border-soft);
-      display: flex;
-      justify-content: space-around;
-      align-items: stretch;
-      font-size: 10px;
-      z-index: 15;
+      position: fixed; left: 0; right: 0; bottom: 0; height: 46px; background: #050505;
+      border-top: 1px solid var(--border-soft); display: flex; justify-content: space-around; align-items: stretch; font-size: 10px; z-index: 15;
     }
-
     .kt-bottom-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      cursor: pointer;
-      gap: 1px;
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: var(--text-muted); cursor: pointer; gap: 1px;
     }
-
-    .kt-bottom-item span:first-child {
-      font-size: 9px;
-      color: var(--amber);
-    }
-
-    .kt-bottom-item.active {
-      background: #151515;
-      color: var(--amber);
-    }
+    .kt-bottom-item span:first-child { font-size: 9px; color: var(--amber); }
+    .kt-bottom-item.active { background: #151515; color: var(--amber); }
 
     /* AI FAB */
     .kt-ai-fab {
-      position: fixed;
-      right: 16px;
-      bottom: 90px; /* di atas submenu strip */
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--amber);
-      color: #000000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      font-weight: 700;
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
-      cursor: pointer;
-      z-index: 30;
-      border: 1px solid #f0f0f0;
-      user-select: none;
+      position: fixed; right: 16px; bottom: 90px; width: 48px; height: 48px; border-radius: 50%;
+      background: var(--amber); color: #000000; display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6); cursor: pointer; z-index: 30; border: 1px solid #f0f0f0; user-select: none;
     }
-
     .kt-ai-panel {
-      position: fixed;
-      right: 16px;
-      bottom: 140px;
-      width: min(360px, 92vw);
-      max-height: 60vh;
-      background: #111111;
-      border-radius: 10px;
-      border: 1px solid var(--border-soft);
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.8);
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 29;
+      position: fixed; right: 16px; bottom: 140px; width: min(360px, 92vw); max-height: 60vh; background: #111111;
+      border-radius: 10px; border: 1px solid var(--border-soft); box-shadow: 0 10px 26px rgba(0,0,0,0.8);
+      display: none; flex-direction: column; overflow: hidden; z-index: 29;
+    }
+    .kt-ai-panel-header { padding: 8px 10px; border-bottom: 1px solid var(--border-soft); display: flex; align-items: center; justify-content: space-between; font-size: 11px; }
+    .kt-ai-panel-title { display: flex; flex-direction: column; gap: 2px; }
+    .kt-ai-panel-title span:first-child { color: var(--amber); font-weight: 500; font-size: 11px; }
+    .kt-ai-panel-title span:last-child { color: var(--text-muted); font-size: 10px; }
+    .kt-ai-panel-close { cursor: pointer; font-size: 12px; color: var(--text-muted); padding: 2px 6px; border-radius: 3px; }
+    .kt-ai-panel-body { padding: 8px 10px; font-size: 11px; color: var(--text-muted); display: flex; flex-direction: column; gap: 6px; }
+    .kt-ai-footer { padding: 6px 10px 8px; border-top: 1px solid var(--border-soft); display: flex; justify-content: flex-end; gap: 6px; }
+    .kt-ai-btn { padding: 4px 10px; border-radius: 3px; font-size: 11px; border: 1px solid var(--border-soft); background: #181818; color: var(--text-muted); cursor: pointer; }
+    .kt-ai-btn.primary { background: var(--amber); color: #000; border-color: #f0f0f0; }
+
+    /* Overlays: Search, Profile, Cheat-sheet */
+    .kt-overlay {
+      position: fixed; inset: 0; background: var(--overlay); display: none; align-items: center; justify-content: center; z-index: 40;
+    }
+    .kt-card {
+      background: #0e0e0e; border: 1px solid var(--border-soft); border-radius: 10px; padding: 12px; width: min(560px, 92vw);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.8);
+    }
+    .kt-card-title { color: var(--amber); font-size: 12px; margin-bottom: 8px; }
+    .kt-search-input {
+      width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-soft); background: #111; color: var(--text-main);
+      outline: none;
+    }
+    .kt-close-btn {
+      margin-top: 10px; padding: 6px 10px; font-size: 11px; border-radius: 4px; border: 1px solid var(--border-soft);
+      background: #181818; color: var(--text-muted); cursor: pointer;
     }
 
-    .kt-ai-panel-header {
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--border-soft);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
+    .kt-cheatsheet {
+      position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%);
+      background: #0e0e0e; border: 1px solid var(--border-soft); border-radius: 8px; padding: 8px 10px; z-index: 35;
+      display: none; font-size: 10px; color: var(--text-muted);
     }
-
-    .kt-ai-panel-title {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .kt-ai-panel-title span:first-child {
-      color: var(--amber);
-      font-weight: 500;
-      font-size: 11px;
-    }
-
-    .kt-ai-panel-title span:last-child {
-      color: var(--text-muted);
-      font-size: 10px;
-    }
-
-    .kt-ai-panel-close {
-      cursor: pointer;
-      font-size: 12px;
-      color: var(--text-muted);
-      padding: 2px 6px;
-      border-radius: 3px;
-    }
-
-    .kt-ai-panel-body {
-      padding: 8px 10px;
-      font-size: 11px;
-      color: var(--text-muted);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .kt-ai-footer {
-      padding: 6px 10px 8px;
-      border-top: 1px solid var(--border-soft);
-      display: flex;
-      justify-content: flex-end;
-      gap: 6px;
-    }
-
-    .kt-ai-btn {
-      padding: 4px 10px;
-      border-radius: 3px;
-      font-size: 11px;
-      border: 1px solid var(--border-soft);
-      background: #181818;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    .kt-ai-btn.primary {
-      background: var(--amber);
-      color: #000;
-      border-color: #f0f0f0;
-    }
+    .kt-cheatsheet b { color: var(--amber); }
 
     /* Desktop – center menus */
     @media (min-width: 900px) {
-      .kt-mainmenu-strip {
-        justify-content: center;
-      }
-      .kt-submenu-strip {
-        display: flex;
-        justify-content: center;
-        padding-left: 0;
-        padding-right: 0;
-      }
-      .kt-submenu-group {
-        max-width: 980px;
-      }
-      .kt-submenu-group.active {
-        justify-content: center;
-      }
+      .kt-mainmenu-strip { justify-content: center; }
+      .kt-submenu-strip { display: flex; justify-content: center; padding-left: 0; padding-right: 0; }
+      .kt-submenu-group { max-width: 980px; }
+      .kt-submenu-group.active { justify-content: center; }
     }
 
-    /* Mobile – top bar lebih pendek */
+    /* Mobile – thinner top bar */
     @media (max-width: 600px) {
-      .kt-topbar {
-        padding: 4px 8px;
-      }
-      .kt-logo {
-        font-size: 12px;
-      }
-      .kt-session-clock {
-        gap: 2px;
-        font-size: 8px;
-      }
-      .kt-session-item {
-        padding: 0 3px;
-      }
-      .kt-session-label,
-      .kt-session-time {
-        font-size: 8px;
-      }
+      .kt-topbar { padding: 4px 8px; }
+      .kt-logo { font-size: 12px; }
+      .kt-session-clock { gap: 2px; font-size: 8px; }
+      .kt-session-item { padding: 0 3px; }
+      .kt-session-label, .kt-session-time { font-size: 8px; }
     }
   </style>
 </head>
@@ -455,22 +207,17 @@
       <div class="kt-topbar-left">
         <div class="kt-logo">KUANTARA TERMINAL</div>
         <div class="kt-session-clock" id="kt-session-clock">
-          <!-- Jam dunia (tanpa JKT) -->
           <div class="kt-session-item">
-            <span class="kt-session-label">SYD</span>
-            <span class="kt-session-time" data-tz="10"></span>
+            <span class="kt-session-label">SYD</span><span class="kt-session-time" data-tz="10"></span>
           </div>
           <div class="kt-session-item">
-            <span class="kt-session-label">TYO</span>
-            <span class="kt-session-time" data-tz="9"></span>
+            <span class="kt-session-label">TYO</span><span class="kt-session-time" data-tz="9"></span>
           </div>
           <div class="kt-session-item">
-            <span class="kt-session-label">LDN</span>
-            <span class="kt-session-time" data-tz="0"></span>
+            <span class="kt-session-label">LDN</span><span class="kt-session-time" data-tz="0"></span>
           </div>
           <div class="kt-session-item">
-            <span class="kt-session-label">NYC</span>
-            <span class="kt-session-time" data-tz="-5"></span>
+            <span class="kt-session-label">NYC</span><span class="kt-session-time" data-tz="-5"></span>
           </div>
         </div>
       </div>
@@ -501,8 +248,8 @@
           </div>
         </div>
         <div class="kt-content-body" id="kt-content-body">
-          <!-- Nanti iframe data di sini -->
-          <p>Area konten (iframe) di sini.</p>
+          <div class="kt-embed-wrap" id="kt-embed-wrap" style="display:none;"></div>
+          <p id="kt-placeholder">Area konten (iframe) di sini.</p>
         </div>
       </section>
 
@@ -513,7 +260,7 @@
     </div>
   </div>
 
-  <!-- SUB MENU: FIXED, DI ATAS BOTTOM NAV -->
+  <!-- SUB MENU: fixed above bottom nav -->
   <nav class="kt-submenu-strip">
     <!-- 0. Markets -->
     <div class="kt-submenu-group active" data-menu-sub="0">
@@ -526,7 +273,7 @@
       <button class="kt-submenu-btn" data-menu="0" data-sub-index="6">ETF</button>
     </div>
 
-    <!-- 1. News (ditambah "24/7 Feed") -->
+    <!-- 1. News -->
     <div class="kt-submenu-group" data-menu-sub="1">
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="0">24/7 Feed</button>
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="1">Global</button>
@@ -587,7 +334,7 @@
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="3">Reports</button>
     </div>
 
-    <!-- 9. Tools (hapus "Stocks Screener") -->
+    <!-- 9. Tools -->
     <div class="kt-submenu-group" data-menu-sub="9">
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Journaling</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Deepnote Page</button>
@@ -623,6 +370,32 @@
     </div>
   </div>
 
+  <!-- SEARCH OVERLAY -->
+  <div class="kt-overlay" id="kt-search-ovl" aria-hidden="true">
+    <div class="kt-card">
+      <div class="kt-card-title">Search</div>
+      <input id="kt-search-input" class="kt-search-input" type="text" placeholder="Type to search… (Enter to confirm, Esc to close)" />
+      <button class="kt-close-btn" id="kt-search-close">Close</button>
+    </div>
+  </div>
+
+  <!-- PROFILE OVERLAY -->
+  <div class="kt-overlay" id="kt-profile-ovl" aria-hidden="true">
+    <div class="kt-card">
+      <div class="kt-card-title">Profile</div>
+      <div style="font-size:11px;color:var(--text-muted);line-height:1.5;">
+        User: <span style="color:var(--amber);">Guest</span><br/>
+        Status: <span style="color:var(--text-main);">Signed-out</span>
+      </div>
+      <button class="kt-close-btn" id="kt-profile-close">Close</button>
+    </div>
+  </div>
+
+  <!-- CHEAT-SHEET TOAST -->
+  <div class="kt-cheatsheet" id="kt-cheatsheet">
+    <div><b>Alt+0–9</b> Menu · <b>Ctrl+1–9</b> Sub · <b>Esc</b>=Alt+0 · <b>Ctrl+F</b> Search · <b>Tab</b> Profile</div>
+  </div>
+
   <script>
     (function () {
       const mainButtons = document.querySelectorAll(".kt-mainmenu-btn");
@@ -639,7 +412,41 @@
       const aiPanel = document.getElementById("kt-ai-panel");
       const aiClose = document.getElementById("kt-ai-close");
 
+      const searchOvl = document.getElementById("kt-search-ovl");
+      const searchInput = document.getElementById("kt-search-input");
+      const searchClose = document.getElementById("kt-search-close");
+
+      const profileOvl = document.getElementById("kt-profile-ovl");
+      const profileClose = document.getElementById("kt-profile-close");
+
+      const cheats = document.getElementById("kt-cheatsheet");
+
+      const contentBody = document.getElementById("kt-content-body");
+      const embedWrap = document.getElementById("kt-embed-wrap");
+      const placeholder = document.getElementById("kt-placeholder");
+
       let activeMenu = 0;
+
+      /* Map menu:sub -> iframe URL */
+      const IFRAME_MAP = {
+        "1:1": "https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html",
+      };
+
+      function renderContent(menuIndex, subIndex) {
+        const key = menuIndex + ":" + subIndex;
+        const url = IFRAME_MAP[key];
+        if (url) {
+          placeholder.style.display = "none";
+          embedWrap.style.display = "flex";
+          embedWrap.innerHTML = '<iframe class="kt-embed" loading="lazy" src="' + url + '"></iframe>';
+          statusMsg.textContent = "EMBED: " + url;
+        } else {
+          embedWrap.style.display = "none";
+          embedWrap.innerHTML = "";
+          placeholder.style.display = "block";
+          statusMsg.textContent = "READY";
+        }
+      }
 
       function setActiveMenu(menuIndex) {
         activeMenu = menuIndex;
@@ -684,6 +491,7 @@
           setActiveSub(menuIndex, 0);
         } else {
           breadcrumbSub.textContent = "";
+          renderContent(menuIndex, -1);
         }
 
         statusMsg.textContent = "ACTIVE MENU: " + menuIndex;
@@ -702,7 +510,12 @@
         if (sub) {
           breadcrumbSub.textContent = sub.textContent.trim();
           statusMsg.textContent = "ACTIVE: " + menuIndex + " · " + breadcrumbSub.textContent;
+        } else {
+          breadcrumbSub.textContent = "";
+          statusMsg.textContent = "ACTIVE MENU: " + menuIndex + " · (no sub)";
         }
+
+        renderContent(menuIndex, subIndex);
       }
 
       // Click handlers
@@ -742,12 +555,8 @@
       function updateSessions() {
         const now = new Date();
         const utc = Date.UTC(
-          now.getUTCFullYear(),
-          now.getUTCMonth(),
-          now.getUTCDate(),
-          now.getUTCHours(),
-          now.getUTCMinutes(),
-          now.getUTCSeconds()
+          now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+          now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()
         );
         sessionTimes.forEach(el => {
           const offset = Number(el.getAttribute("data-tz")) || 0;
@@ -758,6 +567,96 @@
       }
       updateSessions();
       setInterval(updateSessions, 1000);
+
+      // Overlays
+      function openOverlay(el) { el.style.display = "flex"; }
+      function closeOverlay(el) { el.style.display = "none"; }
+
+      // Search
+      function openSearch() {
+        openOverlay(searchOvl);
+        setTimeout(() => searchInput.focus(), 10);
+        statusMsg.textContent = "SEARCH: active";
+      }
+      function closeSearch() {
+        closeOverlay(searchOvl);
+        statusMsg.textContent = "SEARCH: closed";
+      }
+      searchClose.addEventListener("click", closeSearch);
+      searchOvl.addEventListener("click", (e) => { if (e.target === searchOvl) closeSearch(); });
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") { e.preventDefault(); closeSearch(); }
+        if (e.key === "Enter") {
+          e.preventDefault();
+          statusMsg.textContent = "SEARCH query: " + (searchInput.value || "(empty)");
+          closeSearch();
+        }
+      });
+
+      // Profile
+      function openProfile() { openOverlay(profileOvl); statusMsg.textContent = "PROFILE: opened"; }
+      function closeProfile() { closeOverlay(profileOvl); statusMsg.textContent = "PROFILE: closed"; }
+      profileClose.addEventListener("click", closeProfile);
+      profileOvl.addEventListener("click", (e) => { if (e.target === profileOvl) closeProfile(); });
+
+      // Cheat-sheet
+      let cheatTimer = null;
+      function flashCheats() {
+        cheats.style.display = "block";
+        clearTimeout(cheatTimer);
+        cheatTimer = setTimeout(() => { cheats.style.display = "none"; }, 2000);
+      }
+
+      // Keyboard shortcuts
+      window.addEventListener("keydown", (e) => {
+        // Ctrl + F -> Search
+        if (e.ctrlKey && (e.key === "f" || e.key === "F")) {
+          e.preventDefault();
+          openSearch();
+          return;
+        }
+
+        // Alt + 0..9 -> Menu
+        if (e.altKey && !e.ctrlKey && !e.shiftKey) {
+          const k = e.key;
+          if (k >= "0" && k <= "9") {
+            e.preventDefault();
+            setActiveMenu(Number(k));
+            return;
+          }
+        }
+
+        // Ctrl + 1..9 -> Submenu for current menu (maps to subIndex 0..8)
+        if (e.ctrlKey && !e.altKey) {
+          const k = e.key;
+          if (k >= "1" && k <= "9") {
+            e.preventDefault();
+            const subIdx = Number(k) - 1; // 1→0, 2→1, ... 9→8
+            setActiveSub(activeMenu, subIdx);
+            return;
+          }
+        }
+
+        // Escape -> same as Alt+0 (go Markets)
+        if (e.key === "Escape") {
+          e.preventDefault();
+          setActiveMenu(0);
+          return;
+        }
+
+        // Tab -> Profile panel
+        if (e.key === "Tab") {
+          e.preventDefault();
+          openProfile();
+          return;
+        }
+
+        // Shift -> cheat sheet (no modifiers, no repeat)
+        if (e.key === "Shift" && !e.repeat && !e.ctrlKey && !e.altKey) {
+          flashCheats();
+          return;
+        }
+      });
 
       // Initial state
       setActiveMenu(0);
