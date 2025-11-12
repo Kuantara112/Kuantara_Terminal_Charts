@@ -20,18 +20,23 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Fira Code", monospace !important; }
-
     html, body { height: 100%; }
     body { background-color: var(--bg-root); color: var(--text-main); overflow: hidden; }
 
-    .kt-root { display: flex; flex-direction: column; height: 100vh; }
+    .kt-root { display: flex; flex-direction: column; height: 100vh; position: relative; }
 
-    /* TOP BAR */
+    /* ====== FULLSCREEN IFRAME UNDERLAY ====== */
+    .kt-iframe-layer {
+      position: fixed; inset: 0; z-index: 1; background: #0b0b0b;
+    }
+    .kt-iframe-layer iframe { width: 100%; height: 100%; border: 0; display: block; background: #0b0b0b; }
+
+    /* ====== TOPMOST BAR (ALWAYS FIXED, NO AUTO-HIDE) ====== */
     .kt-topbar {
+      position: fixed; top: 0; left: 0; right: 0;
       display: flex; align-items: center; justify-content: center;
-      position: relative; background: #070707;
-      border-bottom: 2px solid var(--amber);
-      padding: 8px 12px; font-size: 10px; z-index: 10;
+      background: #070707; border-bottom: 2px solid var(--amber);
+      padding: 8px 12px; font-size: 10px; z-index: 20;
     }
     .kt-topbar-left { display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
     .kt-logo { font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; font-size: 14px; color: var(--amber); white-space: nowrap; }
@@ -40,14 +45,28 @@
     .kt-session-label { color: var(--amber); font-size: 9px; }
     .kt-session-time { font-size: 9px; }
 
-    /* MAIN */
-    .kt-main { flex: 1; display: flex; flex-direction: column; background: var(--bg-main); min-height: 0; }
+    /* ====== OTHER UI CHROME (AUTO-HIDE) ====== */
+    .kt-main { flex: 1; display: flex; flex-direction: column; background: transparent; min-height: 0; position: relative; z-index: 5; }
 
-    /* MAIN MENU (0–9) */
-    .kt-mainmenu-strip {
-      display: flex; gap: 4px; padding: 6px 8px; background: #050505;
-      border-bottom: 1px solid var(--border-soft); overflow-x: auto; scrollbar-width: thin;
+    .kt-mainmenu-strip,
+    .kt-content-header,
+    .kt-statusbar,
+    .kt-submenu-strip,
+    .kt-bottom-nav {
+      transition: transform 220ms ease, opacity 180ms ease;
+      will-change: transform, opacity;
+      pointer-events: auto;
     }
+
+    /* MAIN MENU (0–9) – autohide from TOP (under topbar) */
+    .kt-mainmenu-strip {
+      position: fixed; top: 38px; left: 0; right: 0;
+      display: flex; gap: 4px; padding: 6px 8px; background: #050505cf;
+      border-bottom: 1px solid var(--border-soft); overflow-x: auto; scrollbar-width: thin;
+      backdrop-filter: blur(4px); z-index: 14;
+    }
+    .kt-hide-top { transform: translateY(-100%); opacity: 0.02; pointer-events: none; }
+
     .kt-mainmenu-btn {
       flex: 0 0 auto; padding: 4px 8px; border-radius: 3px; border: 1px solid var(--border-soft);
       background: #101010; color: var(--text-muted); font-size: 11px; display: inline-flex; align-items: center; gap: 4px;
@@ -57,29 +76,30 @@
     .kt-mainmenu-btn.active { background: var(--amber); color: #000; border-color: #f0f0f0; }
     .kt-mainmenu-btn.active span:first-child { color: #000; }
 
-    /* CONTENT */
-    .kt-content { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    /* CONTENT HEADER – autohide from TOP (sits below main menu) */
     .kt-content-header {
+      position: fixed; top: 78px; left: 0; right: 0;
       border-bottom: 1px solid var(--border-soft); padding: 6px 10px; display: flex;
       justify-content: space-between; align-items: center; font-size: 11px; gap: 8px; flex-wrap: wrap;
+      background: #0a0a0acc; backdrop-filter: blur(4px); z-index: 13;
     }
     .kt-breadcrumb { display: flex; gap: 6px; align-items: baseline; min-width: 0; }
     .kt-breadcrumb-main { color: var(--amber); font-weight: 500; white-space: nowrap; }
     .kt-breadcrumb-sub { color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
-    .kt-content-body { flex: 1; padding: 8px 10px; overflow: hidden; background: #111111; padding-bottom: 110px; position: relative; }
 
-    /* IFRAME */
-    .kt-embed-wrap { position: absolute; inset: 8px 10px 120px 10px; display: flex; flex-direction: column; }
-    .kt-embed { width: 100%; height: 100%; border: none; background: #0b0b0b; }
-
-    /* STATUS BAR */
-    .kt-statusbar { border-top: 1px solid var(--border-soft); padding: 4px 10px 6px; font-size: 10px; display: flex; align-items: center; background: #050505; color: var(--text-muted); }
+    /* STATUS BAR – autohide from BOTTOM */
+    .kt-statusbar {
+      position: fixed; left: 0; right: 0; bottom: 46px;
+      border-top: 1px solid var(--border-soft); padding: 4px 10px 6px; font-size: 10px; display: flex; align-items: center;
+      background: #050505cc; color: var(--text-muted); z-index: 12; backdrop-filter: blur(4px);
+    }
+    .kt-hide-bottom { transform: translateY(100%); opacity: 0.02; pointer-events: none; }
     .kt-status-msg { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
-    /* SUB MENU – fixed above bottom nav */
+    /* SUB MENU – autohide from BOTTOM */
     .kt-submenu-strip {
       position: fixed; left: 0; right: 0; bottom: 46px; border-top: 1px solid var(--border-soft);
-      background: #090909; padding: 4px 6px 4px 8px; min-height: 32px; z-index: 14;
+      background: #090909cc; padding: 4px 6px 4px 8px; min-height: 32px; z-index: 14; backdrop-filter: blur(4px);
     }
     .kt-submenu-group { display: none; gap: 4px; overflow-x: auto; padding-bottom: 2px; }
     .kt-submenu-group.active { display: flex; }
@@ -89,16 +109,16 @@
     }
     .kt-submenu-btn.active { background: var(--amber); color: #000; border-color: #f0f0f0; }
 
-    /* BOTTOM NAV */
+    /* BOTTOM NAV – autohide from BOTTOM */
     .kt-bottom-nav {
-      position: fixed; left: 0; right: 0; bottom: 0; height: 46px; background: #050505;
-      border-top: 1px solid var(--border-soft); display: flex; justify-content: space-around; align-items: stretch; font-size: 10px; z-index: 15;
+      position: fixed; left: 0; right: 0; bottom: 0; height: 46px; background: #050505e6;
+      border-top: 1px solid var(--border-soft); display: flex; justify-content: space-around; align-items: stretch; font-size: 10px; z-index: 15; backdrop-filter: blur(4px);
     }
     .kt-bottom-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; gap: 1px; }
     .kt-bottom-item span:first-child { font-size: 9px; color: var(--amber); }
     .kt-bottom-item.active { background: #151515; color: var(--amber); }
 
-    /* AI FAB */
+    /* AI FAB & PANEL (float above everything) */
     .kt-ai-fab {
       position: fixed; right: 16px; bottom: 90px; width: 48px; height: 48px; border-radius: 50%;
       background: var(--amber); color: #000000; display: flex; align-items: center; justify-content: center;
@@ -131,7 +151,6 @@
 
     /* Desktop */
     @media (min-width: 900px) {
-      .kt-mainmenu-strip { justify-content: center; }
       .kt-submenu-strip { display: flex; justify-content: center; padding-left: 0; padding-right: 0; }
       .kt-submenu-group { max-width: 980px; }
       .kt-submenu-group.active { justify-content: center; }
@@ -149,7 +168,10 @@
 </head>
 <body>
   <div class="kt-root">
-    <!-- TOP BAR -->
+    <!-- FULLSCREEN IFRAME UNDERLAY -->
+    <div class="kt-iframe-layer" id="kt-iframe-layer"></div>
+
+    <!-- TOPMOST BAR (fixed) -->
     <header class="kt-topbar">
       <div class="kt-topbar-left">
         <div class="kt-logo">KUANTARA TERMINAL</div>
@@ -162,46 +184,37 @@
       </div>
     </header>
 
-    <!-- MAIN -->
-    <div class="kt-main">
-      <!-- MAIN MENU -->
-      <nav class="kt-mainmenu-strip" id="kt-mainmenu-strip">
-        <button class="kt-mainmenu-btn active" data-menu="0"><span>0</span><span>Markets</span></button>
-        <button class="kt-mainmenu-btn" data-menu="1"><span>1</span><span>News</span></button>
-        <button class="kt-mainmenu-btn" data-menu="2"><span>2</span><span>Macroeconomic</span></button>
-        <button class="kt-mainmenu-btn" data-menu="3"><span>3</span><span>Geo-Economic</span></button>
-        <button class="kt-mainmenu-btn" data-menu="4"><span>4</span><span>Metrics</span></button>
-        <button class="kt-mainmenu-btn" data-menu="5"><span>5</span><span>Companies</span></button>
-        <button class="kt-mainmenu-btn" data-menu="6"><span>6</span><span>Charts</span></button>
-        <button class="kt-mainmenu-btn" data-menu="7"><span>7</span><span>Screener</span></button>
-        <button class="kt-mainmenu-btn" data-menu="8"><span>8</span><span>Research</span></button>
-        <button class="kt-mainmenu-btn" data-menu="9"><span>9</span><span>Tools</span></button>
-      </nav>
+    <!-- UI Chrome that auto-hides -->
+    <nav class="kt-mainmenu-strip kt-hide-top" id="kt-mainmenu-strip">
+      <button class="kt-mainmenu-btn active" data-menu="0"><span>0</span><span>Markets</span></button>
+      <button class="kt-mainmenu-btn" data-menu="1"><span>1</span><span>News</span></button>
+      <button class="kt-mainmenu-btn" data-menu="2"><span>2</span><span>Macroeconomic</span></button>
+      <button class="kt-mainmenu-btn" data-menu="3"><span>3</span><span>Geo-Economic</span></button>
+      <button class="kt-mainmenu-btn" data-menu="4"><span>4</span><span>Metrics</span></button>
+      <button class="kt-mainmenu-btn" data-menu="5"><span>5</span><span>Companies</span></button>
+      <button class="kt-mainmenu-btn" data-menu="6"><span>6</span><span>Charts</span></button>
+      <button class="kt-mainmenu-btn" data-menu="7"><span>7</span><span>Screener</span></button>
+      <button class="kt-mainmenu-btn" data-menu="8"><span>8</span><span>Research</span></button>
+      <button class="kt-mainmenu-btn" data-menu="9"><span>9</span><span>Tools</span></button>
+    </nav>
 
-      <!-- CONTENT -->
-      <section class="kt-content">
-        <div class="kt-content-header">
-          <div class="kt-breadcrumb">
-            <span class="kt-breadcrumb-main" id="breadcrumb-main">0 · Markets</span>
-            <span class="kt-breadcrumb-sub" id="breadcrumb-sub">Overview</span>
-          </div>
+    <section class="kt-content">
+      <div class="kt-content-header kt-hide-top" id="kt-content-header">
+        <div class="kt-breadcrumb">
+          <span class="kt-breadcrumb-main" id="breadcrumb-main">0 · Markets</span>
+          <span class="kt-breadcrumb-sub" id="breadcrumb-sub">Overview</span>
         </div>
-        <div class="kt-content-body" id="kt-content-body">
-          <div class="kt-embed-wrap" id="kt-embed-wrap" style="display:none;"></div>
-          <p id="kt-placeholder">Area konten (iframe) di sini.</p>
-        </div>
-      </section>
-
-      <!-- STATUS -->
-      <div class="kt-statusbar">
-        <div class="kt-status-msg" id="kt-status-msg">READY</div>
       </div>
+    </section>
+
+    <div class="kt-statusbar kt-hide-bottom" id="kt-statusbar">
+      <div class="kt-status-msg" id="kt-status-msg">READY</div>
     </div>
   </div>
 
-  <!-- SUB MENU: fixed above bottom nav -->
-  <nav class="kt-submenu-strip">
-    <!-- 0. Markets (Indices dipindah ke samping Overview) -->
+  <!-- SUB MENU (auto-hide) -->
+  <nav class="kt-submenu-strip kt-hide-bottom" id="kt-submenu-strip">
+    <!-- 0. Markets -->
     <div class="kt-submenu-group active" data-menu-sub="0">
       <button class="kt-submenu-btn active" data-menu="0" data-sub-index="0">Overview</button>
       <button class="kt-submenu-btn" data-menu="0" data-sub-index="1">Indices</button>
@@ -213,7 +226,7 @@
       <button class="kt-submenu-btn" data-menu="0" data-sub-index="7">ETF</button>
     </div>
 
-    <!-- 1. News (tambah Insights) -->
+    <!-- 1. News -->
     <div class="kt-submenu-group" data-menu-sub="1">
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="0">24/7 Feed</button>
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="1">Global</button>
@@ -221,14 +234,14 @@
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="3">Insights</button>
     </div>
 
-    <!-- 2. Macroeconomic (Core Macro -> US Macro) -->
+    <!-- 2. Macroeconomic -->
     <div class="kt-submenu-group" data-menu-sub="2">
       <button class="kt-submenu-btn" data-menu="2" data-sub-index="0">US Macro</button>
       <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">Central Bank</button>
       <button class="kt-submenu-btn" data-menu="2" data-sub-index="2">Details</button>
     </div>
 
-    <!-- 3. Geo-Economic (+Satellite, Sources -> Resources) -->
+    <!-- 3. Geo-Economic -->
     <div class="kt-submenu-group" data-menu-sub="3">
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="0">Trade &amp; Shipping</button>
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="1">Supply Chain</button>
@@ -237,7 +250,7 @@
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="4">Satellite</button>
     </div>
 
-    <!-- 4. Metrics (ordered) -->
+    <!-- 4. Metrics -->
     <div class="kt-submenu-group" data-menu-sub="4">
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="0">Macro</button>
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="1">Liquidity</button>
@@ -257,14 +270,14 @@
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="2">Blockchain Projects</button>
     </div>
 
-    <!-- 6. Charts (Metric -> Economy) -->
+    <!-- 6. Charts -->
     <div class="kt-submenu-group" data-menu-sub="6">
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="0">Technical</button>
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="1">Fundamental</button>
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="2">Economy</button>
     </div>
 
-    <!-- 7. Screener (Stocks -> US Stocks + ID Stocks) -->
+    <!-- 7. Screener -->
     <div class="kt-submenu-group" data-menu-sub="7">
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">US Stocks</button>
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">ID Stocks</button>
@@ -281,7 +294,7 @@
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="3">Reports</button>
     </div>
 
-    <!-- 9. Tools (Journaling -> Journal; Others di kanan Notes) -->
+    <!-- 9. Tools -->
     <div class="kt-submenu-group" data-menu-sub="9">
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Journal</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Education</button>
@@ -290,8 +303,8 @@
     </div>
   </nav>
 
-  <!-- BOTTOM NAV -->
-  <nav class="kt-bottom-nav">
+  <!-- BOTTOM NAV (auto-hide) -->
+  <nav class="kt-bottom-nav kt-hide-bottom" id="kt-bottom-nav">
     <div class="kt-bottom-item active" data-menu-bottom="0"><span>0</span><span>Markets</span></div>
     <div class="kt-bottom-item" data-menu-bottom="1"><span>1</span><span>News</span></div>
     <div class="kt-bottom-item" data-menu-bottom="2"><span>2</span><span>Macro</span></div>
@@ -299,7 +312,7 @@
     <div class="kt-bottom-item" data-menu-bottom="4"><span>4</span><span>Metrics</span></div>
   </nav>
 
-  <!-- AI FAB & PANEL -->
+  <!-- AI FAB & PANEL (floats, no block) -->
   <div class="kt-ai-fab" id="kt-ai-fab">AI</div>
   <div class="kt-ai-panel" id="kt-ai-panel">
     <div class="kt-ai-panel-header">
@@ -365,51 +378,42 @@
       const searchClose = document.getElementById("kt-search-close");
 
       const profileOvl = document.getElementById("kt-profile-ovl");
-      const profileClose = document.getElementById("kt-profile-close");
 
-      const cheats = document.getElementById("kt-cheatsheet");
+      const iframeLayer = document.getElementById("kt-iframe-layer");
 
-      const contentBody = document.getElementById("kt-content-body");
-      const embedWrap = document.getElementById("kt-embed-wrap");
-      const placeholder = document.getElementById("kt-placeholder");
+      const mainmenuStrip = document.getElementById("kt-mainmenu-strip");
+      const contentHeader = document.getElementById("kt-content-header");
+      const statusbar = document.getElementById("kt-statusbar");
+      const submenuStrip = document.getElementById("kt-submenu-strip");
+      const bottomNav = document.getElementById("kt-bottom-nav");
+
+      const EDGE_ZONE = 80;       // px area dekat tepi untuk trigger show
+      const HIDE_DELAY = 1200;    // ms auto-hide setelah idle
+      let hideTimer = null;
 
       let activeMenu = 0;
 
       /* Map menu:sub -> iframe URL */
       const IFRAME_MAP = {
-        // News > Global
         "1:1": "https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html",
-        // Contoh:
-        // "0:1": "https://your-indices-dashboard.example",     // Markets > Indices
-        // "1:3": "https://your-news-insights.example",          // News > Insights
-        // "2:0": "https://your-us-macro-dash.example",          // Macroeconomic > US Macro
-        // "3:4": "https://your-satellite-geo-dash.example",     // Geo-Economic > Satellite
-        // "6:2": "https://your-economy-charts.example",         // Charts > Economy
-        // "7:1": "https://your-id-stocks-screener.example",     // Screener > ID Stocks
-        // "9:2": "https://your-notes-app.example"               // Tools > Notes
       };
+
+      function injectIframe(url) {
+        if (!url) { iframeLayer.innerHTML = ""; return; }
+        iframeLayer.innerHTML = '<iframe title="embedded" loading="lazy" src="' + url + '"></iframe>';
+      }
 
       function renderContent(menuIndex, subIndex) {
         const key = menuIndex + ":" + subIndex;
-        const url = IFRAME_MAP[key];
-        if (url) {
-          placeholder.style.display = "none";
-          embedWrap.style.display = "flex";
-          embedWrap.innerHTML = '<iframe class="kt-embed" loading="lazy" src="' + url + '"></iframe>';
-          statusMsg.textContent = "EMBED: " + url;
-        } else {
-          embedWrap.style.display = "none";
-          embedWrap.innerHTML = "";
-          placeholder.style.display = "block";
-          statusMsg.textContent = "READY";
-        }
+        injectIframe(IFRAME_MAP[key]);
+        statusMsg.textContent = IFRAME_MAP[key] ? "EMBED: " + IFRAME_MAP[key] : "READY";
       }
 
       function setActiveMenu(menuIndex) {
         activeMenu = menuIndex;
 
         // main buttons
-        mainButtons.forEach(btn => {
+        document.querySelectorAll(".kt-mainmenu-btn").forEach(btn => {
           btn.classList.toggle("active", Number(btn.getAttribute("data-menu")) === menuIndex);
         });
 
@@ -458,45 +462,152 @@
         renderContent(menuIndex, subIndex);
       }
 
-      // Build searchable index from DOM (menu + submenu)
+      // ===== SEARCH (menu & submenu) =====
       function buildSearchIndex() {
         const index = [];
-
-        // main menus
         document.querySelectorAll(".kt-mainmenu-btn").forEach(btn => {
           const menuIdx = Number(btn.getAttribute("data-menu"));
           const name = btn.querySelector("span:nth-child(2)")?.textContent?.trim() || "";
           index.push({ label: name, menu: menuIdx, sub: null, type: "menu" });
         });
-
-        // submenus
         document.querySelectorAll(".kt-submenu-btn").forEach(btn => {
           const menuIdx = Number(btn.getAttribute("data-menu"));
           const subIdx  = Number(btn.getAttribute("data-sub-index"));
           const name    = btn.textContent.trim();
           index.push({ label: name, menu: menuIdx, sub: subIdx, type: "sub" });
         });
-
         return index;
       }
-
-      // Find best match: exact -> startsWith -> includes
       function findBestMatch(index, query) {
         const q = query.toLowerCase();
-
-        const exact = index.find(it => it.label.toLowerCase() === q);
-        if (exact) return exact;
-
-        const starts = index.find(it => it.label.toLowerCase().startsWith(q));
-        if (starts) return starts;
-
-        return index.find(it => it.label.toLowerCase().includes(q)) || null;
+        return index.find(it => it.label.toLowerCase() === q)
+            || index.find(it => it.label.toLowerCase().startsWith(q))
+            || index.find(it => it.label.toLowerCase().includes(q))
+            || null;
       }
 
-      // Click handlers
-      mainButtons.forEach(btn => btn.addEventListener("click", () => setActiveMenu(Number(btn.getAttribute("data-menu")))));
-      bottomItems.forEach(item => item.addEventListener("click", () => setActiveMenu(Number(item.getAttribute("data-menu-bottom")))));
-      submenuButtons.forEach(btn => btn.addEventListener("click", () => setActiveSub(Number(btn.getAttribute("data-menu")), Number(btn.getAttribute("data-sub-index")))));
+      let searchIndex = buildSearchIndex();
+      function openSearch() { searchIndex = buildSearchIndex(); openOverlay(searchOvl); setTimeout(() => searchInput.focus(), 10); statusMsg.textContent = "SEARCH: active"; showAllBars(); }
+      function closeSearch() { closeOverlay(searchOvl); statusMsg.textContent = "SEARCH: closed"; scheduleHide(); }
+
+      const overlays = document.querySelectorAll(".kt-overlay");
+      function openOverlay(el) { el.style.display = "flex"; }
+      function closeOverlay(el) { el.style.display = "none"; }
+
+      document.getElementById("kt-search-close").addEventListener("click", closeSearch);
+      searchOvl.addEventListener("click", (e) => { if (e.target === searchOvl) closeSearch(); });
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") { e.preventDefault(); closeSearch(); return; }
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const q = (searchInput.value || "").trim();
+          if (!q) { statusMsg.textContent = "SEARCH: empty"; closeSearch(); return; }
+          const match = findBestMatch(searchIndex, q);
+          if (match) {
+            setActiveMenu(match.menu);
+            if (match.sub !== null) setActiveSub(match.menu, match.sub);
+            statusMsg.textContent = `SEARCH goto: ${match.label} (${match.type})`;
+          } else {
+            statusMsg.textContent = `SEARCH: "${q}" not found`;
+          }
+          closeSearch();
+        }
+      });
+
+      // ===== AUTO-HIDE LOGIC =====
+      function showTopBars() {
+        mainmenuStrip.classList.remove("kt-hide-top");
+        contentHeader.classList.remove("kt-hide-top");
+      }
+      function hideTopBars() {
+        mainmenuStrip.classList.add("kt-hide-top");
+        contentHeader.classList.add("kt-hide-top");
+      }
+      function showBottomBars() {
+        submenuStrip.classList.remove("kt-hide-bottom");
+        statusbar.classList.remove("kt-hide-bottom");
+        bottomNav.classList.remove("kt-hide-bottom");
+      }
+      function hideBottomBars() {
+        submenuStrip.classList.add("kt-hide-bottom");
+        statusbar.classList.add("kt-hide-bottom");
+        bottomNav.classList.add("kt-hide-bottom");
+      }
+      function showAllBars() { showTopBars(); showBottomBars(); }
+      function hideAllBars() { hideTopBars(); hideBottomBars(); }
+
+      function scheduleHide() {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => { hideAllBars(); }, HIDE_DELAY);
+      }
+
+      // show bars when mouse near edges or any movement
+      function handleMouseMove(e) {
+        const y = e.clientY;
+        const h = window.innerHeight;
+
+        // Always show on any move
+        showAllBars();
+
+        // If cursor in middle zone and not over bars, schedule hide
+        if (y > EDGE_ZONE && y < (h - EDGE_ZONE)) {
+          scheduleHide();
+        } else {
+          clearTimeout(hideTimer);
+        }
+      }
+      window.addEventListener("mousemove", handleMouseMove, { passive: true });
+
+      // Touch support: tap near edges to show; hide after delay
+      window.addEventListener("touchstart", (e) => {
+        const y = e.touches[0]?.clientY ?? 0;
+        const h = window.innerHeight;
+        if (y < EDGE_ZONE) showTopBars();
+        if (y > h - EDGE_ZONE) showBottomBars();
+        scheduleHide();
+      }, { passive: true });
+
+      // Keep visible while hovering bars
+      [mainmenuStrip, contentHeader].forEach(el => {
+        el.addEventListener("mouseenter", () => { clearTimeout(hideTimer); showTopBars(); });
+        el.addEventListener("mouseleave", scheduleHide);
+      });
+      [submenuStrip, statusbar, bottomNav].forEach(el => {
+        el.addEventListener("mouseenter", () => { clearTimeout(hideTimer); showBottomBars(); });
+        el.addEventListener("mouseleave", scheduleHide);
+      });
+
+      // Keyboard shortcuts keep bars visible briefly
+      window.addEventListener("keydown", (e) => {
+        // Ctrl+F open Search
+        if (e.ctrlKey && (e.key === "f" || e.key === "F")) { e.preventDefault(); openSearch(); return; }
+
+        // Alt + 0..9 -> Menu
+        if (e.altKey && !e.ctrlKey && !e.shiftKey) {
+          const k = e.key;
+          if (k >= "0" && k <= "9") { e.preventDefault(); setActiveMenu(Number(k)); showAllBars(); scheduleHide(); return; }
+        }
+
+        // Ctrl + 1..9 -> Submenu for current menu
+        if (e.ctrlKey && !e.altKey) {
+          const k = e.key;
+          if (k >= "1" && k <= "9") { e.preventDefault(); setActiveSub(activeMenu, Number(k) - 1); showAllBars(); scheduleHide(); return; }
+        }
+
+        // Esc -> go Markets
+        if (e.key === "Escape") { e.preventDefault(); setActiveMenu(0); showAllBars(); scheduleHide(); return; }
+
+        // Tab -> Profile
+        if (e.key === "Tab") { e.preventDefault(); document.getElementById("kt-profile-ovl").style.display = "flex"; showAllBars(); return; }
+
+        // Shift -> Cheat sheet
+        if (e.key === "Shift" && !e.repeat && !e.ctrlKey && !e.altKey) {
+          const cheats = document.getElementById("kt-cheatsheet");
+          cheats.style.display = "block"; setTimeout(() => { cheats.style.display = "none"; }, 2000);
+          showAllBars(); scheduleHide();
+          return;
+        }
+      });
 
       // AI panel
       function toggleAiPanel(force) {
@@ -522,81 +633,11 @@
       updateSessions();
       setInterval(updateSessions, 1000);
 
-      // Overlays
-      function openOverlay(el) { el.style.display = "flex"; }
-      function closeOverlay(el) { el.style.display = "none"; }
-
-      // Search (Ctrl+F to open)
-      let searchIndex = buildSearchIndex();
-
-      function openSearch() {
-        // refresh index setiap buka (kalau ada perubahan dinamis)
-        searchIndex = buildSearchIndex();
-        openOverlay(searchOvl);
-        setTimeout(() => searchInput.focus(), 10);
-        statusMsg.textContent = "SEARCH: active";
-      }
-      function closeSearch() { closeOverlay(searchOvl); statusMsg.textContent = "SEARCH: closed"; }
-
-      searchClose.addEventListener("click", closeSearch);
-      searchOvl.addEventListener("click", (e) => { if (e.target === searchOvl) closeSearch(); });
-
-      searchInput.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") { e.preventDefault(); closeSearch(); return; }
-        if (e.key === "Enter") {
-          e.preventDefault();
-          const q = (searchInput.value || "").trim();
-          if (!q) { statusMsg.textContent = "SEARCH: empty"; closeSearch(); return; }
-
-          const match = findBestMatch(searchIndex, q);
-          if (match) {
-            if (match.sub === null) {
-              setActiveMenu(match.menu);
-            } else {
-              setActiveMenu(match.menu);
-              setActiveSub(match.menu, match.sub);
-            }
-            statusMsg.textContent = `SEARCH goto: ${match.label} (${match.type === "menu" ? "Menu" : "Sub"})`;
-          } else {
-            statusMsg.textContent = `SEARCH: "${q}" not found`;
-          }
-          closeSearch();
-        }
-      });
-
-      // Keyboard shortcuts
-      window.addEventListener("keydown", (e) => {
-        // Ctrl + F -> Search
-        if (e.ctrlKey && (e.key === "f" || e.key === "F")) { e.preventDefault(); openSearch(); return; }
-
-        // Alt + 0..9 -> Menu
-        if (e.altKey && !e.ctrlKey && !e.shiftKey) {
-          const k = e.key;
-          if (k >= "0" && k <= "9") { e.preventDefault(); setActiveMenu(Number(k)); return; }
-        }
-
-        // Ctrl + 1..9 -> Submenu for current menu (maps to subIndex 0..8)
-        if (e.ctrlKey && !e.altKey) {
-          const k = e.key;
-          if (k >= "1" && k <= "9") { e.preventDefault(); setActiveSub(activeMenu, Number(k) - 1); return; }
-        }
-
-        // Esc -> go Markets
-        if (e.key === "Escape") { e.preventDefault(); setActiveMenu(0); return; }
-
-        // Tab -> Profile
-        if (e.key === "Tab") { e.preventDefault(); openOverlay(profileOvl); statusMsg.textContent = "PROFILE: opened"; return; }
-
-        // Shift -> cheat sheet
-        if (e.key === "Shift" && !e.repeat && !e.ctrlKey && !e.altKey) {
-          cheats.style.display = "block";
-          setTimeout(() => { cheats.style.display = "none"; }, 2000);
-          return;
-        }
-      });
-
-      // Initial state
+      // Initial: hide bars to free iframe, then show briefly on first move
+      hideAllBars();
       setActiveMenu(0);
+      // Inject a default iframe if needed (optional):
+      // injectIframe('about:blank');
     })();
   </script>
 </body>
