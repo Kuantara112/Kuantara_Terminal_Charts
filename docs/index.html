@@ -104,7 +104,7 @@
     }
     .kt-submenu-btn.active{background:var(--amber);color:#000;border-color:#f0f0f0}
 
-    /* BOTTOM NAV */
+    /* BOTTOM NAV (SELALU NON-AUTOHIDE) */
     .kt-bottom-nav{
       left:0;right:0;bottom:0;height:46px;background:#050505e6;border-top:1px solid var(--border-soft);
       display:flex;justify-content:space-around;align-items:stretch;font-size:10px;backdrop-filter:blur(4px)
@@ -321,8 +321,8 @@
     </div>
   </nav>
 
-  <!-- BOTTOM NAV -->
-  <nav class="kt-bottom-nav kt-hide-bottom" id="kt-bottom-nav">
+  <!-- BOTTOM NAV (SELALU ON) -->
+  <nav class="kt-bottom-nav" id="kt-bottom-nav">
     <div class="kt-bottom-item active" data-menu-bottom="0"><span>0</span><span>Markets</span></div>
     <div class="kt-bottom-item" data-menu-bottom="1"><span>1</span><span>News</span></div>
     <div class="kt-bottom-item" data-menu-bottom="2"><span>2</span><span>Macro</span></div>
@@ -431,9 +431,10 @@
         updateIframeInteractivity();
       }
 
+      /* Bars visible = hanya hitung main menu, breadcrumb, submenu, status (bottom nav diabaikan) */
       function barsAreVisible(){
         const topHidden    = mainmenuStrip.classList.contains("kt-hide-top") && contentHeader.classList.contains("kt-hide-top");
-        const bottomHidden = submenuStrip.classList.contains("kt-hide-bottom") && statusbar.classList.contains("kt-hide-bottom") && bottomNav.classList.contains("kt-hide-bottom");
+        const bottomHidden = submenuStrip.classList.contains("kt-hide-bottom") && statusbar.classList.contains("kt-hide-bottom");
         return !(topHidden && bottomHidden);
       }
       function updateIframeInteractivity(){
@@ -565,7 +566,7 @@
         }
       });
 
-      /* ===== AUTOHIDE BARS ===== */
+      /* ===== AUTOHIDE BARS (TANPA BOTTOM NAV) ===== */
       function showTopBars(){
         mainmenuStrip.classList.remove("kt-hide-top");
         contentHeader.classList.remove("kt-hide-top");
@@ -583,7 +584,6 @@
       function showBottomBars(){
         submenuStrip.classList.remove("kt-hide-bottom");
         statusbar.classList.remove("kt-hide-bottom");
-        bottomNav.classList.remove("kt-hide-bottom");
         clearTimeout(graceTimer);
         graceTimer=setTimeout(()=>{},CLICK_GRACE);
         updateIframeInteractivity();
@@ -592,7 +592,6 @@
       function hideBottomBars(){
         submenuStrip.classList.add("kt-hide-bottom");
         statusbar.classList.add("kt-hide-bottom");
-        bottomNav.classList.add("kt-hide-bottom");
         updateIframeInteractivity();
       }
 
@@ -775,7 +774,7 @@
       setupEventListeners();
       setActiveMenu(0);
       showAllBars();
-      setTimeout(()=>{ hideAllBars(); }, 1000);
+      setTimeout(()=>{ hideAllBars(); }, 1000); // top menu + breadcrumb + submenu + status auto-hide, bottom nav tetap
       updateIframeInteractivity();
     })();
   </script>
