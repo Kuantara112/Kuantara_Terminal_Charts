@@ -26,7 +26,7 @@
     /* ===== TOPMOST BAR (NO AUTOHIDE) ===== */
     .kt-topbar{
       position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:center;
-      background:#070707;border-bottom:2px solid var(--amber);padding:8px 12px;font-size:10px;z-index:3000 /* setara AI */
+      background:#070707;border-bottom:2px solid var(--amber);padding:8px 12px;font-size:10px;z-index:3000;
     }
     .kt-topbar-left{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;flex-wrap:wrap}
     .kt-logo{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--amber);white-space:nowrap}
@@ -34,7 +34,7 @@
     .kt-session-item{display:inline-flex;gap:2px;align-items:baseline;white-space:nowrap;padding:1px 4px;border-radius:2px;background:#101010;border:1px solid #151515}
     .kt-session-label{color:var(--amber);font-size:9px}.kt-session-time{font-size:9px}
 
-    /* ===== UI CHROME (AUTOHIDE) — dibuat mirip AI floating: z-index tinggi + selalu clickable ===== */
+    /* ===== UI CHROME (AUTOHIDE) ===== */
     .kt-main{flex:1;display:flex;flex-direction:column;background:transparent;min-height:0;position:relative;z-index:5}
 
     .kt-mainmenu-strip,
@@ -44,15 +44,25 @@
     .kt-bottom-nav{
       transition:transform 220ms ease,opacity 180ms ease;
       will-change:transform,opacity;
-      pointer-events:auto;                /* selalu menerima klik */
-      z-index:2800;                        /* di atas iframe & mendekati AI */
+      pointer-events:auto;
+      z-index:2800;
       position:fixed;
     }
 
-    /* MAIN MENU */
+    /* MAIN MENU (TOP SUB MENU) */
     .kt-mainmenu-strip{
-      top:38px;left:0;right:0;display:flex;gap:4px;padding:6px 8px;background:#050505cf;
-      border-bottom:1px solid var(--border-soft);overflow-x:auto;scrollbar-width:thin;backdrop-filter:blur(4px)
+      top:38px;
+      left:0;
+      right:0;
+      display:flex;
+      gap:4px;
+      padding:6px 8px;
+      background:#050505cf;
+      border-bottom:1px solid var(--border-soft);
+      overflow-x:auto;
+      scrollbar-width:thin;
+      backdrop-filter:blur(4px);
+      justify-content:center; /* center di desktop */
     }
     .kt-hide-top{transform:translateY(-100%);opacity:.02;pointer-events:none}
 
@@ -82,7 +92,7 @@
     .kt-hide-bottom{transform:translateY(100%);opacity:.02;pointer-events:none}
     .kt-status-msg{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 
-    /* SUB MENU */
+    /* SUB MENU (BOTTOM STRIP) */
     .kt-submenu-strip{
       left:0;right:0;bottom:46px;border-top:1px solid var(--border-soft);background:#090909cc;padding:4px 6px 4px 8px;min-height:32px;backdrop-filter:blur(4px)
     }
@@ -103,12 +113,29 @@
     .kt-bottom-item span:first-child{font-size:9px;color:var(--amber)}
     .kt-bottom-item.active{background:#151515;color:var(--amber)}
 
-    /* AI FAB & PANEL */
+    /* FLOATING FAB + MENU + PANEL */
     .kt-ai-fab{
       position:fixed;right:16px;bottom:90px;width:48px;height:48px;border-radius:50%;
       background:var(--amber);color:#000;display:flex;align-items:center;justify-content:center;
       font-size:15px;font-weight:700;box-shadow:0 6px 14px rgba(0,0,0,.6);cursor:pointer;z-index:3000;border:1px solid #f0f0f0;user-select:none
     }
+
+    .kt-ai-menu{
+      position:fixed;right:16px;bottom:150px;display:none;flex-direction:column;gap:6px;
+      z-index:3000;
+    }
+    .kt-ai-menu-btn{
+      padding:6px 10px;border-radius:999px;border:1px solid var(--border-soft);
+      background:#111;color:var(--text-muted);font-size:11px;
+      display:flex;align-items:center;gap:6px;cursor:pointer;
+    }
+    .kt-ai-menu-btn span:first-child{
+      width:22px;text-align:center;color:var(--amber);font-weight:500;font-size:11px;
+    }
+    .kt-ai-menu-btn:hover{
+      background:#181818;color:var(--text-main);
+    }
+
     .kt-ai-panel{
       position:fixed;right:16px;bottom:140px;width:min(360px,92vw);max-height:60vh;background:#111;border-radius:10px;border:1px solid var(--border-soft);
       box-shadow:0 10px 26px rgba(0,0,0,.8);display:none;flex-direction:column;overflow:hidden;z-index:3000
@@ -133,19 +160,25 @@
     .kt-cheatsheet{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);background:#0e0e0e;border:1px solid var(--border-soft);border-radius:8px;padding:8px 10px;z-index:3500;display:none;font-size:10px;color:var(--text-muted)}
     .kt-cheatsheet b{color:var(--amber)}
 
-    /* Desktop center submenu */
+    /* Desktop center submenu strip (bottom) */
     @media (min-width:900px){
       .kt-submenu-strip{display:flex;justify-content:center;padding-left:0;padding-right:0}
       .kt-submenu-group{max-width:980px}
       .kt-submenu-group.active{justify-content:center}
     }
-    /* Mobile compact topbar */
+
+    /* Mobile tweaks */
     @media (max-width:600px){
       .kt-topbar{padding:4px 8px}
       .kt-logo{font-size:12px}
       .kt-session-clock{gap:2px;font-size:8px}
       .kt-session-item{padding:0 3px}
       .kt-session-label,.kt-session-time{font-size:8px}
+
+      /* di HP, main menu mulai dari kiri biar gampang di-swipe */
+      .kt-mainmenu-strip{
+        justify-content:flex-start;
+      }
     }
   </style>
 </head>
@@ -167,7 +200,7 @@
       </div>
     </header>
 
-    <!-- MAIN MENU -->
+    <!-- MAIN MENU (TOP SUB MENU) -->
     <nav class="kt-mainmenu-strip kt-hide-top" id="kt-mainmenu-strip">
       <button class="kt-mainmenu-btn active" data-menu="0"><span>0</span><span>Markets</span></button>
       <button class="kt-mainmenu-btn" data-menu="1"><span>1</span><span>News</span></button>
@@ -197,7 +230,7 @@
     </div>
   </div>
 
-  <!-- SUB MENU -->
+  <!-- SUB MENU (BOTTOM STRIP) -->
   <nav class="kt-submenu-strip kt-hide-bottom" id="kt-submenu-strip">
     <!-- 0. Markets -->
     <div class="kt-submenu-group active" data-menu-sub="0">
@@ -297,23 +330,25 @@
     <div class="kt-bottom-item" data-menu-bottom="4"><span>4</span><span>Metrics</span></div>
   </nav>
 
-  <!-- AI FLOAT -->
-  <div class="kt-ai-fab" id="kt-ai-fab">AI</div>
+  <!-- FLOATING FAB + MENU + PANEL -->
+  <div class="kt-ai-fab" id="kt-ai-fab">≡</div>
+
+  <div class="kt-ai-menu" id="kt-ai-menu">
+    <button class="kt-ai-menu-btn" data-pane="ai"><span>AI</span><span>Kuantara AI</span></button>
+    <button class="kt-ai-menu-btn" data-pane="chart"><span>TV</span><span>TradingView Chart</span></button>
+    <button class="kt-ai-menu-btn" data-pane="notes"><span>NT</span><span>Notes</span></button>
+  </div>
+
   <div class="kt-ai-panel" id="kt-ai-panel">
     <div class="kt-ai-panel-header">
       <div class="kt-ai-panel-title">
-        <span>Kuantara AI Assistant</span>
-        <span>Prototype UI (belum backend).</span>
+        <span id="kt-ai-title">Kuantara Panel</span>
+        <span id="kt-ai-subtitle">Floating utility for AI, chart & notes.</span>
       </div>
       <div class="kt-ai-panel-close" id="kt-ai-close">✕</div>
     </div>
-    <div class="kt-ai-panel-body">
-      <div>Panel AI akan jelaskan data dari iframe nanti.</div>
-    </div>
-    <div class="kt-ai-footer">
-      <button class="kt-ai-btn" disabled>History</button>
-      <button class="kt-ai-btn primary" disabled>Ask AI</button>
-    </div>
+    <div class="kt-ai-panel-body" id="kt-ai-body"></div>
+    <div class="kt-ai-footer" id="kt-ai-footer"></div>
   </div>
 
   <!-- SEARCH -->
@@ -354,9 +389,15 @@
       const statusMsg      = document.getElementById("kt-status-msg");
       const sessionTimes   = document.querySelectorAll(".kt-session-time");
 
-      const aiFab  = document.getElementById("kt-ai-fab");
-      const aiPanel= document.getElementById("kt-ai-panel");
-      const aiClose= document.getElementById("kt-ai-close");
+      const aiFab    = document.getElementById("kt-ai-fab");
+      const aiMenu   = document.getElementById("kt-ai-menu");
+      const aiPanel  = document.getElementById("kt-ai-panel");
+      const aiClose  = document.getElementById("kt-ai-close");
+      const aiTitle  = document.getElementById("kt-ai-title");
+      const aiSubtitle = document.getElementById("kt-ai-subtitle");
+      const aiBody   = document.getElementById("kt-ai-body");
+      const aiFooter = document.getElementById("kt-ai-footer");
+      const aiMenuButtons = document.querySelectorAll(".kt-ai-menu-btn");
 
       const searchOvl   = document.getElementById("kt-search-ovl");
       const searchInput = document.getElementById("kt-search-input");
@@ -371,8 +412,8 @@
       const submenuStrip  = document.getElementById("kt-submenu-strip");
       const bottomNav     = document.getElementById("kt-bottom-nav");
 
-      const TOP_TRIGGER_ZONE = 60;    // Area di atas untuk trigger top bars
-      const BOTTOM_TRIGGER_ZONE = 120; // Area di bawah untuk trigger bottom bars
+      const TOP_TRIGGER_ZONE = 60;
+      const BOTTOM_TRIGGER_ZONE = 120;
       const HIDE_DELAY = 1800;
       const CLICK_GRACE = 450;
       let hideTimer=null, graceTimer=null;
@@ -387,10 +428,9 @@
       function injectIframe(url){
         if(!url){ iframeLayer.innerHTML=""; return; }
         iframeLayer.innerHTML = '<iframe title="embedded" loading="lazy" src="'+url+'"></iframe>';
-        updateIframeInteractivity(); // respect current bar visibility
+        updateIframeInteractivity();
       }
 
-      /* ====== KUNCI: bikin iframe non-klik saat bar kelihatan (mirip AI FAB) ====== */
       function barsAreVisible(){
         const topHidden    = mainmenuStrip.classList.contains("kt-hide-top") && contentHeader.classList.contains("kt-hide-top");
         const bottomHidden = submenuStrip.classList.contains("kt-hide-bottom") && statusbar.classList.contains("kt-hide-bottom") && bottomNav.classList.contains("kt-hide-bottom");
@@ -439,9 +479,8 @@
         renderContent(menuIndex, subIndex);
       }
 
-      /* ===== EVENT LISTENERS UNTUK MENU DAN SUBMENU ===== */
+      /* ===== EVENT LISTENERS MENU ===== */
       function setupEventListeners() {
-        // Main menu buttons
         mainButtons.forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -452,7 +491,6 @@
           });
         });
 
-        // Bottom nav items
         bottomItems.forEach(item => {
           item.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -463,7 +501,6 @@
           });
         });
 
-        // Submenu buttons
         submenuButtons.forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -476,7 +513,7 @@
         });
       }
 
-      /* ===== SEARCH ke menu/sub ===== */
+      /* ===== SEARCH ===== */
       function buildSearchIndex(){
         const idx=[];
         document.querySelectorAll(".kt-mainmenu-btn").forEach(btn=>{
@@ -528,60 +565,58 @@
         }
       });
 
-      /* ===== AUTOHIDE YANG TIDAK SENSITIF ===== */
-      function showTopBars(){ 
-        mainmenuStrip.classList.remove("kt-hide-top"); 
-        contentHeader.classList.remove("kt-hide-top"); 
-        clearTimeout(graceTimer); 
-        graceTimer=setTimeout(()=>{},CLICK_GRACE); 
-        updateIframeInteractivity(); 
-      }
-      
-      function hideTopBars(){ 
-        mainmenuStrip.classList.add("kt-hide-top"); 
-        contentHeader.classList.add("kt-hide-top"); 
-        updateIframeInteractivity(); 
-      }
-      
-      function showBottomBars(){ 
-        submenuStrip.classList.remove("kt-hide-bottom"); 
-        statusbar.classList.remove("kt-hide-bottom"); 
-        bottomNav.classList.remove("kt-hide-bottom"); 
-        clearTimeout(graceTimer); 
-        graceTimer=setTimeout(()=>{},CLICK_GRACE); 
-        updateIframeInteractivity(); 
-      }
-      
-      function hideBottomBars(){ 
-        submenuStrip.classList.add("kt-hide-bottom"); 
-        statusbar.classList.add("kt-hide-bottom"); 
-        bottomNav.classList.add("kt-hide-bottom"); 
-        updateIframeInteractivity(); 
-      }
-      
-      function showAllBars(){ 
-        showTopBars(); 
-        showBottomBars(); 
-      }
-      
-      function hideAllBars(){ 
-        hideTopBars(); 
-        hideBottomBars(); 
+      /* ===== AUTOHIDE BARS ===== */
+      function showTopBars(){
+        mainmenuStrip.classList.remove("kt-hide-top");
+        contentHeader.classList.remove("kt-hide-top");
+        clearTimeout(graceTimer);
+        graceTimer=setTimeout(()=>{},CLICK_GRACE);
+        updateIframeInteractivity();
       }
 
-      function scheduleHide(){ 
-        clearTimeout(hideTimer); 
-        hideTimer=setTimeout(()=>{ hideAllBars(); }, HIDE_DELAY); 
+      function hideTopBars(){
+        mainmenuStrip.classList.add("kt-hide-top");
+        contentHeader.classList.add("kt-hide-top");
+        updateIframeInteractivity();
+      }
+
+      function showBottomBars(){
+        submenuStrip.classList.remove("kt-hide-bottom");
+        statusbar.classList.remove("kt-hide-bottom");
+        bottomNav.classList.remove("kt-hide-bottom");
+        clearTimeout(graceTimer);
+        graceTimer=setTimeout(()=>{},CLICK_GRACE);
+        updateIframeInteractivity();
+      }
+
+      function hideBottomBars(){
+        submenuStrip.classList.add("kt-hide-bottom");
+        statusbar.classList.add("kt-hide-bottom");
+        bottomNav.classList.add("kt-hide-bottom");
+        updateIframeInteractivity();
+      }
+
+      function showAllBars(){
+        showTopBars();
+        showBottomBars();
+      }
+
+      function hideAllBars(){
+        hideTopBars();
+        hideBottomBars();
+      }
+
+      function scheduleHide(){
+        clearTimeout(hideTimer);
+        hideTimer=setTimeout(()=>{ hideAllBars(); }, HIDE_DELAY);
       }
 
       function handleMouseMove(e){
         const y = e.clientY;
         const h = window.innerHeight;
-        
-        // Hanya trigger show bars ketika cursor mendekati area bar
         const nearTop = y <= TOP_TRIGGER_ZONE;
         const nearBottom = y >= (h - BOTTOM_TRIGGER_ZONE);
-        
+
         if (nearTop) {
           showTopBars();
           scheduleHide();
@@ -589,7 +624,6 @@
           showBottomBars();
           scheduleHide();
         }
-        // Jika cursor di tengah-tengah (jauh dari bar), biarkan hide timer berjalan
       }
 
       window.addEventListener("mousemove", handleMouseMove, {passive:true});
@@ -598,18 +632,15 @@
         const y=e.touches[0]?.clientY??0, h=window.innerHeight;
         const nearTop = y <= TOP_TRIGGER_ZONE;
         const nearBottom = y >= (h - BOTTOM_TRIGGER_ZONE);
-        
+
         if(nearTop) showTopBars();
         if(nearBottom) showBottomBars();
         scheduleHide();
       },{passive:true});
 
-      /* ===== "mirip AI floating": cegah klik tembus ===== */
-      // Saat berinteraksi di area bar, jangan sampai iframe aktif.
       [mainmenuStrip, contentHeader, submenuStrip, statusbar, bottomNav].forEach(el=>{
-        el.addEventListener("mouseenter", ()=>{ 
-          clearTimeout(hideTimer); 
-          // Tampilkan bars yang sesuai berdasarkan elemen yang di-hover
+        el.addEventListener("mouseenter", ()=>{
+          clearTimeout(hideTimer);
           if (el === mainmenuStrip || el === contentHeader) {
             showTopBars();
           } else {
@@ -618,18 +649,92 @@
         });
         el.addEventListener("mouseleave", scheduleHide);
         el.addEventListener("pointerdown", ()=>{ clearTimeout(hideTimer); });
-        el.addEventListener("click", (e)=>{ e.stopPropagation(); }); // klik pasti nempel ke bar
+        el.addEventListener("click", (e)=>{ e.stopPropagation(); });
       });
 
-      // Tombol menu/sub: stop propagation supaya tidak pernah "tembus" ke iframe
       document.querySelectorAll('.kt-mainmenu-btn, .kt-submenu-btn, .kt-bottom-item').forEach(btn=>{
-        btn.addEventListener('pointerdown', (e)=>{ 
-          e.stopPropagation(); 
-          showAllBars(); 
-          updateIframeInteractivity(); 
+        btn.addEventListener('pointerdown', (e)=>{
+          e.stopPropagation();
+          showAllBars();
+          updateIframeInteractivity();
         });
         btn.addEventListener('click', (e)=>{ e.stopPropagation(); });
       });
+
+      /* ===== FLOATING MENU LOGIC ===== */
+      function toggleAiMenu(force){
+        const isOpen = aiMenu.style.display==="flex";
+        const next = typeof force==="boolean" ? force : !isOpen;
+        aiMenu.style.display = next ? "flex" : "none";
+      }
+
+      function openAiPane(mode){
+        if(mode==="ai"){
+          aiTitle.textContent = "Kuantara AI Assistant";
+          aiSubtitle.textContent = "Jelaskan data dari iframe dan bantu analisis.";
+          aiBody.innerHTML = "<div>Panel AI akan jelaskan data dari iframe nanti.</div>";
+          aiFooter.innerHTML =
+            '<button class="kt-ai-btn" disabled>History</button>' +
+            '<button class="kt-ai-btn primary" disabled>Ask AI</button>';
+        }else if(mode==="chart"){
+          aiTitle.textContent = "TradingView Chart";
+          aiSubtitle.textContent = "Area untuk embed widget chart favoritmu.";
+          aiBody.innerHTML =
+            '<div style="border:1px solid var(--border-soft);border-radius:6px;height:260px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-muted);">TradingView chart iframe akan ditempatkan di sini.</div>';
+          aiFooter.innerHTML = '<button class="kt-ai-btn" disabled>Save Layout</button>';
+        }else if(mode==="notes"){
+          aiTitle.textContent = "Notes";
+          aiSubtitle.textContent = "Catatan cepat untuk ide trade dan macro view.";
+          aiBody.innerHTML =
+            '<textarea id="kt-notes-area" style="width:100%;min-height:180px;background:#111;border:1px solid var(--border-soft);border-radius:6px;color:var(--text-main);padding:6px;font-size:11px;resize:vertical;" placeholder="Tulis catatan di sini..."></textarea>';
+          aiFooter.innerHTML = '<button class="kt-ai-btn" id="kt-notes-clear">Clear</button>';
+
+          const clearBtn = document.getElementById("kt-notes-clear");
+          const notesArea = document.getElementById("kt-notes-area");
+          if(window.localStorage){
+            const saved = localStorage.getItem("kuantara_notes");
+            if(saved) notesArea.value = saved;
+            notesArea.addEventListener("input", ()=>localStorage.setItem("kuantara_notes", notesArea.value));
+            clearBtn.addEventListener("click", ()=>{
+              notesArea.value="";
+              localStorage.removeItem("kuantara_notes");
+            });
+          }else{
+            clearBtn.addEventListener("click", ()=>{
+              if(notesArea) notesArea.value="";
+            });
+          }
+        }
+        aiPanel.style.display="flex";
+        showAllBars();
+      }
+
+      aiFab.addEventListener("click", (e)=>{
+        e.stopPropagation();
+        toggleAiMenu();
+        showAllBars();
+      });
+
+      aiMenuButtons.forEach(btn=>{
+        btn.addEventListener("click",(e)=>{
+          e.stopPropagation();
+          const pane = btn.getAttribute("data-pane");
+          toggleAiMenu(false);
+          openAiPane(pane);
+        });
+      });
+
+      aiClose.addEventListener("click", ()=>{
+        aiPanel.style.display="none";
+      });
+
+      window.addEventListener("click",(e)=>{
+        if(!aiFab.contains(e.target) && !aiMenu.contains(e.target) && !aiPanel.contains(e.target)){
+          toggleAiMenu(false);
+        }
+      });
+
+      aiPanel.addEventListener("click",(e)=>{ e.stopPropagation(); });
 
       /* ===== Keyboard ===== */
       window.addEventListener("keydown",(e)=>{
@@ -649,15 +754,6 @@
         }
       });
 
-      /* ===== AI panel ===== */
-      function toggleAiPanel(force){
-        const isOpen=aiPanel.style.display==="flex";
-        const next=(typeof force==="boolean")?force:!isOpen;
-        aiPanel.style.display = next?"flex":"none";
-      }
-      aiFab.addEventListener("click", ()=>toggleAiPanel());
-      aiClose.addEventListener("click", ()=>toggleAiPanel(false));
-
       /* ===== Profile overlay ===== */
       profileClose.addEventListener("click", ()=>{ profileOvl.style.display="none"; updateIframeInteractivity(); });
       profileOvl.addEventListener("click",(e)=>{ if(e.target===profileOvl) profileOvl.style.display="none"; updateIframeInteractivity(); });
@@ -676,10 +772,10 @@
       updateSessions(); setInterval(updateSessions,1000);
 
       /* ===== Init ===== */
-      setupEventListeners(); // Setup event listeners untuk menu dan submenu
+      setupEventListeners();
       setActiveMenu(0);
-      showAllBars();            // tampil dulu biar user lihat
-      setTimeout(()=>{ hideAllBars(); }, 1000); // lalu auto-hide
+      showAllBars();
+      setTimeout(()=>{ hideAllBars(); }, 1000);
       updateIframeInteractivity();
     })();
   </script>
