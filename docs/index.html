@@ -103,7 +103,7 @@
     }
     .kt-submenu-btn.active{background:var(--amber);color:#000;border-color:#f0f0f0}
 
-    /* BOTTOM NAV (SELALU ON) */
+    /* BOTTOM NAV (SELALU ON, TEXT ONLY) */
     .kt-bottom-nav{
       position:fixed;
       left:0;right:0;bottom:0;height:46px;background:#050505e6;border-top:1px solid var(--border-soft);
@@ -117,16 +117,90 @@
       color:var(--text-muted);
       cursor:pointer;gap:2px;
       touch-action:manipulation;
+      font-size:11px;
     }
-    .kt-bottom-item span:first-child{
-      font-size:13px;
+    .kt-bottom-item.active{
+      background:#151515;
       color:var(--amber);
-      line-height:1;
     }
-    .kt-bottom-item span:last-child{
-      font-size:9px;
+
+    /* PROFILE PAGE (PAGE BARU) */
+    .kt-profile-page{
+      position:fixed;
+      left:0;
+      right:0;
+      top:0;
+      bottom:46px; /* sisakan ruang bottom bar */
+      padding:64px 16px 16px; /* kira-kira mulai di bawah topbar */
+      z-index:2; /* di atas iframe, di bawah menu (2800) */
+      display:none;
+      overflow:auto;
+      background:radial-gradient(circle at top left,#1a1200,#050505 55%);
     }
-    .kt-bottom-item.active{background:#151515;color:var(--amber)}
+    .kt-profile-inner{
+      max-width:720px;
+      margin:0 auto;
+      background:#0e0e0e;
+      border-radius:12px;
+      border:1px solid var(--border-soft);
+      padding:16px 18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.7);
+      font-size:11px;
+      color:var(--text-muted);
+    }
+    .kt-profile-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .kt-profile-title{
+      font-size:12px;
+      color:var(--amber);
+      font-weight:600;
+    }
+    .kt-profile-name{
+      font-size:13px;
+      color:var(--text-main);
+      font-weight:600;
+    }
+    .kt-profile-meta{
+      font-size:10px;
+      color:var(--text-muted);
+    }
+    .kt-badge{
+      display:inline-flex;
+      align-items:center;
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#151515;
+      font-size:10px;
+      color:var(--amber);
+      gap:4px;
+    }
+    .kt-profile-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:10px;
+      margin-top:8px;
+    }
+    .kt-profile-card{
+      border-radius:8px;
+      border:1px solid var(--border-soft);
+      background:#101010;
+      padding:8px 10px;
+    }
+    .kt-profile-card-title{
+      font-size:10px;
+      color:var(--amber);
+      margin-bottom:4px;
+    }
+    .kt-profile-card-body{
+      font-size:10px;
+      line-height:1.5;
+    }
 
     /* FLOATING FAB + MENU + PANEL */
     .kt-ai-fab{
@@ -165,7 +239,7 @@
     .kt-ai-btn{padding:4px 10px;border-radius:3px;font-size:11px;border:1px solid var(--border-soft);background:#181818;color:var(--text-muted);cursor:pointer}
     .kt-ai-btn.primary{background:var(--amber);color:#000;border-color:#f0f0f0}
 
-    /* Overlays */
+    /* Overlays (search) */
     .kt-overlay{position:fixed;inset:0;background:var(--overlay);display:none;align-items:center;justify-content:center;z-index:4000}
     .kt-card{background:#0e0e0e;border:1px solid var(--border-soft);border-radius:10px;padding:12px;width:min(560px,92vw);box-shadow:0 10px 26px rgba(0,0,0,.8)}
     .kt-card-title{color:var(--amber);font-size:12px;margin-bottom:8px}
@@ -192,6 +266,9 @@
 
       .kt-mainmenu-strip{
         justify-content:flex-start;
+      }
+      .kt-profile-inner{
+        padding:12px 12px;
       }
     }
   </style>
@@ -322,7 +399,7 @@
     <!-- 8. Research -->
     <div class="kt-submenu-group" data-menu-sub="8">
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Internal</button>
-      <button class="kt-submenu-btn" data-menu-sub="8" data-menu="8" data-sub-index="1">Institutions</button>
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Institutions</button>
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Reports</button>
     </div>
 
@@ -336,19 +413,77 @@
     </div>
   </nav>
 
-  <!-- BOTTOM NAV (NEW SYSTEM) -->
+  <!-- PROFILE PAGE (PAGE BARU) -->
+  <div class="kt-profile-page" id="kt-profile-page">
+    <div class="kt-profile-inner">
+      <div class="kt-profile-header">
+        <div>
+          <div class="kt-profile-title">User Profile</div>
+          <div class="kt-profile-name">Guest User</div>
+          <div class="kt-profile-meta">
+            Kuantara Terminal · Single-seat license<br/>
+            Last login: — 
+          </div>
+        </div>
+        <div>
+          <span class="kt-badge">ACTIVE PLAN</span>
+        </div>
+      </div>
+
+      <div class="kt-profile-grid">
+        <div class="kt-profile-card">
+          <div class="kt-profile-card-title">Account</div>
+          <div class="kt-profile-card-body">
+            Name : Guest User<br/>
+            Email: guest@example.com<br/>
+            Role : Retail Trader / Analyst
+          </div>
+        </div>
+
+        <div class="kt-profile-card">
+          <div class="kt-profile-card-title">Subscription</div>
+          <div class="kt-profile-card-body">
+            Plan          : Kuantara Terminal Standard<br/>
+            Status        : Trial<br/>
+            Time Left     : 7 days<br/>
+            Renewal Mode  : Manual
+          </div>
+        </div>
+
+        <div class="kt-profile-card">
+          <div class="kt-profile-card-title">Contact & Support</div>
+          <div class="kt-profile-card-body">
+            Telegram : @kuantara<br/>
+            Email    : support@kuantara.com<br/>
+            Priority : Standard
+          </div>
+        </div>
+
+        <div class="kt-profile-card">
+          <div class="kt-profile-card-title">Usage Snapshot</div>
+          <div class="kt-profile-card-body">
+            Terminals Active : 1 / 2<br/>
+            Last 24h Logins : 3<br/>
+            Most Used Page  : Markets · Overview
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV (TEXT ONLY) -->
   <nav class="kt-bottom-nav" id="kt-bottom-nav">
     <div class="kt-bottom-item active" data-bottom-role="home">
-      <span>⌂</span><span>Home</span>
+      <span>Home</span>
     </div>
     <div class="kt-bottom-item" data-bottom-role="247">
-      <span>📰</span><span>24/7</span>
+      <span>24/7</span>
     </div>
     <div class="kt-bottom-item" data-bottom-role="chart">
-      <span>📈</span><span>Charts</span>
+      <span>Charts</span>
     </div>
     <div class="kt-bottom-item" data-bottom-role="profile">
-      <span>👤</span><span>Profile</span>
+      <span>Profile</span>
     </div>
   </nav>
 
@@ -382,20 +517,6 @@
     </div>
   </div>
 
-  <!-- PROFILE -->
-  <div class="kt-overlay" id="kt-profile-ovl" aria-hidden="true">
-    <div class="kt-card">
-      <div class="kt-card-title">Profile</div>
-      <div style="font-size:11px;color:var(--text-muted);line-height:1.5;">
-        User: <span style="color:var(--amber);">Guest</span><br/>
-        Email: <span style="color:var(--text-main);">guest@example.com</span><br/>
-        Subscription: <span style="color:var(--text-main);">Trial – 7 days left</span><br/>
-        Plan: <span style="color:var(--text-main);">Kuantara Terminal Standard</span>
-      </div>
-      <button class="kt-close-btn" id="kt-profile-close">Close</button>
-    </div>
-  </div>
-
   <!-- CHEATSHEET -->
   <div class="kt-cheatsheet" id="kt-cheatsheet">
     <div><b>Alt+0–9</b> Menu · <b>Ctrl+1–9</b> Sub · <b>Esc</b>=Alt+0 · <b>Ctrl+F</b> Search · <b>Tab</b> Profile</div>
@@ -426,8 +547,6 @@
       const searchOvl   = document.getElementById("kt-search-ovl");
       const searchInput = document.getElementById("kt-search-input");
       const searchClose = document.getElementById("kt-search-close");
-      const profileOvl  = document.getElementById("kt-profile-ovl");
-      const profileClose = document.getElementById("kt-profile-close");
 
       const iframeLayer   = document.getElementById("kt-iframe-layer");
       const mainmenuStrip = document.getElementById("kt-mainmenu-strip");
@@ -435,6 +554,7 @@
       const statusbar     = document.getElementById("kt-statusbar");
       const submenuStrip  = document.getElementById("kt-submenu-strip");
       const bottomNav     = document.getElementById("kt-bottom-nav");
+      const profilePage   = document.getElementById("kt-profile-page");
 
       const TOP_TRIGGER_ZONE = 60;
       const BOTTOM_TRIGGER_ZONE = 120;
@@ -450,7 +570,7 @@
         "1:1":"https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html",
       };
 
-      /* Full-page TradingView chart URL (ganti dengan embed kamu) */
+      /* Full-page TradingView chart URL */
       const CHART_IFRAME_URL = "https://www.tradingview.com";
 
       function injectIframe(url){
@@ -512,14 +632,21 @@
         });
       }
 
+      function showProfilePage(){
+        profilePage.style.display="block";
+      }
+      function hideProfilePage(){
+        profilePage.style.display="none";
+      }
+
       function setupEventListeners() {
         mainButtons.forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
             if(activeBottom==="chart"){
-              // keluar dari full chart mode
               setBottomActive("home");
             }
+            hideProfilePage();
             setActiveMenu(Number(btn.getAttribute("data-menu")));
             showAllBars();
             scheduleHide();
@@ -534,6 +661,7 @@
             if(activeBottom==="chart"){
               setBottomActive("home");
             }
+            hideProfilePage();
             setActiveSub(menuIndex, subIndex);
             showAllBars();
             scheduleHide();
@@ -548,6 +676,7 @@
 
             if(role==="home"){
               setBottomActive("home");
+              hideProfilePage();
               setActiveMenu(0);
               setActiveSub(0,0);
               showAllBars();
@@ -555,6 +684,7 @@
             }
             else if(role==="247"){
               setBottomActive("247");
+              hideProfilePage();
               setActiveMenu(1);      // News
               setActiveSub(1,0);     // 24/7 Feed
               showAllBars();
@@ -562,15 +692,18 @@
             }
             else if(role==="chart"){
               setBottomActive("chart");
-              // FULL CHART MODE: sembunyikan semua UI chrome kecuali bottom bar
+              hideProfilePage();
               injectIframe(CHART_IFRAME_URL);
               statusMsg.textContent="TRADINGVIEW CHART MODE";
               hideAllBars(); // hide top menu + breadcrumb + sub menu + status bar
             }
             else if(role==="profile"){
               setBottomActive("profile");
-              profileOvl.style.display="flex";
-              updateIframeInteractivity();
+              hideAllBars();  // mulai dengan clean, lalu munculkan lagi auto berdasarkan movement
+              injectIframe(""); // kosongkan iframe jika mau
+              showProfilePage();
+              showAllBars();
+              scheduleHide();
             }
           });
         });
@@ -626,6 +759,7 @@
             if(activeBottom==="chart"){
               setBottomActive("home");
             }
+            hideProfilePage();
             setActiveMenu(match.menu);
             if(match.sub!==null) setActiveSub(match.menu,match.sub);
             statusMsg.textContent=`SEARCH goto: ${match.label} (${match.type})`;
@@ -824,6 +958,7 @@
             if(activeBottom==="chart"){
               setBottomActive("home");
             }
+            hideProfilePage();
             setBottomActive("home");
             setActiveMenu(Number(k));
             showAllBars();
@@ -837,6 +972,7 @@
             if(activeBottom==="chart"){
               setBottomActive("home");
             }
+            hideProfilePage();
             setActiveSub(activeMenu, Number(k)-1);
             showAllBars();
             scheduleHide();
@@ -848,6 +984,7 @@
           if(activeBottom==="chart"){
             setBottomActive("home");
           }
+          hideProfilePage();
           setActiveMenu(0);
           setActiveSub(0,0);
           showAllBars();
@@ -856,9 +993,13 @@
         }
         if(e.key==="Tab"){
           e.preventDefault();
-          profileOvl.style.display="flex";
+          // Tab = buka Profile page (sama seperti klik bottom Profile)
+          setBottomActive("profile");
+          hideAllBars();
+          injectIframe("");
+          showProfilePage();
           showAllBars();
-          updateIframeInteractivity();
+          scheduleHide();
           return;
         }
         if(e.key==="Shift" && !e.repeat && !e.ctrlKey && !e.altKey){
@@ -867,10 +1008,6 @@
           showAllBars(); scheduleHide(); return;
         }
       });
-
-      /* Profile overlay */
-      profileClose.addEventListener("click", ()=>{ profileOvl.style.display="none"; updateIframeInteractivity(); });
-      profileOvl.addEventListener("click",(e)=>{ if(e.target===profileOvl) profileOvl.style.display="none"; updateIframeInteractivity(); });
 
       /* Clocks */
       function pad2(n){return n<10?"0"+n:""+n}
@@ -889,6 +1026,7 @@
       setupEventListeners();
       setActiveMenu(0);
       setBottomActive("home");
+      hideProfilePage();
       showAllBars();
       setTimeout(()=>{ hideAllBars(); }, 1000);
       updateIframeInteractivity();
