@@ -40,8 +40,7 @@
     .kt-mainmenu-strip,
     .kt-content-header,
     .kt-statusbar,
-    .kt-submenu-strip,
-    .kt-bottom-nav{
+    .kt-submenu-strip{
       transition:transform 220ms ease,opacity 180ms ease;
       will-change:transform,opacity;
       pointer-events:auto;
@@ -62,7 +61,7 @@
       overflow-x:auto;
       scrollbar-width:thin;
       backdrop-filter:blur(4px);
-      justify-content:center; /* center di desktop */
+      justify-content:center;
     }
     .kt-hide-top{transform:translateY(-100%);opacity:.02;pointer-events:none}
 
@@ -104,13 +103,29 @@
     }
     .kt-submenu-btn.active{background:var(--amber);color:#000;border-color:#f0f0f0}
 
-    /* BOTTOM NAV (SELALU NON-AUTOHIDE) */
+    /* BOTTOM NAV (SELALU ON) */
     .kt-bottom-nav{
+      position:fixed;
       left:0;right:0;bottom:0;height:46px;background:#050505e6;border-top:1px solid var(--border-soft);
-      display:flex;justify-content:space-around;align-items:stretch;font-size:10px;backdrop-filter:blur(4px)
+      display:flex;justify-content:space-around;align-items:stretch;font-size:10px;backdrop-filter:blur(4px);
+      z-index:2800;
     }
-    .kt-bottom-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-muted);cursor:pointer;gap:1px;touch-action:manipulation}
-    .kt-bottom-item span:first-child{font-size:9px;color:var(--amber)}
+    .kt-bottom-item{
+      flex:1;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      color:var(--text-muted);
+      cursor:pointer;gap:2px;
+      touch-action:manipulation;
+    }
+    .kt-bottom-item span:first-child{
+      font-size:13px;
+      color:var(--amber);
+      line-height:1;
+    }
+    .kt-bottom-item span:last-child{
+      font-size:9px;
+    }
     .kt-bottom-item.active{background:#151515;color:var(--amber)}
 
     /* FLOATING FAB + MENU + PANEL */
@@ -126,7 +141,7 @@
     }
     .kt-ai-menu-btn{
       padding:6px 10px;border-radius:999px;border:1px solid var(--border-soft);
-      background:#111;color:var(--text-muted);font-size:11px;
+      background:#111;color:#9b9b9b;font-size:11px;
       display:flex;align-items:center;gap:6px;cursor:pointer;
     }
     .kt-ai-menu-btn span:first-child{
@@ -175,7 +190,6 @@
       .kt-session-item{padding:0 3px}
       .kt-session-label,.kt-session-time{font-size:8px}
 
-      /* di HP, main menu mulai dari kiri biar gampang di-swipe */
       .kt-mainmenu-strip{
         justify-content:flex-start;
       }
@@ -249,7 +263,9 @@
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="0">24/7 Feed</button>
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="1">Global</button>
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="2">Indonesia</button>
-      <button class="kt-submenu-btn" data-menu="1" data-sub-index="3">Insights</button>
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="3">Calendar</button>
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="4">Recap</button>
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="5">Insights</button>
     </div>
 
     <!-- 2. Macroeconomic -->
@@ -300,16 +316,14 @@
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">US Stocks</button>
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">ID Stocks</button>
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="2">Crypto</button>
-      <button class="kt-submenu-btn" data-menu="7" data-sub-index="3">Forex</button>
-      <button class="kt-submenu-btn" data-menu="7" data-sub-index="4">Commodities</button>
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="3">Custom</button>
     </div>
 
     <!-- 8. Research -->
     <div class="kt-submenu-group" data-menu-sub="8">
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Internal</button>
-      <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Institutions</button>
-      <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Articles</button>
-      <button class="kt-submenu-btn" data-menu="8" data-sub-index="3">Reports</button>
+      <button class="kt-submenu-btn" data-menu-sub="8" data-menu="8" data-sub-index="1">Institutions</button>
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Reports</button>
     </div>
 
     <!-- 9. Tools -->
@@ -317,17 +331,25 @@
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Journal</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Education</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Notes</button>
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Others</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Quantitative</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="4">Others</button>
     </div>
   </nav>
 
-  <!-- BOTTOM NAV (SELALU ON) -->
+  <!-- BOTTOM NAV (NEW SYSTEM) -->
   <nav class="kt-bottom-nav" id="kt-bottom-nav">
-    <div class="kt-bottom-item active" data-menu-bottom="0"><span>0</span><span>Markets</span></div>
-    <div class="kt-bottom-item" data-menu-bottom="1"><span>1</span><span>News</span></div>
-    <div class="kt-bottom-item" data-menu-bottom="2"><span>2</span><span>Macro</span></div>
-    <div class="kt-bottom-item" data-menu-bottom="3"><span>3</span><span>Geo</span></div>
-    <div class="kt-bottom-item" data-menu-bottom="4"><span>4</span><span>Metrics</span></div>
+    <div class="kt-bottom-item active" data-bottom-role="home">
+      <span>⌂</span><span>Home</span>
+    </div>
+    <div class="kt-bottom-item" data-bottom-role="247">
+      <span>📰</span><span>24/7</span>
+    </div>
+    <div class="kt-bottom-item" data-bottom-role="chart">
+      <span>📈</span><span>Charts</span>
+    </div>
+    <div class="kt-bottom-item" data-bottom-role="profile">
+      <span>👤</span><span>Profile</span>
+    </div>
   </nav>
 
   <!-- FLOATING FAB + MENU + PANEL -->
@@ -366,7 +388,9 @@
       <div class="kt-card-title">Profile</div>
       <div style="font-size:11px;color:var(--text-muted);line-height:1.5;">
         User: <span style="color:var(--amber);">Guest</span><br/>
-        Status: <span style="color:var(--text-main);">Signed-out</span>
+        Email: <span style="color:var(--text-main);">guest@example.com</span><br/>
+        Subscription: <span style="color:var(--text-main);">Trial – 7 days left</span><br/>
+        Plan: <span style="color:var(--text-main);">Kuantara Terminal Standard</span>
       </div>
       <button class="kt-close-btn" id="kt-profile-close">Close</button>
     </div>
@@ -419,11 +443,15 @@
       let hideTimer=null, graceTimer=null;
 
       let activeMenu=0;
+      let activeBottom="home";
 
       /* Map menu:sub -> iframe URL */
       const IFRAME_MAP = {
         "1:1":"https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html",
       };
+
+      /* Full-page TradingView chart URL (ganti dengan embed kamu) */
+      const CHART_IFRAME_URL = "https://www.tradingview.com";
 
       function injectIframe(url){
         if(!url){ iframeLayer.innerHTML=""; return; }
@@ -431,7 +459,6 @@
         updateIframeInteractivity();
       }
 
-      /* Bars visible = hanya hitung main menu, breadcrumb, submenu, status (bottom nav diabaikan) */
       function barsAreVisible(){
         const topHidden    = mainmenuStrip.classList.contains("kt-hide-top") && contentHeader.classList.contains("kt-hide-top");
         const bottomHidden = submenuStrip.classList.contains("kt-hide-bottom") && statusbar.classList.contains("kt-hide-bottom");
@@ -451,9 +478,6 @@
         activeMenu = menuIndex;
         document.querySelectorAll(".kt-mainmenu-btn").forEach(btn=>{
           btn.classList.toggle("active", Number(btn.getAttribute("data-menu"))===menuIndex);
-        });
-        bottomItems.forEach(item=>{
-          item.classList.toggle("active", Number(item.getAttribute("data-menu-bottom"))===menuIndex);
         });
         submenuGroups.forEach(group=>{
           group.classList.toggle("active", Number(group.getAttribute("data-menu-sub"))===menuIndex);
@@ -480,23 +504,23 @@
         renderContent(menuIndex, subIndex);
       }
 
-      /* ===== EVENT LISTENERS MENU ===== */
+      /* Bottom bar active state */
+      function setBottomActive(role){
+        activeBottom = role;
+        bottomItems.forEach(item=>{
+          item.classList.toggle("active", item.getAttribute("data-bottom-role")===role);
+        });
+      }
+
       function setupEventListeners() {
         mainButtons.forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const menuIndex = Number(btn.getAttribute("data-menu"));
-            setActiveMenu(menuIndex);
-            showAllBars();
-            scheduleHide();
-          });
-        });
-
-        bottomItems.forEach(item => {
-          item.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const menuIndex = Number(item.getAttribute("data-menu-bottom"));
-            setActiveMenu(menuIndex);
+            if(activeBottom==="chart"){
+              // keluar dari full chart mode
+              setBottomActive("home");
+            }
+            setActiveMenu(Number(btn.getAttribute("data-menu")));
             showAllBars();
             scheduleHide();
           });
@@ -507,14 +531,52 @@
             e.stopPropagation();
             const menuIndex = Number(btn.getAttribute("data-menu"));
             const subIndex = Number(btn.getAttribute("data-sub-index"));
+            if(activeBottom==="chart"){
+              setBottomActive("home");
+            }
             setActiveSub(menuIndex, subIndex);
             showAllBars();
             scheduleHide();
           });
         });
+
+        /* Bottom bar behaviour (NEW) */
+        bottomItems.forEach(item=>{
+          item.addEventListener("click",(e)=>{
+            e.stopPropagation();
+            const role = item.getAttribute("data-bottom-role");
+
+            if(role==="home"){
+              setBottomActive("home");
+              setActiveMenu(0);
+              setActiveSub(0,0);
+              showAllBars();
+              scheduleHide();
+            }
+            else if(role==="247"){
+              setBottomActive("247");
+              setActiveMenu(1);      // News
+              setActiveSub(1,0);     // 24/7 Feed
+              showAllBars();
+              scheduleHide();
+            }
+            else if(role==="chart"){
+              setBottomActive("chart");
+              // FULL CHART MODE: sembunyikan semua UI chrome kecuali bottom bar
+              injectIframe(CHART_IFRAME_URL);
+              statusMsg.textContent="TRADINGVIEW CHART MODE";
+              hideAllBars(); // hide top menu + breadcrumb + sub menu + status bar
+            }
+            else if(role==="profile"){
+              setBottomActive("profile");
+              profileOvl.style.display="flex";
+              updateIframeInteractivity();
+            }
+          });
+        });
       }
 
-      /* ===== SEARCH ===== */
+      /* SEARCH */
       function buildSearchIndex(){
         const idx=[];
         document.querySelectorAll(".kt-mainmenu-btn").forEach(btn=>{
@@ -560,14 +622,24 @@
           const q=(searchInput.value||"").trim();
           if(!q){ statusMsg.textContent="SEARCH: empty"; closeSearch(); return; }
           const match=findBestMatch(searchIndex,q);
-          if(match){ setActiveMenu(match.menu); if(match.sub!==null) setActiveSub(match.menu,match.sub); statusMsg.textContent=`SEARCH goto: ${match.label} (${match.type})`; }
-          else     { statusMsg.textContent=`SEARCH: "${q}" not found`; }
+          if(match){
+            if(activeBottom==="chart"){
+              setBottomActive("home");
+            }
+            setActiveMenu(match.menu);
+            if(match.sub!==null) setActiveSub(match.menu,match.sub);
+            statusMsg.textContent=`SEARCH goto: ${match.label} (${match.type})`;
+          }
+          else{
+            statusMsg.textContent=`SEARCH: "${q}" not found`;
+          }
           closeSearch();
         }
       });
 
-      /* ===== AUTOHIDE BARS (TANPA BOTTOM NAV) ===== */
+      /* AUTOHIDE BARS (tanpa bottom nav, dan dimatikan saat chart mode) */
       function showTopBars(){
+        if(activeBottom==="chart") return; // full chart mode: jangan muncul
         mainmenuStrip.classList.remove("kt-hide-top");
         contentHeader.classList.remove("kt-hide-top");
         clearTimeout(graceTimer);
@@ -582,6 +654,7 @@
       }
 
       function showBottomBars(){
+        if(activeBottom==="chart") return; // full chart mode
         submenuStrip.classList.remove("kt-hide-bottom");
         statusbar.classList.remove("kt-hide-bottom");
         clearTimeout(graceTimer);
@@ -606,11 +679,13 @@
       }
 
       function scheduleHide(){
+        if(activeBottom==="chart") return; // di chart mode tidak perlu autohide
         clearTimeout(hideTimer);
         hideTimer=setTimeout(()=>{ hideAllBars(); }, HIDE_DELAY);
       }
 
       function handleMouseMove(e){
+        if(activeBottom==="chart") return; // full chart: tidak respon hover
         const y = e.clientY;
         const h = window.innerHeight;
         const nearTop = y <= TOP_TRIGGER_ZONE;
@@ -628,6 +703,7 @@
       window.addEventListener("mousemove", handleMouseMove, {passive:true});
 
       window.addEventListener("touchstart",(e)=>{
+        if(activeBottom==="chart") return;
         const y=e.touches[0]?.clientY??0, h=window.innerHeight;
         const nearTop = y <= TOP_TRIGGER_ZONE;
         const nearBottom = y >= (h - BOTTOM_TRIGGER_ZONE);
@@ -639,19 +715,23 @@
 
       [mainmenuStrip, contentHeader, submenuStrip, statusbar, bottomNav].forEach(el=>{
         el.addEventListener("mouseenter", ()=>{
+          if(activeBottom==="chart" && (el!==bottomNav)) return;
           clearTimeout(hideTimer);
           if (el === mainmenuStrip || el === contentHeader) {
             showTopBars();
-          } else {
+          } else if (el !== bottomNav) {
             showBottomBars();
           }
         });
-        el.addEventListener("mouseleave", scheduleHide);
+        el.addEventListener("mouseleave", ()=>{
+          if(el===bottomNav) return;
+          scheduleHide();
+        });
         el.addEventListener("pointerdown", ()=>{ clearTimeout(hideTimer); });
         el.addEventListener("click", (e)=>{ e.stopPropagation(); });
       });
 
-      document.querySelectorAll('.kt-mainmenu-btn, .kt-submenu-btn, .kt-bottom-item').forEach(btn=>{
+      document.querySelectorAll('.kt-mainmenu-btn, .kt-submenu-btn').forEach(btn=>{
         btn.addEventListener('pointerdown', (e)=>{
           e.stopPropagation();
           showAllBars();
@@ -660,7 +740,7 @@
         btn.addEventListener('click', (e)=>{ e.stopPropagation(); });
       });
 
-      /* ===== FLOATING MENU LOGIC ===== */
+      /* FLOATING MENU LOGIC */
       function toggleAiMenu(force){
         const isOpen = aiMenu.style.display==="flex";
         const next = typeof force==="boolean" ? force : !isOpen;
@@ -735,17 +815,52 @@
 
       aiPanel.addEventListener("click",(e)=>{ e.stopPropagation(); });
 
-      /* ===== Keyboard ===== */
+      /* Keyboard */
       window.addEventListener("keydown",(e)=>{
         if(e.ctrlKey && (e.key==="f"||e.key==="F")){ e.preventDefault(); openSearch(); return; }
         if(e.altKey && !e.ctrlKey && !e.shiftKey){
-          const k=e.key; if(k>="0"&&k<="9"){ e.preventDefault(); setActiveMenu(Number(k)); showAllBars(); scheduleHide(); return; }
+          const k=e.key; if(k>="0"&&k<="9"){
+            e.preventDefault();
+            if(activeBottom==="chart"){
+              setBottomActive("home");
+            }
+            setBottomActive("home");
+            setActiveMenu(Number(k));
+            showAllBars();
+            scheduleHide();
+            return;
+          }
         }
         if(e.ctrlKey && !e.altKey){
-          const k=e.key; if(k>="1"&&k<="9"){ e.preventDefault(); setActiveSub(activeMenu, Number(k)-1); showAllBars(); scheduleHide(); return; }
+          const k=e.key; if(k>="1"&&k<="9"){
+            e.preventDefault();
+            if(activeBottom==="chart"){
+              setBottomActive("home");
+            }
+            setActiveSub(activeMenu, Number(k)-1);
+            showAllBars();
+            scheduleHide();
+            return;
+          }
         }
-        if(e.key==="Escape"){ e.preventDefault(); setActiveMenu(0); showAllBars(); scheduleHide(); return; }
-        if(e.key==="Tab"){ e.preventDefault(); profileOvl.style.display="flex"; showAllBars(); updateIframeInteractivity(); return; }
+        if(e.key==="Escape"){
+          e.preventDefault();
+          if(activeBottom==="chart"){
+            setBottomActive("home");
+          }
+          setActiveMenu(0);
+          setActiveSub(0,0);
+          showAllBars();
+          scheduleHide();
+          return;
+        }
+        if(e.key==="Tab"){
+          e.preventDefault();
+          profileOvl.style.display="flex";
+          showAllBars();
+          updateIframeInteractivity();
+          return;
+        }
         if(e.key==="Shift" && !e.repeat && !e.ctrlKey && !e.altKey){
           const cheats=document.getElementById("kt-cheatsheet");
           cheats.style.display="block"; setTimeout(()=>{cheats.style.display="none";},2000);
@@ -753,11 +868,11 @@
         }
       });
 
-      /* ===== Profile overlay ===== */
+      /* Profile overlay */
       profileClose.addEventListener("click", ()=>{ profileOvl.style.display="none"; updateIframeInteractivity(); });
       profileOvl.addEventListener("click",(e)=>{ if(e.target===profileOvl) profileOvl.style.display="none"; updateIframeInteractivity(); });
 
-      /* ===== Clocks ===== */
+      /* Clocks */
       function pad2(n){return n<10?"0"+n:""+n}
       function updateSessions(){
         const now=new Date();
@@ -770,11 +885,12 @@
       }
       updateSessions(); setInterval(updateSessions,1000);
 
-      /* ===== Init ===== */
+      /* Init */
       setupEventListeners();
       setActiveMenu(0);
+      setBottomActive("home");
       showAllBars();
-      setTimeout(()=>{ hideAllBars(); }, 1000); // top menu + breadcrumb + submenu + status auto-hide, bottom nav tetap
+      setTimeout(()=>{ hideAllBars(); }, 1000);
       updateIframeInteractivity();
     })();
   </script>
