@@ -26,7 +26,10 @@
     /* ===== TOPMOST BAR (NO AUTOHIDE) ===== */
     .kt-topbar{
       position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:center;
-      background:#070707;border-bottom:2px solid var(--amber);padding:8px 12px;font-size:10px;z-index:3000;
+      background:#070707;
+      /* divider kuning dihapus, ganti border lembut */
+      border-bottom:1px solid var(--border-soft);
+      padding:8px 12px;font-size:10px;z-index:3000;
     }
     .kt-topbar-left{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;flex-wrap:wrap}
     .kt-logo{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--amber);white-space:nowrap}
@@ -202,6 +205,34 @@
       line-height:1.5;
     }
 
+    /* PROFILE MENU (Settings / Notifications / Store) */
+    .kt-profile-menu{
+      margin-top:14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .kt-profile-menu-btn{
+      padding:6px 12px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#111;
+      color:var(--text-main);
+      font-size:10px;
+      cursor:pointer;
+    }
+    .kt-profile-menu-btn:hover{
+      background:#181818;
+    }
+    .kt-profile-footer{
+      margin-top:14px;
+      padding-top:8px;
+      border-top:1px solid var(--border-soft);
+      font-size:9px;
+      color:var(--text-muted);
+      line-height:1.4;
+    }
+
     /* FLOATING FAB + MENU + PANEL */
     .kt-ai-fab{
       position:fixed;right:16px;bottom:90px;width:48px;height:48px;border-radius:50%;
@@ -335,9 +366,9 @@
       <button class="kt-submenu-btn" data-menu="0" data-sub-index="7">ETF</button>
     </div>
 
-    <!-- 1. News (reordered) -->
+    <!-- 1. News (reordered & renamed X Feed) -->
     <div class="kt-submenu-group" data-menu-sub="1">
-      <button class="kt-submenu-btn" data-menu="1" data-sub-index="0">24/7 Feed</button>
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="0">X Feed</button>
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="1">Calendar</button>
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="2">Global</button>
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="3">Insights</button>
@@ -468,6 +499,18 @@
           </div>
         </div>
       </div>
+
+      <!-- Profile menu: Settings / Notifications / Store -->
+      <div class="kt-profile-menu">
+        <button class="kt-profile-menu-btn">Settings</button>
+        <button class="kt-profile-menu-btn">Notifications</button>
+        <button class="kt-profile-menu-btn">Store</button>
+      </div>
+
+      <!-- Footer: Developed by + disclaimer -->
+      <div class="kt-profile-footer">
+        Developed by Kuantara Analytics · Informasi di dalam terminal ini bersifat edukatif dan bukan merupakan saran investasi atau ajakan untuk melakukan transaksi finansial.
+      </div>
     </div>
   </div>
 
@@ -494,6 +537,8 @@
     <button class="kt-ai-menu-btn" data-pane="ai"><span>AI</span><span>Kuantara AI</span></button>
     <button class="kt-ai-menu-btn" data-pane="chart"><span>TV</span><span>TradingView Chart</span></button>
     <button class="kt-ai-menu-btn" data-pane="notes"><span>NT</span><span>Notes</span></button>
+    <!-- New Signals menu -->
+    <button class="kt-ai-menu-btn" data-pane="signals"><span>SG</span><span>Signals</span></button>
   </div>
 
   <div class="kt-ai-panel" id="kt-ai-panel">
@@ -688,7 +733,7 @@
             else if(role==="247"){
               setBottomActive("247");
               hideProfilePage();
-              // Tampilkan News · 24/7 Feed, tapi tanpa menu/submenu
+              // Tampilkan News · X Feed, tapi tanpa menu/submenu
               setActiveMenu(1);
               setActiveSub(1,0);
               hideAllBars();
@@ -921,6 +966,17 @@
               if(notesArea) notesArea.value="";
             });
           }
+        }else if(mode==="signals"){
+          aiTitle.textContent = "Signals";
+          aiSubtitle.textContent = "Ringkasan sinyal trading & alert utama.";
+          aiBody.innerHTML =
+            '<div style="font-size:10px;line-height:1.5;color:var(--text-muted);">' +
+            'Panel ini akan menampilkan sinyal dari sistem Kuantara (algo, screener, atau alert eksternal). ' +
+            'Integrasi backend bisa diarahkan untuk push sinyal terbaru ke area ini secara realtime.' +
+            '</div>';
+          aiFooter.innerHTML =
+            '<button class="kt-ai-btn" disabled>Refresh</button>' +
+            '<button class="kt-ai-btn primary" disabled>Details</button>';
         }
         aiPanel.style.display="flex";
         if(activeBottom==="home") showAllBars();
