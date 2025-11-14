@@ -546,7 +546,8 @@
 
   <div class="kt-ai-menu" id="kt-ai-menu">
     <button class="kt-ai-menu-btn" data-pane="ai"><span>AI</span><span>Kuantara AI</span></button>
-    <button class="kt-ai-menu-btn" data-pane="chart"><span>TV</span><span>TradingView Chart</span></button>
+    <button class="kt-ai-menu-btn" data-pane="mini"><span>MC</span><span>Mini Chart</span></button>
+    <button class="kt-ai-menu-btn" data-pane="chart"><span>TV</span><span>Full Chart</span></button>
     <button class="kt-ai-menu-btn" data-pane="notes"><span>NT</span><span>Notes</span></button>
     <button class="kt-ai-menu-btn" data-pane="signals"><span>SG</span><span>Signals</span></button>
   </div>
@@ -625,6 +626,9 @@
         "1:2":"https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html",
         // tambah mapping lain sesuai kebutuhan
       };
+
+      const FULL_CHART_URL = "https://kuantara112.github.io/Kuantara_Terminal_Charts/xauusd_tradingview.html";
+      const MINI_CHART_URL = FULL_CHART_URL;
 
       function injectIframe(url){
         if(!url){ iframeLayer.innerHTML=""; return; }
@@ -940,14 +944,25 @@
             '<button class="kt-ai-btn primary" disabled>Ask AI</button>';
           aiPanel.style.display="flex";
           if(activeBottom==="home") showAllBars();
+        }else if(mode==="mini"){
+          aiTitle.textContent = "Mini Chart";
+          aiSubtitle.textContent = "Chart kecil untuk quick view XAUUSD.";
+          aiBody.innerHTML =
+            '<div style="border:1px solid var(--border-soft);border-radius:6px;overflow:hidden;height:260px;">' +
+              '<iframe src="'+MINI_CHART_URL+'" ' +
+              'title="Mini Chart" loading="lazy" style="width:100%;height:100%;border:0;"></iframe>' +
+            '</div>';
+          aiFooter.innerHTML = '<button class="kt-ai-btn" disabled>Detach</button>';
+          aiPanel.style.display="flex";
+          if(activeBottom==="home") showAllBars();
         }else if(mode==="chart"){
-          // TRADINGVIEW CHART MODE (full area kerja, tapi tetap hormat header & bottom nav)
+          // FULL CHART MODE (pakai iframe utama)
           setBottomActive("home");
           hideProfilePage();
           aiPanel.style.display="none";
-          injectIframe("https://kuantara112.github.io/Kuantara_Terminal_Charts/xauusd_tradingview.html");
+          injectIframe(FULL_CHART_URL);
           hideAllBars();
-          statusMsg.textContent="TRADINGVIEW CHART MODE";
+          statusMsg.textContent="FULL CHART MODE";
         }else if(mode==="notes"){
           aiTitle.textContent = "Notes";
           aiSubtitle.textContent = "Catatan cepat untuk ide trade dan macro view.";
