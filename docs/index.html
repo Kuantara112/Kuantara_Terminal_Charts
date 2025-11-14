@@ -19,9 +19,23 @@
 
     .kt-root{display:flex;flex-direction:column;height:100vh;position:relative}
 
-    /* ===== FULLSCREEN IFRAME UNDERLAY ===== */
-    .kt-iframe-layer{position:fixed;inset:0;z-index:1;background:#0b0b0b}
-    .kt-iframe-layer iframe{width:100%;height:100%;border:0;display:block;background:#0b0b0b}
+    /* ===== IFRAME LAYER (RESPECT HEADER + BOTTOM NAV) ===== */
+    .kt-iframe-layer{
+      position:fixed;
+      left:0;
+      right:0;
+      top:38px;    /* mulai tepat di bawah topbar + mainmenu strip */
+      bottom:46px; /* berhenti tepat di atas bottom nav */
+      z-index:1;
+      background:#0b0b0b;
+    }
+    .kt-iframe-layer iframe{
+      width:100%;
+      height:100%;
+      border:0;
+      display:block;
+      background:#0b0b0b;
+    }
 
     /* ===== TOPMOST BAR (NO AUTOHIDE) ===== */
     .kt-topbar{
@@ -385,7 +399,7 @@
     <!-- 3. Geo-Economic -->
     <div class="kt-submenu-group" data-menu-sub="3">
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="0">Trade &amp; Shipping</button>
-      <button class="kt-submenu-btn" data-menu-sub="3" data-menu="3" data-sub-index="1">Supply Chain</button>
+      <button class="kt-submenu-btn" data-menu="3" data-sub-index="1">Supply Chain</button>
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="2">Demographics</button>
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="3">Resources</button>
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="4">Satellite</button>
@@ -609,7 +623,7 @@
       /* Map menu:sub -> iframe URL (contoh) */
       const IFRAME_MAP = {
         "1:2":"https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html",
-        // tambahkan mapping lain sesuai kebutuhan
+        // tambah mapping lain sesuai kebutuhan
       };
 
       function injectIframe(url){
@@ -709,7 +723,7 @@
           });
         });
 
-        /* Bottom bar behaviour (tanpa Charts) */
+        /* Bottom bar behaviour (HOME / 24/7 / PROFILE) */
         bottomItems.forEach(item=>{
           item.addEventListener("click",(e)=>{
             e.stopPropagation();
@@ -927,7 +941,7 @@
           aiPanel.style.display="flex";
           if(activeBottom==="home") showAllBars();
         }else if(mode==="chart"){
-          // FULLSCREEN TRADINGVIEW CHART MODE
+          // TRADINGVIEW CHART MODE (full area kerja, tapi tetap hormat header & bottom nav)
           setBottomActive("home");
           hideProfilePage();
           aiPanel.style.display="none";
