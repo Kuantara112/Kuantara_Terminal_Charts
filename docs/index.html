@@ -924,19 +924,16 @@
           aiFooter.innerHTML =
             '<button class="kt-ai-btn" disabled>History</button>' +
             '<button class="kt-ai-btn primary" disabled>Ask AI</button>';
+          aiPanel.style.display="flex";
+          if(activeBottom==="home") showAllBars();
         }else if(mode==="chart"){
-          aiTitle.textContent = "TradingView Chart";
-          aiSubtitle.textContent = "XAUUSD · Kuantara Layout";
-          aiBody.innerHTML =
-            '<div style="border:1px solid var(--border-soft);border-radius:6px;overflow:hidden;height:260px;">' +
-              '<iframe ' +
-                'src="https://kuantara112.github.io/Kuantara_Terminal_Charts/xauusd_tradingview.html" ' +
-                'title="TradingView XAUUSD" ' +
-                'loading="lazy" ' +
-                'style="width:100%;height:100%;border:0;background:#0b0b0b;">' +
-              '</iframe>' +
-            '</div>';
-          aiFooter.innerHTML = '<button class="kt-ai-btn" disabled>Save Layout</button>';
+          // FULLSCREEN TRADINGVIEW CHART MODE
+          setBottomActive("home");
+          hideProfilePage();
+          aiPanel.style.display="none";
+          injectIframe("https://kuantara112.github.io/Kuantara_Terminal_Charts/xauusd_tradingview.html");
+          hideAllBars();
+          statusMsg.textContent="TRADINGVIEW CHART MODE";
         }else if(mode==="notes"){
           aiTitle.textContent = "Notes";
           aiSubtitle.textContent = "Catatan cepat untuk ide trade dan macro view.";
@@ -959,6 +956,8 @@
               if(notesArea) notesArea.value="";
             });
           }
+          aiPanel.style.display="flex";
+          if(activeBottom==="home") showAllBars();
         }else if(mode==="signals"){
           aiTitle.textContent = "Signals";
           aiSubtitle.textContent = "Ringkasan sinyal trading & alert utama.";
@@ -970,9 +969,9 @@
           aiFooter.innerHTML =
             '<button class="kt-ai-btn" disabled>Refresh</button>' +
             '<button class="kt-ai-btn primary" disabled>Details</button>';
+          aiPanel.style.display="flex";
+          if(activeBottom==="home") showAllBars();
         }
-        aiPanel.style.display="flex";
-        if(activeBottom==="home") showAllBars();
       }
 
       aiFab.addEventListener("click", (e)=>{
