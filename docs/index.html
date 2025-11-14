@@ -27,7 +27,7 @@
     .kt-topbar{
       position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:center;
       background:#070707;
-      /* divider kuning dihapus, ganti border lembut */
+      /* divider kuning dihapus, pakai border lembut */
       border-bottom:1px solid var(--border-soft);
       padding:8px 12px;font-size:10px;z-index:3000;
     }
@@ -366,7 +366,7 @@
       <button class="kt-submenu-btn" data-menu="0" data-sub-index="7">ETF</button>
     </div>
 
-    <!-- 1. News (reordered & renamed X Feed) -->
+    <!-- 1. News (X Feed) -->
     <div class="kt-submenu-group" data-menu-sub="1">
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="0">X Feed</button>
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="1">Calendar</button>
@@ -386,7 +386,7 @@
     <!-- 3. Geo-Economic -->
     <div class="kt-submenu-group" data-menu-sub="3">
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="0">Trade &amp; Shipping</button>
-      <button class="kt-submenu-btn" data-menu="3" data-sub-index="1">Supply Chain</button>
+      <button class="kt-submenu-btn" data-menu-sub="3" data-menu="3" data-sub-index="1">Supply Chain</button>
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="2">Demographics</button>
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="3">Resources</button>
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="4">Satellite</button>
@@ -440,7 +440,8 @@
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Education</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Notes</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Quantitative</button>
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="4">Others</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="4">Calculator</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="5">Others</button>
     </div>
   </nav>
 
@@ -537,7 +538,6 @@
     <button class="kt-ai-menu-btn" data-pane="ai"><span>AI</span><span>Kuantara AI</span></button>
     <button class="kt-ai-menu-btn" data-pane="chart"><span>TV</span><span>TradingView Chart</span></button>
     <button class="kt-ai-menu-btn" data-pane="notes"><span>NT</span><span>Notes</span></button>
-    <!-- New Signals menu -->
     <button class="kt-ai-menu-btn" data-pane="signals"><span>SG</span><span>Signals</span></button>
   </div>
 
