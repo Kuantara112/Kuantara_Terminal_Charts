@@ -27,7 +27,6 @@
     .kt-topbar{
       position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:center;
       background:#070707;
-      /* divider kuning dihapus, pakai border lembut */
       border-bottom:1px solid var(--border-soft);
       padding:8px 12px;font-size:10px;z-index:3000;
     }
@@ -106,7 +105,7 @@
     }
     .kt-submenu-btn.active{background:var(--amber);color:#000;border-color:#f0f0f0}
 
-    /* BOTTOM NAV (SELALU ON) */
+    /* BOTTOM NAV (3 MENU: HOME / 24/7 / PROFILE) */
     .kt-bottom-nav{
       position:fixed;
       left:0;right:0;bottom:0;height:46px;background:#050505e6;border-top:1px solid var(--border-soft);
@@ -515,16 +514,13 @@
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
+  <!-- BOTTOM NAV (3 ITEM) -->
   <nav class="kt-bottom-nav" id="kt-bottom-nav">
     <div class="kt-bottom-item active" data-bottom-role="home">
       <span>Home</span>
     </div>
     <div class="kt-bottom-item" data-bottom-role="247">
       <span>24/7</span>
-    </div>
-    <div class="kt-bottom-item" data-bottom-role="chart">
-      <span>Charts</span>
     </div>
     <div class="kt-bottom-item" data-bottom-role="profile">
       <span>Profile</span>
@@ -615,9 +611,6 @@
         "1:2":"https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html",
         // tambahkan mapping lain sesuai kebutuhan
       };
-
-      /* Full-page TradingView chart URL (Charts bottom bar) */
-      const CHART_IFRAME_URL = "https://kuantara112.github.io/Kuantara_Terminal_Charts/xauusd_tradingview.html";
 
       function injectIframe(url){
         if(!url){ iframeLayer.innerHTML=""; return; }
@@ -716,7 +709,7 @@
           });
         });
 
-        /* Bottom bar behaviour */
+        /* Bottom bar behaviour (tanpa Charts) */
         bottomItems.forEach(item=>{
           item.addEventListener("click",(e)=>{
             e.stopPropagation();
@@ -738,13 +731,6 @@
               setActiveSub(1,0);
               hideAllBars();
               statusMsg.textContent="24/7 FEED MODE";
-            }
-            else if(role==="chart"){
-              setBottomActive("chart");
-              hideProfilePage();
-              injectIframe(CHART_IFRAME_URL);
-              statusMsg.textContent="TRADINGVIEW CHART MODE";
-              hideAllBars(); // hide top menu + breadcrumb + sub menu + status bar
             }
             else if(role==="profile"){
               setBottomActive("profile");
@@ -940,9 +926,16 @@
             '<button class="kt-ai-btn primary" disabled>Ask AI</button>';
         }else if(mode==="chart"){
           aiTitle.textContent = "TradingView Chart";
-          aiSubtitle.textContent = "Area untuk embed widget chart favoritmu.";
+          aiSubtitle.textContent = "XAUUSD · Kuantara Layout";
           aiBody.innerHTML =
-            '<div style="border:1px solid var(--border-soft);border-radius:6px;height:260px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-muted);">TradingView chart iframe akan ditempatkan di sini.</div>';
+            '<div style="border:1px solid var(--border-soft);border-radius:6px;overflow:hidden;height:260px;">' +
+              '<iframe ' +
+                'src="https://kuantara112.github.io/Kuantara_Terminal_Charts/xauusd_tradingview.html" ' +
+                'title="TradingView XAUUSD" ' +
+                'loading="lazy" ' +
+                'style="width:100%;height:100%;border:0;background:#0b0b0b;">' +
+              '</iframe>' +
+            '</div>';
           aiFooter.innerHTML = '<button class="kt-ai-btn" disabled>Save Layout</button>';
         }else if(mode==="notes"){
           aiTitle.textContent = "Notes";
