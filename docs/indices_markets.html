@@ -59,6 +59,7 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
+      gap:8px;
     }
 
     .kt-title span.label {
@@ -95,6 +96,7 @@
       display:flex;
       flex-direction:column;
       gap:8px;
+      min-height:0;
     }
 
     .kt-card-header {
@@ -104,6 +106,7 @@
       gap:8px;
       font-size:var(--fs-subtitle);
       color:var(--text-main);
+      flex-wrap:wrap;
     }
 
     .kt-card-header .subtitle {
@@ -117,6 +120,8 @@
       gap:8px;
       font-size:var(--fs-small);
       color:var(--text-muted);
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
 
     .kt-pill {
@@ -126,6 +131,7 @@
       font-size:var(--fs-small);
       cursor:pointer;
       user-select:none;
+      white-space:nowrap;
     }
     .kt-pill.active {
       border-color:var(--amber);
@@ -134,6 +140,7 @@
 
     .kt-search {
       flex:1;
+      min-width:140px;
       display:flex;
       align-items:center;
       gap:6px;
@@ -149,6 +156,7 @@
       background:transparent;
       color:var(--text-main);
       font-size:var(--fs-small);
+      min-width:0;
     }
 
     .kt-search span {
@@ -160,7 +168,7 @@
     .kt-table-wrapper {
       flex:1;
       min-height:0;
-      overflow:auto;
+      overflow:auto;          /* vertical + horizontal scroll on small screen */
       margin-top:4px;
     }
 
@@ -168,6 +176,7 @@
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
+      min-width:720px;        /* force horizontal scroll on mobile instead of super kecil */
     }
 
     thead {
@@ -224,6 +233,7 @@
       min-height:0;
       position:relative;
       margin-top:4px;
+      overflow:hidden;
     }
 
     .kt-chart-canvas {
@@ -239,6 +249,7 @@
       gap:6px;
       font-size:var(--fs-small);
       color:var(--text-muted);
+      margin-top:4px;
     }
 
     .kt-legend-item {
@@ -262,29 +273,46 @@
     @media (max-width:900px) {
       .kt-layout {
         grid-template-columns:1fr;
-        grid-template-rows:auto auto auto;
+        grid-template-rows:auto auto;
         height:auto;
         max-height:none;
       }
       .kt-column {
-        min-height:220px;
+        min-height:260px;
       }
       .kt-column > .kt-card {
-        min-height:220px;
+        min-height:260px;
       }
     }
 
     @media (max-width:600px) {
+      :root {
+        --fs-title:13px;
+        --fs-subtitle:11px;
+        --fs-body:10px;
+        --fs-small:9px;
+      }
+
       .kt-page {
         padding:12px;
       }
+
       .kt-title {
         flex-direction:column;
         align-items:flex-start;
         gap:4px;
       }
+
       .kt-toolbar {
-        flex-wrap:wrap;
+        justify-content:flex-start;
+      }
+
+      .kt-card {
+        padding:10px 10px;
+      }
+
+      th, td {
+        padding:4px 3px;
       }
     }
   </style>
