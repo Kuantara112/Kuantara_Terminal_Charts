@@ -647,13 +647,9 @@
         updateIframeInteractivity();
       }
 
-      function barsAreVisible(){
-        const topHidden    = mainmenuStrip.classList.contains("kt-hide-top") && contentHeader.classList.contains("kt-hide-top");
-        const bottomHidden = submenuStrip.classList.contains("kt-hide-bottom") && statusbar.classList.contains("kt-hide-bottom");
-        return !(topHidden && bottomHidden);
-      }
+      /* 👇 SEKARANG pointerEvents SELALU di-allow supaya mobile bisa scroll */
       function updateIframeInteractivity(){
-        iframeLayer.style.pointerEvents = barsAreVisible() ? "none" : "auto";
+        iframeLayer.style.pointerEvents = "auto";
       }
 
       function renderContent(menuIndex, subIndex){
