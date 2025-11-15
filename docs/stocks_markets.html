@@ -41,6 +41,7 @@
     body {
       background:var(--bg-root);
       color:var(--text-main);
+      overflow-x:hidden; /* cegah scroll horizontal seluruh page */
     }
 
     .kt-page {
@@ -51,6 +52,8 @@
       display:flex;
       flex-direction:column;
       gap:6px;
+      width:100%;
+      max-width:100vw; /* jangan lebih lebar dari viewport */
     }
 
     .kt-title {
@@ -100,10 +103,10 @@
       display:grid;
       grid-template-columns:repeat(2, minmax(0,1fr));
       gap:12px;
-      /* lock height ke viewport, minus padding/title/universe kecil */
       height:calc(100vh - 16px - 16px - 32px);
       max-height:calc(100vh - 16px - 16px - 32px);
       min-height:0;
+      width:100%;
     }
 
     .kt-column {
@@ -127,6 +130,8 @@
       flex-direction:column;
       gap:8px;
       min-height:0;
+      width:100%;
+      max-width:100%;
     }
 
     .kt-card-header {
@@ -184,15 +189,18 @@
     .kt-table-wrapper {
       flex:1;
       min-height:0;
-      overflow:auto;          /* scroll internal */
       margin-top:4px;
+      width:100%;
+      max-width:100%;
+      overflow-x:auto;   /* ⬅⬅ scroll ke samping DI SINI */
+      overflow-y:auto;   /* vertical di panel */
     }
 
     table {
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:720px;        /* di mobile → scroll horizontal di panel, bukan mengecil */
+      min-width:720px;   /* bikin tabel lebih lebar dari panel → horizontal scroll lokal */
     }
 
     thead {
@@ -249,7 +257,9 @@
       min-height:0;
       position:relative;
       margin-top:4px;
-      overflow:auto;          /* scroll internal kalau canvas/content tinggi */
+      width:100%;
+      max-width:100%;
+      overflow:hidden; /* chart responsif, tanpa scroll samping */
     }
 
     .kt-chart-canvas {
@@ -288,8 +298,10 @@
     /* === Responsive === */
     @media (max-width:900px) {
       .kt-layout {
-        grid-template-columns:1fr;             /* 1 kolom di mobile */
-        grid-auto-rows:minmax(0,1fr);         /* tiap baris share tinggi layout */
+        grid-template-columns:1fr;      /* 1 kolom di mobile */
+        grid-auto-rows:minmax(0,1fr);
+        height:calc(100vh - 16px - 16px - 32px);
+        max-height:calc(100vh - 16px - 16px - 32px);
       }
 
       .kt-column {
@@ -297,7 +309,7 @@
       }
 
       .kt-column > .kt-card {
-        min-height:0;                          /* biar scroll di dalam, bukan tinggi page */
+        min-height:0;
       }
     }
 
@@ -447,9 +459,6 @@
     let rrgData = [];
     let currentUniverse = "us";
 
-    // ==========================
-    //  TABLE RENDER
-    // ==========================
     function updateQuotesTable(data) {
       latestQuotes = Array.isArray(data) ? data : [];
       renderQuotesTable();
@@ -499,28 +508,19 @@
       const num = Number(value);
       if (Number.isNaN(num)) return "";
       const abs = Math.abs(num);
-
-      if (abs >= 1000) {
-        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
-      }
-      if (abs >= 1) {
-        return num.toFixed(2);
-      }
+      if (abs >= 1000) return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      if (abs >= 1) return num.toFixed(2);
       return num.toFixed(4);
     }
 
     function formatSigned(value) {
       const num = Number(value);
       if (Number.isNaN(num) || num === 0) return num.toFixed(2);
-      const sign = num > 0 ? "+" : "";
-      return sign + num.toFixed(2);
+      return (num > 0 ? "+" : "") + num.toFixed(2);
     }
 
     searchInput.addEventListener("input", renderQuotesTable);
 
-    // ==========================
-    //  CANVAS UTILS
-    // ==========================
     function resizeCanvasToContainer(canvas) {
       const parent = canvas.parentElement;
       const rect = parent.getBoundingClientRect();
@@ -535,9 +535,6 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-    // ==========================
-    //  CAPITAL FLOW
-    // ==========================
     function updateCapitalFlow(data) {
       capitalFlowData = (Array.isArray(data) ? data : []).slice();
       capitalFlowData.sort((a, b) => (b.changePct || 0) - (a.changePct || 0));
@@ -606,9 +603,6 @@
       });
     }
 
-    // ==========================
-    //  SECTOR RRG
-    // ==========================
     function updateRRG(data) {
       rrgData = Array.isArray(data) ? data : [];
       drawRRG();
@@ -697,9 +691,9 @@
         const y = centerY - dy;
 
         let color = "#3b82f6";
-        if (ratio >= baseRatio && momentum >= baseMomentum) color = "#22c55e";   // Leading
-        else if (ratio >= baseRatio && momentum < baseMomentum) color = "#ffbf00"; // Weakening
-        else if (ratio < baseRatio && momentum < baseMomentum) color = "#ef4444";  // Lagging
+        if (ratio >= baseRatio && momentum >= baseMomentum) color = "#22c55e";
+        else if (ratio >= baseRatio && momentum < baseMomentum) color = "#ffbf00";
+        else if (ratio < baseRatio && momentum < baseMomentum) color = "#ef4444";
 
         ctx.fillStyle = color;
         ctx.beginPath();
@@ -712,9 +706,6 @@
       });
     }
 
-    // ==========================
-    //  MOCK DATA (US & ID)
-    // ==========================
     const mockData = {
       us: {
         quotes: [
@@ -790,9 +781,6 @@
       });
     }
 
-    // ==========================
-    //  UNIVERSE SWITCHING
-    // ==========================
     function applyUniverse(universeKey) {
       currentUniverse = universeKey;
 
@@ -815,9 +803,6 @@
       });
     });
 
-    // ==========================
-    //  INIT
-    // ==========================
     window.addEventListener("resize", () => {
       drawCapitalFlow();
       drawRRG();
