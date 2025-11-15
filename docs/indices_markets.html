@@ -68,7 +68,7 @@
 
     .kt-layout {
       display:grid;
-      grid-template-columns:repeat(2, minmax(0,1fr)); /* SYMMETRIC L/R */
+      grid-template-columns:repeat(2, minmax(0,1fr)); /* kiri-kanan simetris */
       gap:12px;
       height:calc(100vh - 16px - 10px - 16px);
       max-height:calc(100vh - 42px);
@@ -81,7 +81,7 @@
       min-height:0;
     }
 
-    /* cards fill column height so left panel = total height of two right panels */
+    /* cards dalam column full height sehingga tinggi panel kiri = total dua panel kanan */
     .kt-column > .kt-card {
       flex:1;
       min-height:0;
@@ -501,11 +501,14 @@
         return val > acc ? val : acc;
       }, 0.01);
 
-      const barWidth = chartWidth / Math.max(capitalFlowData.length, 1) * 0.7;
+      const barWidth = (chartWidth / Math.max(capitalFlowData.length, 1)) * 0.7;
       const xStep = chartWidth / Math.max(capitalFlowData.length, 1);
 
       ctx.textAlign = "center";
       ctx.font = "9px 'Fira Code'";
+
+      const upColor = "#22c55e";   // hijau
+      const downColor = "#ef4444"; // merah
 
       capitalFlowData.forEach((d, idx) => {
         const xCenter = margin.left + xStep * idx + xStep / 2;
@@ -513,7 +516,7 @@
         const barHeight = (Math.abs(value) / maxAbsChange) * (chartHeight / 2);
 
         const isPositive = value >= 0;
-        ctx.fillStyle = isPositive ? "var(--green)" : "var(--red)";
+        ctx.fillStyle = isPositive ? upColor : downColor;
 
         const y = isPositive ? zeroY - barHeight : zeroY;
         ctx.fillRect(xCenter - barWidth / 2, y, barWidth, barHeight);
@@ -584,10 +587,10 @@
       ctx.restore();
 
       ctx.font = "9px 'Fira Code'";
-      ctx.fillText("Leading", margin.left + 4, margin.top + 12);
-      ctx.fillText("Weakening", centerX + 4, margin.top + 12);
+      ctx.fillText("Leading",   margin.left + 4, margin.top + 12);
+      ctx.fillText("Weakening", centerX + 4,    margin.top + 12);
       ctx.fillText("Improving", margin.left + 4, centerY + 12);
-      ctx.fillText("Lagging", centerX + 4, centerY + 12);
+      ctx.fillText("Lagging",   centerX + 4,    centerY + 12);
 
       if (!rrgData.length) {
         ctx.fillStyle = "#555";
@@ -622,9 +625,9 @@
         const y = centerY - dy;
 
         let color = "#3b82f6";
-        if (ratio >= baseRatio && momentum >= baseMomentum) color = "#22c55e";
-        else if (ratio >= baseRatio && momentum < baseMomentum) color = "#ffbf00";
-        else if (ratio < baseRatio && momentum < baseMomentum) color = "#ef4444";
+        if (ratio >= baseRatio && momentum >= baseMomentum) color = "#22c55e";   // Leading
+        else if (ratio >= baseRatio && momentum < baseMomentum) color = "#ffbf00"; // Weakening
+        else if (ratio < baseRatio && momentum < baseMomentum) color = "#ef4444";  // Lagging
 
         ctx.fillStyle = color;
         ctx.beginPath();
@@ -642,38 +645,38 @@
     // ==========================
     function loadMockData() {
       const mockQuotes = [
-        { symbol:"SPX",    name:"S&P 500",                 last:5534.21, change:12.4,  changePct:0.22,  session:"US" },
-        { symbol:"NDX",    name:"Nasdaq 100",              last:19642.3, change:-32.8, changePct:-0.17, session:"US" },
-        { symbol:"DJI",    name:"Dow Jones",               last:40251.8, change:88.2,  changePct:0.22,  session:"US" },
-        { symbol:"RUT",    name:"Russell 2000",            last:2155.9,  change:9.7,   changePct:0.45,  session:"US" },
+        { symbol:"SPX",    name:"S&P 500",            last:5534.21, change:12.4,  changePct:0.22,  session:"New York" },
+        { symbol:"NDX",    name:"Nasdaq 100",         last:19642.3, change:-32.8, changePct:-0.17, session:"New York" },
+        { symbol:"DJI",    name:"Dow Jones",          last:40251.8, change:88.2,  changePct:0.22,  session:"New York" },
+        { symbol:"RUT",    name:"Russell 2000",       last:2155.9,  change:9.7,   changePct:0.45,  session:"New York" },
 
-        { symbol:"SX5E",   name:"Euro Stoxx 50",           last:5050.1,  change:-18.4, changePct:-0.36, session:"EU" },
-        { symbol:"DAX",    name:"DAX Germany",             last:18840.7, change:-56.2, changePct:-0.30, session:"EU" },
-        { symbol:"UKX",    name:"FTSE 100",                last:8356.4,  change:14.1,  changePct:0.17,  session:"EU" },
-        { symbol:"CAC",    name:"CAC 40",                  last:7695.3,  change:7.9,   changePct:0.10,  session:"EU" },
-        { symbol:"SMI",    name:"Swiss SMI",               last:12045.6, change:-21.3, changePct:-0.18, session:"EU" },
-        { symbol:"IBEX",   name:"IBEX 35",                 last:11340.2, change:16.9,  changePct:0.15,  session:"EU" },
+        { symbol:"SX5E",   name:"Euro Stoxx 50",      last:5050.1,  change:-18.4, changePct:-0.36, session:"London" },
+        { symbol:"DAX",    name:"DAX Germany",        last:18840.7, change:-56.2, changePct:-0.30, session:"Frankfurt" },
+        { symbol:"UKX",    name:"FTSE 100",           last:8356.4,  change:14.1,  changePct:0.17,  session:"London" },
+        { symbol:"CAC",    name:"CAC 40",             last:7695.3,  change:7.9,   changePct:0.10,  session:"Paris" },
+        { symbol:"SMI",    name:"Swiss SMI",          last:12045.6, change:-21.3, changePct:-0.18, session:"Zurich" },
+        { symbol:"IBEX",   name:"IBEX 35",            last:11340.2, change:16.9,  changePct:0.15,  session:"Madrid" },
 
-        { symbol:"NKY",    name:"Nikkei 225",              last:38742.9, change:221.1, changePct:0.57,  session:"JP" },
-        { symbol:"TOPIX",  name:"TOPIX",                   last:2815.2,  change:6.5,   changePct:0.23,  session:"JP" },
+        { symbol:"NKY",    name:"Nikkei 225",         last:38742.9, change:221.1, changePct:0.57,  session:"Tokyo" },
+        { symbol:"TOPIX",  name:"TOPIX",              last:2815.2,  change:6.5,   changePct:0.23,  session:"Tokyo" },
 
-        { symbol:"HSI",    name:"Hang Seng",               last:18450.2, change:-95.4, changePct:-0.51, session:"HK" },
-        { symbol:"SHCOMP", name:"Shanghai Composite",      last:3155.6,  change:4.8,   changePct:0.15,  session:"CN" },
-        { symbol:"SZCOMP", name:"Shenzhen Component",      last:10125.3, change:-32.1, changePct:-0.32, session:"CN" },
+        { symbol:"HSI",    name:"Hang Seng",          last:18450.2, change:-95.4, changePct:-0.51, session:"Hong Kong" },
+        { symbol:"SHCOMP", name:"Shanghai Composite", last:3155.6,  change:4.8,   changePct:0.15,  session:"Shanghai" },
+        { symbol:"SZCOMP", name:"Shenzhen Component", last:10125.3, change:-32.1, changePct:-0.32, session:"Shenzhen" },
 
-        { symbol:"KS11",   name:"KOSPI",                   last:2790.5,  change:4.7,   changePct:0.17,  session:"KR" },
-        { symbol:"TWII",   name:"Taiwan Weighted",         last:20985.4, change:-45.2, changePct:-0.21, session:"TW" },
-        { symbol:"STI",    name:"Straits Times",           last:3420.8,  change:1.1,   changePct:0.03,  session:"SG" },
-        { symbol:"NIFTY",  name:"Nifty 50 India",          last:23521.3, change:63.2,  changePct:0.27,  session:"IN" },
-        { symbol:"SENSEX", name:"BSE Sensex",              last:78550.7, change:135.6, changePct:0.17,  session:"IN" },
+        { symbol:"KS11",   name:"KOSPI",              last:2790.5,  change:4.7,   changePct:0.17,  session:"Seoul" },
+        { symbol:"TWII",   name:"Taiwan Weighted",    last:20985.4, change:-45.2, changePct:-0.21, session:"Taipei" },
+        { symbol:"STI",    name:"Straits Times",      last:3420.8,  change:1.1,   changePct:0.03,  session:"Singapore" },
+        { symbol:"NIFTY",  name:"Nifty 50 India",     last:23521.3, change:63.2,  changePct:0.27,  session:"Mumbai" },
+        { symbol:"SENSEX", name:"BSE Sensex",         last:78550.7, change:135.6, changePct:0.17,  session:"Mumbai" },
 
-        { symbol:"AS51",   name:"ASX 200",                 last:8115.7,  change:-12.9, changePct:-0.16, session:"AU" },
-        { symbol:"NZ50",   name:"NZX 50",                  last:1203.9,  change:1.8,   changePct:0.15,  session:"NZ" },
+        { symbol:"AS51",   name:"ASX 200",            last:8115.7,  change:-12.9, changePct:-0.16, session:"Sydney" },
+        { symbol:"NZ50",   name:"NZX 50",             last:1203.9,  change:1.8,   changePct:0.15,  session:"Wellington" },
 
-        { symbol:"TSX",    name:"S&P/TSX Composite",       last:22650.4, change:24.3,  changePct:0.11,  session:"CA" },
-        { symbol:"BVSP",   name:"Ibovespa",                last:132540,  change:-180,  changePct:-0.14, session:"BR" },
-        { symbol:"MEXBOL", name:"S&P/BMV IPC",             last:57210.5, change:92.7,  changePct:0.16,  session:"MX" },
-        { symbol:"TOP40",  name:"FTSE/JSE Top 40",         last:74520.1, change:-75.9, changePct:-0.10, session:"ZA" }
+        { symbol:"TSX",    name:"S&P/TSX Composite",  last:22650.4, change:24.3,  changePct:0.11,  session:"Toronto" },
+        { symbol:"BVSP",   name:"Ibovespa",           last:132540,  change:-180,  changePct:-0.14, session:"São Paulo" },
+        { symbol:"MEXBOL", name:"S&P/BMV IPC",        last:57210.5, change:92.7,  changePct:0.16,  session:"Mexico City" },
+        { symbol:"TOP40",  name:"FTSE/JSE Top 40",    last:74520.1, change:-75.9, changePct:-0.10, session:"Johannesburg" }
       ];
 
       const mockFlow = mockQuotes.map(q => ({
@@ -730,7 +733,7 @@
     });
 
     document.addEventListener("DOMContentLoaded", () => {
-      loadMockData(); // full dummy mode → bar chart + RRG langsung tampil
+      loadMockData(); // full dummy mode
     });
   </script>
 </body>
