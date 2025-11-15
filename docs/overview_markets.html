@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara Terminal – Main Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <style>
+    :root {
+      --amber:#ffbf00;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+    }
+
+    html, body {
+      height:100%;
+      width:100%;
+    }
+
+    body {
+      background-color:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    .kt-page {
+      min-height:100vh;
+      padding:16px;
+      background:var(--bg-root);
+      color:var(--text-main);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .kt-page-header {
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .kt-page-title {
+      font-size:var(--fs-title);
+      font-weight:500;
+      letter-spacing:0.5px;
+    }
+
+    .kt-page-meta {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      text-align:right;
+      flex-shrink:0;
+    }
+
+    .kt-grid {
+      flex:1;
+      display:grid;
+      grid-template-columns:1.2fr 1.1fr 1.1fr;
+      grid-template-rows:1fr 1fr;
+      grid-template-areas:
+        "ai headlines headlines"
+        "quotes heatmap risk";
+      gap:10px;
+      min-height:0;
+    }
+
+    .kt-card {
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width:0;
+      min-height:0;
+    }
+
+    .kt-card-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:6px;
+      margin-bottom:2px;
+    }
+
+    .kt-card-title {
+      font-size:var(--fs-subtitle);
+      font-weight:500;
+    }
+
+    .kt-card-subtitle {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-card-body {
+      font-size:var(--fs-body);
+      line-height:1.4;
+      color:var(--text-main);
+      overflow:auto;
+    }
+
+    /* === Layout areas === */
+    .ai-summary { grid-area:ai; }
+    .daily-headlines { grid-area:headlines; }
+    .market-quotes { grid-area:quotes; }
+    .market-heatmap { grid-area:heatmap; }
+    .risk-meter-card { grid-area:risk; }
+
+    /* === AI Market Summary === */
+    .ai-summary-text {
+      font-size:var(--fs-body);
+      color:var(--text-main);
+      white-space:pre-wrap;
+    }
+
+    /* === Daily Core Headlines === */
+    .headline-list {
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .headline-item {
+      font-size:var(--fs-body);
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .headline-text {
+      color:var(--text-main);
+      flex:1;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .headline-time {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      flex-shrink:0;
+    }
+
+    /* === Market Quotes === */
+    .quotes-table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:var(--fs-body);
+    }
+
+    .quotes-table thead {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .quotes-table th,
+    .quotes-table td {
+      padding:3px 4px;
+      text-align:right;
+      border-bottom:1px solid rgba(43,43,43,0.7);
+      white-space:nowrap;
+    }
+
+    .quotes-table th:first-child,
+    .quotes-table td:first-child {
+      text-align:left;
+    }
+
+    .quote-symbol {
+      color:var(--amber);
+      font-weight:500;
+    }
+
+    .quote-change.pos {
+      color:#4caf50;
+    }
+
+    .quote-change.neg {
+      color:#ff5252;
+    }
+
+    /* === Market Heatmap (3 x 6) === */
+    .heatmap-grid {
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      grid-template-rows:repeat(6, 1fr);
+      gap:4px;
+      width:100%;
+      height:100%;
+      min-height:0;
+    }
+
+    .heatmap-cell {
+      border-radius:3px;
+      border:1px solid rgba(0,0,0,0.4);
+      background:#1a1a1a;
+      padding:4px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      font-size:var(--fs-small);
+      overflow:hidden;
+    }
+
+    .heatmap-symbol {
+      font-weight:500;
+      color:var(--text-main);
+      white-space:nowrap;
+      text-overflow:ellipsis;
+      overflow:hidden;
+    }
+
+    .heatmap-value {
+      font-size:var(--fs-small);
+      color:var(--text-main);
+    }
+
+    .heatmap-change {
+      font-size:var(--fs-small);
+    }
+
+    /* === Risk-On / Risk-Off Speedometer === */
+    .risk-meter-wrapper {
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      height:100%;
+    }
+
+    .risk-meter-gauge {
+      position:relative;
+      width:100%;
+      aspect-ratio:2 / 1;
+      border-radius:100% 100% 0 0;
+      overflow:hidden;
+      background:
+        conic-gradient(
+          from 180deg,
+          #4caf50 0deg,
+          #4caf50 60deg,
+          #ffbf00 60deg,
+          #ffbf00 120deg,
+          #ff5252 120deg,
+          #ff5252 180deg
+        );
+      border:1px solid var(--border-soft);
+    }
+
+    .risk-meter-gauge::after {
+      content:"";
+      position:absolute;
+      left:50%;
+      bottom:-40%;
+      transform:translateX(-50%);
+      width:70%;
+      height:70%;
+      background:var(--bg-main);
+      border-radius:50%;
+      border:1px solid var(--border-soft);
+    }
+
+    .risk-meter-needle {
+      position:absolute;
+      left:50%;
+      bottom:0;
+      width:2px;
+      height:60%;
+      background:var(--text-main);
+      transform-origin:50% 100%;
+      transform:rotate(0deg);
+      transition:transform 0.4s ease-out;
+      z-index:2;
+    }
+
+    .risk-meter-center {
+      position:absolute;
+      left:50%;
+      bottom:0;
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--bg-main);
+      border:2px solid var(--amber);
+      transform:translate(-50%, 50%);
+      z-index:3;
+    }
+
+    .risk-meter-scale {
+      display:flex;
+      justify-content:space-between;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      padding:0 2px;
+    }
+
+    .risk-meter-value {
+      font-size:var(--fs-body);
+      text-align:center;
+    }
+
+    .risk-meter-tag {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      text-align:center;
+    }
+
+    /* === Scroll helpers for smaller iframes === */
+    .ai-summary .kt-card-body,
+    .daily-headlines .kt-card-body,
+    .market-quotes .kt-card-body {
+      min-height:0;
+      overflow:auto;
+    }
+
+    .market-heatmap .kt-card-body,
+    .risk-meter-card .kt-card-body {
+      flex:1;
+      min-height:0;
+      overflow:hidden;
+    }
+
+    /* === Mobile: stack layout === */
+    @media (max-width:900px) {
+      .kt-grid {
+        grid-template-columns:1fr;
+        grid-template-rows:auto;
+        grid-template-areas:
+          "ai"
+          "headlines"
+          "quotes"
+          "heatmap"
+          "risk";
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-page">
+    <div class="kt-page-header">
+      <div class="kt-page-title">Kuantara Terminal – Main Dashboard</div>
+      <div class="kt-page-meta" id="kt-timestamp">
+        <!-- last update from API/WebSocket -->
+        last update: --
+      </div>
+    </div>
+
+    <div class="kt-grid">
+      <!-- AI Market Summary -->
+      <section class="kt-card ai-summary" data-section="ai-summary">
+        <div class="kt-card-header">
+          <div class="kt-card-title">AI Market Summary</div>
+          <div class="kt-card-subtitle">multi-asset | intraday view</div>
+        </div>
+        <div class="kt-card-body">
+          <div id="ai-market-summary" class="ai-summary-text">
+            Waiting for AI summary data from WebSocket/API...
+          </div>
+        </div>
+      </section>
+
+      <!-- Daily Core Headlines -->
+      <section class="kt-card daily-headlines" data-section="daily-headlines">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Daily Core Headlines</div>
+          <div class="kt-card-subtitle">filtered macro & market drivers</div>
+        </div>
+        <div class="kt-card-body">
+          <ul id="headline-list" class="headline-list">
+            <!-- populated by JS -->
+          </ul>
+        </div>
+      </section>
+
+      <!-- Market Quotes -->
+      <section class="kt-card market-quotes" data-section="market-quotes">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Market Quotes</div>
+          <div class="kt-card-subtitle">key indices, FX, commodities</div>
+        </div>
+        <div class="kt-card-body">
+          <table class="quotes-table" id="quotes-table">
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>Last</th>
+                <th>Chg</th>
+                <th>%</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- rows from JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Market Heatmap 3 x 6 -->
+      <section class="kt-card market-heatmap" data-section="market-heatmap">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Market Heatmap</div>
+          <div class="kt-card-subtitle">3 × 6 grid | multi-asset</div>
+        </div>
+        <div class="kt-card-body">
+          <div class="heatmap-grid" id="heatmap-grid">
+            <!-- 18 cells (3 cols x 6 rows) -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Risk-On / Risk-Off Meter -->
+      <section class="kt-card risk-meter-card" data-section="risk-meter">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Risk-On / Risk-Off</div>
+          <div class="kt-card-subtitle">composite sentiment gauge</div>
+        </div>
+        <div class="kt-card-body">
+          <div class="risk-meter-wrapper">
+            <div class="risk-meter-gauge">
+              <div id="risk-needle" class="risk-meter-needle"></div>
+              <div class="risk-meter-center"></div>
+            </div>
+            <div class="risk-meter-scale">
+              <span>Risk-Off</span>
+              <span>Neutral</span>
+              <span>Risk-On</span>
+            </div>
+            <div id="risk-meter-value" class="risk-meter-value">Score: -- / 100</div>
+            <div id="risk-meter-tag" class="risk-meter-tag">waiting for data...</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ============================
+    // Helpers for integration
+    // ============================
+
+    function updateTimestamp(ts) {
+      const el = document.getElementById("kt-timestamp");
+      if (!el) return;
+      el.textContent = "last update: " + ts;
+    }
+
+    // === 1) AI Market Summary ===
+    function updateAiSummary(summaryText) {
+      const el = document.getElementById("ai-market-summary");
+      if (!el) return;
+      el.textContent = summaryText || "No summary available.";
+    }
+
+    // === 2) Daily Core Headlines ===
+    // items: [{ title, time }, ...]
+    function updateHeadlines(items) {
+      const listEl = document.getElementById("headline-list");
+      if (!listEl) return;
+      listEl.innerHTML = "";
+
+      (items || []).forEach(item => {
+        const li = document.createElement("li");
+        li.className = "headline-item";
+
+        const spanText = document.createElement("span");
+        spanText.className = "headline-text";
+        spanText.textContent = item.title || "";
+
+        const spanTime = document.createElement("span");
+        spanTime.className = "headline-time";
+        spanTime.textContent = item.time || "";
+
+        li.appendChild(spanText);
+        li.appendChild(spanTime);
+        listEl.appendChild(li);
+      });
+
+      if (!items || !items.length) {
+        const li = document.createElement("li");
+        li.className = "headline-item";
+        const spanText = document.createElement("span");
+        spanText.className = "headline-text";
+        spanText.textContent = "No headlines received.";
+        li.appendChild(spanText);
+        listEl.appendChild(li);
+      }
+    }
+
+    // === 3) Market Quotes ===
+    // rows: [{ symbol, name, last, change, changePct }, ...]
+    function updateQuotes(rows) {
+      const tbody = document.querySelector("#quotes-table tbody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      (rows || []).forEach(row => {
+        const tr = document.createElement("tr");
+
+        const tdAsset = document.createElement("td");
+        tdAsset.innerHTML =
+          '<span class="quote-symbol">' + (row.symbol || "") + "</span>" +
+          (row.name ? ' <span style="color:var(--text-muted);font-size:9px;">' + row.name + "</span>" : "");
+
+        const tdLast = document.createElement("td");
+        tdLast.textContent = row.last != null ? row.last : "--";
+
+        const tdChg = document.createElement("td");
+        const chg = row.change;
+        const sign = chg > 0 ? "pos" : chg < 0 ? "neg" : "";
+        tdChg.className = "quote-change " + sign;
+        tdChg.textContent = chg != null ? chg : "--";
+
+        const tdPct = document.createElement("td");
+        const pct = row.changePct;
+        tdPct.className = "quote-change " + sign;
+        tdPct.textContent = pct != null ? (pct.toFixed(2) + "%") : "--";
+
+        tr.appendChild(tdAsset);
+        tr.appendChild(tdLast);
+        tr.appendChild(tdChg);
+        tr.appendChild(tdPct);
+        tbody.appendChild(tr);
+      });
+    }
+
+    // === 4) Market Heatmap 3 x 6 ===
+    // cells: [{ symbol, value, change, color }, ...] length up to 18
+    function updateHeatmap(cells) {
+      const grid = document.getElementById("heatmap-grid");
+      if (!grid) return;
+      grid.innerHTML = "";
+
+      const totalCells = 18;
+      const data = cells || [];
+
+      for (let i = 0; i < totalCells; i++) {
+        const cellData = data[i] || {};
+        const cell = document.createElement("div");
+        cell.className = "heatmap-cell";
+
+        if (cellData.color) {
+          cell.style.background = cellData.color;
+        }
+
+        const sym = document.createElement("div");
+        sym.className = "heatmap-symbol";
+        sym.textContent = cellData.symbol || ("ASSET-" + (i + 1));
+
+        const val = document.createElement("div");
+        val.className = "heatmap-value";
+        val.textContent = cellData.value != null ? cellData.value : "--";
+
+        const chg = document.createElement("div");
+        chg.className = "heatmap-change";
+        if (cellData.change != null) {
+          const prefix = cellData.change > 0 ? "+" : "";
+          chg.textContent = prefix + cellData.change + "%";
+          chg.style.color = cellData.change > 0 ? "#c5ffb0" :
+                            cellData.change < 0 ? "#ffb0b0" :
+                            "#e0e0e0";
+        } else {
+          chg.textContent = "";
+        }
+
+        cell.appendChild(sym);
+        cell.appendChild(val);
+        cell.appendChild(chg);
+        grid.appendChild(cell);
+      }
+    }
+
+    // === 5) Risk-On / Risk-Off Meter ===
+    // score: 0–100
+    function updateRiskMeter(score) {
+      const needle = document.getElementById("risk-needle");
+      const valueEl = document.getElementById("risk-meter-value");
+      const tagEl = document.getElementById("risk-meter-tag");
+      if (!needle || !valueEl || !tagEl) return;
+
+      const s = Math.max(0, Math.min(100, Number(score)));
+      const angle = -90 + (s / 100) * 180; // -90 (risk-off) to +90 (risk-on)
+      needle.style.transform = "rotate(" + angle + "deg)";
+
+      valueEl.textContent = "Score: " + s.toFixed(0) + " / 100";
+
+      let label = "neutral";
+      if (s <= 33) label = "Risk-Off";
+      else if (s >= 67) label = "Risk-On";
+
+      tagEl.textContent = "Composite regime: " + label;
+    }
+
+    // ============================
+    // WebSocket / API skeleton
+    // ============================
+    // Contoh integrasi:
+    // - ganti URL WebSocket
+    // - sesuaikan payload parser
+
+    function connectWebSocket() {
+      // const ws = new WebSocket("wss://your-websocket-endpoint");
+      // ws.onopen = () => console.log("WS connected");
+      // ws.onmessage = (event) => {
+      //   const payload = JSON.parse(event.data);
+      //   // Contoh expected payload:
+      //   // {
+      //   //   ts: "2025-11-15 13:05:00",
+      //   //   ai_summary: "...",
+      //   //   headlines: [{title, time}, ...],
+      //   //   quotes: [{symbol, name, last, change, changePct}, ...],
+      //   //   heatmap: [{symbol, value, change, color}, ...],
+      //   //   risk_score: 58
+      //   // }
+      //
+      //   if (payload.ts) updateTimestamp(payload.ts);
+      //   if (payload.ai_summary) updateAiSummary(payload.ai_summary);
+      //   if (payload.headlines) updateHeadlines(payload.headlines);
+      //   if (payload.quotes) updateQuotes(payload.quotes);
+      //   if (payload.heatmap) updateHeatmap(payload.heatmap);
+      //   if (payload.risk_score != null) updateRiskMeter(payload.risk_score);
+      // };
+      // ws.onerror = (err) => console.error("WS error:", err);
+      // ws.onclose = () => console.log("WS closed");
+    }
+
+    // ============================
+    // Demo mock (bisa dihapus)
+    // ============================
+    function renderMockData() {
+      updateTimestamp("demo mode");
+
+      updateAiSummary(
+        "Equity indices trade mixed with US tech leading while value lags. " +
+        "Dollar index consolidates near recent highs; yields stay elevated " +
+        "as markets reassess Fed cuts. Commodities see moderate rotation " +
+        "out of gold into energy and industrial metals."
+      );
+
+      updateHeadlines([
+        { title:"US yields stabilize as market waits next CPI print", time:"12:10" },
+        { title:"Dollar consolidates; JPY under pressure on policy divergence", time:"11:55" },
+        { title:"Tech outperforms cyclicals as earnings revisions improve", time:"11:20" },
+        { title:"Crude pulls back after sharp rally; positioning remains crowded", time:"10:45" }
+      ]);
+
+      updateQuotes([
+        { symbol:"SPX",   name:"S&P 500",    last:"5,230.4", change:+12.3, changePct:+0.24 },
+        { symbol:"NDX",   name:"Nasdaq 100", last:"18,120",  change:+65.1, changePct:+0.36 },
+        { symbol:"DXY",   name:"US Dollar",  last:"105.2",   change:-0.12, changePct:-0.11 },
+        { symbol:"XAU",   name:"Gold",       last:"2,365",   change:-8.5,  changePct:-0.36 },
+        { symbol:"WTI",   name:"Crude Oil",  last:"79.4",    change:+0.9,  changePct:+1.15 },
+        { symbol:"BTC",   name:"Bitcoin",    last:"67,800",  change:+420,  changePct:+0.62 }
+      ]);
+
+      updateHeatmap([
+        { symbol:"SPX",  value:"5,230", change:+0.24, color:"#234c39" },
+        { symbol:"NDX",  value:"18,120", change:+0.36, color:"#24503e" },
+        { symbol:"RUT",  value:"2,080", change:-0.15, color:"#4a2629" },
+        { symbol:"DXY",  value:"105.2", change:-0.11, color:"#333333" },
+        { symbol:"EURUSD", value:"1.085", change:+0.18, color:"#27513f" },
+        { symbol:"USDJPY", value:"152.3", change:+0.22, color:"#4a2629" },
+        { symbol:"XAUUSD", value:"2,365", change:-0.36, color:"#4a2629" },
+        { symbol:"XAGUSD", value:"28.1", change:+0.45, color:"#27513f" },
+        { symbol:"WTI", value:"79.4", change:+1.15, color:"#2b6344" },
+        { symbol:"BRENT", value:"83.1", change:+0.92, color:"#295840" },
+        { symbol:"HYG", value:"78.2", change:+0.05, color:"#234c39" },
+        { symbol:"LQD", value:"108.5", change:-0.09, color:"#4a2629" },
+        { symbol:"US10Y", value:"4.28%", change:+0.03, color:"#4a2629" },
+        { symbol:"US2Y", value:"4.71%", change:+0.01, color:"#333333" },
+        { symbol:"MOVE", value:"98", change:-1.8, color:"#27513f" },
+        { symbol:"VIX", value:"16.2", change:-0.6, color:"#27513f" },
+        { symbol:"EEM", value:"42.1", change:+0.30, color:"#27513f" },
+        { symbol:"EFA", value:"82.4", change:+0.12, color:"#234c39" }
+      ]);
+
+      updateRiskMeter(58);
+    }
+
+    function initDashboard() {
+      renderMockData();   // hapus jika tidak ingin dummy data
+      // connectWebSocket(); // aktifkan setelah endpoint siap
+    }
+
+    window.addEventListener("DOMContentLoaded", initDashboard);
+  </script>
+</body>
+</html>
