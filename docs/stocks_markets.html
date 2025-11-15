@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara – Stocks Market Snapshot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <style>
+    :root {
+      --amber:#ffbf00;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+
+      --green:#22c55e;
+      --red:#ef4444;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+    }
+
+    html, body {
+      width:100%;
+      height:100%;
+    }
+
+    body {
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    .kt-page {
+      min-height:100vh;
+      padding:16px;
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    .kt-title {
+      font-size:var(--fs-title);
+      font-weight:600;
+      letter-spacing:0.03em;
+      margin-bottom:6px;
+      color:var(--text-main);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .kt-title span.label {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    /* Universe switcher (US vs ID) */
+    .kt-universe {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .kt-universe-label {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-pill {
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:2px 8px;
+      font-size:var(--fs-small);
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .kt-pill.active {
+      border-color:var(--amber);
+      color:var(--amber);
+    }
+
+    .kt-layout {
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:12px;
+      height:calc(100vh - 16px - 10px - 16px - 22px);
+      max-height:calc(100vh - 56px);
+    }
+
+    .kt-column {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:0;
+    }
+
+    .kt-column > .kt-card {
+      flex:1;
+      min-height:0;
+    }
+
+    .kt-card {
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .kt-card-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      font-size:var(--fs-subtitle);
+      color:var(--text-main);
+      flex-wrap:wrap;
+    }
+
+    .kt-card-header .subtitle {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-toolbar {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .kt-search {
+      flex:1;
+      min-width:140px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      border-radius:4px;
+      border:1px solid var(--border-soft);
+      padding:2px 6px;
+    }
+
+    .kt-search input {
+      flex:1;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--text-main);
+      font-size:var(--fs-small);
+      min-width:0;
+    }
+
+    .kt-search span {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    /* === Quotes Table === */
+    .kt-table-wrapper {
+      flex:1;
+      min-height:0;
+      overflow:auto;
+      margin-top:4px;
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:var(--fs-body);
+      min-width:720px;
+    }
+
+    thead {
+      position:sticky;
+      top:0;
+      background:linear-gradient(to bottom,#111111,#0b0b0b);
+      z-index:2;
+    }
+
+    th, td {
+      padding:5px 4px;
+      text-align:right;
+      white-space:nowrap;
+    }
+
+    th:first-child, td:first-child {
+      text-align:left;
+    }
+
+    th:nth-child(2), td:nth-child(2) {
+      text-align:left;
+    }
+
+    th {
+      font-size:var(--fs-small);
+      font-weight:500;
+      color:var(--text-muted);
+      border-bottom:1px solid var(--border-soft);
+    }
+
+    tbody tr:nth-child(even) {
+      background:#0d0d0d;
+    }
+
+    tbody tr:nth-child(odd) {
+      background:#090909;
+    }
+
+    tbody tr:hover {
+      background:#151515;
+    }
+
+    .text-up {
+      color:var(--green);
+    }
+
+    .text-down {
+      color:var(--red);
+    }
+
+    /* === Charts === */
+    .kt-chart-wrapper {
+      flex:1;
+      min-height:0;
+      position:relative;
+      margin-top:4px;
+      overflow:hidden;
+    }
+
+    .kt-chart-canvas {
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+    }
+
+    .kt-legend {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    .kt-legend-item {
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
+
+    .kt-dot {
+      width:8px;
+      height:8px;
+      border-radius:999px;
+    }
+
+    .dot-leading { background:var(--green); }
+    .dot-weakening { background:var(--amber); }
+    .dot-lagging { background:var(--red); }
+    .dot-improving { background:#3b82f6; }
+
+    /* === Responsive === */
+    @media (max-width:900px) {
+      .kt-layout {
+        grid-template-columns:1fr;
+        grid-template-rows:auto auto;
+        height:auto;
+        max-height:none;
+      }
+      .kt-column {
+        min-height:260px;
+      }
+      .kt-column > .kt-card {
+        min-height:260px;
+      }
+    }
+
+    @media (max-width:600px) {
+      :root {
+        --fs-title:13px;
+        --fs-subtitle:11px;
+        --fs-body:10px;
+        --fs-small:9px;
+      }
+
+      .kt-page {
+        padding:12px;
+      }
+
+      .kt-title {
+        flex-direction:column;
+        align-items:flex-start;
+        gap:4px;
+      }
+
+      .kt-toolbar {
+        justify-content:flex-start;
+      }
+
+      .kt-card {
+        padding:10px 10px;
+      }
+
+      th, td {
+        padding:4px 3px;
+      }
+
+      .kt-universe {
+        flex-wrap:wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-page">
+    <div class="kt-title">
+      <div>STOCKS MARKET SNAPSHOT</div>
+      <span class="label">Universe: US & Indonesia Stocks · Dummy Data</span>
+    </div>
+
+    <!-- Universe selector: US vs ID -->
+    <div class="kt-universe">
+      <span class="kt-universe-label">Universe:</span>
+      <div class="kt-pill active" data-universe="us">US Stocks</div>
+      <div class="kt-pill" data-universe="id">ID Stocks</div>
+    </div>
+
+    <div class="kt-layout">
+      <!-- LEFT: Stocks Market Quotes -->
+      <div class="kt-column">
+        <section class="kt-card">
+          <header class="kt-card-header">
+            <div>Stocks Market Quotes</div>
+            <div class="kt-toolbar">
+              <div class="kt-search">
+                <span>🔍</span>
+                <input id="searchInput" type="text" placeholder="Filter stock (e.g. AAPL, MSFT, BBCA)" />
+              </div>
+            </div>
+          </header>
+
+          <div class="kt-table-wrapper">
+            <table id="indicesTable">
+              <thead>
+                <tr>
+                  <th>Symbol</th>
+                  <th>Company</th>
+                  <th>Last</th>
+                  <th>Δ</th>
+                  <th>Δ%</th>
+                  <th>D Hi</th>
+                  <th>D Lo</th>
+                  <th>W Hi</th>
+                  <th>W Lo</th>
+                  <th>Session</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Dummy rows via JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT: Capital Flow (top) + Sector RRG (bottom) -->
+      <div class="kt-column">
+        <!-- Stocks Capital Flow -->
+        <section class="kt-card">
+          <header class="kt-card-header">
+            <div>Stocks Capital Flow</div>
+            <div class="subtitle">Intraday % Change · Sorted from Strongest to Weakest</div>
+          </header>
+          <div class="kt-chart-wrapper">
+            <canvas id="capitalFlowCanvas" class="kt-chart-canvas"></canvas>
+          </div>
+        </section>
+
+        <!-- Sector Relative Rotation Graph -->
+        <section class="kt-card">
+          <header class="kt-card-header">
+            <div>Sector Relative Rotation Graph (RRG)</div>
+            <div class="subtitle">RS-Ratio vs RS-Momentum · Sector Rotation (Universe-aware)</div>
+          </header>
+          <div class="kt-chart-wrapper">
+            <canvas id="rrgCanvas" class="kt-chart-canvas"></canvas>
+          </div>
+          <div class="kt-legend">
+            <div class="kt-legend-item">
+              <span class="kt-dot dot-leading"></span><span>Leading</span>
+            </div>
+            <div class="kt-legend-item">
+              <span class="kt-dot dot-weakening"></span><span>Weakening</span>
+            </div>
+            <div class="kt-legend-item">
+              <span class="kt-dot dot-lagging"></span><span>Lagging</span>
+            </div>
+            <div class="kt-legend-item">
+              <span class="kt-dot dot-improving"></span><span>Improving</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tableBody = document.querySelector("#indicesTable tbody");
+    const searchInput = document.getElementById("searchInput");
+    const universePills = document.querySelectorAll(".kt-universe .kt-pill");
+
+    const capitalFlowCanvas = document.getElementById("capitalFlowCanvas");
+    const capitalFlowCtx = capitalFlowCanvas.getContext("2d");
+
+    const rrgCanvas = document.getElementById("rrgCanvas");
+    const rrgCtx = rrgCanvas.getContext("2d");
+
+    let latestQuotes = [];
+    let capitalFlowData = [];
+    let rrgData = [];
+    let currentUniverse = "us";
+
+    // ==========================
+    //  TABLE RENDER
+    // ==========================
+    function updateQuotesTable(data) {
+      latestQuotes = Array.isArray(data) ? data : [];
+      renderQuotesTable();
+    }
+
+    function renderQuotesTable() {
+      const filter = (searchInput.value || "").trim().toLowerCase();
+      tableBody.innerHTML = "";
+
+      latestQuotes
+        .filter(row => {
+          if (!filter) return true;
+          const symbol = (row.symbol || "").toLowerCase();
+          const name = (row.name || "").toLowerCase();
+          return symbol.includes(filter) || name.includes(filter);
+        })
+        .forEach(row => {
+          const tr = document.createElement("tr");
+
+          const changePct = Number(row.changePct || 0);
+          const change = Number(row.change || 0);
+          const isUp = changePct > 0;
+          const isDown = changePct < 0;
+
+          tr.innerHTML = `
+            <td>${row.symbol || ""}</td>
+            <td>${row.name || ""}</td>
+            <td>${formatNumber(row.last)}</td>
+            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
+              ${formatSigned(change)}
+            </td>
+            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
+              ${formatSigned(changePct)}%
+            </td>
+            <td>${formatNumber(row.dailyHigh)}</td>
+            <td>${formatNumber(row.dailyLow)}</td>
+            <td>${formatNumber(row.weeklyHigh)}</td>
+            <td>${formatNumber(row.weeklyLow)}</td>
+            <td>${row.session || ""}</td>
+          `;
+
+          tableBody.appendChild(tr);
+        });
+    }
+
+    function formatNumber(value) {
+      const num = Number(value);
+      if (Number.isNaN(num)) return "";
+      const abs = Math.abs(num);
+
+      if (abs >= 1000) {
+        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      }
+      if (abs >= 1) {
+        return num.toFixed(2);
+      }
+      return num.toFixed(4);
+    }
+
+    function formatSigned(value) {
+      const num = Number(value);
+      if (Number.isNaN(num) || num === 0) return num.toFixed(2);
+      const sign = num > 0 ? "+" : "";
+      return sign + num.toFixed(2);
+    }
+
+    searchInput.addEventListener("input", renderQuotesTable);
+
+    // ==========================
+    //  CANVAS UTILS
+    // ==========================
+    function resizeCanvasToContainer(canvas) {
+      const parent = canvas.parentElement;
+      const rect = parent.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + "px";
+      canvas.style.height = rect.height + "px";
+
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    // ==========================
+    //  CAPITAL FLOW
+    // ==========================
+    function updateCapitalFlow(data) {
+      capitalFlowData = (Array.isArray(data) ? data : []).slice();
+      capitalFlowData.sort((a, b) => (b.changePct || 0) - (a.changePct || 0));
+      drawCapitalFlow();
+    }
+
+    function drawCapitalFlow() {
+      if (!capitalFlowCanvas) return;
+      resizeCanvasToContainer(capitalFlowCanvas);
+      const ctx = capitalFlowCtx;
+      const width = capitalFlowCanvas.clientWidth;
+      const height = capitalFlowCanvas.clientHeight;
+
+      ctx.clearRect(0, 0, width, height);
+
+      if (!capitalFlowData.length) {
+        ctx.fillStyle = "#555";
+        ctx.font = "10px 'Fira Code'";
+        ctx.fillText("Waiting for dummy data…", 8, 16);
+        return;
+      }
+
+      const margin = { top: 8, right: 16, bottom: 20, left: 40 };
+      const chartWidth = width - margin.left - margin.right;
+      const chartHeight = height - margin.top - margin.bottom;
+      const zeroY = margin.top + chartHeight / 2;
+
+      ctx.strokeStyle = "#444";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(margin.left, zeroY);
+      ctx.lineTo(margin.left + chartWidth, zeroY);
+      ctx.stroke();
+
+      const maxAbsChange = capitalFlowData.reduce((acc, d) => {
+        const val = Math.abs(d.changePct || 0);
+        return val > acc ? val : acc;
+      }, 0.01);
+
+      const barWidth = (chartWidth / Math.max(capitalFlowData.length, 1)) * 0.7;
+      const xStep = chartWidth / Math.max(capitalFlowData.length, 1);
+
+      ctx.textAlign = "center";
+      ctx.font = "9px 'Fira Code'";
+
+      const upColor = "#22c55e";
+      const downColor = "#ef4444";
+
+      capitalFlowData.forEach((d, idx) => {
+        const xCenter = margin.left + xStep * idx + xStep / 2;
+        const value = d.changePct || 0;
+        const barHeight = (Math.abs(value) / maxAbsChange) * (chartHeight / 2);
+
+        const isPositive = value >= 0;
+        ctx.fillStyle = isPositive ? upColor : downColor;
+
+        const y = isPositive ? zeroY - barHeight : zeroY;
+        ctx.fillRect(xCenter - barWidth / 2, y, barWidth, barHeight);
+
+        ctx.fillStyle = "#9b9b9b";
+        ctx.save();
+        ctx.translate(xCenter, height - 4);
+        ctx.rotate(-Math.PI / 4);
+        ctx.fillText((d.symbol || "").toUpperCase(), 0, 0);
+        ctx.restore();
+      });
+    }
+
+    // ==========================
+    //  SECTOR RRG
+    // ==========================
+    function updateRRG(data) {
+      rrgData = Array.isArray(data) ? data : [];
+      drawRRG();
+    }
+
+    function drawRRG() {
+      if (!rrgCanvas) return;
+      resizeCanvasToContainer(rrgCanvas);
+      const ctx = rrgCtx;
+      const width = rrgCanvas.clientWidth;
+      const height = rrgCanvas.clientHeight;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const margin = { top: 10, right: 10, bottom: 16, left: 16 };
+      const chartWidth = width - margin.left - margin.right;
+      const chartHeight = height - margin.top - margin.bottom;
+
+      const centerX = margin.left + chartWidth / 2;
+      const centerY = margin.top + chartHeight / 2;
+
+      ctx.strokeStyle = "#444";
+      ctx.lineWidth = 1;
+
+      ctx.beginPath();
+      ctx.moveTo(centerX, margin.top);
+      ctx.lineTo(centerX, margin.top + chartHeight);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(margin.left, centerY);
+      ctx.lineTo(margin.left + chartWidth, centerY);
+      ctx.stroke();
+
+      ctx.strokeStyle = "#2b2b2b";
+      ctx.strokeRect(margin.left, margin.top, chartWidth / 2, chartHeight / 2);
+      ctx.strokeRect(centerX, margin.top, chartWidth / 2, chartHeight / 2);
+      ctx.strokeRect(margin.left, centerY, chartWidth / 2, chartHeight / 2);
+      ctx.strokeRect(centerX, centerY, chartWidth / 2, chartHeight / 2);
+
+      ctx.fillStyle = "#9b9b9b";
+      ctx.font = "10px 'Fira Code'";
+      ctx.fillText("RS-Ratio →", centerX + 4, margin.top + 10);
+      ctx.save();
+      ctx.translate(margin.left + 4, centerY - 4);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText("RS-Momentum ↑", 0, 0);
+      ctx.restore();
+
+      ctx.font = "9px 'Fira Code'";
+      ctx.fillText("Leading",   margin.left + 4, margin.top + 12);
+      ctx.fillText("Weakening", centerX + 4,    margin.top + 12);
+      ctx.fillText("Improving", margin.left + 4, centerY + 12);
+      ctx.fillText("Lagging",   centerX + 4,    centerY + 12);
+
+      if (!rrgData.length) {
+        ctx.fillStyle = "#555";
+        ctx.fillText("Waiting for dummy data…", margin.left + 4, margin.top + 26);
+        return;
+      }
+
+      const baseRatio = 100;
+      const baseMomentum = 100;
+
+      const maxDeltaRatio = rrgData.reduce((acc, d) => {
+        const diff = Math.abs((d.rsRatio || baseRatio) - baseRatio);
+        return diff > acc ? diff : acc;
+      }, 1);
+
+      const maxDeltaMomentum = rrgData.reduce((acc, d) => {
+        const diff = Math.abs((d.rsMomentum || baseMomentum) - baseMomentum);
+        return diff > acc ? diff : acc;
+      }, 1);
+
+      const maxRadiusX = chartWidth / 2 - 10;
+      const maxRadiusY = chartHeight / 2 - 10;
+
+      rrgData.forEach(d => {
+        const ratio = d.rsRatio || baseRatio;
+        const momentum = d.rsMomentum || baseMomentum;
+
+        const dx = ((ratio - baseRatio) / maxDeltaRatio) * maxRadiusX;
+        const dy = ((momentum - baseMomentum) / maxDeltaMomentum) * maxRadiusY;
+
+        const x = centerX + dx;
+        const y = centerY - dy;
+
+        let color = "#3b82f6";
+        if (ratio >= baseRatio && momentum >= baseMomentum) color = "#22c55e";   // Leading
+        else if (ratio >= baseRatio && momentum < baseMomentum) color = "#ffbf00"; // Weakening
+        else if (ratio < baseRatio && momentum < baseMomentum) color = "#ef4444";  // Lagging
+
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#f5f5f5";
+        ctx.font = "8px 'Fira Code'";
+        ctx.fillText((d.symbol || "").toUpperCase(), x + 5, y - 4);
+      });
+    }
+
+    // ==========================
+    //  MOCK DATA (US & ID)
+    // ==========================
+    const mockData = {
+      us: {
+        quotes: [
+          // Mega/Large Cap – US
+          { symbol:"AAPL", name:"Apple Inc.",            last:228.54, change:1.32,  changePct:0.58,  dailyHigh:230.40, dailyLow:225.80, weeklyHigh:234.60, weeklyLow:221.10, session:"New York" },
+          { symbol:"MSFT", name:"Microsoft Corp.",       last:454.12, change:-0.84, changePct:-0.18, dailyHigh:459.60, dailyLow:450.50, weeklyHigh:467.80, weeklyLow:446.40, session:"New York" },
+          { symbol:"GOOGL",name:"Alphabet Inc. Class A", last:182.24, change:0.76,  changePct:0.42,  dailyHigh:184.70, dailyLow:179.80, weeklyHigh:187.40, weeklyLow:176.60, session:"New York" },
+          { symbol:"AMZN", name:"Amazon.com Inc.",       last:204.38, change:2.14,  changePct:1.06,  dailyHigh:207.90, dailyLow:199.40, weeklyHigh:211.80, weeklyLow:195.40, session:"New York" },
+          { symbol:"META", name:"Meta Platforms Inc.",   last:512.76, change:-3.40, changePct:-0.66, dailyHigh:521.20, dailyLow:508.40, weeklyHigh:534.80, weeklyLow:498.10, session:"New York" },
+
+          // Financials
+          { symbol:"JPM",  name:"JPMorgan Chase & Co.",  last:204.16, change:1.24,  changePct:0.61,  dailyHigh:206.40, dailyLow:201.20, weeklyHigh:209.80, weeklyLow:197.40, session:"New York" },
+          { symbol:"BAC",  name:"Bank of America Corp.", last:41.52,  change:0.22,  changePct:0.53,  dailyHigh:41.98,  dailyLow:40.82,  weeklyHigh:42.80,  weeklyLow:39.90,  session:"New York" },
+
+          // Energy
+          { symbol:"XOM",  name:"Exxon Mobil Corp.",     last:124.32, change:-0.62, changePct:-0.50, dailyHigh:126.10, dailyLow:123.10, weeklyHigh:129.40, weeklyLow:121.20, session:"New York" },
+          { symbol:"CVX",  name:"Chevron Corp.",         last:153.48, change:0.18,  changePct:0.12,  dailyHigh:155.40, dailyLow:151.60, weeklyHigh:158.20, weeklyLow:148.90, session:"New York" },
+
+          // Defensives
+          { symbol:"JNJ",  name:"Johnson & Johnson",      last:164.76, change:0.30,  changePct:0.18,  dailyHigh:166.10, dailyLow:163.20, weeklyHigh:168.40, weeklyLow:160.80, session:"New York" },
+          { symbol:"PG",   name:"Procter & Gamble Co.",   last:172.20, change:0.54,  changePct:0.32,  dailyHigh:173.60, dailyLow:170.40, weeklyHigh:175.80, weeklyLow:168.40, session:"New York" },
+
+          // High Beta / Growth
+          { symbol:"TSLA", name:"Tesla Inc.",             last:207.44, change:4.82,  changePct:2.38,  dailyHigh:211.80, dailyLow:200.60, weeklyHigh:219.40, weeklyLow:195.20, session:"New York" },
+          { symbol:"NVDA", name:"NVIDIA Corp.",           last:132.60, change:-1.84, changePct:-1.37, dailyHigh:136.20, dailyLow:131.40, weeklyHigh:141.20, weeklyLow:128.10, session:"New York" },
+          { symbol:"AMD",  name:"Advanced Micro Devices", last:178.32, change:1.92,  changePct:1.09,  dailyHigh:181.80, dailyLow:173.80, weeklyHigh:185.40, weeklyLow:169.40, session:"New York" },
+
+          // Industrials / Cyclicals
+          { symbol:"CAT",  name:"Caterpillar Inc.",       last:342.88, change:1.46,  changePct:0.43,  dailyHigh:346.20, dailyLow:338.40, weeklyHigh:352.40, weeklyLow:331.40, session:"New York" },
+          { symbol:"BA",   name:"Boeing Co.",             last:203.16, change:-1.18, changePct:-0.58, dailyHigh:207.40, dailyLow:201.20, weeklyHigh:211.60, weeklyLow:196.40, session:"New York" }
+        ],
+        flow: [],   // to be derived
+        // Sector-level RRG for US (Technology, Financials, Energy, Healthcare, Consumer, Industrials, Utilities, Real Estate, Communication)
+        rrg: [
+          { symbol:"TECH",     rsRatio:108, rsMomentum:104 }, // Tech
+          { symbol:"FIN",      rsRatio:101, rsMomentum:100 }, // Financials
+          { symbol:"ENERGY",   rsRatio:95,  rsMomentum:96  }, // Energy
+          { symbol:"HEALTH",   rsRatio:99,  rsMomentum:98  }, // Healthcare
+          { symbol:"CONS_DISC",rsRatio:103, rsMomentum:105 }, // Consumer Discretionary
+          { symbol:"CONS_STAP",rsRatio:98,  rsMomentum:101 }, // Consumer Staples
+          { symbol:"INDUSTR",  rsRatio:100, rsMomentum:102 }, // Industrials
+          { symbol:"UTIL",     rsRatio:94,  rsMomentum:95  }, // Utilities
+          { symbol:"REIT",     rsRatio:96,  rsMomentum:97  }, // Real Estate
+          { symbol:"COMM",     rsRatio:102, rsMomentum:103 }  // Communication Services
+        ]
+      },
+      id: {
+        quotes: [
+          // Big 4 banks
+          { symbol:"BBCA", name:"Bank Central Asia Tbk",      last:10250, change:50,   changePct:0.49,  dailyHigh:10350, dailyLow:10100, weeklyHigh:10475, weeklyLow:9950,  session:"Jakarta" },
+          { symbol:"BBRI", name:"Bank Rakyat Indonesia Tbk",  last:5250,  change:40,   changePct:0.77,  dailyHigh:5325,  dailyLow:5150,  weeklyHigh:5400,  weeklyLow:5050,  session:"Jakarta" },
+          { symbol:"BMRI", name:"Bank Mandiri Tbk",           last:8000,  change:60,   changePct:0.76,  dailyHigh:8100,  dailyLow:7880,  weeklyHigh:8200,  weeklyLow:7700,  session:"Jakarta" },
+          { symbol:"BBNI", name:"Bank Negara Indonesia Tbk",  last:5075,  change:25,   changePct:0.50,  dailyHigh:5150,  dailyLow:4975,  weeklyHigh:5200,  weeklyLow:4875,  session:"Jakarta" },
+
+          // Consumer / Staples
+          { symbol:"ICBP", name:"Indofood CBP Sukses Makmur", last:10500, change:-75,  changePct:-0.71, dailyHigh:10675, dailyLow:10350, weeklyHigh:10850, weeklyLow:10200, session:"Jakarta" },
+          { symbol:"INDF", name:"Indofood Sukses Makmur",     last:6950,  change:-25,  changePct:-0.36, dailyHigh:7075,  dailyLow:6875,  weeklyHigh:7150,  weeklyLow:6750,  session:"Jakarta" },
+          { symbol:"UNVR", name:"Unilever Indonesia Tbk",     last:3800,  change:20,   changePct:0.53,  dailyHigh:3850,  dailyLow:3720,  weeklyHigh:3920,  weeklyLow:3650,  session:"Jakarta" },
+
+          // Telco
+          { symbol:"TLKM", name:"Telkom Indonesia Tbk",       last:3920,  change:10,   changePct:0.26,  dailyHigh:3980,  dailyLow:3850,  weeklyHigh:4050,  weeklyLow:3750,  session:"Jakarta" },
+          { symbol:"EXCL", name:"XL Axiata Tbk",              last:2120,  change:30,   changePct:1.44,  dailyHigh:2160,  dailyLow:2060,  weeklyHigh:2200,  weeklyLow:1980,  session:"Jakarta" },
+
+          // Automotive / Cyclicals
+          { symbol:"ASII", name:"Astra International Tbk",    last:6600,  change:25,   changePct:0.38,  dailyHigh:6725,  dailyLow:6500,  weeklyHigh:6850,  weeklyLow:6400,  session:"Jakarta" },
+
+          // Commodity-related
+          { symbol:"MDKA", name:"Merdeka Copper Gold Tbk",    last:2620,  change:-40,  changePct:-1.50, dailyHigh:2700,  dailyLow:2600,  weeklyHigh:2820,  weeklyLow:2550,  session:"Jakarta" },
+          { symbol:"ANTM", name:"Aneka Tambang Tbk",          last:2060,  change:-10,  changePct:-0.48, dailyHigh:2120,  dailyLow:2020,  weeklyHigh:2220,  weeklyLow:1980,  session:"Jakarta" },
+          { symbol:"ADRO", name:"Adaro Energy Indonesia Tbk", last:2760,  change:20,   changePct:0.73,  dailyHigh:2820,  dailyLow:2700,  weeklyHigh:2900,  weeklyLow:2620,  session:"Jakarta" },
+
+          // Infra / Construction / Property
+          { symbol:"TLKM", name:"Telkom Indonesia Tbk",       last:3920,  change:10,   changePct:0.26,  dailyHigh:3980,  dailyLow:3850,  weeklyHigh:4050,  weeklyLow:3750,  session:"Jakarta" },
+          { symbol:"SMRA", name:"Summarecon Agung Tbk",       last:690,   change:8,    changePct:1.17,  dailyHigh:710,   dailyLow:672,   weeklyHigh:740,   weeklyLow:648,   session:"Jakarta" },
+          { symbol:"PWON", name:"Pakuwon Jati Tbk",           last:530,   change:4,    changePct:0.76,  dailyHigh:542,   dailyLow:520,   weeklyHigh:560,   weeklyLow:508,   session:"Jakarta" }
+        ],
+        flow: [],
+        // IDX sector-level RRG (Finance, Consumer, Infrastructure, Basic Materials, Energy, Property, Telco, Healthcare)
+        rrg: [
+          { symbol:"FINANCE",   rsRatio:104, rsMomentum:105 },
+          { symbol:"CONSUMER",  rsRatio:101, rsMomentum:102 },
+          { symbol:"INFRA",     rsRatio:98,  rsMomentum:99  },
+          { symbol:"BASIC_MAT", rsRatio:96,  rsMomentum:95  },
+          { symbol:"ENERGY",    rsRatio:103, rsMomentum:101 },
+          { symbol:"PROPERTY",  rsRatio:97,  rsMomentum:98  },
+          { symbol:"TELCO",     rsRatio:100, rsMomentum:103 },
+          { symbol:"HEALTH",    rsRatio:99,  rsMomentum:100 }
+        ]
+      }
+    };
+
+    // build flow arrays from quotes
+    function prepareFlowData() {
+      Object.keys(mockData).forEach(u => {
+        mockData[u].flow = mockData[u].quotes.map(q => ({
+          symbol: q.symbol,
+          changePct: q.changePct
+        }));
+      });
+    }
+
+    // ==========================
+    //  UNIVERSE SWITCHING
+    // ==========================
+    function applyUniverse(universeKey) {
+      currentUniverse = universeKey;
+
+      universePills.forEach(p => {
+        p.classList.toggle("active", p.getAttribute("data-universe") === universeKey);
+      });
+
+      const universeData = mockData[universeKey] || { quotes: [], flow: [], rrg: [] };
+      updateQuotesTable(universeData.quotes);
+      updateCapitalFlow(universeData.flow);
+      updateRRG(universeData.rrg);
+    }
+
+    universePills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        const u = pill.getAttribute("data-universe");
+        if (u && u !== currentUniverse) {
+          applyUniverse(u);
+        }
+      });
+    });
+
+    // ==========================
+    //  INIT
+    // ==========================
+    window.addEventListener("resize", () => {
+      drawCapitalFlow();
+      drawRRG();
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      prepareFlowData();
+      applyUniverse("us"); // default US Stocks
+    });
+  </script>
+</body>
+</html>
