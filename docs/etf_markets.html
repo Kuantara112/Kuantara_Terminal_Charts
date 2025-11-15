@@ -41,43 +41,33 @@
     body {
       background:var(--bg-root);
       color:var(--text-main);
-      overflow-x:hidden; /* ⬅ cegah scroll samping global */
+      overflow:hidden;       /* lock body, semua scroll di dalam main */
     }
 
-    .kt-page {
-      min-height:100vh;
-      padding:16px;
-      background:var(--bg-root);
-      color:var(--text-main);
-      max-width:100vw;     /* ⬅ batasi ke lebar layar */
-      overflow-x:hidden;   /* ⬅ cegah overflow horizontal */
-    }
-
-    .kt-title {
-      font-size:var(--fs-title);
-      font-weight:600;
-      letter-spacing:0.03em;
-      margin-bottom:10px;
-      color:var(--text-main);
+    /* ROOT LAYOUT – sama pola dengan page lain */
+    .kt-root {
       display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
+      flex-direction:column;
+      height:100vh;
+      max-width:100vw;
+      overflow:hidden;
+      background:var(--bg-root);
     }
 
-    .kt-title span.label {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
+    .kt-main {
+      flex:1;
+      padding:12px 12px;
+      overflow:auto;         /* scroll vertical di sini */
     }
 
+    /* GRID LAYOUT */
     .kt-layout {
       display:grid;
       grid-template-columns:repeat(2, minmax(0,1fr));
       gap:12px;
-      height:calc(100vh - 16px - 10px - 16px);
-      max-height:calc(100vh - 42px);
-      width:100%;         /* ⬅ pastikan selalu 100% */
-      max-width:100%;     /* ⬅ jangan lewat dari viewport */
+      min-height:0;
+      width:100%;
+      max-width:100%;
     }
 
     .kt-column {
@@ -175,7 +165,7 @@
     .kt-table-wrapper {
       flex:1;
       min-height:0;
-      overflow:auto;       /* scroll di DALAM panel kalau kepanjangan */
+      overflow:auto;       /* vertical + horizontal scroll DI DALAM panel */
       margin-top:4px;
       max-width:100%;
     }
@@ -184,7 +174,7 @@
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:720px;     /* untuk layar besar */
+      min-width:720px;     /* bikin kolom nyaman di desktop, mobile akan scroll-x di wrapper */
     }
 
     thead {
@@ -280,13 +270,12 @@
 
     /* === Responsive === */
     @media (max-width:900px) {
+      .kt-main {
+        padding:10px;
+      }
       .kt-layout {
         grid-template-columns:1fr;
-        grid-template-rows:auto auto;
-        height:auto;
-        max-height:none;
-        width:100%;
-        max-width:100%;
+        grid-auto-rows:minmax(260px, auto);
       }
       .kt-column {
         min-height:260px;
@@ -304,123 +293,121 @@
         --fs-small:9px;
       }
 
-      .kt-page {
-        padding:12px;
-      }
-
-      .kt-title {
-        flex-direction:column;
-        align-items:flex-start;
-        gap:4px;
-      }
-
-      .kt-toolbar {
-        justify-content:flex-start;
+      .kt-main {
+        padding:10px 8px;
       }
 
       .kt-card {
         padding:10px 10px;
       }
 
+      .kt-card-header {
+        flex-direction:column;
+        align-items:flex-start;
+        gap:6px;
+      }
+
+      .kt-toolbar {
+        justify-content:flex-start;
+      }
+
       th, td {
         padding:4px 3px;
       }
 
+      /* opsional: kalau mau tabel full width di mobile kecil */
       table {
-        min-width:100%;   /* ⬅ di mobile kecil, ikuti lebar panel */
+        min-width:640px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="kt-page">
-    <div class="kt-title">
-      <div>ETFS MARKET SNAPSHOT</div>
-      <span class="label">Universe: Equity, Fixed Income, Sector & Thematic ETFs · Dummy Data</span>
-    </div>
+  <div class="kt-root">
+    <main class="kt-main">
+      <div class="kt-layout">
+        <!-- LEFT: ETFs Market Quotes -->
+        <div class="kt-column">
+          <section class="kt-card">
+            <header class="kt-card-header">
+              <div>ETFs Market Quotes</div>
+              <div class="kt-toolbar">
+                <div class="kt-pill active" data-scope="all">All</div>
+                <div class="kt-pill" data-scope="equity">Equity</div>
+                <div class="kt-pill" data-scope="fixedincome">Fixed Income</div>
+                <div class="kt-pill" data-scope="sector">Sector</div>
+                <div class="kt-pill" data-scope="thematic">Thematic</div>
+                <div class="kt-search">
+                  <span>🔍</span>
+                  <input id="searchInput" type="text" placeholder="Filter ETF (e.g. SPY, QQQ, ARKK)" />
+                </div>
+              </div>
+            </header>
 
-    <div class="kt-layout">
-      <!-- LEFT: ETFs Market Quotes -->
-      <div class="kt-column">
-        <section class="kt-card">
-          <header class="kt-card-header">
-            <div>ETFs Market Quotes</div>
-            <div class="kt-toolbar">
-              <div class="kt-pill active" data-scope="all">All</div>
-              <div class="kt-pill" data-scope="equity">Equity</div>
-              <div class="kt-pill" data-scope="fixedincome">Fixed Income</div>
-              <div class="kt-pill" data-scope="sector">Sector</div>
-              <div class="kt-pill" data-scope="thematic">Thematic</div>
-              <div class="kt-search">
-                <span>🔍</span>
-                <input id="searchInput" type="text" placeholder="Filter ETF (e.g. SPY, QQQ, ARKK)" />
+            <div class="kt-table-wrapper">
+              <table id="indicesTable">
+                <thead>
+                  <tr>
+                    <th>Symbol</th>
+                    <th>ETF</th>
+                    <th>Last</th>
+                    <th>Δ</th>
+                    <th>Δ%</th>
+                    <th>D Hi</th>
+                    <th>D Lo</th>
+                    <th>W Hi</th>
+                    <th>W Lo</th>
+                    <th>Session</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Dummy rows via JS -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT: Capital Flow (top) + RRG (bottom) -->
+        <div class="kt-column">
+          <!-- ETFs Capital Flow -->
+          <section class="kt-card">
+            <header class="kt-card-header">
+              <div>ETFs Capital Flow</div>
+              <div class="subtitle">Intraday % Change · Sorted from Strongest to Weakest</div>
+            </header>
+            <div class="kt-chart-wrapper">
+              <canvas id="capitalFlowCanvas" class="kt-chart-canvas"></canvas>
+            </div>
+          </section>
+
+          <!-- ETFs Relative Rotation Graph -->
+          <section class="kt-card">
+            <header class="kt-card-header">
+              <div>ETFs Relative Rotation Graph (RRG)</div>
+              <div class="subtitle">RS-Ratio vs RS-Momentum · Cross-Asset & Sector Rotation</div>
+            </header>
+            <div class="kt-chart-wrapper">
+              <canvas id="rrgCanvas" class="kt-chart-canvas"></canvas>
+            </div>
+            <div class="kt-legend">
+              <div class="kt-legend-item">
+                <span class="kt-dot dot-leading"></span><span>Leading</span>
+              </div>
+              <div class="kt-legend-item">
+                <span class="kt-dot dot-weakening"></span><span>Weakening</span>
+              </div>
+              <div class="kt-legend-item">
+                <span class="kt-dot dot-lagging"></span><span>Lagging</span>
+              </div>
+              <div class="kt-legend-item">
+                <span class="kt-dot dot-improving"></span><span>Improving</span>
               </div>
             </div>
-          </header>
-
-          <div class="kt-table-wrapper">
-            <table id="indicesTable">
-              <thead>
-                <tr>
-                  <th>Symbol</th>
-                  <th>ETF</th>
-                  <th>Last</th>
-                  <th>Δ</th>
-                  <th>Δ%</th>
-                  <th>D Hi</th>
-                  <th>D Lo</th>
-                  <th>W Hi</th>
-                  <th>W Lo</th>
-                  <th>Session</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Dummy rows via JS -->
-              </tbody>
-            </table>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
-
-      <!-- RIGHT: Capital Flow (top) + RRG (bottom) -->
-      <div class="kt-column">
-        <!-- ETFs Capital Flow -->
-        <section class="kt-card">
-          <header class="kt-card-header">
-            <div>ETFs Capital Flow</div>
-            <div class="subtitle">Intraday % Change · Sorted from Strongest to Weakest</div>
-          </header>
-          <div class="kt-chart-wrapper">
-            <canvas id="capitalFlowCanvas" class="kt-chart-canvas"></canvas>
-          </div>
-        </section>
-
-        <!-- ETFs Relative Rotation Graph -->
-        <section class="kt-card">
-          <header class="kt-card-header">
-            <div>ETFs Relative Rotation Graph (RRG)</div>
-            <div class="subtitle">RS-Ratio vs RS-Momentum · Cross-Asset & Sector Rotation</div>
-          </header>
-          <div class="kt-chart-wrapper">
-            <canvas id="rrgCanvas" class="kt-chart-canvas"></canvas>
-          </div>
-          <div class="kt-legend">
-            <div class="kt-legend-item">
-              <span class="kt-dot dot-leading"></span><span>Leading</span>
-            </div>
-            <div class="kt-legend-item">
-              <span class="kt-dot dot-weakening"></span><span>Weakening</span>
-            </div>
-            <div class="kt-legend-item">
-              <span class="kt-dot dot-lagging"></span><span>Lagging</span>
-            </div>
-            <div class="kt-legend-item">
-              <span class="kt-dot dot-improving"></span><span>Improving</span>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
+    </main>
   </div>
 
   <script>
