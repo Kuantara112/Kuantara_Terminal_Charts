@@ -95,7 +95,8 @@
       background:rgba(255,191,0,0.08);
     }
 
-    /* === GRID: 2 atas, 3 bawah (semua panel bawah sama) === */
+    /* === GRID: 2 atas, 3 bawah ===
+       Bottom row: RISK | CALENDAR | HEATMAP (swapped) */
     .kt-grid {
       flex:1;
       display:grid;
@@ -103,7 +104,7 @@
       grid-template-rows:1fr 1fr;
       grid-template-areas:
         "ai ai headlines"
-        "heatmap calendar risk";
+        "risk calendar heatmap";
       gap:10px;
       min-height:0;
     }
@@ -219,7 +220,7 @@
       color:#ff5252;
     }
 
-    /* === Core Catalyst → Bubble Chart (sentris) === */
+    /* === Core Catalyst → Bubble Chart (sentris, full-space) === */
     .headline-bubble-chart {
       position:relative;
       width:100%;
@@ -437,7 +438,7 @@
       overflow:hidden;
     }
 
-    /* === Mobile: stack layout === */
+    /* Mobile tweaks: bubble panel gets more height */
     @media (max-width:900px) {
       .kt-grid {
         grid-template-columns:1fr;
@@ -445,9 +446,13 @@
         grid-template-areas:
           "ai"
           "headlines"
-          "heatmap"
+          "risk"
           "calendar"
-          "risk";
+          "heatmap";
+      }
+
+      .headline-bubble-chart {
+        min-height:220px; /* supaya bubble tetap kelihatan di mobile */
       }
     }
   </style>
@@ -456,10 +461,8 @@
   <div class="kt-page">
     <div class="kt-page-header">
       <div class="kt-page-header-left">
-        <div class="kt-page-title">Kuantara Terminal – Main Dashboard</div>
-        <div class="kt-page-meta" id="kt-timestamp">
-          last update: --
-        </div>
+        <div class="kt-page-title">Markets Overview</div>
+        <div class="kt-page-meta" id="kt-timestamp">last update: demo mode</div>
       </div>
       <div class="kt-page-header-right">
         <!-- Tombol ini nantinya memicu auto-PDF dari seluruh konten page -->
@@ -479,7 +482,7 @@
         </div>
         <div class="kt-card-body">
           <div id="ai-market-summary" class="ai-summary-text">
-            No summary generated yet. Click “Generate Summary” to fetch AI view.
+No summary generated yet. Click “Generate Summary” to fetch AI view.
           </div>
         </div>
       </section>
@@ -504,47 +507,7 @@
         </div>
       </section>
 
-      <!-- Market Heatmap (BOTTOM LEFT) -->
-      <section class="kt-card market-heatmap" data-section="market-heatmap">
-        <div class="kt-card-header">
-          <div class="kt-card-header-left">
-            <div class="kt-card-title">Market Heatmap</div>
-            <div class="kt-card-subtitle">3 × 6 grid | multi-asset</div>
-          </div>
-        </div>
-        <div class="kt-card-body">
-          <div class="heatmap-grid" id="heatmap-grid">
-            <!-- 18 cells (3 cols x 6 rows) -->
-          </div>
-        </div>
-      </section>
-
-      <!-- Economic Calendar (BOTTOM MIDDLE) -->
-      <section class="kt-card economic-calendar" data-section="economic-calendar">
-        <div class="kt-card-header">
-          <div class="kt-card-header-left">
-            <div class="kt-card-title">Economic Calendar</div>
-            <div class="kt-card-subtitle">today's key releases & impact</div>
-          </div>
-        </div>
-        <div class="kt-card-body">
-          <table class="calendar-table" id="calendar-table">
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Event</th>
-                <th>Currency</th>
-                <th>Impact</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- rows from JS -->
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Risk-On / Risk-Off – Horizontal Meter + Market Quotes (BOTTOM RIGHT) -->
+      <!-- Risk-On / Risk-Off – Horizontal Meter + Market Quotes (BOTTOM LEFT now) -->
       <section class="kt-card risk-meter-card" data-section="risk-meter">
         <div class="kt-card-header">
           <div class="kt-card-header-left">
@@ -579,6 +542,46 @@
               <!-- rows from JS -->
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <!-- Economic Calendar (BOTTOM MIDDLE) -->
+      <section class="kt-card economic-calendar" data-section="economic-calendar">
+        <div class="kt-card-header">
+          <div class="kt-card-header-left">
+            <div class="kt-card-title">Economic Calendar</div>
+            <div class="kt-card-subtitle">today's key releases & impact</div>
+          </div>
+        </div>
+        <div class="kt-card-body">
+          <table class="calendar-table" id="calendar-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Event</th>
+                <th>Currency</th>
+                <th>Impact</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- rows from JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Market Heatmap (BOTTOM RIGHT now) -->
+      <section class="kt-card market-heatmap" data-section="market-heatmap">
+        <div class="kt-card-header">
+          <div class="kt-card-header-left">
+            <div class="kt-card-title">Market Heatmap</div>
+            <div class="kt-card-subtitle">3 × 6 grid | multi-asset</div>
+          </div>
+        </div>
+        <div class="kt-card-body">
+          <div class="heatmap-grid" id="heatmap-grid">
+            <!-- 18 cells -->
+          </div>
         </div>
       </section>
     </div>
@@ -667,7 +670,7 @@
       }
     }
 
-    // === 3) Core Catalyst → Bubble Chart (sentris, pseudo-random) ===
+    // === 3) Core Catalyst → Bubble Chart (sentris, lebih tersebar & full-space) ===
     // items: [{ title, time, impactPct }, ...]
     function updateHeadlines(items) {
       const container = document.getElementById("headline-bubble-chart");
@@ -675,37 +678,86 @@
       container.innerHTML = "";
 
       const list = items || [];
-      const n = list.length || 1;
+      if (!list.length) {
+        const dummy = document.createElement("div");
+        dummy.className = "hb-title";
+        dummy.textContent = "No headlines received.";
+        container.appendChild(dummy);
+        return;
+      }
 
-      list.forEach((item, idx) => {
+      const n = list.length;
+      const rect = container.getBoundingClientRect();
+      const w = rect.width || container.clientWidth || 260;
+      const h = rect.height || container.clientHeight || 180;
+      const cx = w / 2;
+      const cy = h / 2;
+
+      // size range: 45–110 px
+      const minSize = 45;
+      const maxSize = 110;
+
+      // sort by impact desc (bigger impact nearer ke tengah)
+      const sorted = list
+        .map((it, idx) => ({ ...it, _idx: idx }))
+        .sort((a, b) => (Number(b.impactPct || b.impact || 0) - Number(a.impactPct || a.impact || 0)));
+
+      const maxRadius = Math.max(Math.min(w, h) / 2 - maxSize / 2 - 10, 30);
+
+      sorted.forEach((item, order) => {
         const bubble = document.createElement("div");
         const impactRaw = Number(item.impactPct || item.impact || 0);
         const impact = Math.max(0, Math.min(100, isNaN(impactRaw) ? 0 : impactRaw));
-        const size = 40 + (impact / 100) * 70; // ukuran sesuai impact (40–110 px)
+
+        const size = minSize + (impact / 100) * (maxSize - minSize);
+        bubble.style.width = size + "px";
+        bubble.style.height = size + "px";
 
         bubble.className = "headline-bubble";
-
         if (impact >= 66) bubble.classList.add("high");
         else if (impact >= 33) bubble.classList.add("medium");
         else bubble.classList.add("low");
 
-        bubble.style.width = size + "px";
-        bubble.style.height = size + "px";
+        let x = cx;
+        let y = cy;
 
-        // Pseudo-random posisi tapi tetap sentris di sekitar tengah
-        const angle = (idx / n) * 2 * Math.PI + (idx * 0.7);
-        const ringBase = 20 + (100 - impact) * 0.6; // besar impact => radius lebih kecil
-        const radius = ringBase;
+        if (n === 1) {
+          // single bubble right in the center
+          x = cx;
+          y = cy;
+        } else {
+          // ring index: pertama (impact paling besar) di tengah, sisanya di ring
+          if (order === 0) {
+            x = cx;
+            y = cy;
+          } else {
+            const idx = order - 1;
+            const ringCount = Math.max(1, Math.ceil((n - 1) / 6)); // max ~6 per ring
+            const ringIndex = Math.floor(idx / 6);
+            const inRingPos = idx % 6;
 
-        const offsetX = Math.cos(angle) * radius;
-        const offsetY = Math.sin(angle) * radius;
+            const radiusFactor = (ringIndex + 1) / (ringCount + 0.3);
+            const r = maxRadius * radiusFactor;
 
-        bubble.style.left = `calc(50% + ${offsetX}px)`;
-        bubble.style.top = `calc(50% + ${offsetY}px)`;
+            const angleStep = (2 * Math.PI) / Math.min(6, n - 1);
+            const angle = inRingPos * angleStep + ringIndex * 0.4;
+
+            x = cx + Math.cos(angle) * r;
+            y = cy + Math.sin(angle) * r;
+          }
+        }
+
+        // clamp supaya tidak keluar viewport panel
+        const margin = size / 2 + 6;
+        x = Math.max(margin, Math.min(w - margin, x));
+        y = Math.max(margin, Math.min(h - margin, y));
+
+        bubble.style.left = x + "px";
+        bubble.style.top = y + "px";
 
         const title = document.createElement("div");
         title.className = "hb-title";
-        title.textContent = item.title || ("Headline " + (idx + 1));
+        title.textContent = item.title || ("Headline " + (item._idx + 1));
 
         const meta = document.createElement("div");
         meta.className = "hb-meta";
@@ -717,13 +769,6 @@
         bubble.appendChild(meta);
         container.appendChild(bubble);
       });
-
-      if (!list.length) {
-        const dummy = document.createElement("div");
-        dummy.className = "hb-title";
-        dummy.textContent = "No headlines received.";
-        container.appendChild(dummy);
-      }
     }
 
     // === 4) Market Heatmap 3 x 6 ===
@@ -867,8 +912,6 @@
     // ============================
     function renderMockData() {
       updateTimestamp("demo mode");
-
-      // AI summary sengaja tidak diisi di awal – hanya via tombol Generate Summary
 
       updateEconomicCalendar([
         { time:"19:30", event:"US CPI YoY", currency:"USD", impactPct:85 },
