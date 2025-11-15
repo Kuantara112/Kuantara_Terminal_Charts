@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Kuantara – ETFs Market Snapshot</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <title>Kuantara – FX Market Snapshot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
 
   <style>
     :root {
@@ -69,7 +67,7 @@
 
     .kt-layout {
       display:grid;
-      grid-template-columns:repeat(2, minmax(0,1fr));
+      grid-template-columns:repeat(2, minmax(0,1fr)); /* kiri-kanan simetris */
       gap:12px;
       height:calc(100vh - 16px - 10px - 16px);
       max-height:calc(100vh - 42px);
@@ -82,6 +80,7 @@
       min-height:0;
     }
 
+    /* cards dalam column full height sehingga tinggi panel kiri = total dua panel kanan */
     .kt-column > .kt-card {
       flex:1;
       min-height:0;
@@ -167,7 +166,7 @@
     .kt-table-wrapper {
       flex:1;
       min-height:0;
-      overflow:auto;
+      overflow:auto;          /* vertical + horizontal scroll on small screen */
       margin-top:4px;
     }
 
@@ -175,7 +174,7 @@
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:720px;
+      min-width:720px;        /* force horizontal scroll on mobile instead of super kecil */
     }
 
     thead {
@@ -315,29 +314,543 @@
       }
     }
   </style>
-</head>
+<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.immersive-translate-attach-loading::after {
+  content: " ";
+
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-2000%, -50%);
+  z-index: 100;
+}
+
+.immersive-translate-loading-spinner {
+  vertical-align: middle !important;
+  width: 10px !important;
+  height: 10px !important;
+  display: inline-block !important;
+  margin: 0 4px !important;
+  border: 2px rgba(221, 244, 255, 0.6) solid !important;
+  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+}
+
+@-webkit-keyframes immersive-translate-loading-animation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@keyframes immersive-translate-loading-animation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.immersive-translate-input-loading {
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+}
+
+@keyframes immersiveTranslateShadowRolling {
+  0% {
+    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  12% {
+    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  25% {
+    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  36% {
+    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
+      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  50% {
+    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
+      110px 0 var(--loading-color), 100px 0 var(--loading-color);
+  }
+
+  62% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
+      120px 0 var(--loading-color), 110px 0 var(--loading-color);
+  }
+
+  75% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      130px 0 var(--loading-color), 120px 0 var(--loading-color);
+  }
+
+  87% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
+  }
+
+  100% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.immersive-translate-toast {
+  display: flex;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  right: 0;
+  top: 1%;
+  width: fit-content;
+  padding: 12px 20px;
+  margin: auto;
+  overflow: auto;
+  background: #fef6f9;
+  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
+  font-size: 15px;
+  border-radius: 8px;
+  color: #333;
+}
+
+.immersive-translate-toast-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.immersive-translate-toast-hidden {
+  margin: 0 20px 0 72px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.immersive-translate-toast-close {
+  color: #666666;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-toast {
+    top: 0;
+    padding: 12px 0px 0 10px;
+  }
+  .immersive-translate-toast-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .immersive-translate-toast-hidden {
+    margin: 10px auto;
+  }
+}
+
+.immersive-translate-dialog {
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  display: flex;
+  width: 300px;
+  flex-direction: column;
+  align-items: center;
+  font-size: 15px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: fit-content;
+  border-radius: 20px;
+  background-color: #fff;
+}
+
+.immersive-translate-modal {
+  display: none;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  font-size: 15px;
+}
+
+.immersive-translate-modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 40px 24px 24px;
+  border-radius: 12px;
+  width: 350px;
+  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
+    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  position: relative;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-content {
+    margin: 25% auto !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .immersive-translate-modal-content {
+    width: 80vw !important;
+    margin: 20vh auto !important;
+    padding: 20px 12px 12px !important;
+  }
+
+  .immersive-translate-modal-title {
+    font-size: 14px !important;
+  }
+
+  .immersive-translate-modal-body {
+    font-size: 13px !important;
+    max-height: 60vh !important;
+  }
+
+  .immersive-translate-btn {
+    font-size: 13px !important;
+    padding: 8px 16px !important;
+    margin: 0 4px !important;
+  }
+
+  .immersive-translate-modal-footer {
+    gap: 6px !important;
+    margin-top: 16px !important;
+  }
+}
+
+.immersive-translate-modal .immersive-translate-modal-content-in-input {
+  max-width: 500px;
+}
+.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
+  text-align: left;
+  max-height: unset;
+}
+
+.immersive-translate-modal-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.immersive-translate-modal-body {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+  margin-top: 24px;
+  word-break: break-all;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-body {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+}
+
+.immersive-translate-close {
+  color: #666666;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.immersive-translate-close:hover,
+.immersive-translate-close:focus {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.immersive-translate-modal-footer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.immersive-translate-btn {
+  width: fit-content;
+  color: #fff;
+  background-color: #ea4c89;
+  border: none;
+  font-size: 14px;
+  margin: 0 8px;
+  padding: 9px 30px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.immersive-translate-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.immersive-translate-btn:hover {
+  background-color: #f082ac;
+}
+.immersive-translate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.immersive-translate-btn:disabled:hover {
+  background-color: #ea4c89;
+}
+
+.immersive-translate-link-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: none;
+  cursor: pointer;
+  height: 30px;
+  line-height: 30px;
+}
+
+.immersive-translate-cancel-btn {
+  /* gray color */
+  background-color: rgb(89, 107, 120);
+}
+
+.immersive-translate-cancel-btn:hover {
+  background-color: hsl(205, 20%, 32%);
+}
+
+.immersive-translate-action-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: 1px solid #ea4c89;
+}
+
+.immersive-translate-btn svg {
+  margin-right: 5px;
+}
+
+.immersive-translate-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-primary-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-modal input[type="radio"] {
+  margin: 0 6px;
+  cursor: pointer;
+}
+
+.immersive-translate-modal label {
+  cursor: pointer;
+}
+
+.immersive-translate-close-action {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  cursor: pointer;
+}
+
+.imt-image-status {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 16px !important;
+}
+.imt-image-status img,
+.imt-image-status svg,
+.imt-img-loading {
+  width: 28px !important;
+  height: 28px !important;
+  margin: 0 0 8px 0 !important;
+  min-height: 28px !important;
+  min-width: 28px !important;
+  position: relative !important;
+}
+.imt-img-loading {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
+  background-size: 28px 28px;
+  animation: image-loading-rotate 1s linear infinite !important;
+}
+
+.imt-image-status span {
+  color: var(--bg-2, #fff) !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+  font-weight: 500 !important;
+  font-family: "PingFang SC", Arial, sans-serif !important;
+}
+
+.imt-primary-button {
+  display: flex;
+  padding: 12px 80px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: #ea4c89;
+  color: #fff;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  border: none;
+  cursor: pointer;
+}
+
+.imt-retry-text {
+  color: #999;
+  text-align: center;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  cursor: pointer;
+}
+
+.imt-action-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.imt-modal-content-text {
+  text-align: left;
+  color: #333;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+@keyframes image-loading-rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.imt-linear-gradient-text {
+  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.imt-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imt-linear-black-btn {
+  border-radius: 50px;
+  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
+  height: 48px;
+  width: 100%;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: center;
+}
+</style></head>
 <body>
   <div class="kt-page">
-    <div class="kt-title">
-      <div>ETFS MARKET SNAPSHOT</div>
-      <span class="label">Universe: Equity, Fixed Income, Sector & Thematic ETFs · Dummy Data</span>
-    </div>
+    
 
     <div class="kt-layout">
-      <!-- LEFT: ETFs Market Quotes -->
+      <!-- LEFT: FX Market Quotes -->
       <div class="kt-column">
         <section class="kt-card">
           <header class="kt-card-header">
-            <div>ETFs Market Quotes</div>
+            <div>FX Market Quotes</div>
             <div class="kt-toolbar">
-              <div class="kt-pill active" data-scope="all">All</div>
-              <div class="kt-pill" data-scope="equity">Equity</div>
-              <div class="kt-pill" data-scope="fixedincome">Fixed Income</div>
-              <div class="kt-pill" data-scope="sector">Sector</div>
-              <div class="kt-pill" data-scope="thematic">Thematic</div>
+              <div class="kt-pill active" data-scope="global">All</div>
+              <div class="kt-pill" data-scope="majors">Majors</div>
+              <div class="kt-pill" data-scope="exotics">Exotics</div>
               <div class="kt-search">
                 <span>🔍</span>
-                <input id="searchInput" type="text" placeholder="Filter ETF (e.g. SPY, QQQ, ARKK)" />
+                <input id="searchInput" type="text" placeholder="Filter pair (e.g. EURUSD, GBPJPY)">
               </div>
             </div>
           </header>
@@ -347,7 +860,7 @@
               <thead>
                 <tr>
                   <th>Symbol</th>
-                  <th>ETF</th>
+                  <th>Pair</th>
                   <th>Last</th>
                   <th>Δ</th>
                   <th>Δ%</th>
@@ -358,9 +871,472 @@
                   <th>Session</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- Dummy rows via JS -->
-              </tbody>
+              <tbody><tr>
+            <td>EURUSD</td>
+            <td>EUR / USD · Major</td>
+            <td>1.0865</td>
+            <td class="text-up">
+              +0.0028
+            </td>
+            <td class="text-up">
+              +0.2600%
+            </td>
+            <td>1.0890</td>
+            <td>1.0812</td>
+            <td>1.0935</td>
+            <td>1.0740</td>
+            <td>London</td>
+          </tr><tr>
+            <td>GBPUSD</td>
+            <td>GBP / USD · Major</td>
+            <td>1.2742</td>
+            <td class="text-down">
+              -0.0015
+            </td>
+            <td class="text-down">
+              -0.1200%
+            </td>
+            <td>1.2785</td>
+            <td>1.2690</td>
+            <td>1.2840</td>
+            <td>1.2615</td>
+            <td>London</td>
+          </tr><tr>
+            <td>USDJPY</td>
+            <td>USD / JPY · Major</td>
+            <td>154.3200</td>
+            <td class="text-up">
+              +0.3800
+            </td>
+            <td class="text-up">
+              +0.2500%
+            </td>
+            <td>154.9000</td>
+            <td>153.5000</td>
+            <td>155.8000</td>
+            <td>151.9000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>USDCHF</td>
+            <td>USD / CHF · Major</td>
+            <td>0.8968</td>
+            <td class="text-down">
+              -0.0019
+            </td>
+            <td class="text-down">
+              -0.2100%
+            </td>
+            <td>0.9015</td>
+            <td>0.8932</td>
+            <td>0.9070</td>
+            <td>0.8895</td>
+            <td>Zurich</td>
+          </tr><tr>
+            <td>USDCAD</td>
+            <td>USD / CAD · Major</td>
+            <td>1.3645</td>
+            <td class="text-up">
+              +0.0010
+            </td>
+            <td class="text-up">
+              +0.0700%
+            </td>
+            <td>1.3682</td>
+            <td>1.3594</td>
+            <td>1.3725</td>
+            <td>1.3532</td>
+            <td>New York</td>
+          </tr><tr>
+            <td>AUDUSD</td>
+            <td>AUD / USD · Major</td>
+            <td>0.6674</td>
+            <td class="text-up">
+              +0.0009
+            </td>
+            <td class="text-up">
+              +0.1400%
+            </td>
+            <td>0.6701</td>
+            <td>0.6615</td>
+            <td>0.6745</td>
+            <td>0.6588</td>
+            <td>Sydney</td>
+          </tr><tr>
+            <td>NZDUSD</td>
+            <td>NZD / USD · Major</td>
+            <td>0.6142</td>
+            <td class="text-down">
+              -0.0007
+            </td>
+            <td class="text-down">
+              -0.1100%
+            </td>
+            <td>0.6170</td>
+            <td>0.6095</td>
+            <td>0.6215</td>
+            <td>0.6050</td>
+            <td>Wellington</td>
+          </tr><tr>
+            <td>EURGBP</td>
+            <td>EUR / GBP · Minor</td>
+            <td>0.8525</td>
+            <td class="text-up">
+              +0.0006
+            </td>
+            <td class="text-up">
+              +0.0700%
+            </td>
+            <td>0.8541</td>
+            <td>0.8488</td>
+            <td>0.8575</td>
+            <td>0.8460</td>
+            <td>London</td>
+          </tr><tr>
+            <td>EURJPY</td>
+            <td>EUR / JPY · Minor</td>
+            <td>167.8000</td>
+            <td class="text-up">
+              +0.4200
+            </td>
+            <td class="text-up">
+              +0.2500%
+            </td>
+            <td>168.6000</td>
+            <td>166.4000</td>
+            <td>169.9000</td>
+            <td>164.9000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>EURAUD</td>
+            <td>EUR / AUD · Minor</td>
+            <td>1.6289</td>
+            <td class="text-up">
+              +0.0023
+            </td>
+            <td class="text-up">
+              +0.1400%
+            </td>
+            <td>1.6345</td>
+            <td>1.6190</td>
+            <td>1.6430</td>
+            <td>1.6120</td>
+            <td>Frankfurt</td>
+          </tr><tr>
+            <td>EURNZD</td>
+            <td>EUR / NZD · Minor</td>
+            <td>1.7685</td>
+            <td class="text-up">
+              +0.0044
+            </td>
+            <td class="text-up">
+              +0.2500%
+            </td>
+            <td>1.7760</td>
+            <td>1.7550</td>
+            <td>1.7850</td>
+            <td>1.7425</td>
+            <td>Frankfurt</td>
+          </tr><tr>
+            <td>EURCHF</td>
+            <td>EUR / CHF · Minor</td>
+            <td>0.9736</td>
+            <td class="text-down">
+              -0.0011
+            </td>
+            <td class="text-down">
+              -0.1100%
+            </td>
+            <td>0.9780</td>
+            <td>0.9704</td>
+            <td>0.9815</td>
+            <td>0.9670</td>
+            <td>Zurich</td>
+          </tr><tr>
+            <td>GBPJPY</td>
+            <td>GBP / JPY · Minor</td>
+            <td>196.7200</td>
+            <td class="text-up">
+              +0.5500
+            </td>
+            <td class="text-up">
+              +0.2800%
+            </td>
+            <td>197.8000</td>
+            <td>194.9000</td>
+            <td>199.1000</td>
+            <td>192.8000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>GBPCAD</td>
+            <td>GBP / CAD · Minor</td>
+            <td>1.7392</td>
+            <td class="text-down">
+              -0.0020
+            </td>
+            <td class="text-down">
+              -0.1100%
+            </td>
+            <td>1.7460</td>
+            <td>1.7315</td>
+            <td>1.7535</td>
+            <td>1.7240</td>
+            <td>London</td>
+          </tr><tr>
+            <td>GBPCHF</td>
+            <td>GBP / CHF · Minor</td>
+            <td>1.1425</td>
+            <td class="text-up">
+              +0.0015
+            </td>
+            <td class="text-up">
+              +0.1300%
+            </td>
+            <td>1.1468</td>
+            <td>1.1350</td>
+            <td>1.1520</td>
+            <td>1.1310</td>
+            <td>London</td>
+          </tr><tr>
+            <td>AUDJPY</td>
+            <td>AUD / JPY · Minor</td>
+            <td>102.9800</td>
+            <td class="text-up">
+              +0.2200
+            </td>
+            <td class="text-up">
+              +0.2100%
+            </td>
+            <td>103.6000</td>
+            <td>101.8000</td>
+            <td>104.4000</td>
+            <td>100.9000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>AUDCAD</td>
+            <td>AUD / CAD · Minor</td>
+            <td>0.9104</td>
+            <td class="text-up">
+              +0.0008
+            </td>
+            <td class="text-up">
+              +0.0900%
+            </td>
+            <td>0.9135</td>
+            <td>0.9050</td>
+            <td>0.9180</td>
+            <td>0.8985</td>
+            <td>Sydney</td>
+          </tr><tr>
+            <td>AUDNZD</td>
+            <td>AUD / NZD · Minor</td>
+            <td>1.0866</td>
+            <td class="text-up">
+              +0.0014
+            </td>
+            <td class="text-up">
+              +0.1300%
+            </td>
+            <td>1.0905</td>
+            <td>1.0780</td>
+            <td>1.0955</td>
+            <td>1.0725</td>
+            <td>Sydney</td>
+          </tr><tr>
+            <td>NZDJPY</td>
+            <td>NZD / JPY · Minor</td>
+            <td>94.8800</td>
+            <td class="text-up">
+              +0.1200
+            </td>
+            <td class="text-up">
+              +0.1300%
+            </td>
+            <td>95.4000</td>
+            <td>93.9000</td>
+            <td>96.1000</td>
+            <td>92.8000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>CADJPY</td>
+            <td>CAD / JPY · Minor</td>
+            <td>113.1000</td>
+            <td class="text-up">
+              +0.2800
+            </td>
+            <td class="text-up">
+              +0.2500%
+            </td>
+            <td>113.8000</td>
+            <td>111.9000</td>
+            <td>114.6000</td>
+            <td>110.9000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>CHFJPY</td>
+            <td>CHF / JPY · Minor</td>
+            <td>172.1000</td>
+            <td class="text-up">
+              +0.2000
+            </td>
+            <td class="text-up">
+              +0.1200%
+            </td>
+            <td>172.9000</td>
+            <td>170.8000</td>
+            <td>173.8000</td>
+            <td>169.4000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>USDTRY</td>
+            <td>USD / TRY · Exotic</td>
+            <td>34.8520</td>
+            <td class="text-up">
+              +0.1120
+            </td>
+            <td class="text-up">
+              +0.3200%
+            </td>
+            <td>35.1200</td>
+            <td>34.4200</td>
+            <td>35.5800</td>
+            <td>33.9500</td>
+            <td>Istanbul</td>
+          </tr><tr>
+            <td>USDZAR</td>
+            <td>USD / ZAR · Exotic</td>
+            <td>18.4520</td>
+            <td class="text-down">
+              -0.0650
+            </td>
+            <td class="text-down">
+              -0.3500%
+            </td>
+            <td>18.7200</td>
+            <td>18.2100</td>
+            <td>19.0500</td>
+            <td>18.0200</td>
+            <td>Johannesburg</td>
+          </tr><tr>
+            <td>USDMXN</td>
+            <td>USD / MXN · Exotic</td>
+            <td>18.1520</td>
+            <td class="text-up">
+              +0.0240
+            </td>
+            <td class="text-up">
+              +0.1300%
+            </td>
+            <td>18.3200</td>
+            <td>17.9200</td>
+            <td>18.6500</td>
+            <td>17.6500</td>
+            <td>Mexico City</td>
+          </tr><tr>
+            <td>USDSEK</td>
+            <td>USD / SEK · Exotic</td>
+            <td>10.4520</td>
+            <td class="text-down">
+              -0.0180
+            </td>
+            <td class="text-down">
+              -0.1700%
+            </td>
+            <td>10.5400</td>
+            <td>10.3200</td>
+            <td>10.7400</td>
+            <td>10.2100</td>
+            <td>Stockholm</td>
+          </tr><tr>
+            <td>USDNOK</td>
+            <td>USD / NOK · Exotic</td>
+            <td>10.8920</td>
+            <td class="text-up">
+              +0.0210
+            </td>
+            <td class="text-up">
+              +0.1900%
+            </td>
+            <td>11.0200</td>
+            <td>10.7500</td>
+            <td>11.2800</td>
+            <td>10.6200</td>
+            <td>Oslo</td>
+          </tr><tr>
+            <td>USDPLN</td>
+            <td>USD / PLN · Exotic</td>
+            <td>3.9820</td>
+            <td class="text-down">
+              -0.0060
+            </td>
+            <td class="text-down">
+              -0.1500%
+            </td>
+            <td>4.0200</td>
+            <td>3.9450</td>
+            <td>4.0650</td>
+            <td>3.9100</td>
+            <td>Warsaw</td>
+          </tr><tr>
+            <td>USDTHB</td>
+            <td>USD / THB · Exotic</td>
+            <td>35.4520</td>
+            <td class="text-up">
+              +0.0320
+            </td>
+            <td class="text-up">
+              +0.0900%
+            </td>
+            <td>35.6800</td>
+            <td>35.1200</td>
+            <td>36.0500</td>
+            <td>34.9800</td>
+            <td>Bangkok</td>
+          </tr><tr>
+            <td>EURTRY</td>
+            <td>EUR / TRY · Exotic</td>
+            <td>37.8520</td>
+            <td class="text-up">
+              +0.1280
+            </td>
+            <td class="text-up">
+              +0.3400%
+            </td>
+            <td>38.2100</td>
+            <td>37.3200</td>
+            <td>38.9200</td>
+            <td>36.9500</td>
+            <td>Istanbul</td>
+          </tr><tr>
+            <td>EURZAR</td>
+            <td>EUR / ZAR · Exotic</td>
+            <td>20.4520</td>
+            <td class="text-down">
+              -0.0750
+            </td>
+            <td class="text-down">
+              -0.3700%
+            </td>
+            <td>20.8200</td>
+            <td>20.1900</td>
+            <td>21.1500</td>
+            <td>19.9800</td>
+            <td>Johannesburg</td>
+          </tr><tr>
+            <td>EURPLN</td>
+            <td>EUR / PLN · Exotic</td>
+            <td>4.3220</td>
+            <td class="text-down">
+              -0.0080
+            </td>
+            <td class="text-down">
+              -0.1800%
+            </td>
+            <td>4.3600</td>
+            <td>4.2850</td>
+            <td>4.4100</td>
+            <td>4.2500</td>
+            <td>Warsaw</td>
+          </tr></tbody>
             </table>
           </div>
         </section>
@@ -368,25 +1344,25 @@
 
       <!-- RIGHT: Capital Flow (top) + RRG (bottom) -->
       <div class="kt-column">
-        <!-- ETFs Capital Flow -->
+        <!-- FX Capital Flow -->
         <section class="kt-card">
           <header class="kt-card-header">
-            <div>ETFs Capital Flow</div>
+            <div>FX Capital Flow</div>
             <div class="subtitle">Intraday % Change · Sorted from Strongest to Weakest</div>
           </header>
           <div class="kt-chart-wrapper">
-            <canvas id="capitalFlowCanvas" class="kt-chart-canvas"></canvas>
+            <canvas id="capitalFlowCanvas" class="kt-chart-canvas" width="1080" height="310" style="width: 720px; height: 206.667px;"></canvas>
           </div>
         </section>
 
-        <!-- ETFs Relative Rotation Graph -->
+        <!-- FX Relative Rotation Graph -->
         <section class="kt-card">
           <header class="kt-card-header">
-            <div>ETFs Relative Rotation Graph (RRG)</div>
-            <div class="subtitle">RS-Ratio vs RS-Momentum · Cross-Asset & Sector Rotation</div>
+            <div>FX Relative Rotation Graph (RRG)</div>
+            <div class="subtitle">RS-Ratio vs RS-Momentum · RRG-Style Quadrants</div>
           </header>
           <div class="kt-chart-wrapper">
-            <canvas id="rrgCanvas" class="kt-chart-canvas"></canvas>
+            <canvas id="rrgCanvas" class="kt-chart-canvas" width="1080" height="273" style="width: 720px; height: 182px;"></canvas>
           </div>
           <div class="kt-legend">
             <div class="kt-legend-item">
@@ -464,22 +1440,16 @@
     function formatNumber(value) {
       const num = Number(value);
       if (Number.isNaN(num)) return "";
-      const abs = Math.abs(num);
-
-      if (abs >= 1000) {
-        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
-      }
-      if (abs >= 1) {
-        return num.toFixed(2);
+      if (Math.abs(num) >= 1000) {
+        return num.toLocaleString(undefined, { maximumFractionDigits: 4 });
       }
       return num.toFixed(4);
     }
 
     function formatSigned(value) {
       const num = Number(value);
-      if (Number.isNaN(num) || num === 0) return formatNumber(0);
-      const sign = num > 0 ? "+" : "";
-      return sign + formatNumber(num);
+      if (Number.isNaN(num) || num === 0) return num.toFixed(4);
+      return (num > 0 ? "+" : "") + num.toFixed(4);
     }
 
     searchInput.addEventListener("input", renderQuotesTable);
@@ -550,8 +1520,8 @@
       ctx.textAlign = "center";
       ctx.font = "9px 'Fira Code'";
 
-      const upColor = "#22c55e";
-      const downColor = "#ef4444";
+      const upColor = "#22c55e";   // hijau
+      const downColor = "#ef4444"; // merah
 
       capitalFlowData.forEach((d, idx) => {
         const xCenter = margin.left + xStep * idx + xStep / 2;
@@ -684,55 +1654,53 @@
     }
 
     // ==========================
-    //  DUMMY DATA – ETFS
+    //  DUMMY DATA – FX (Majors, Minors, Exotics)
     // ==========================
     function loadMockData() {
       const mockQuotes = [
-        // === Broad US Equity ===
-        { symbol:"SPY",   name:"SPDR S&P 500 ETF · US Equity",            last:556.42, change:1.85,  changePct:0.33,  dailyHigh:559.10, dailyLow:550.80, weeklyHigh:562.30, weeklyLow:544.20, session:"New York" },
-        { symbol:"QQQ",   name:"Invesco QQQ Trust · US Tech Growth",      last:486.38, change:-0.92, changePct:-0.19, dailyHigh:490.10, dailyLow:482.70, weeklyHigh:497.60, weeklyLow:474.90, session:"New York" },
-        { symbol:"IWM",   name:"iShares Russell 2000 ETF · US Small Cap", last:222.54, change:1.02,  changePct:0.46,  dailyHigh:225.10, dailyLow:218.60, weeklyHigh:228.40, weeklyLow:213.80, session:"New York" },
-        { symbol:"DIA",   name:"SPDR Dow Jones Industrial Avg",           last:417.86, change:0.88,  changePct:0.21,  dailyHigh:420.20, dailyLow:413.40, weeklyHigh:423.50, weeklyLow:408.80, session:"New York" },
-        { symbol:"VTI",   name:"Vanguard Total Stock Market",             last:273.12, change:0.74,  changePct:0.27,  dailyHigh:275.80, dailyLow:269.40, weeklyHigh:278.40, weeklyLow:266.30, session:"New York" },
+        // === Majors ===
+        { symbol:"EURUSD", name:"EUR / USD · Major", last:1.0865, change:0.0028,  changePct:0.26,  dailyHigh:1.0890, dailyLow:1.0812, weeklyHigh:1.0935, weeklyLow:1.0740, session:"London" },
+        { symbol:"GBPUSD", name:"GBP / USD · Major", last:1.2742, change:-0.0015, changePct:-0.12, dailyHigh:1.2785, dailyLow:1.2690, weeklyHigh:1.2840, weeklyLow:1.2615, session:"London" },
+        { symbol:"USDJPY", name:"USD / JPY · Major", last:154.32, change:0.38,   changePct:0.25,  dailyHigh:154.90, dailyLow:153.50, weeklyHigh:155.80, weeklyLow:151.90, session:"Tokyo" },
+        { symbol:"USDCHF", name:"USD / CHF · Major", last:0.8968, change:-0.0019, changePct:-0.21, dailyHigh:0.9015, dailyLow:0.8932, weeklyHigh:0.9070, weeklyLow:0.8895, session:"Zurich" },
+        { symbol:"USDCAD", name:"USD / CAD · Major", last:1.3645, change:0.0010,  changePct:0.07,  dailyHigh:1.3682, dailyLow:1.3594, weeklyHigh:1.3725, weeklyLow:1.3532, session:"New York" },
+        { symbol:"AUDUSD", name:"AUD / USD · Major", last:0.6674, change:0.0009,  changePct:0.14,  dailyHigh:0.6701, dailyLow:0.6615, weeklyHigh:0.6745, weeklyLow:0.6588, session:"Sydney" },
+        { symbol:"NZDUSD", name:"NZD / USD · Major", last:0.6142, change:-0.0007, changePct:-0.11, dailyHigh:0.6170, dailyLow:0.6095, weeklyHigh:0.6215, weeklyLow:0.6050, session:"Wellington" },
 
-        // === US Sector SPDRs ===
-        { symbol:"XLK",   name:"Technology Select Sector SPDR",           last:221.44, change:-0.32, changePct:-0.14, dailyHigh:224.80, dailyLow:219.10, weeklyHigh:228.50, weeklyLow:215.40, session:"New York" },
-        { symbol:"XLF",   name:"Financial Select Sector SPDR",            last:43.28,  change:0.18,  changePct:0.42,  dailyHigh:43.60,  dailyLow:42.70,  weeklyHigh:44.10,  weeklyLow:41.90,  session:"New York" },
-        { symbol:"XLE",   name:"Energy Select Sector SPDR",               last:98.16,  change:-0.54, changePct:-0.55, dailyHigh:99.80,  dailyLow:97.40,  weeklyHigh:102.10, weeklyLow:95.30,  session:"New York" },
-        { symbol:"XLV",   name:"Health Care Select Sector SPDR",          last:152.74, change:0.30,  changePct:0.20,  dailyHigh:154.10, dailyLow:150.90, weeklyHigh:155.60, weeklyLow:148.60, session:"New York" },
-        { symbol:"XLY",   name:"Consumer Discretionary Select SPDR",      last:191.62, change:1.05,  changePct:0.55,  dailyHigh:193.90, dailyLow:187.80, weeklyHigh:196.20, weeklyLow:184.10, session:"New York" },
-        { symbol:"XLP",   name:"Consumer Staples Select SPDR",            last:78.45,  change:0.12,  changePct:0.15,  dailyHigh:78.88,  dailyLow:77.60,  weeklyHigh:79.66,  weeklyLow:76.92,  session:"New York" },
-        { symbol:"XLU",   name:"Utilities Select Sector SPDR",            last:70.12,  change:-0.08, changePct:-0.11, dailyHigh:70.88,  dailyLow:69.60,  weeklyHigh:72.30,  weeklyLow:68.90,  session:"New York" },
-        { symbol:"XLI",   name:"Industrial Select Sector SPDR",           last:129.34, change:0.46,  changePct:0.36,  dailyHigh:130.90, dailyLow:127.60, weeklyHigh:132.40, weeklyLow:125.20, session:"New York" },
+        // === Minor EUR-cross ===
+        { symbol:"EURGBP", name:"EUR / GBP · Minor", last:0.8525, change:0.0006,  changePct:0.07,  dailyHigh:0.8541, dailyLow:0.8488, weeklyHigh:0.8575, weeklyLow:0.8460, session:"London" },
+        { symbol:"EURJPY", name:"EUR / JPY · Minor", last:167.80, change:0.42,   changePct:0.25,  dailyHigh:168.60, dailyLow:166.40, weeklyHigh:169.90, weeklyLow:164.90, session:"Tokyo" },
+        { symbol:"EURAUD", name:"EUR / AUD · Minor", last:1.6289, change:0.0023,  changePct:0.14,  dailyHigh:1.6345, dailyLow:1.6190, weeklyHigh:1.6430, weeklyLow:1.6120, session:"Frankfurt" },
+        { symbol:"EURNZD", name:"EUR / NZD · Minor", last:1.7685, change:0.0044,  changePct:0.25,  dailyHigh:1.7760, dailyLow:1.7550, weeklyHigh:1.7850, weeklyLow:1.7425, session:"Frankfurt" },
+        { symbol:"EURCHF", name:"EUR / CHF · Minor", last:0.9736, change:-0.0011, changePct:-0.11, dailyHigh:0.9780, dailyLow:0.9704, weeklyHigh:0.9815, weeklyLow:0.9670, session:"Zurich" },
 
-        // === Thematic / Growth ===
-        { symbol:"ARKK",  name:"ARK Innovation ETF · Disruptive Growth",  last:52.84,  change:-0.66, changePct:-1.23, dailyHigh:54.10,  dailyLow:52.10,  weeklyHigh:55.80,  weeklyLow:50.40,  session:"New York" },
-        { symbol:"SMH",   name:"VanEck Semiconductor ETF",                last:226.10, change:2.92,  changePct:1.31,  dailyHigh:229.40, dailyLow:220.80, weeklyHigh:232.60, weeklyLow:214.90, session:"New York" },
-        { symbol:"KWEB",  name:"KraneShares CSI China Internet",          last:33.42,  change:-0.40, changePct:-1.18, dailyHigh:34.40,  dailyLow:33.10,  weeklyHigh:35.80,  weeklyLow:32.20,  session:"New York" },
-        { symbol:"TAN",   name:"Invesco Solar ETF",                       last:44.26,  change:0.76,  changePct:1.75,  dailyHigh:45.40,  dailyLow:43.10,  weeklyHigh:47.10,  weeklyLow:41.80,  session:"New York" },
+        // === Minor GBP / JPY / CAD / AUD / NZD crosses ===
+        { symbol:"GBPJPY", name:"GBP / JPY · Minor", last:196.72, change:0.55,   changePct:0.28,  dailyHigh:197.80, dailyLow:194.90, weeklyHigh:199.10, weeklyLow:192.80, session:"Tokyo" },
+        { symbol:"GBPCAD", name:"GBP / CAD · Minor", last:1.7392, change:-0.0020, changePct:-0.11, dailyHigh:1.7460, dailyLow:1.7315, weeklyHigh:1.7535, weeklyLow:1.7240, session:"London" },
+        { symbol:"GBPCHF", name:"GBP / CHF · Minor", last:1.1425, change:0.0015,  changePct:0.13,  dailyHigh:1.1468, dailyLow:1.1350, weeklyHigh:1.1520, weeklyLow:1.1310, session:"London" },
 
-        // === International Equity ===
-        { symbol:"EFA",   name:"iShares MSCI EAFE · Dev ex US",           last:83.52,  change:-0.14, changePct:-0.17, dailyHigh:84.20,  dailyLow:82.80,  weeklyHigh:85.40,  weeklyLow:81.60,  session:"New York" },
-        { symbol:"EEM",   name:"iShares MSCI Emerging Markets",           last:42.18,  change:0.20,  changePct:0.48,  dailyHigh:42.70,  dailyLow:41.60,  weeklyHigh:43.40,  weeklyLow:40.90,  session:"New York" },
-        { symbol:"EWJ",   name:"iShares MSCI Japan",                      last:75.84,  change:0.30,  changePct:0.40,  dailyHigh:76.50,  dailyLow:74.90,  weeklyHigh:77.80,  weeklyLow:73.60,  session:"New York" },
-        { symbol:"EWZ",   name:"iShares MSCI Brazil",                     last:33.96,  change:-0.22, changePct:-0.64, dailyHigh:34.60,  dailyLow:33.40,  weeklyHigh:35.40,  weeklyLow:32.80,  session:"New York" },
-        { symbol:"FXI",   name:"iShares China Large-Cap",                 last:27.14,  change:-0.18, changePct:-0.66, dailyHigh:27.80,  dailyLow:26.90,  weeklyHigh:28.60,  weeklyLow:26.10,  session:"New York" },
+        { symbol:"AUDJPY", name:"AUD / JPY · Minor", last:102.98, change:0.22,   changePct:0.21,  dailyHigh:103.60, dailyLow:101.80, weeklyHigh:104.40, weeklyLow:100.90, session:"Tokyo" },
+        { symbol:"AUDCAD", name:"AUD / CAD · Minor", last:0.9104, change:0.0008,  changePct:0.09,  dailyHigh:0.9135, dailyLow:0.9050, weeklyHigh:0.9180, weeklyLow:0.8985, session:"Sydney" },
+        { symbol:"AUDNZD", name:"AUD / NZD · Minor", last:1.0866, change:0.0014,  changePct:0.13,  dailyHigh:1.0905, dailyLow:1.0780, weeklyHigh:1.0955, weeklyLow:1.0725, session:"Sydney" },
 
-        // === Fixed Income ETFs ===
-        { symbol:"TLT",   name:"iShares 20+ Year Treasury Bond",          last:94.62,  change:-0.40, changePct:-0.42, dailyHigh:95.80,  dailyLow:93.90,  weeklyHigh:97.40,  weeklyLow:92.10,  session:"New York" },
-        { symbol:"IEF",   name:"iShares 7–10 Year Treasury Bond",         last:94.10,  change:-0.18, changePct:-0.19, dailyHigh:94.80,  dailyLow:93.50,  weeklyHigh:95.90,  weeklyLow:92.80,  session:"New York" },
-        { symbol:"SHY",   name:"iShares 1–3 Year Treasury Bond",          last:81.22,  change:-0.02, changePct:-0.02, dailyHigh:81.32,  dailyLow:81.10,  weeklyHigh:81.54,  weeklyLow:81.02,  session:"New York" },
-        { symbol:"LQD",   name:"iShares iBoxx $ Inv Grade Corporate",     last:110.84, change:-0.16, changePct:-0.14, dailyHigh:111.50, dailyLow:110.20, weeklyHigh:112.40, weeklyLow:109.10, session:"New York" },
-        { symbol:"HYG",   name:"iShares iBoxx $ High Yield Corporate",    last:77.42,  change:0.08,  changePct:0.10,  dailyHigh:77.80,  dailyLow:76.90,  weeklyHigh:78.40,  weeklyLow:76.20,  session:"New York" },
+        { symbol:"NZDJPY", name:"NZD / JPY · Minor", last:94.88,  change:0.12,   changePct:0.13,  dailyHigh:95.40,  dailyLow:93.90,  weeklyHigh:96.10,  weeklyLow:92.80,  session:"Tokyo" },
 
-        // === Commodity-linked ETFs ===
-        { symbol:"GLD",   name:"SPDR Gold Shares",                         last:225.32, change:0.76,  changePct:0.34,  dailyHigh:227.10, dailyLow:222.40, weeklyHigh:229.80, weeklyLow:219.60, session:"New York" },
-        { symbol:"SLV",   name:"iShares Silver Trust",                     last:26.34,  change:-0.18, changePct:-0.68, dailyHigh:26.80,  dailyLow:25.90,  weeklyHigh:27.60,  weeklyLow:25.40,  session:"New York" },
-        { symbol:"DBC",   name:"Invesco DB Commodity Index Tracking",      last:25.82,  change:0.10,  changePct:0.39,  dailyHigh:26.10,  dailyLow:25.40,  weeklyHigh:26.40,  weeklyLow:24.90,  session:"New York" },
+        { symbol:"CADJPY", name:"CAD / JPY · Minor", last:113.10, change:0.28,   changePct:0.25,  dailyHigh:113.80, dailyLow:111.90, weeklyHigh:114.60, weeklyLow:110.90, session:"Tokyo" },
+        { symbol:"CHFJPY", name:"CHF / JPY · Minor", last:172.10, change:0.20,   changePct:0.12,  dailyHigh:172.90, dailyLow:170.80, weeklyHigh:173.80, weeklyLow:169.40, session:"Tokyo" },
 
-        // === UCITS / European Listings (sample) ===
-        { symbol:"VUAA.L",name:"Vanguard S&P 500 UCITS ETF (Acc)",        last:101.20, change:0.30,  changePct:0.30,  dailyHigh:101.80, dailyLow:100.40, weeklyHigh:102.60, weeklyLow:99.40,  session:"London" },
-        { symbol:"EQQQ.L",name:"Invesco NASDAQ-100 UCITS ETF",            last:102.84, change:-0.18, changePct:-0.17, dailyHigh:103.60, dailyLow:101.80, weeklyHigh:104.90, weeklyLow:100.10, session:"London" }
+        // === Exotics vs USD ===
+        { symbol:"USDTRY", name:"USD / TRY · Exotic", last:34.852, change:0.112,  changePct:0.32,  dailyHigh:35.120, dailyLow:34.420, weeklyHigh:35.580, weeklyLow:33.950, session:"Istanbul" },
+        { symbol:"USDZAR", name:"USD / ZAR · Exotic", last:18.452, change:-0.065, changePct:-0.35, dailyHigh:18.720, dailyLow:18.210, weeklyHigh:19.050, weeklyLow:18.020, session:"Johannesburg" },
+        { symbol:"USDMXN", name:"USD / MXN · Exotic", last:18.152, change:0.024,  changePct:0.13,  dailyHigh:18.320, dailyLow:17.920, weeklyHigh:18.650, weeklyLow:17.650, session:"Mexico City" },
+        { symbol:"USDSEK", name:"USD / SEK · Exotic", last:10.452, change:-0.018, changePct:-0.17, dailyHigh:10.540, dailyLow:10.320, weeklyHigh:10.740, weeklyLow:10.210, session:"Stockholm" },
+        { symbol:"USDNOK", name:"USD / NOK · Exotic", last:10.892, change:0.021,  changePct:0.19,  dailyHigh:11.020, dailyLow:10.750, weeklyHigh:11.280, weeklyLow:10.620, session:"Oslo" },
+        { symbol:"USDPLN", name:"USD / PLN · Exotic", last:3.982,  change:-0.006, changePct:-0.15, dailyHigh:4.020,  dailyLow:3.945,  weeklyHigh:4.065,  weeklyLow:3.910,  session:"Warsaw" },
+        { symbol:"USDTHB", name:"USD / THB · Exotic", last:35.452, change:0.032,  changePct:0.09,  dailyHigh:35.680, dailyLow:35.120, weeklyHigh:36.050, weeklyLow:34.980, session:"Bangkok" },
+
+        // === Exotics vs EUR ===
+        { symbol:"EURTRY", name:"EUR / TRY · Exotic", last:37.852, change:0.128,  changePct:0.34,  dailyHigh:38.210, dailyLow:37.320, weeklyHigh:38.920, weeklyLow:36.950, session:"Istanbul" },
+        { symbol:"EURZAR", name:"EUR / ZAR · Exotic", last:20.452, change:-0.075, changePct:-0.37, dailyHigh:20.820, dailyLow:20.190, weeklyHigh:21.150, weeklyLow:19.980, session:"Johannesburg" },
+        { symbol:"EURPLN", name:"EUR / PLN · Exotic", last:4.322,  change:-0.008, changePct:-0.18, dailyHigh:4.360,  dailyLow:4.285,  weeklyHigh:4.410,  weeklyLow:4.250,  session:"Warsaw" }
       ];
 
       const mockFlow = mockQuotes.map(q => ({
@@ -741,51 +1709,33 @@
       }));
 
       const mockRRG = [
-        // Broad US Equity
-        { symbol:"SPY",   rsRatio:104, rsMomentum:103 },
-        { symbol:"QQQ",   rsRatio:106, rsMomentum:101 },
-        { symbol:"IWM",   rsRatio:101, rsMomentum:104 },
-        { symbol:"DIA",   rsRatio:99,  rsMomentum:100 },
-        { symbol:"VTI",   rsRatio:103, rsMomentum:102 },
+        // Majors
+        { symbol:"EURUSD", rsRatio:104, rsMomentum:103 },
+        { symbol:"GBPUSD", rsRatio:101, rsMomentum:99  },
+        { symbol:"USDJPY", rsRatio:103, rsMomentum:106 },
+        { symbol:"USDCHF", rsRatio:96,  rsMomentum:97  },
+        { symbol:"USDCAD", rsRatio:99,  rsMomentum:101 },
+        { symbol:"AUDUSD", rsRatio:102, rsMomentum:104 },
+        { symbol:"NZDUSD", rsRatio:98,  rsMomentum:99  },
 
-        // Sectors
-        { symbol:"XLK",   rsRatio:107, rsMomentum:99  },
-        { symbol:"XLF",   rsRatio:100, rsMomentum:101 },
-        { symbol:"XLE",   rsRatio:95,  rsMomentum:96  },
-        { symbol:"XLV",   rsRatio:102, rsMomentum:100 },
-        { symbol:"XLY",   rsRatio:103, rsMomentum:104 },
-        { symbol:"XLP",   rsRatio:98,  rsMomentum:99  },
-        { symbol:"XLU",   rsRatio:96,  rsMomentum:97  },
-        { symbol:"XLI",   rsRatio:101, rsMomentum:102 },
+        // Minors
+        { symbol:"EURGBP", rsRatio:100, rsMomentum:100 },
+        { symbol:"EURJPY", rsRatio:105, rsMomentum:103 },
+        { symbol:"EURAUD", rsRatio:99,  rsMomentum:98  },
+        { symbol:"GBPJPY", rsRatio:106, rsMomentum:104 },
+        { symbol:"AUDJPY", rsRatio:103, rsMomentum:102 },
+        { symbol:"NZDJPY", rsRatio:101, rsMomentum:101 },
+        { symbol:"CADJPY", rsRatio:100, rsMomentum:99  },
 
-        // Thematic / Growth
-        { symbol:"ARKK",  rsRatio:92,  rsMomentum:94  },
-        { symbol:"SMH",   rsRatio:109, rsMomentum:106 },
-        { symbol:"KWEB",  rsRatio:93,  rsMomentum:95  },
-        { symbol:"TAN",   rsRatio:101, rsMomentum:103 },
-
-        // International
-        { symbol:"EFA",   rsRatio:97,  rsMomentum:98  },
-        { symbol:"EEM",   rsRatio:99,  rsMomentum:101 },
-        { symbol:"EWJ",   rsRatio:100, rsMomentum:102 },
-        { symbol:"EWZ",   rsRatio:95,  rsMomentum:96  },
-        { symbol:"FXI",   rsRatio:94,  rsMomentum:95  },
-
-        // Fixed Income
-        { symbol:"TLT",   rsRatio:90,  rsMomentum:93  },
-        { symbol:"IEF",   rsRatio:92,  rsMomentum:95  },
-        { symbol:"SHY",   rsRatio:96,  rsMomentum:97  },
-        { symbol:"LQD",   rsRatio:94,  rsMomentum:96  },
-        { symbol:"HYG",   rsRatio:99,  rsMomentum:100 },
-
-        // Commodity ETFs
-        { symbol:"GLD",   rsRatio:103, rsMomentum:104 },
-        { symbol:"SLV",   rsRatio:98,  rsMomentum:97  },
-        { symbol:"DBC",   rsRatio:101, rsMomentum:102 },
-
-        // UCITS
-        { symbol:"VUAA.L",rsRatio:102, rsMomentum:101 },
-        { symbol:"EQQQ.L",rsRatio:105, rsMomentum:100 }
+        // Exotics
+        { symbol:"USDTRY", rsRatio:95,  rsMomentum:96  },
+        { symbol:"USDZAR", rsRatio:94,  rsMomentum:94  },
+        { symbol:"USDMXN", rsRatio:97,  rsMomentum:98  },
+        { symbol:"USDSEK", rsRatio:98,  rsMomentum:97  },
+        { symbol:"USDNOK", rsRatio:99,  rsMomentum:96  },
+        { symbol:"USDPLN", rsRatio:96,  rsMomentum:95  },
+        { symbol:"EURTRY", rsRatio:93,  rsMomentum:94  },
+        { symbol:"EURZAR", rsRatio:92,  rsMomentum:93  }
       ];
 
       updateQuotesTable(mockQuotes);
@@ -805,5 +1755,6 @@
       loadMockData(); // full dummy mode
     });
   </script>
-</body>
-</html>
+
+
+</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
