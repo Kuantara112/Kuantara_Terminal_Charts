@@ -16,16 +16,16 @@
     *{box-sizing:border-box;margin:0;padding:0;font-family:"Fira Code",monospace!important}
     html,body{height:100%}
 
-    /* 👇 PERBAIKAN: jangan kunci scroll/touch global, terutama di mobile */
+    /* Scroll behavior */
     body{
       background-color:var(--bg-root);
       color:var(--text-main);
-      overflow:hidden; /* tetap untuk desktop / layout terminal */
+      overflow:hidden;
     }
     @media (max-width: 768px){
       body{
-        overflow:auto;                     /* izinkan gesture vertikal */
-        -webkit-overflow-scrolling:touch;  /* smooth scroll di mobile Safari */
+        overflow:auto;
+        -webkit-overflow-scrolling:touch;
       }
     }
 
@@ -36,8 +36,8 @@
       position:fixed;
       left:0;
       right:0;
-      top:38px;    /* mulai tepat di bawah topbar + mainmenu strip */
-      bottom:46px; /* berhenti tepat di atas bottom nav */
+      top:38px;
+      bottom:46px;
       z-index:1;
       background:#0b0b0b;
     }
@@ -47,7 +47,7 @@
       border:0;
       display:block;
       background:#0b0b0b;
-      touch-action:auto; /* biarkan TradingView meng-handle gesture */
+      touch-action:auto;
     }
 
     /* ===== TOPMOST BAR (NO AUTOHIDE) ===== */
@@ -159,9 +159,9 @@
       left:0;
       right:0;
       top:0;
-      bottom:46px; /* sisakan ruang bottom bar */
+      bottom:46px;
       padding:64px 16px 16px;
-      z-index:2; /* di atas iframe, di bawah menu (2800) */
+      z-index:2;
       display:none;
       overflow:auto;
       background:radial-gradient(circle at top left,#1a1200,#050505 55%);
@@ -231,7 +231,6 @@
       line-height:1.5;
     }
 
-    /* PROFILE MENU (Settings / Notifications / Store) */
     .kt-profile-menu{
       margin-top:14px;
       display:flex;
@@ -479,7 +478,7 @@
           <div class="kt-profile-name">Guest User</div>
           <div class="kt-profile-meta">
             Kuantara Terminal · Single-seat license<br/>
-            Last login: — 
+            Last login: —
           </div>
         </div>
         <div>
@@ -526,14 +525,12 @@
         </div>
       </div>
 
-      <!-- Profile menu: Settings / Notifications / Store -->
       <div class="kt-profile-menu">
         <button class="kt-profile-menu-btn">Settings</button>
         <button class="kt-profile-menu-btn">Notifications</button>
         <button class="kt-profile-menu-btn">Store</button>
       </div>
 
-      <!-- Footer: Developed by + disclaimer -->
       <div class="kt-profile-footer">
         Developed by Kuantara Analytics · Informasi di dalam terminal ini bersifat edukatif dan bukan merupakan saran investasi atau ajakan untuk melakukan transaksi finansial.
       </div>
@@ -633,13 +630,14 @@
       let activeMenu=0;
       let activeBottom="home";
 
-      /* Map menu:sub -> iframe URL (contoh) */
+      /* Map menu:sub -> iframe URL */
       const IFRAME_MAP = {
-        "1:2":"https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html",
-        // tambah mapping lain sesuai kebutuhan
+        "0:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/overview_markets.html",                    // Markets · Overview
+        "1:2":"https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html", // News · Global (contoh)
+        "2:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/usmacro.html",                              // Macroeconomic · US Macro
+        "6:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/technical_charts.html"                      // Charts · Technical
       };
 
-      /* 👇 Pastikan ini mengarah ke file chart TradingView yang sudah kamu buat dengan script full sebelumnya */
       const FULL_CHART_URL = "https://kuantara112.github.io/Kuantara_Terminal_Charts/xauusd_tradingview.html";
       const MINI_CHART_URL = FULL_CHART_URL;
 
@@ -694,7 +692,6 @@
         renderContent(menuIndex, subIndex);
       }
 
-      /* Bottom bar active state */
       function setBottomActive(role){
         activeBottom = role;
         bottomItems.forEach(item=>{
@@ -757,7 +754,6 @@
             else if(role==="247"){
               setBottomActive("247");
               hideProfilePage();
-              // Tampilkan News · Insights (sub-index 0), tapi tanpa menu/submenu
               setActiveMenu(1);
               setActiveSub(1,0);
               hideAllBars();
@@ -969,7 +965,6 @@
           aiPanel.style.display="flex";
           if(activeBottom==="home") showAllBars();
         }else if(mode==="chart"){
-          // FULL CHART MODE (pakai iframe utama)
           setBottomActive("home");
           hideProfilePage();
           aiPanel.style.display="none";
@@ -1086,7 +1081,6 @@
         }
         if(e.key==="Tab"){
           e.preventDefault();
-          // Tab = buka Profile page full, tanpa menu/submenu
           setBottomActive("profile");
           hideAllBars();
           injectIframe("");
