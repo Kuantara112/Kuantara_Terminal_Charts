@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara – ETFs Market Snapshot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <style>
+    :root {
+      --amber:#ffbf00;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+
+      --green:#22c55e;
+      --red:#ef4444;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+    }
+
+    html, body {
+      width:100%;
+      height:100%;
+    }
+
+    body {
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    .kt-page {
+      min-height:100vh;
+      padding:16px;
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    .kt-title {
+      font-size:var(--fs-title);
+      font-weight:600;
+      letter-spacing:0.03em;
+      margin-bottom:10px;
+      color:var(--text-main);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .kt-title span.label {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-layout {
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:12px;
+      height:calc(100vh - 16px - 10px - 16px);
+      max-height:calc(100vh - 42px);
+    }
+
+    .kt-column {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:0;
+    }
+
+    .kt-column > .kt-card {
+      flex:1;
+      min-height:0;
+    }
+
+    .kt-card {
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .kt-card-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      font-size:var(--fs-subtitle);
+      color:var(--text-main);
+      flex-wrap:wrap;
+    }
+
+    .kt-card-header .subtitle {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-toolbar {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .kt-pill {
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:2px 8px;
+      font-size:var(--fs-small);
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .kt-pill.active {
+      border-color:var(--amber);
+      color:var(--amber);
+    }
+
+    .kt-search {
+      flex:1;
+      min-width:140px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      border-radius:4px;
+      border:1px solid var(--border-soft);
+      padding:2px 6px;
+    }
+
+    .kt-search input {
+      flex:1;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--text-main);
+      font-size:var(--fs-small);
+      min-width:0;
+    }
+
+    .kt-search span {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    /* === Quotes Table === */
+    .kt-table-wrapper {
+      flex:1;
+      min-height:0;
+      overflow:auto;
+      margin-top:4px;
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:var(--fs-body);
+      min-width:720px;
+    }
+
+    thead {
+      position:sticky;
+      top:0;
+      background:linear-gradient(to bottom,#111111,#0b0b0b);
+      z-index:2;
+    }
+
+    th, td {
+      padding:5px 4px;
+      text-align:right;
+      white-space:nowrap;
+    }
+
+    th:first-child, td:first-child {
+      text-align:left;
+    }
+
+    th:nth-child(2), td:nth-child(2) {
+      text-align:left;
+    }
+
+    th {
+      font-size:var(--fs-small);
+      font-weight:500;
+      color:var(--text-muted);
+      border-bottom:1px solid var(--border-soft);
+    }
+
+    tbody tr:nth-child(even) {
+      background:#0d0d0d;
+    }
+
+    tbody tr:nth-child(odd) {
+      background:#090909;
+    }
+
+    tbody tr:hover {
+      background:#151515;
+    }
+
+    .text-up {
+      color:var(--green);
+    }
+
+    .text-down {
+      color:var(--red);
+    }
+
+    /* === Charts === */
+    .kt-chart-wrapper {
+      flex:1;
+      min-height:0;
+      position:relative;
+      margin-top:4px;
+      overflow:hidden;
+    }
+
+    .kt-chart-canvas {
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+    }
+
+    .kt-legend {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    .kt-legend-item {
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
+
+    .kt-dot {
+      width:8px;
+      height:8px;
+      border-radius:999px;
+    }
+
+    .dot-leading { background:var(--green); }
+    .dot-weakening { background:var(--amber); }
+    .dot-lagging { background:var(--red); }
+    .dot-improving { background:#3b82f6; }
+
+    /* === Responsive === */
+    @media (max-width:900px) {
+      .kt-layout {
+        grid-template-columns:1fr;
+        grid-template-rows:auto auto;
+        height:auto;
+        max-height:none;
+      }
+      .kt-column {
+        min-height:260px;
+      }
+      .kt-column > .kt-card {
+        min-height:260px;
+      }
+    }
+
+    @media (max-width:600px) {
+      :root {
+        --fs-title:13px;
+        --fs-subtitle:11px;
+        --fs-body:10px;
+        --fs-small:9px;
+      }
+
+      .kt-page {
+        padding:12px;
+      }
+
+      .kt-title {
+        flex-direction:column;
+        align-items:flex-start;
+        gap:4px;
+      }
+
+      .kt-toolbar {
+        justify-content:flex-start;
+      }
+
+      .kt-card {
+        padding:10px 10px;
+      }
+
+      th, td {
+        padding:4px 3px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-page">
+    <div class="kt-title">
+      <div>ETFS MARKET SNAPSHOT</div>
+      <span class="label">Universe: Equity, Fixed Income, Sector & Thematic ETFs · Dummy Data</span>
+    </div>
+
+    <div class="kt-layout">
+      <!-- LEFT: ETFs Market Quotes -->
+      <div class="kt-column">
+        <section class="kt-card">
+          <header class="kt-card-header">
+            <div>ETFs Market Quotes</div>
+            <div class="kt-toolbar">
+              <div class="kt-pill active" data-scope="all">All</div>
+              <div class="kt-pill" data-scope="equity">Equity</div>
+              <div class="kt-pill" data-scope="fixedincome">Fixed Income</div>
+              <div class="kt-pill" data-scope="sector">Sector</div>
+              <div class="kt-pill" data-scope="thematic">Thematic</div>
+              <div class="kt-search">
+                <span>🔍</span>
+                <input id="searchInput" type="text" placeholder="Filter ETF (e.g. SPY, QQQ, ARKK)" />
+              </div>
+            </div>
+          </header>
+
+          <div class="kt-table-wrapper">
+            <table id="indicesTable">
+              <thead>
+                <tr>
+                  <th>Symbol</th>
+                  <th>ETF</th>
+                  <th>Last</th>
+                  <th>Δ</th>
+                  <th>Δ%</th>
+                  <th>D Hi</th>
+                  <th>D Lo</th>
+                  <th>W Hi</th>
+                  <th>W Lo</th>
+                  <th>Session</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Dummy rows via JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT: Capital Flow (top) + RRG (bottom) -->
+      <div class="kt-column">
+        <!-- ETFs Capital Flow -->
+        <section class="kt-card">
+          <header class="kt-card-header">
+            <div>ETFs Capital Flow</div>
+            <div class="subtitle">Intraday % Change · Sorted from Strongest to Weakest</div>
+          </header>
+          <div class="kt-chart-wrapper">
+            <canvas id="capitalFlowCanvas" class="kt-chart-canvas"></canvas>
+          </div>
+        </section>
+
+        <!-- ETFs Relative Rotation Graph -->
+        <section class="kt-card">
+          <header class="kt-card-header">
+            <div>ETFs Relative Rotation Graph (RRG)</div>
+            <div class="subtitle">RS-Ratio vs RS-Momentum · Cross-Asset & Sector Rotation</div>
+          </header>
+          <div class="kt-chart-wrapper">
+            <canvas id="rrgCanvas" class="kt-chart-canvas"></canvas>
+          </div>
+          <div class="kt-legend">
+            <div class="kt-legend-item">
+              <span class="kt-dot dot-leading"></span><span>Leading</span>
+            </div>
+            <div class="kt-legend-item">
+              <span class="kt-dot dot-weakening"></span><span>Weakening</span>
+            </div>
+            <div class="kt-legend-item">
+              <span class="kt-dot dot-lagging"></span><span>Lagging</span>
+            </div>
+            <div class="kt-legend-item">
+              <span class="kt-dot dot-improving"></span><span>Improving</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================
+    //  QUOTES TABLE (Dummy)
+    // ==========================
+    const tableBody = document.querySelector("#indicesTable tbody");
+    const searchInput = document.getElementById("searchInput");
+
+    let latestQuotes = [];
+
+    function updateQuotesTable(data) {
+      latestQuotes = Array.isArray(data) ? data : [];
+      renderQuotesTable();
+    }
+
+    function renderQuotesTable() {
+      const filter = (searchInput.value || "").trim().toLowerCase();
+      tableBody.innerHTML = "";
+
+      latestQuotes
+        .filter(row => {
+          if (!filter) return true;
+          const symbol = (row.symbol || "").toLowerCase();
+          const name = (row.name || "").toLowerCase();
+          return symbol.includes(filter) || name.includes(filter);
+        })
+        .forEach(row => {
+          const tr = document.createElement("tr");
+
+          const changePct = Number(row.changePct || 0);
+          const change = Number(row.change || 0);
+          const isUp = changePct > 0;
+          const isDown = changePct < 0;
+
+          tr.innerHTML = `
+            <td>${row.symbol || ""}</td>
+            <td>${row.name || ""}</td>
+            <td>${formatNumber(row.last)}</td>
+            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
+              ${formatSigned(change)}
+            </td>
+            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
+              ${formatSigned(changePct)}%
+            </td>
+            <td>${formatNumber(row.dailyHigh)}</td>
+            <td>${formatNumber(row.dailyLow)}</td>
+            <td>${formatNumber(row.weeklyHigh)}</td>
+            <td>${formatNumber(row.weeklyLow)}</td>
+            <td>${row.session || ""}</td>
+          `;
+
+          tableBody.appendChild(tr);
+        });
+    }
+
+    function formatNumber(value) {
+      const num = Number(value);
+      if (Number.isNaN(num)) return "";
+      const abs = Math.abs(num);
+
+      if (abs >= 1000) {
+        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      }
+      if (abs >= 1) {
+        return num.toFixed(2);
+      }
+      return num.toFixed(4);
+    }
+
+    function formatSigned(value) {
+      const num = Number(value);
+      if (Number.isNaN(num) || num === 0) return formatNumber(0);
+      const sign = num > 0 ? "+" : "";
+      return sign + formatNumber(num);
+    }
+
+    searchInput.addEventListener("input", renderQuotesTable);
+
+    // ==========================
+    //  CAPITAL FLOW (Dummy)
+    // ==========================
+    const capitalFlowCanvas = document.getElementById("capitalFlowCanvas");
+    const capitalFlowCtx = capitalFlowCanvas.getContext("2d");
+    let capitalFlowData = [];
+
+    function updateCapitalFlow(data) {
+      capitalFlowData = (Array.isArray(data) ? data : []).slice();
+      capitalFlowData.sort((a, b) => (b.changePct || 0) - (a.changePct || 0));
+      drawCapitalFlow();
+    }
+
+    function resizeCanvasToContainer(canvas) {
+      const parent = canvas.parentElement;
+      const rect = parent.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + "px";
+      canvas.style.height = rect.height + "px";
+
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function drawCapitalFlow() {
+      if (!capitalFlowCanvas) return;
+      resizeCanvasToContainer(capitalFlowCanvas);
+      const ctx = capitalFlowCtx;
+      const width = capitalFlowCanvas.clientWidth;
+      const height = capitalFlowCanvas.clientHeight;
+
+      ctx.clearRect(0, 0, width, height);
+
+      if (!capitalFlowData.length) {
+        ctx.fillStyle = "#555";
+        ctx.font = "10px 'Fira Code'";
+        ctx.fillText("Waiting for dummy data…", 8, 16);
+        return;
+      }
+
+      const margin = { top: 8, right: 16, bottom: 20, left: 40 };
+      const chartWidth = width - margin.left - margin.right;
+      const chartHeight = height - margin.top - margin.bottom;
+      const zeroY = margin.top + chartHeight / 2;
+
+      ctx.strokeStyle = "#444";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(margin.left, zeroY);
+      ctx.lineTo(margin.left + chartWidth, zeroY);
+      ctx.stroke();
+
+      const maxAbsChange = capitalFlowData.reduce((acc, d) => {
+        const val = Math.abs(d.changePct || 0);
+        return val > acc ? val : acc;
+      }, 0.01);
+
+      const barWidth = (chartWidth / Math.max(capitalFlowData.length, 1)) * 0.7;
+      const xStep = chartWidth / Math.max(capitalFlowData.length, 1);
+
+      ctx.textAlign = "center";
+      ctx.font = "9px 'Fira Code'";
+
+      const upColor = "#22c55e";
+      const downColor = "#ef4444";
+
+      capitalFlowData.forEach((d, idx) => {
+        const xCenter = margin.left + xStep * idx + xStep / 2;
+        const value = d.changePct || 0;
+        const barHeight = (Math.abs(value) / maxAbsChange) * (chartHeight / 2);
+
+        const isPositive = value >= 0;
+        ctx.fillStyle = isPositive ? upColor : downColor;
+
+        const y = isPositive ? zeroY - barHeight : zeroY;
+        ctx.fillRect(xCenter - barWidth / 2, y, barWidth, barHeight);
+
+        ctx.fillStyle = "#9b9b9b";
+        ctx.save();
+        ctx.translate(xCenter, height - 4);
+        ctx.rotate(-Math.PI / 4);
+        ctx.fillText((d.symbol || "").toUpperCase(), 0, 0);
+        ctx.restore();
+      });
+    }
+
+    // ==========================
+    //  RRG (Dummy)
+    // ==========================
+    const rrgCanvas = document.getElementById("rrgCanvas");
+    const rrgCtx = rrgCanvas.getContext("2d");
+    let rrgData = [];
+
+    function updateRRG(data) {
+      rrgData = Array.isArray(data) ? data : [];
+      drawRRG();
+    }
+
+    function drawRRG() {
+      if (!rrgCanvas) return;
+      resizeCanvasToContainer(rrgCanvas);
+      const ctx = rrgCtx;
+      const width = rrgCanvas.clientWidth;
+      const height = rrgCanvas.clientHeight;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const margin = { top: 10, right: 10, bottom: 16, left: 16 };
+      const chartWidth = width - margin.left - margin.right;
+      const chartHeight = height - margin.top - margin.bottom;
+
+      const centerX = margin.left + chartWidth / 2;
+      const centerY = margin.top + chartHeight / 2;
+
+      ctx.strokeStyle = "#444";
+      ctx.lineWidth = 1;
+
+      ctx.beginPath();
+      ctx.moveTo(centerX, margin.top);
+      ctx.lineTo(centerX, margin.top + chartHeight);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(margin.left, centerY);
+      ctx.lineTo(margin.left + chartWidth, centerY);
+      ctx.stroke();
+
+      ctx.strokeStyle = "#2b2b2b";
+      ctx.strokeRect(margin.left, margin.top, chartWidth / 2, chartHeight / 2);
+      ctx.strokeRect(centerX, margin.top, chartWidth / 2, chartHeight / 2);
+      ctx.strokeRect(margin.left, centerY, chartWidth / 2, chartHeight / 2);
+      ctx.strokeRect(centerX, centerY, chartWidth / 2, chartHeight / 2);
+
+      ctx.fillStyle = "#9b9b9b";
+      ctx.font = "10px 'Fira Code'";
+      ctx.fillText("RS-Ratio →", centerX + 4, margin.top + 10);
+      ctx.save();
+      ctx.translate(margin.left + 4, centerY - 4);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText("RS-Momentum ↑", 0, 0);
+      ctx.restore();
+
+      ctx.font = "9px 'Fira Code'";
+      ctx.fillText("Leading",   margin.left + 4, margin.top + 12);
+      ctx.fillText("Weakening", centerX + 4,    margin.top + 12);
+      ctx.fillText("Improving", margin.left + 4, centerY + 12);
+      ctx.fillText("Lagging",   centerX + 4,    centerY + 12);
+
+      if (!rrgData.length) {
+        ctx.fillStyle = "#555";
+        ctx.fillText("Waiting for dummy data…", margin.left + 4, margin.top + 26);
+        return;
+      }
+
+      const baseRatio = 100;
+      const baseMomentum = 100;
+
+      const maxDeltaRatio = rrgData.reduce((acc, d) => {
+        const diff = Math.abs((d.rsRatio || baseRatio) - baseRatio);
+        return diff > acc ? diff : acc;
+      }, 1);
+
+      const maxDeltaMomentum = rrgData.reduce((acc, d) => {
+        const diff = Math.abs((d.rsMomentum || baseMomentum) - baseMomentum);
+        return diff > acc ? diff : acc;
+      }, 1);
+
+      const maxRadiusX = chartWidth / 2 - 10;
+      const maxRadiusY = chartHeight / 2 - 10;
+
+      rrgData.forEach(d => {
+        const ratio = d.rsRatio || baseRatio;
+        const momentum = d.rsMomentum || baseMomentum;
+
+        const dx = ((ratio - baseRatio) / maxDeltaRatio) * maxRadiusX;
+        const dy = ((momentum - baseMomentum) / maxDeltaMomentum) * maxRadiusY;
+
+        const x = centerX + dx;
+        const y = centerY - dy;
+
+        let color = "#3b82f6";
+        if (ratio >= baseRatio && momentum >= baseMomentum) color = "#22c55e";   // Leading
+        else if (ratio >= baseRatio && momentum < baseMomentum) color = "#ffbf00"; // Weakening
+        else if (ratio < baseRatio && momentum < baseMomentum) color = "#ef4444";  // Lagging
+
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#f5f5f5";
+        ctx.font = "8px 'Fira Code'";
+        ctx.fillText((d.symbol || "").toUpperCase(), x + 5, y - 4);
+      });
+    }
+
+    // ==========================
+    //  DUMMY DATA – ETFS
+    // ==========================
+    function loadMockData() {
+      const mockQuotes = [
+        // === Broad US Equity ===
+        { symbol:"SPY",   name:"SPDR S&P 500 ETF · US Equity",            last:556.42, change:1.85,  changePct:0.33,  dailyHigh:559.10, dailyLow:550.80, weeklyHigh:562.30, weeklyLow:544.20, session:"New York" },
+        { symbol:"QQQ",   name:"Invesco QQQ Trust · US Tech Growth",      last:486.38, change:-0.92, changePct:-0.19, dailyHigh:490.10, dailyLow:482.70, weeklyHigh:497.60, weeklyLow:474.90, session:"New York" },
+        { symbol:"IWM",   name:"iShares Russell 2000 ETF · US Small Cap", last:222.54, change:1.02,  changePct:0.46,  dailyHigh:225.10, dailyLow:218.60, weeklyHigh:228.40, weeklyLow:213.80, session:"New York" },
+        { symbol:"DIA",   name:"SPDR Dow Jones Industrial Avg",           last:417.86, change:0.88,  changePct:0.21,  dailyHigh:420.20, dailyLow:413.40, weeklyHigh:423.50, weeklyLow:408.80, session:"New York" },
+        { symbol:"VTI",   name:"Vanguard Total Stock Market",             last:273.12, change:0.74,  changePct:0.27,  dailyHigh:275.80, dailyLow:269.40, weeklyHigh:278.40, weeklyLow:266.30, session:"New York" },
+
+        // === US Sector SPDRs ===
+        { symbol:"XLK",   name:"Technology Select Sector SPDR",           last:221.44, change:-0.32, changePct:-0.14, dailyHigh:224.80, dailyLow:219.10, weeklyHigh:228.50, weeklyLow:215.40, session:"New York" },
+        { symbol:"XLF",   name:"Financial Select Sector SPDR",            last:43.28,  change:0.18,  changePct:0.42,  dailyHigh:43.60,  dailyLow:42.70,  weeklyHigh:44.10,  weeklyLow:41.90,  session:"New York" },
+        { symbol:"XLE",   name:"Energy Select Sector SPDR",               last:98.16,  change:-0.54, changePct:-0.55, dailyHigh:99.80,  dailyLow:97.40,  weeklyHigh:102.10, weeklyLow:95.30,  session:"New York" },
+        { symbol:"XLV",   name:"Health Care Select Sector SPDR",          last:152.74, change:0.30,  changePct:0.20,  dailyHigh:154.10, dailyLow:150.90, weeklyHigh:155.60, weeklyLow:148.60, session:"New York" },
+        { symbol:"XLY",   name:"Consumer Discretionary Select SPDR",      last:191.62, change:1.05,  changePct:0.55,  dailyHigh:193.90, dailyLow:187.80, weeklyHigh:196.20, weeklyLow:184.10, session:"New York" },
+        { symbol:"XLP",   name:"Consumer Staples Select SPDR",            last:78.45,  change:0.12,  changePct:0.15,  dailyHigh:78.88,  dailyLow:77.60,  weeklyHigh:79.66,  weeklyLow:76.92,  session:"New York" },
+        { symbol:"XLU",   name:"Utilities Select Sector SPDR",            last:70.12,  change:-0.08, changePct:-0.11, dailyHigh:70.88,  dailyLow:69.60,  weeklyHigh:72.30,  weeklyLow:68.90,  session:"New York" },
+        { symbol:"XLI",   name:"Industrial Select Sector SPDR",           last:129.34, change:0.46,  changePct:0.36,  dailyHigh:130.90, dailyLow:127.60, weeklyHigh:132.40, weeklyLow:125.20, session:"New York" },
+
+        // === Thematic / Growth ===
+        { symbol:"ARKK",  name:"ARK Innovation ETF · Disruptive Growth",  last:52.84,  change:-0.66, changePct:-1.23, dailyHigh:54.10,  dailyLow:52.10,  weeklyHigh:55.80,  weeklyLow:50.40,  session:"New York" },
+        { symbol:"SMH",   name:"VanEck Semiconductor ETF",                last:226.10, change:2.92,  changePct:1.31,  dailyHigh:229.40, dailyLow:220.80, weeklyHigh:232.60, weeklyLow:214.90, session:"New York" },
+        { symbol:"KWEB",  name:"KraneShares CSI China Internet",          last:33.42,  change:-0.40, changePct:-1.18, dailyHigh:34.40,  dailyLow:33.10,  weeklyHigh:35.80,  weeklyLow:32.20,  session:"New York" },
+        { symbol:"TAN",   name:"Invesco Solar ETF",                       last:44.26,  change:0.76,  changePct:1.75,  dailyHigh:45.40,  dailyLow:43.10,  weeklyHigh:47.10,  weeklyLow:41.80,  session:"New York" },
+
+        // === International Equity ===
+        { symbol:"EFA",   name:"iShares MSCI EAFE · Dev ex US",           last:83.52,  change:-0.14, changePct:-0.17, dailyHigh:84.20,  dailyLow:82.80,  weeklyHigh:85.40,  weeklyLow:81.60,  session:"New York" },
+        { symbol:"EEM",   name:"iShares MSCI Emerging Markets",           last:42.18,  change:0.20,  changePct:0.48,  dailyHigh:42.70,  dailyLow:41.60,  weeklyHigh:43.40,  weeklyLow:40.90,  session:"New York" },
+        { symbol:"EWJ",   name:"iShares MSCI Japan",                      last:75.84,  change:0.30,  changePct:0.40,  dailyHigh:76.50,  dailyLow:74.90,  weeklyHigh:77.80,  weeklyLow:73.60,  session:"New York" },
+        { symbol:"EWZ",   name:"iShares MSCI Brazil",                     last:33.96,  change:-0.22, changePct:-0.64, dailyHigh:34.60,  dailyLow:33.40,  weeklyHigh:35.40,  weeklyLow:32.80,  session:"New York" },
+        { symbol:"FXI",   name:"iShares China Large-Cap",                 last:27.14,  change:-0.18, changePct:-0.66, dailyHigh:27.80,  dailyLow:26.90,  weeklyHigh:28.60,  weeklyLow:26.10,  session:"New York" },
+
+        // === Fixed Income ETFs ===
+        { symbol:"TLT",   name:"iShares 20+ Year Treasury Bond",          last:94.62,  change:-0.40, changePct:-0.42, dailyHigh:95.80,  dailyLow:93.90,  weeklyHigh:97.40,  weeklyLow:92.10,  session:"New York" },
+        { symbol:"IEF",   name:"iShares 7–10 Year Treasury Bond",         last:94.10,  change:-0.18, changePct:-0.19, dailyHigh:94.80,  dailyLow:93.50,  weeklyHigh:95.90,  weeklyLow:92.80,  session:"New York" },
+        { symbol:"SHY",   name:"iShares 1–3 Year Treasury Bond",          last:81.22,  change:-0.02, changePct:-0.02, dailyHigh:81.32,  dailyLow:81.10,  weeklyHigh:81.54,  weeklyLow:81.02,  session:"New York" },
+        { symbol:"LQD",   name:"iShares iBoxx $ Inv Grade Corporate",     last:110.84, change:-0.16, changePct:-0.14, dailyHigh:111.50, dailyLow:110.20, weeklyHigh:112.40, weeklyLow:109.10, session:"New York" },
+        { symbol:"HYG",   name:"iShares iBoxx $ High Yield Corporate",    last:77.42,  change:0.08,  changePct:0.10,  dailyHigh:77.80,  dailyLow:76.90,  weeklyHigh:78.40,  weeklyLow:76.20,  session:"New York" },
+
+        // === Commodity-linked ETFs ===
+        { symbol:"GLD",   name:"SPDR Gold Shares",                         last:225.32, change:0.76,  changePct:0.34,  dailyHigh:227.10, dailyLow:222.40, weeklyHigh:229.80, weeklyLow:219.60, session:"New York" },
+        { symbol:"SLV",   name:"iShares Silver Trust",                     last:26.34,  change:-0.18, changePct:-0.68, dailyHigh:26.80,  dailyLow:25.90,  weeklyHigh:27.60,  weeklyLow:25.40,  session:"New York" },
+        { symbol:"DBC",   name:"Invesco DB Commodity Index Tracking",      last:25.82,  change:0.10,  changePct:0.39,  dailyHigh:26.10,  dailyLow:25.40,  weeklyHigh:26.40,  weeklyLow:24.90,  session:"New York" },
+
+        // === UCITS / European Listings (sample) ===
+        { symbol:"VUAA.L",name:"Vanguard S&P 500 UCITS ETF (Acc)",        last:101.20, change:0.30,  changePct:0.30,  dailyHigh:101.80, dailyLow:100.40, weeklyHigh:102.60, weeklyLow:99.40,  session:"London" },
+        { symbol:"EQQQ.L",name:"Invesco NASDAQ-100 UCITS ETF",            last:102.84, change:-0.18, changePct:-0.17, dailyHigh:103.60, dailyLow:101.80, weeklyHigh:104.90, weeklyLow:100.10, session:"London" }
+      ];
+
+      const mockFlow = mockQuotes.map(q => ({
+        symbol: q.symbol,
+        changePct: q.changePct
+      }));
+
+      const mockRRG = [
+        // Broad US Equity
+        { symbol:"SPY",   rsRatio:104, rsMomentum:103 },
+        { symbol:"QQQ",   rsRatio:106, rsMomentum:101 },
+        { symbol:"IWM",   rsRatio:101, rsMomentum:104 },
+        { symbol:"DIA",   rsRatio:99,  rsMomentum:100 },
+        { symbol:"VTI",   rsRatio:103, rsMomentum:102 },
+
+        // Sectors
+        { symbol:"XLK",   rsRatio:107, rsMomentum:99  },
+        { symbol:"XLF",   rsRatio:100, rsMomentum:101 },
+        { symbol:"XLE",   rsRatio:95,  rsMomentum:96  },
+        { symbol:"XLV",   rsRatio:102, rsMomentum:100 },
+        { symbol:"XLY",   rsRatio:103, rsMomentum:104 },
+        { symbol:"XLP",   rsRatio:98,  rsMomentum:99  },
+        { symbol:"XLU",   rsRatio:96,  rsMomentum:97  },
+        { symbol:"XLI",   rsRatio:101, rsMomentum:102 },
+
+        // Thematic / Growth
+        { symbol:"ARKK",  rsRatio:92,  rsMomentum:94  },
+        { symbol:"SMH",   rsRatio:109, rsMomentum:106 },
+        { symbol:"KWEB",  rsRatio:93,  rsMomentum:95  },
+        { symbol:"TAN",   rsRatio:101, rsMomentum:103 },
+
+        // International
+        { symbol:"EFA",   rsRatio:97,  rsMomentum:98  },
+        { symbol:"EEM",   rsRatio:99,  rsMomentum:101 },
+        { symbol:"EWJ",   rsRatio:100, rsMomentum:102 },
+        { symbol:"EWZ",   rsRatio:95,  rsMomentum:96  },
+        { symbol:"FXI",   rsRatio:94,  rsMomentum:95  },
+
+        // Fixed Income
+        { symbol:"TLT",   rsRatio:90,  rsMomentum:93  },
+        { symbol:"IEF",   rsRatio:92,  rsMomentum:95  },
+        { symbol:"SHY",   rsRatio:96,  rsMomentum:97  },
+        { symbol:"LQD",   rsRatio:94,  rsMomentum:96  },
+        { symbol:"HYG",   rsRatio:99,  rsMomentum:100 },
+
+        // Commodity ETFs
+        { symbol:"GLD",   rsRatio:103, rsMomentum:104 },
+        { symbol:"SLV",   rsRatio:98,  rsMomentum:97  },
+        { symbol:"DBC",   rsRatio:101, rsMomentum:102 },
+
+        // UCITS
+        { symbol:"VUAA.L",rsRatio:102, rsMomentum:101 },
+        { symbol:"EQQQ.L",rsRatio:105, rsMomentum:100 }
+      ];
+
+      updateQuotesTable(mockQuotes);
+      updateCapitalFlow(mockFlow);
+      updateRRG(mockRRG);
+    }
+
+    // ==========================
+    //  INIT
+    // ==========================
+    window.addEventListener("resize", () => {
+      drawCapitalFlow();
+      drawRRG();
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadMockData(); // full dummy mode
+    });
+  </script>
+</body>
+</html>
