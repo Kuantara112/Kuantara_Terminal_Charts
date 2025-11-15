@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
+<html lang="en"><head>
+  <meta charset="UTF-8">
   <title>Kuantara – FX Market Snapshot</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
 
   <style>
     :root {
@@ -316,13 +314,529 @@
       }
     }
   </style>
-</head>
+<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.immersive-translate-attach-loading::after {
+  content: " ";
+
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-2000%, -50%);
+  z-index: 100;
+}
+
+.immersive-translate-loading-spinner {
+  vertical-align: middle !important;
+  width: 10px !important;
+  height: 10px !important;
+  display: inline-block !important;
+  margin: 0 4px !important;
+  border: 2px rgba(221, 244, 255, 0.6) solid !important;
+  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+}
+
+@-webkit-keyframes immersive-translate-loading-animation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@keyframes immersive-translate-loading-animation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.immersive-translate-input-loading {
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+}
+
+@keyframes immersiveTranslateShadowRolling {
+  0% {
+    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  12% {
+    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  25% {
+    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  36% {
+    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
+      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  50% {
+    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
+      110px 0 var(--loading-color), 100px 0 var(--loading-color);
+  }
+
+  62% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
+      120px 0 var(--loading-color), 110px 0 var(--loading-color);
+  }
+
+  75% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      130px 0 var(--loading-color), 120px 0 var(--loading-color);
+  }
+
+  87% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
+  }
+
+  100% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.immersive-translate-toast {
+  display: flex;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  right: 0;
+  top: 1%;
+  width: fit-content;
+  padding: 12px 20px;
+  margin: auto;
+  overflow: auto;
+  background: #fef6f9;
+  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
+  font-size: 15px;
+  border-radius: 8px;
+  color: #333;
+}
+
+.immersive-translate-toast-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.immersive-translate-toast-hidden {
+  margin: 0 20px 0 72px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.immersive-translate-toast-close {
+  color: #666666;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-toast {
+    top: 0;
+    padding: 12px 0px 0 10px;
+  }
+  .immersive-translate-toast-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .immersive-translate-toast-hidden {
+    margin: 10px auto;
+  }
+}
+
+.immersive-translate-dialog {
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  display: flex;
+  width: 300px;
+  flex-direction: column;
+  align-items: center;
+  font-size: 15px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: fit-content;
+  border-radius: 20px;
+  background-color: #fff;
+}
+
+.immersive-translate-modal {
+  display: none;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  font-size: 15px;
+}
+
+.immersive-translate-modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 40px 24px 24px;
+  border-radius: 12px;
+  width: 350px;
+  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
+    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  position: relative;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-content {
+    margin: 25% auto !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .immersive-translate-modal-content {
+    width: 80vw !important;
+    margin: 20vh auto !important;
+    padding: 20px 12px 12px !important;
+  }
+
+  .immersive-translate-modal-title {
+    font-size: 14px !important;
+  }
+
+  .immersive-translate-modal-body {
+    font-size: 13px !important;
+    max-height: 60vh !important;
+  }
+
+  .immersive-translate-btn {
+    font-size: 13px !important;
+    padding: 8px 16px !important;
+    margin: 0 4px !important;
+  }
+
+  .immersive-translate-modal-footer {
+    gap: 6px !important;
+    margin-top: 16px !important;
+  }
+}
+
+.immersive-translate-modal .immersive-translate-modal-content-in-input {
+  max-width: 500px;
+}
+.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
+  text-align: left;
+  max-height: unset;
+}
+
+.immersive-translate-modal-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.immersive-translate-modal-body {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+  margin-top: 24px;
+  word-break: break-all;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-body {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+}
+
+.immersive-translate-close {
+  color: #666666;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.immersive-translate-close:hover,
+.immersive-translate-close:focus {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.immersive-translate-modal-footer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.immersive-translate-btn {
+  width: fit-content;
+  color: #fff;
+  background-color: #ea4c89;
+  border: none;
+  font-size: 14px;
+  margin: 0 8px;
+  padding: 9px 30px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.immersive-translate-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.immersive-translate-btn:hover {
+  background-color: #f082ac;
+}
+.immersive-translate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.immersive-translate-btn:disabled:hover {
+  background-color: #ea4c89;
+}
+
+.immersive-translate-link-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: none;
+  cursor: pointer;
+  height: 30px;
+  line-height: 30px;
+}
+
+.immersive-translate-cancel-btn {
+  /* gray color */
+  background-color: rgb(89, 107, 120);
+}
+
+.immersive-translate-cancel-btn:hover {
+  background-color: hsl(205, 20%, 32%);
+}
+
+.immersive-translate-action-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: 1px solid #ea4c89;
+}
+
+.immersive-translate-btn svg {
+  margin-right: 5px;
+}
+
+.immersive-translate-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-primary-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-modal input[type="radio"] {
+  margin: 0 6px;
+  cursor: pointer;
+}
+
+.immersive-translate-modal label {
+  cursor: pointer;
+}
+
+.immersive-translate-close-action {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  cursor: pointer;
+}
+
+.imt-image-status {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 16px !important;
+}
+.imt-image-status img,
+.imt-image-status svg,
+.imt-img-loading {
+  width: 28px !important;
+  height: 28px !important;
+  margin: 0 0 8px 0 !important;
+  min-height: 28px !important;
+  min-width: 28px !important;
+  position: relative !important;
+}
+.imt-img-loading {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
+  background-size: 28px 28px;
+  animation: image-loading-rotate 1s linear infinite !important;
+}
+
+.imt-image-status span {
+  color: var(--bg-2, #fff) !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+  font-weight: 500 !important;
+  font-family: "PingFang SC", Arial, sans-serif !important;
+}
+
+.imt-primary-button {
+  display: flex;
+  padding: 12px 80px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: #ea4c89;
+  color: #fff;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  border: none;
+  cursor: pointer;
+}
+
+.imt-retry-text {
+  color: #999;
+  text-align: center;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  cursor: pointer;
+}
+
+.imt-action-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.imt-modal-content-text {
+  text-align: left;
+  color: #333;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+@keyframes image-loading-rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.imt-linear-gradient-text {
+  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.imt-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imt-linear-black-btn {
+  border-radius: 50px;
+  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
+  height: 48px;
+  width: 100%;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: center;
+}
+</style></head>
 <body>
   <div class="kt-page">
-    <div class="kt-title">
-      <div>FX MARKET SNAPSHOT</div>
-      <span class="label">Universe: Global FX Majors, Minors & Exotics · Dummy Data</span>
-    </div>
+    
 
     <div class="kt-layout">
       <!-- LEFT: FX Market Quotes -->
@@ -336,7 +850,7 @@
               <div class="kt-pill" data-scope="exotics">Exotics</div>
               <div class="kt-search">
                 <span>🔍</span>
-                <input id="searchInput" type="text" placeholder="Filter pair (e.g. EURUSD, GBPJPY)" />
+                <input id="searchInput" type="text" placeholder="Filter pair (e.g. EURUSD, GBPJPY)">
               </div>
             </div>
           </header>
@@ -357,9 +871,472 @@
                   <th>Session</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- Dummy rows via JS -->
-              </tbody>
+              <tbody><tr>
+            <td>EURUSD</td>
+            <td>EUR / USD · Major</td>
+            <td>1.0865</td>
+            <td class="text-up">
+              +0.0028
+            </td>
+            <td class="text-up">
+              +0.2600%
+            </td>
+            <td>1.0890</td>
+            <td>1.0812</td>
+            <td>1.0935</td>
+            <td>1.0740</td>
+            <td>London</td>
+          </tr><tr>
+            <td>GBPUSD</td>
+            <td>GBP / USD · Major</td>
+            <td>1.2742</td>
+            <td class="text-down">
+              -0.0015
+            </td>
+            <td class="text-down">
+              -0.1200%
+            </td>
+            <td>1.2785</td>
+            <td>1.2690</td>
+            <td>1.2840</td>
+            <td>1.2615</td>
+            <td>London</td>
+          </tr><tr>
+            <td>USDJPY</td>
+            <td>USD / JPY · Major</td>
+            <td>154.3200</td>
+            <td class="text-up">
+              +0.3800
+            </td>
+            <td class="text-up">
+              +0.2500%
+            </td>
+            <td>154.9000</td>
+            <td>153.5000</td>
+            <td>155.8000</td>
+            <td>151.9000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>USDCHF</td>
+            <td>USD / CHF · Major</td>
+            <td>0.8968</td>
+            <td class="text-down">
+              -0.0019
+            </td>
+            <td class="text-down">
+              -0.2100%
+            </td>
+            <td>0.9015</td>
+            <td>0.8932</td>
+            <td>0.9070</td>
+            <td>0.8895</td>
+            <td>Zurich</td>
+          </tr><tr>
+            <td>USDCAD</td>
+            <td>USD / CAD · Major</td>
+            <td>1.3645</td>
+            <td class="text-up">
+              +0.0010
+            </td>
+            <td class="text-up">
+              +0.0700%
+            </td>
+            <td>1.3682</td>
+            <td>1.3594</td>
+            <td>1.3725</td>
+            <td>1.3532</td>
+            <td>New York</td>
+          </tr><tr>
+            <td>AUDUSD</td>
+            <td>AUD / USD · Major</td>
+            <td>0.6674</td>
+            <td class="text-up">
+              +0.0009
+            </td>
+            <td class="text-up">
+              +0.1400%
+            </td>
+            <td>0.6701</td>
+            <td>0.6615</td>
+            <td>0.6745</td>
+            <td>0.6588</td>
+            <td>Sydney</td>
+          </tr><tr>
+            <td>NZDUSD</td>
+            <td>NZD / USD · Major</td>
+            <td>0.6142</td>
+            <td class="text-down">
+              -0.0007
+            </td>
+            <td class="text-down">
+              -0.1100%
+            </td>
+            <td>0.6170</td>
+            <td>0.6095</td>
+            <td>0.6215</td>
+            <td>0.6050</td>
+            <td>Wellington</td>
+          </tr><tr>
+            <td>EURGBP</td>
+            <td>EUR / GBP · Minor</td>
+            <td>0.8525</td>
+            <td class="text-up">
+              +0.0006
+            </td>
+            <td class="text-up">
+              +0.0700%
+            </td>
+            <td>0.8541</td>
+            <td>0.8488</td>
+            <td>0.8575</td>
+            <td>0.8460</td>
+            <td>London</td>
+          </tr><tr>
+            <td>EURJPY</td>
+            <td>EUR / JPY · Minor</td>
+            <td>167.8000</td>
+            <td class="text-up">
+              +0.4200
+            </td>
+            <td class="text-up">
+              +0.2500%
+            </td>
+            <td>168.6000</td>
+            <td>166.4000</td>
+            <td>169.9000</td>
+            <td>164.9000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>EURAUD</td>
+            <td>EUR / AUD · Minor</td>
+            <td>1.6289</td>
+            <td class="text-up">
+              +0.0023
+            </td>
+            <td class="text-up">
+              +0.1400%
+            </td>
+            <td>1.6345</td>
+            <td>1.6190</td>
+            <td>1.6430</td>
+            <td>1.6120</td>
+            <td>Frankfurt</td>
+          </tr><tr>
+            <td>EURNZD</td>
+            <td>EUR / NZD · Minor</td>
+            <td>1.7685</td>
+            <td class="text-up">
+              +0.0044
+            </td>
+            <td class="text-up">
+              +0.2500%
+            </td>
+            <td>1.7760</td>
+            <td>1.7550</td>
+            <td>1.7850</td>
+            <td>1.7425</td>
+            <td>Frankfurt</td>
+          </tr><tr>
+            <td>EURCHF</td>
+            <td>EUR / CHF · Minor</td>
+            <td>0.9736</td>
+            <td class="text-down">
+              -0.0011
+            </td>
+            <td class="text-down">
+              -0.1100%
+            </td>
+            <td>0.9780</td>
+            <td>0.9704</td>
+            <td>0.9815</td>
+            <td>0.9670</td>
+            <td>Zurich</td>
+          </tr><tr>
+            <td>GBPJPY</td>
+            <td>GBP / JPY · Minor</td>
+            <td>196.7200</td>
+            <td class="text-up">
+              +0.5500
+            </td>
+            <td class="text-up">
+              +0.2800%
+            </td>
+            <td>197.8000</td>
+            <td>194.9000</td>
+            <td>199.1000</td>
+            <td>192.8000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>GBPCAD</td>
+            <td>GBP / CAD · Minor</td>
+            <td>1.7392</td>
+            <td class="text-down">
+              -0.0020
+            </td>
+            <td class="text-down">
+              -0.1100%
+            </td>
+            <td>1.7460</td>
+            <td>1.7315</td>
+            <td>1.7535</td>
+            <td>1.7240</td>
+            <td>London</td>
+          </tr><tr>
+            <td>GBPCHF</td>
+            <td>GBP / CHF · Minor</td>
+            <td>1.1425</td>
+            <td class="text-up">
+              +0.0015
+            </td>
+            <td class="text-up">
+              +0.1300%
+            </td>
+            <td>1.1468</td>
+            <td>1.1350</td>
+            <td>1.1520</td>
+            <td>1.1310</td>
+            <td>London</td>
+          </tr><tr>
+            <td>AUDJPY</td>
+            <td>AUD / JPY · Minor</td>
+            <td>102.9800</td>
+            <td class="text-up">
+              +0.2200
+            </td>
+            <td class="text-up">
+              +0.2100%
+            </td>
+            <td>103.6000</td>
+            <td>101.8000</td>
+            <td>104.4000</td>
+            <td>100.9000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>AUDCAD</td>
+            <td>AUD / CAD · Minor</td>
+            <td>0.9104</td>
+            <td class="text-up">
+              +0.0008
+            </td>
+            <td class="text-up">
+              +0.0900%
+            </td>
+            <td>0.9135</td>
+            <td>0.9050</td>
+            <td>0.9180</td>
+            <td>0.8985</td>
+            <td>Sydney</td>
+          </tr><tr>
+            <td>AUDNZD</td>
+            <td>AUD / NZD · Minor</td>
+            <td>1.0866</td>
+            <td class="text-up">
+              +0.0014
+            </td>
+            <td class="text-up">
+              +0.1300%
+            </td>
+            <td>1.0905</td>
+            <td>1.0780</td>
+            <td>1.0955</td>
+            <td>1.0725</td>
+            <td>Sydney</td>
+          </tr><tr>
+            <td>NZDJPY</td>
+            <td>NZD / JPY · Minor</td>
+            <td>94.8800</td>
+            <td class="text-up">
+              +0.1200
+            </td>
+            <td class="text-up">
+              +0.1300%
+            </td>
+            <td>95.4000</td>
+            <td>93.9000</td>
+            <td>96.1000</td>
+            <td>92.8000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>CADJPY</td>
+            <td>CAD / JPY · Minor</td>
+            <td>113.1000</td>
+            <td class="text-up">
+              +0.2800
+            </td>
+            <td class="text-up">
+              +0.2500%
+            </td>
+            <td>113.8000</td>
+            <td>111.9000</td>
+            <td>114.6000</td>
+            <td>110.9000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>CHFJPY</td>
+            <td>CHF / JPY · Minor</td>
+            <td>172.1000</td>
+            <td class="text-up">
+              +0.2000
+            </td>
+            <td class="text-up">
+              +0.1200%
+            </td>
+            <td>172.9000</td>
+            <td>170.8000</td>
+            <td>173.8000</td>
+            <td>169.4000</td>
+            <td>Tokyo</td>
+          </tr><tr>
+            <td>USDTRY</td>
+            <td>USD / TRY · Exotic</td>
+            <td>34.8520</td>
+            <td class="text-up">
+              +0.1120
+            </td>
+            <td class="text-up">
+              +0.3200%
+            </td>
+            <td>35.1200</td>
+            <td>34.4200</td>
+            <td>35.5800</td>
+            <td>33.9500</td>
+            <td>Istanbul</td>
+          </tr><tr>
+            <td>USDZAR</td>
+            <td>USD / ZAR · Exotic</td>
+            <td>18.4520</td>
+            <td class="text-down">
+              -0.0650
+            </td>
+            <td class="text-down">
+              -0.3500%
+            </td>
+            <td>18.7200</td>
+            <td>18.2100</td>
+            <td>19.0500</td>
+            <td>18.0200</td>
+            <td>Johannesburg</td>
+          </tr><tr>
+            <td>USDMXN</td>
+            <td>USD / MXN · Exotic</td>
+            <td>18.1520</td>
+            <td class="text-up">
+              +0.0240
+            </td>
+            <td class="text-up">
+              +0.1300%
+            </td>
+            <td>18.3200</td>
+            <td>17.9200</td>
+            <td>18.6500</td>
+            <td>17.6500</td>
+            <td>Mexico City</td>
+          </tr><tr>
+            <td>USDSEK</td>
+            <td>USD / SEK · Exotic</td>
+            <td>10.4520</td>
+            <td class="text-down">
+              -0.0180
+            </td>
+            <td class="text-down">
+              -0.1700%
+            </td>
+            <td>10.5400</td>
+            <td>10.3200</td>
+            <td>10.7400</td>
+            <td>10.2100</td>
+            <td>Stockholm</td>
+          </tr><tr>
+            <td>USDNOK</td>
+            <td>USD / NOK · Exotic</td>
+            <td>10.8920</td>
+            <td class="text-up">
+              +0.0210
+            </td>
+            <td class="text-up">
+              +0.1900%
+            </td>
+            <td>11.0200</td>
+            <td>10.7500</td>
+            <td>11.2800</td>
+            <td>10.6200</td>
+            <td>Oslo</td>
+          </tr><tr>
+            <td>USDPLN</td>
+            <td>USD / PLN · Exotic</td>
+            <td>3.9820</td>
+            <td class="text-down">
+              -0.0060
+            </td>
+            <td class="text-down">
+              -0.1500%
+            </td>
+            <td>4.0200</td>
+            <td>3.9450</td>
+            <td>4.0650</td>
+            <td>3.9100</td>
+            <td>Warsaw</td>
+          </tr><tr>
+            <td>USDTHB</td>
+            <td>USD / THB · Exotic</td>
+            <td>35.4520</td>
+            <td class="text-up">
+              +0.0320
+            </td>
+            <td class="text-up">
+              +0.0900%
+            </td>
+            <td>35.6800</td>
+            <td>35.1200</td>
+            <td>36.0500</td>
+            <td>34.9800</td>
+            <td>Bangkok</td>
+          </tr><tr>
+            <td>EURTRY</td>
+            <td>EUR / TRY · Exotic</td>
+            <td>37.8520</td>
+            <td class="text-up">
+              +0.1280
+            </td>
+            <td class="text-up">
+              +0.3400%
+            </td>
+            <td>38.2100</td>
+            <td>37.3200</td>
+            <td>38.9200</td>
+            <td>36.9500</td>
+            <td>Istanbul</td>
+          </tr><tr>
+            <td>EURZAR</td>
+            <td>EUR / ZAR · Exotic</td>
+            <td>20.4520</td>
+            <td class="text-down">
+              -0.0750
+            </td>
+            <td class="text-down">
+              -0.3700%
+            </td>
+            <td>20.8200</td>
+            <td>20.1900</td>
+            <td>21.1500</td>
+            <td>19.9800</td>
+            <td>Johannesburg</td>
+          </tr><tr>
+            <td>EURPLN</td>
+            <td>EUR / PLN · Exotic</td>
+            <td>4.3220</td>
+            <td class="text-down">
+              -0.0080
+            </td>
+            <td class="text-down">
+              -0.1800%
+            </td>
+            <td>4.3600</td>
+            <td>4.2850</td>
+            <td>4.4100</td>
+            <td>4.2500</td>
+            <td>Warsaw</td>
+          </tr></tbody>
             </table>
           </div>
         </section>
@@ -374,7 +1351,7 @@
             <div class="subtitle">Intraday % Change · Sorted from Strongest to Weakest</div>
           </header>
           <div class="kt-chart-wrapper">
-            <canvas id="capitalFlowCanvas" class="kt-chart-canvas"></canvas>
+            <canvas id="capitalFlowCanvas" class="kt-chart-canvas" width="1080" height="310" style="width: 720px; height: 206.667px;"></canvas>
           </div>
         </section>
 
@@ -385,7 +1362,7 @@
             <div class="subtitle">RS-Ratio vs RS-Momentum · RRG-Style Quadrants</div>
           </header>
           <div class="kt-chart-wrapper">
-            <canvas id="rrgCanvas" class="kt-chart-canvas"></canvas>
+            <canvas id="rrgCanvas" class="kt-chart-canvas" width="1080" height="273" style="width: 720px; height: 182px;"></canvas>
           </div>
           <div class="kt-legend">
             <div class="kt-legend-item">
@@ -778,5 +1755,6 @@
       loadMockData(); // full dummy mode
     });
   </script>
-</body>
-</html>
+
+
+</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
