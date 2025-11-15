@@ -95,8 +95,7 @@
       background:rgba(255,191,0,0.08);
     }
 
-    /* === GRID: 2 atas, 3 bawah ===
-       Bottom row: RISK | CALENDAR | HEATMAP (swapped) */
+    /* === GRID: 2 atas, 3 bawah === */
     .kt-grid {
       flex:1;
       display:grid;
@@ -151,6 +150,7 @@
       line-height:1.4;
       color:var(--text-main);
       overflow:auto;
+      min-height:0;
     }
 
     .kt-card-btn {
@@ -176,11 +176,82 @@
     .headline-bubbles { grid-area:headlines; }
     .risk-meter-card { grid-area:risk; }
 
-    /* === AI Market Summary === */
+    /* === AI Market Summary + Trading Signals SPLIT === */
+    .ai-summary-body {
+      display:flex;
+      gap:10px;
+      height:100%;
+      min-height:0;
+    }
+
+    .ai-summary-main {
+      flex:3;
+      overflow:auto;
+      min-width:0;
+    }
+
     .ai-summary-text {
       font-size:var(--fs-body);
       color:var(--text-main);
       white-space:pre-wrap;
+    }
+
+    .ai-signals-panel {
+      flex:1;
+      border-left:1px solid var(--border-soft);
+      padding-left:10px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+      min-height:0;
+    }
+
+    .ai-signals-header {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+
+    .ai-signals-table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:var(--fs-small);
+    }
+
+    .ai-signals-table th,
+    .ai-signals-table td {
+      padding:3px 2px;
+      border-bottom:1px solid rgba(43,43,43,0.7);
+      white-space:nowrap;
+      text-align:right;
+    }
+
+    .ai-signals-table th:first-child,
+    .ai-signals-table td:first-child {
+      text-align:left;
+    }
+
+    .ai-signal-symbol {
+      font-weight:500;
+      color:var(--amber);
+    }
+
+    .ai-signal-bias.long {
+      color:#4caf50;
+    }
+
+    .ai-signal-bias.short {
+      color:#ff5252;
+    }
+
+    .ai-signal-bias.neutral {
+      color:var(--text-muted);
+    }
+
+    .ai-signal-conf {
+      color:var(--text-main);
     }
 
     /* === Economic Calendar === */
@@ -220,7 +291,7 @@
       color:#ff5252;
     }
 
-    /* === Core Catalyst → Bubble Chart (sentris, full-space) === */
+    /* === Core Catalyst → Bubble Chart === */
     .headline-bubble-chart {
       position:relative;
       width:100%;
@@ -380,7 +451,6 @@
       margin-bottom:4px;
     }
 
-    /* Quotes di bawah meter */
     .quotes-table {
       width:100%;
       border-collapse:collapse;
@@ -428,7 +498,6 @@
     .ai-summary .kt-card-body,
     .economic-calendar .kt-card-body {
       min-height:0;
-      overflow:auto;
     }
 
     .market-heatmap .kt-card-body,
@@ -438,7 +507,7 @@
       overflow:hidden;
     }
 
-    /* Mobile tweaks: bubble panel gets more height */
+    /* Mobile tweaks */
     @media (max-width:900px) {
       .kt-grid {
         grid-template-columns:1fr;
@@ -452,7 +521,18 @@
       }
 
       .headline-bubble-chart {
-        min-height:220px; /* supaya bubble tetap kelihatan di mobile */
+        min-height:220px;
+      }
+
+      .ai-summary-body {
+        flex-direction:column;
+      }
+
+      .ai-signals-panel {
+        border-left:none;
+        border-top:1px solid var(--border-soft);
+        padding-left:0;
+        padding-top:8px;
       }
     }
   </style>
@@ -465,7 +545,6 @@
         <div class="kt-page-meta" id="kt-timestamp">last update: demo mode</div>
       </div>
       <div class="kt-page-header-right">
-        <!-- Tombol ini nantinya memicu auto-PDF dari seluruh konten page -->
         <button class="kt-action-btn" onclick="generateMarketReport()">Generate Market Report</button>
       </div>
     </div>
@@ -480,9 +559,26 @@
           </div>
           <button class="kt-card-btn" onclick="generateSummary()">Generate Summary</button>
         </div>
-        <div class="kt-card-body">
-          <div id="ai-market-summary" class="ai-summary-text">
+        <div class="kt-card-body ai-summary-body">
+          <div class="ai-summary-main">
+            <div id="ai-market-summary" class="ai-summary-text">
 No summary generated yet. Click “Generate Summary” to fetch AI view.
+            </div>
+          </div>
+          <div class="ai-signals-panel">
+            <div class="ai-signals-header">Trading Signals</div>
+            <table class="ai-signals-table" id="ai-signals-table">
+              <thead>
+                <tr>
+                  <th>Tick</th>
+                  <th>Bias</th>
+                  <th>Conf</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- rows from JS -->
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -507,7 +603,7 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
         </div>
       </section>
 
-      <!-- Risk-On / Risk-Off – Horizontal Meter + Market Quotes (BOTTOM LEFT now) -->
+      <!-- Risk-On / Risk-Off – Horizontal Meter + Market Quotes (BOTTOM LEFT) -->
       <section class="kt-card risk-meter-card" data-section="risk-meter">
         <div class="kt-card-header">
           <div class="kt-card-header-left">
@@ -570,7 +666,7 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
         </div>
       </section>
 
-      <!-- Market Heatmap (BOTTOM RIGHT now) -->
+      <!-- Market Heatmap (BOTTOM RIGHT) -->
       <section class="kt-card market-heatmap" data-section="market-heatmap">
         <div class="kt-card-header">
           <div class="kt-card-header-left">
@@ -598,17 +694,13 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
       el.textContent = "last update: " + ts;
     }
 
-    // Tombol untuk auto-PDF dari seluruh konten page
     function generateMarketReport() {
-      // TODO: Integrasi ke backend PDF (ambil data dari WS/API lalu generate file)
       console.log("Generate Market Report clicked");
       alert("Generate Market Report – connect this button to your PDF backend.");
     }
 
-    // Tombol untuk memicu AI Summary (akan dihubungkan ke backend/LLM)
     function generateSummary() {
       console.log("Generate Summary clicked");
-      // TODO: ganti dengan call ke backend (fetch/WebSocket)
       const demoSummary =
         "AI Summary (demo):\n" +
         "- Global equities trade mixed; US tech outperforms while value lags.\n" +
@@ -616,6 +708,15 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
         "- Commodities show rotation from gold into energy and industrial metals.\n" +
         "- Credit spreads remain tight, supporting a moderate risk-on tone despite elevated yields.";
       updateAiSummary(demoSummary);
+
+      // Contoh: langsung isi Trading Signals dari 'summary' (di real-case, dari backend)
+      updateTradingSignals([
+        { symbol:"SPX",   bias:"long",    confidencePct:78 },
+        { symbol:"NDX",   bias:"long",    confidencePct:82 },
+        { symbol:"DXY",   bias:"neutral", confidencePct:55 },
+        { symbol:"XAU",   bias:"short",   confidencePct:60 },
+        { symbol:"WTI",   bias:"long",    confidencePct:73 }
+      ]);
     }
 
     // === 1) AI Market Summary ===
@@ -625,8 +726,52 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
       el.textContent = summaryText || "No summary generated yet. Click “Generate Summary”.";
     }
 
+    // === Trading Signals (inside AI card) ===
+    // signals: [{ symbol, bias: "long|short|neutral", confidencePct }, ...]
+    function updateTradingSignals(signals) {
+      const tbody = document.querySelector("#ai-signals-table tbody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      const list = signals || [];
+      if (!list.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 3;
+        td.textContent = "No signals.";
+        td.style.color = "var(--text-muted)";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
+
+      list.forEach(sig => {
+        const tr = document.createElement("tr");
+
+        const tdSym = document.createElement("td");
+        tdSym.innerHTML = '<span class="ai-signal-symbol">' + (sig.symbol || "") + "</span>";
+
+        const tdBias = document.createElement("td");
+        const bias = (sig.bias || "neutral").toLowerCase();
+        tdBias.className = "ai-signal-bias " + bias;
+        tdBias.textContent =
+          bias === "long" ? "LONG" :
+          bias === "short" ? "SHORT" :
+          "NEUTRAL";
+
+        const tdConf = document.createElement("td");
+        const pct = Number(sig.confidencePct || sig.confidence || 0);
+        tdConf.className = "ai-signal-conf";
+        tdConf.textContent = pct ? pct.toFixed(0) + "%" : "--";
+
+        tr.appendChild(tdSym);
+        tr.appendChild(tdBias);
+        tr.appendChild(tdConf);
+        tbody.appendChild(tr);
+      });
+    }
+
     // === 2) Economic Calendar ===
-    // events: [{ time, event, currency, impactPct }, ...]
     function updateEconomicCalendar(events) {
       const tbody = document.querySelector("#calendar-table tbody");
       if (!tbody) return;
@@ -670,7 +815,7 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
       }
     }
 
-    // === 3) Core Catalyst → Bubble Chart (sentris, lebih tersebar & full-space) ===
+    // === 3) Core Catalyst → Bubble Chart (no sticking) ===
     // items: [{ title, time, impactPct }, ...]
     function updateHeadlines(items) {
       const container = document.getElementById("headline-bubble-chart");
@@ -693,16 +838,14 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
       const cx = w / 2;
       const cy = h / 2;
 
-      // size range: 45–110 px
-      const minSize = 45;
+      const minSize = 55;
       const maxSize = 110;
-
-      // sort by impact desc (bigger impact nearer ke tengah)
       const sorted = list
         .map((it, idx) => ({ ...it, _idx: idx }))
         .sort((a, b) => (Number(b.impactPct || b.impact || 0) - Number(a.impactPct || a.impact || 0)));
 
       const maxRadius = Math.max(Math.min(w, h) / 2 - maxSize / 2 - 10, 30);
+      const placed = []; // {x,y,r}
 
       sorted.forEach((item, order) => {
         const bubble = document.createElement("div");
@@ -710,6 +853,7 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
         const impact = Math.max(0, Math.min(100, isNaN(impactRaw) ? 0 : impactRaw));
 
         const size = minSize + (impact / 100) * (maxSize - minSize);
+        const radius = size / 2;
         bubble.style.width = size + "px";
         bubble.style.height = size + "px";
 
@@ -722,17 +866,15 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
         let y = cy;
 
         if (n === 1) {
-          // single bubble right in the center
           x = cx;
           y = cy;
         } else {
-          // ring index: pertama (impact paling besar) di tengah, sisanya di ring
           if (order === 0) {
             x = cx;
             y = cy;
           } else {
             const idx = order - 1;
-            const ringCount = Math.max(1, Math.ceil((n - 1) / 6)); // max ~6 per ring
+            const ringCount = Math.max(1, Math.ceil((n - 1) / 6));
             const ringIndex = Math.floor(idx / 6);
             const inRingPos = idx % 6;
 
@@ -740,17 +882,45 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
             const r = maxRadius * radiusFactor;
 
             const angleStep = (2 * Math.PI) / Math.min(6, n - 1);
-            const angle = inRingPos * angleStep + ringIndex * 0.4;
+            const baseAngle = inRingPos * angleStep + ringIndex * 0.4;
+            const jitter = (Math.random() - 0.5) * 0.4;
+            const angle = baseAngle + jitter;
 
             x = cx + Math.cos(angle) * r;
             y = cy + Math.sin(angle) * r;
           }
         }
 
-        // clamp supaya tidak keluar viewport panel
-        const margin = size / 2 + 6;
+        const margin = radius + 6;
         x = Math.max(margin, Math.min(w - margin, x));
         y = Math.max(margin, Math.min(h - margin, y));
+
+        // Simple collision avoidance: geser jika terlalu dekat bubble lain
+        let safe = false;
+        let attempts = 0;
+        while (!safe && attempts < 40) {
+          safe = true;
+          for (const p of placed) {
+            const dx = x - p.x;
+            const dy = y - p.y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
+            const minDist = radius + p.r + 4; // jarak minimum antar bubble
+
+            if (dist < minDist) {
+              safe = false;
+              const angle = Math.atan2(dy, dx);
+              const push = (minDist - dist);
+              x += Math.cos(angle) * push;
+              y += Math.sin(angle) * push;
+
+              x = Math.max(margin, Math.min(w - margin, x));
+              y = Math.max(margin, Math.min(h - margin, y));
+            }
+          }
+          attempts++;
+        }
+
+        placed.push({ x, y, r: radius });
 
         bubble.style.left = x + "px";
         bubble.style.top = y + "px";
@@ -772,7 +942,6 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
     }
 
     // === 4) Market Heatmap 3 x 6 ===
-    // cells: [{ symbol, value, change, color }, ...] length up to 18
     function updateHeatmap(cells) {
       const grid = document.getElementById("heatmap-grid");
       if (!grid) return;
@@ -817,8 +986,7 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
       }
     }
 
-    // === 5) Risk-On / Risk-Off Meter (horizontal bar) ===
-    // score: 0–100
+    // === 5) Risk-On / Risk-Off Meter ===
     function updateRiskMeter(score) {
       const pointer = document.getElementById("risk-meter-pointer");
       const valueEl = document.getElementById("risk-meter-value");
@@ -826,7 +994,7 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
       if (!pointer || !valueEl || !tagEl) return;
 
       const s = Math.max(0, Math.min(100, Number(score)));
-      const pct = s; // 0–100
+      const pct = s;
       pointer.style.left = pct + "%";
 
       valueEl.textContent = "Score: " + s.toFixed(0) + " / 100";
@@ -839,7 +1007,6 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
     }
 
     // === 6) Market Quotes (inside Risk Meter card) ===
-    // rows: [{ symbol, name, last, change, changePct }, ...]
     function updateQuotes(rows) {
       const tbody = document.querySelector("#risk-quotes-table tbody");
       if (!tbody) return;
@@ -878,10 +1045,10 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
     // ============================
     // WebSocket / API skeleton
     // ============================
-    // Expected payload example:
     // {
     //   ts: "2025-11-15 13:05:00",
     //   ai_summary: "...",
+    //   signals: [{symbol, bias, confidencePct}, ...],
     //   calendar: [{time, event, currency, impactPct}, ...],
     //   headlines: [{title, time, impactPct}, ...],
     //   quotes: [{symbol, name, last, change, changePct}, ...],
@@ -897,6 +1064,7 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
       //
       //   if (payload.ts) updateTimestamp(payload.ts);
       //   if (payload.ai_summary) updateAiSummary(payload.ai_summary);
+      //   if (payload.signals) updateTradingSignals(payload.signals);
       //   if (payload.calendar) updateEconomicCalendar(payload.calendar);
       //   if (payload.headlines) updateHeadlines(payload.headlines);
       //   if (payload.quotes) updateQuotes(payload.quotes);
@@ -960,11 +1128,18 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
       ]);
 
       updateRiskMeter(58);
+
+      // Demo Trading Signals default (kalau belum klik Generate Summary)
+      updateTradingSignals([
+        { symbol:"SPX", bias:"long", confidencePct:72 },
+        { symbol:"NDX", bias:"long", confidencePct:80 },
+        { symbol:"RUT", bias:"neutral", confidencePct:48 }
+      ]);
     }
 
     function initDashboard() {
-      renderMockData();   // hapus jika tidak ingin dummy data
-      // connectWebSocket(); // aktifkan setelah endpoint siap
+      renderMockData();
+      // connectWebSocket();
     }
 
     window.addEventListener("DOMContentLoaded", initDashboard);
