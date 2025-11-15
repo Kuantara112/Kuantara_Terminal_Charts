@@ -322,6 +322,10 @@
                   <th>Last</th>
                   <th>Δ</th>
                   <th>Δ%</th>
+                  <th>D Hi</th>
+                  <th>D Lo</th>
+                  <th>W Hi</th>
+                  <th>W Lo</th>
                   <th>Session</th>
                 </tr>
               </thead>
@@ -417,6 +421,10 @@
             <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
               ${formatSigned(changePct)}%
             </td>
+            <td>${formatNumber(row.dailyHigh)}</td>
+            <td>${formatNumber(row.dailyLow)}</td>
+            <td>${formatNumber(row.weeklyHigh)}</td>
+            <td>${formatNumber(row.weeklyLow)}</td>
             <td>${row.session || ""}</td>
           `;
 
@@ -645,38 +653,45 @@
     // ==========================
     function loadMockData() {
       const mockQuotes = [
-        { symbol:"SPX",    name:"S&P 500",            last:5534.21, change:12.4,  changePct:0.22,  session:"New York" },
-        { symbol:"NDX",    name:"Nasdaq 100",         last:19642.3, change:-32.8, changePct:-0.17, session:"New York" },
-        { symbol:"DJI",    name:"Dow Jones",          last:40251.8, change:88.2,  changePct:0.22,  session:"New York" },
-        { symbol:"RUT",    name:"Russell 2000",       last:2155.9,  change:9.7,   changePct:0.45,  session:"New York" },
+        // US
+        { symbol:"SPX",    name:"S&P 500",            last:5534.21, change:12.4,  changePct:0.22,  dailyHigh:5560.00, dailyLow:5490.15, weeklyHigh:5605.40, weeklyLow:5430.20, session:"New York" },
+        { symbol:"NDX",    name:"Nasdaq 100",         last:19642.3, change:-32.8, changePct:-0.17, dailyHigh:19780.0, dailyLow:19510.2, weeklyHigh:19950.1, weeklyLow:19320.4, session:"New York" },
+        { symbol:"DJI",    name:"Dow Jones",          last:40251.8, change:88.2,  changePct:0.22,  dailyHigh:40420.5, dailyLow:39980.0, weeklyHigh:40650.0, weeklyLow:39600.0, session:"New York" },
+        { symbol:"RUT",    name:"Russell 2000",       last:2155.9,  change:9.7,   changePct:0.45,  dailyHigh:2175.0,  dailyLow:2120.5,  weeklyHigh:2190.0,  weeklyLow:2085.0,  session:"New York" },
 
-        { symbol:"SX5E",   name:"Euro Stoxx 50",      last:5050.1,  change:-18.4, changePct:-0.36, session:"London" },
-        { symbol:"DAX",    name:"DAX Germany",        last:18840.7, change:-56.2, changePct:-0.30, session:"Frankfurt" },
-        { symbol:"UKX",    name:"FTSE 100",           last:8356.4,  change:14.1,  changePct:0.17,  session:"London" },
-        { symbol:"CAC",    name:"CAC 40",             last:7695.3,  change:7.9,   changePct:0.10,  session:"Paris" },
-        { symbol:"SMI",    name:"Swiss SMI",          last:12045.6, change:-21.3, changePct:-0.18, session:"Zurich" },
-        { symbol:"IBEX",   name:"IBEX 35",            last:11340.2, change:16.9,  changePct:0.15,  session:"Madrid" },
+        // Europe
+        { symbol:"SX5E",   name:"Euro Stoxx 50",      last:5050.1,  change:-18.4, changePct:-0.36, dailyHigh:5090.5,  dailyLow:5020.0,  weeklyHigh:5140.0,  weeklyLow:4985.0,  session:"London" },
+        { symbol:"DAX",    name:"DAX Germany",        last:18840.7, change:-56.2, changePct:-0.30, dailyHigh:18990.0, dailyLow:18720.3, weeklyHigh:19120.0, weeklyLow:18550.0, session:"Frankfurt" },
+        { symbol:"UKX",    name:"FTSE 100",           last:8356.4,  change:14.1,  changePct:0.17,  dailyHigh:8385.0,  dailyLow:8290.2,  weeklyHigh:8425.0,  weeklyLow:8225.0,  session:"London" },
+        { symbol:"CAC",    name:"CAC 40",             last:7695.3,  change:7.9,   changePct:0.10,  dailyHigh:7725.0,  dailyLow:7630.5,  weeklyHigh:7775.0,  weeklyLow:7550.0,  session:"Paris" },
+        { symbol:"SMI",    name:"Swiss SMI",          last:12045.6, change:-21.3, changePct:-0.18, dailyHigh:12110.0, dailyLow:11980.4, weeklyHigh:12220.0, weeklyLow:11850.0, session:"Zurich" },
+        { symbol:"IBEX",   name:"IBEX 35",            last:11340.2, change:16.9,  changePct:0.15,  dailyHigh:11385.0, dailyLow:11240.0, weeklyHigh:11460.0, weeklyLow:11120.0, session:"Madrid" },
 
-        { symbol:"NKY",    name:"Nikkei 225",         last:38742.9, change:221.1, changePct:0.57,  session:"Tokyo" },
-        { symbol:"TOPIX",  name:"TOPIX",              last:2815.2,  change:6.5,   changePct:0.23,  session:"Tokyo" },
+        // Japan
+        { symbol:"NKY",    name:"Nikkei 225",         last:38742.9, change:221.1, changePct:0.57,  dailyHigh:38980.0, dailyLow:38250.0, weeklyHigh:39250.0, weeklyLow:37820.0, session:"Tokyo" },
+        { symbol:"TOPIX",  name:"TOPIX",              last:2815.2,  change:6.5,   changePct:0.23,  dailyHigh:2830.5,  dailyLow:2780.0,  weeklyHigh:2850.0,  weeklyLow:2745.0,  session:"Tokyo" },
 
-        { symbol:"HSI",    name:"Hang Seng",          last:18450.2, change:-95.4, changePct:-0.51, session:"Hong Kong" },
-        { symbol:"SHCOMP", name:"Shanghai Composite", last:3155.6,  change:4.8,   changePct:0.15,  session:"Shanghai" },
-        { symbol:"SZCOMP", name:"Shenzhen Component", last:10125.3, change:-32.1, changePct:-0.32, session:"Shenzhen" },
+        // China / HK
+        { symbol:"HSI",    name:"Hang Seng",          last:18450.2, change:-95.4, changePct:-0.51, dailyHigh:18620.0, dailyLow:18320.0, weeklyHigh:18890.0, weeklyLow:18150.0, session:"Hong Kong" },
+        { symbol:"SHCOMP", name:"Shanghai Composite", last:3155.6,  change:4.8,   changePct:0.15,  dailyHigh:3170.0,  dailyLow:3120.0,  weeklyHigh:3195.0,  weeklyLow:3085.0,  session:"Shanghai" },
+        { symbol:"SZCOMP", name:"Shenzhen Component", last:10125.3, change:-32.1, changePct:-0.32, dailyHigh:10210.0, dailyLow:10040.0, weeklyHigh:10350.0, weeklyLow:9930.0, session:"Shenzhen" },
 
-        { symbol:"KS11",   name:"KOSPI",              last:2790.5,  change:4.7,   changePct:0.17,  session:"Seoul" },
-        { symbol:"TWII",   name:"Taiwan Weighted",    last:20985.4, change:-45.2, changePct:-0.21, session:"Taipei" },
-        { symbol:"STI",    name:"Straits Times",      last:3420.8,  change:1.1,   changePct:0.03,  session:"Singapore" },
-        { symbol:"NIFTY",  name:"Nifty 50 India",     last:23521.3, change:63.2,  changePct:0.27,  session:"Mumbai" },
-        { symbol:"SENSEX", name:"BSE Sensex",         last:78550.7, change:135.6, changePct:0.17,  session:"Mumbai" },
+        // Asia ex-Japan
+        { symbol:"KS11",   name:"KOSPI",              last:2790.5,  change:4.7,   changePct:0.17,  dailyHigh:2810.0,  dailyLow:2755.0,  weeklyHigh:2835.0,  weeklyLow:2720.0,  session:"Seoul" },
+        { symbol:"TWII",   name:"Taiwan Weighted",    last:20985.4, change:-45.2, changePct:-0.21, dailyHigh:21110.0, dailyLow:20820.0, weeklyHigh:21280.0, weeklyLow:20550.0, session:"Taipei" },
+        { symbol:"STI",    name:"Straits Times",      last:3420.8,  change:1.1,   changePct:0.03,  dailyHigh:3435.0,  dailyLow:3385.0,  weeklyHigh:3460.0,  weeklyLow:3350.0,  session:"Singapore" },
+        { symbol:"NIFTY",  name:"Nifty 50 India",     last:23521.3, change:63.2,  changePct:0.27,  dailyHigh:23620.0, dailyLow:23280.0, weeklyHigh:23850.0, weeklyLow:22990.0, session:"Mumbai" },
+        { symbol:"SENSEX", name:"BSE Sensex",         last:78550.7, change:135.6, changePct:0.17,  dailyHigh:78820.0, dailyLow:77880.0, weeklyHigh:79250.0, weeklyLow:77150.0, session:"Mumbai" },
 
-        { symbol:"AS51",   name:"ASX 200",            last:8115.7,  change:-12.9, changePct:-0.16, session:"Sydney" },
-        { symbol:"NZ50",   name:"NZX 50",             last:1203.9,  change:1.8,   changePct:0.15,  session:"Wellington" },
+        // Australia / NZ
+        { symbol:"AS51",   name:"ASX 200",            last:8115.7,  change:-12.9, changePct:-0.16, dailyHigh:8160.0,  dailyLow:8050.0,  weeklyHigh:8220.0,  weeklyLow:7990.0,  session:"Sydney" },
+        { symbol:"NZ50",   name:"NZX 50",             last:1203.9,  change:1.8,   changePct:0.15,  dailyHigh:1211.0,  dailyLow:1188.0,  weeklyHigh:1225.0,  weeklyLow:1170.0,  session:"Wellington" },
 
-        { symbol:"TSX",    name:"S&P/TSX Composite",  last:22650.4, change:24.3,  changePct:0.11,  session:"Toronto" },
-        { symbol:"BVSP",   name:"Ibovespa",           last:132540,  change:-180,  changePct:-0.14, session:"São Paulo" },
-        { symbol:"MEXBOL", name:"S&P/BMV IPC",        last:57210.5, change:92.7,  changePct:0.16,  session:"Mexico City" },
-        { symbol:"TOP40",  name:"FTSE/JSE Top 40",    last:74520.1, change:-75.9, changePct:-0.10, session:"Johannesburg" }
+        // Americas / EM
+        { symbol:"TSX",    name:"S&P/TSX Composite",  last:22650.4, change:24.3,  changePct:0.11,  dailyHigh:22780.0, dailyLow:22480.0, weeklyHigh:22940.0, weeklyLow:22150.0, session:"Toronto" },
+        { symbol:"BVSP",   name:"Ibovespa",           last:132540,  change:-180,  changePct:-0.14, dailyHigh:133420,  dailyLow:131800, weeklyHigh:134950,  weeklyLow:129500, session:"São Paulo" },
+        { symbol:"MEXBOL", name:"S&P/BMV IPC",        last:57210.5, change:92.7,  changePct:0.16,  dailyHigh:57525.0, dailyLow:56780.0, weeklyHigh:57980.0, weeklyLow:56150.0, session:"Mexico City" },
+        { symbol:"TOP40",  name:"FTSE/JSE Top 40",    last:74520.1, change:-75.9, changePct:-0.10, dailyHigh:74980.0, dailyLow:73920.0, weeklyHigh:75440.0, weeklyLow:73250.0, session:"Johannesburg" }
       ];
 
       const mockFlow = mockQuotes.map(q => ({
