@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara Macro Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <style>
+    :root {
+      --amber:#ffbf00;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --overlay:rgba(0,0,0,0.6);
+      --danger:#ff4d4f;
+      --ok:#46c97f;
+      --warn:#ffc53d;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+    }
+
+    html, body {
+      height:100%;
+      width:100%;
+    }
+
+    body {
+      background-color:var(--bg-root);
+      color:var(--text-main);
+      overflow:auto;
+    }
+
+    .kt-root {
+      min-height:100vh;
+      padding:16px;
+      background:var(--bg-root);
+      color:var(--text-main);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .kt-header {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:baseline;
+      gap:8px;
+    }
+
+    .kt-title {
+      font-size:14px;
+      font-weight:700;
+      letter-spacing:0.04em;
+      text-transform:uppercase;
+      color:var(--amber);
+    }
+
+    .kt-subtitle {
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .kt-status {
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:8px;
+      font-size:9px;
+      color:var(--text-muted);
+    }
+
+    .kt-pill {
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      font-size:9px;
+    }
+
+    .kt-pill-live {
+      border-color:var(--amber);
+      color:var(--amber);
+    }
+
+    .kt-dot {
+      display:inline-block;
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--amber);
+      margin-right:4px;
+    }
+
+    .kt-last-updated {
+      font-size:9px;
+      color:var(--text-muted);
+    }
+
+    /* KPI STRIP */
+    .kt-kpi-strip {
+      display:flex;
+      flex-wrap:nowrap;
+      overflow-x:auto;
+      gap:8px;
+      padding:4px 0;
+    }
+
+    .kt-kpi-card {
+      flex:0 0 auto;
+      min-width:150px;
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:8px 10px;
+    }
+
+    .kt-kpi-label {
+      font-size:9px;
+      color:var(--text-muted);
+      margin-bottom:2px;
+      white-space:nowrap;
+    }
+
+    .kt-kpi-value {
+      font-size:12px;
+      font-weight:500;
+    }
+
+    .kt-kpi-meta {
+      font-size:9px;
+      color:var(--text-muted);
+      margin-top:2px;
+    }
+
+    .chip {
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:1px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      font-size:9px;
+    }
+
+    .chip-risk-on {
+      border-color:var(--ok);
+      color:var(--ok);
+    }
+
+    .chip-risk-off {
+      border-color:var(--danger);
+      color:var(--danger);
+    }
+
+    .chip-neutral {
+      border-color:var(--warn);
+      color:var(--warn);
+    }
+
+    /* GRID + CARDS */
+    .kt-section-title {
+      font-size:12px;
+      font-weight:500;
+      color:var(--text-main);
+      margin-top:6px;
+      margin-bottom:4px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .kt-section-title span {
+      font-size:9px;
+      color:var(--text-muted);
+      font-weight:400;
+    }
+
+    .kt-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+      gap:10px;
+    }
+
+    .kt-card {
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-height:0;
+    }
+
+    .kt-card-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:6px;
+    }
+
+    .kt-card-title {
+      font-size:11px;
+      color:var(--text-main);
+    }
+
+    .kt-card-meta {
+      font-size:9px;
+      color:var(--text-muted);
+    }
+
+    .metric-list {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .metric-row {
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      gap:6px;
+    }
+
+    .metric-label {
+      font-size:9px;
+      color:var(--text-muted);
+      flex:1 1 auto;
+      min-width:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .metric-value {
+      font-size:10px;
+      flex:0 0 auto;
+      text-align:right;
+    }
+
+    .metric-value small {
+      display:block;
+      font-size:9px;
+      color:var(--text-muted);
+    }
+
+    .metric-updated {
+      animation:flash 0.5s ease-out;
+    }
+
+    @keyframes flash {
+      0%   { background:rgba(255,191,0,0.18); }
+      100% { background:transparent; }
+    }
+
+    .trend-tag {
+      font-size:9px;
+      padding:0 4px;
+      border-radius:3px;
+      border:1px solid var(--border-soft);
+      margin-left:4px;
+    }
+
+    .trend-up    { border-color:var(--danger); color:var(--danger); }
+    .trend-down  { border-color:var(--ok);     color:var(--ok); }
+    .trend-flat  { border-color:var(--text-muted); color:var(--text-muted); }
+
+    /* SMALL HINT TEXT */
+    .hint {
+      font-size:9px;
+      color:var(--text-muted);
+    }
+
+    @media (max-width:768px) {
+      .kt-header {
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-root">
+    <!-- HEADER -->
+    <div class="kt-header">
+      <div>
+        <div class="kt-title">Kuantara Macro Dashboard — US</div>
+        <div class="kt-subtitle">Realtime US Macro, Liquidity, Credit & Market Internals</div>
+      </div>
+      <div class="kt-status">
+        <div class="kt-pill kt-pill-live"><span class="kt-dot"></span>LIVE • WebSocket/API</div>
+        <div class="kt-last-updated">Last update: <span id="last-updated">—</span></div>
+      </div>
+    </div>
+
+    <!-- TOP KPI STRIP -->
+    <div class="kt-kpi-strip">
+      <div class="kt-kpi-card">
+        <div class="kt-kpi-label">Recession Probability (NY Fed)</div>
+        <div class="kt-kpi-value" id="val-recession-prob">26.5%</div>
+        <div class="kt-kpi-meta" id="val-recession-horizon">12m ahead • Oct 2026</div>
+      </div>
+
+      <div class="kt-kpi-card">
+        <div class="kt-kpi-label">CPI Inflation YoY</div>
+        <div class="kt-kpi-value" id="val-cpi-yoy">3.0%</div>
+        <div class="kt-kpi-meta" id="val-cpi-period">Sep 2025</div>
+      </div>
+
+      <div class="kt-kpi-card">
+        <div class="kt-kpi-label">Real GDP YoY</div>
+        <div class="kt-kpi-value" id="val-gdp-yoy">4.6%</div>
+        <div class="kt-kpi-meta" id="val-gdp-period">Q2 2025 • GDP/M2: <span id="val-gdp-m2">1.39</span></div>
+      </div>
+
+      <div class="kt-kpi-card">
+        <div class="kt-kpi-label">Unemployment Rate</div>
+        <div class="kt-kpi-value" id="val-unemp-rate">4.3%</div>
+        <div class="kt-kpi-meta">Participation: <span id="val-participation-rate">62.3%</span></div>
+      </div>
+
+      <div class="kt-kpi-card">
+        <div class="kt-kpi-label">Fed Funds (Upper Bound)</div>
+        <div class="kt-kpi-value" id="val-ffr">5.50%</div>
+        <div class="kt-kpi-meta">SOFR: <span id="val-sofr">5.32%</span></div>
+      </div>
+
+      <div class="kt-kpi-card">
+        <div class="kt-kpi-label">Yield Curve Spread 10Y–3M</div>
+        <div class="kt-kpi-value" id="val-spread-10y-3m">-95 bps</div>
+        <div class="kt-kpi-meta">10Y–2Y: <span id="val-spread-10y-2y">-42 bps</span></div>
+      </div>
+
+      <div class="kt-kpi-card">
+        <div class="kt-kpi-label">Macro Risk Regime</div>
+        <div class="kt-kpi-value">
+          <span class="chip chip-neutral" id="val-risk-regime">Late-Cycle • Fragile</span>
+        </div>
+        <div class="kt-kpi-meta">VVIX/VIX: <span id="val-vvix-vix">1.25</span></div>
+      </div>
+    </div>
+
+    <!-- MACRO GROWTH & INFLATION -->
+    <div class="kt-section-title">
+      Macro Growth & Inflation
+      <span>Real economy & prices</span>
+    </div>
+    <div class="kt-grid">
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Growth • GDP</div>
+          <div class="kt-card-meta">Real activity</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Real GDP (SAAR)</div>
+            <div class="metric-value" id="val-gdp-level">$30,486 bn</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Real GDP YoY</div>
+            <div class="metric-value" id="val-gdp-yoy-row">
+              <span id="val-gdp-yoy">4.6%</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">GDP / M2</div>
+            <div class="metric-value" id="val-gdp-m2-row">
+              <span id="val-gdp-m2-2">1.39</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Capacity Utilisation</div>
+            <div class="metric-value" id="val-capacity-util">77.4%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Inflation • CPI & PPI</div>
+          <div class="kt-card-meta">Prices & pipelines</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">CPI YoY</div>
+            <div class="metric-value" id="val-cpi-yoy-row">
+              <span id="val-cpi-yoy-2">3.0%</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Core CPI YoY</div>
+            <div class="metric-value" id="val-core-cpi-yoy">—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">PCE Core YoY</div>
+            <div class="metric-value" id="val-pce-core-yoy">—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">PPI All Commodities YoY</div>
+            <div class="metric-value" id="val-ppi-commod-yoy">2.7%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">PPI Final Demand YoY</div>
+            <div class="metric-value" id="val-ppi-yoy">2.6%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Supply Chain & Savings</div>
+          <div class="kt-card-meta">Buffers & bottlenecks</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Global Supply Chain Pressure Index</div>
+            <div class="metric-value" id="val-gscpi">—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Personal Saving Rate</div>
+            <div class="metric-value" id="val-saving-rate">—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Real Wage Growth YoY</div>
+            <div class="metric-value" id="val-real-wage-yoy">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LABOR MARKET -->
+    <div class="kt-section-title">
+      Labor Market
+      <span>Jobs, wages & flows</span>
+    </div>
+    <div class="kt-grid">
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Headline Labor</div>
+          <div class="kt-card-meta">Unemployment & payrolls</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Unemployment Rate</div>
+            <div class="metric-value" id="val-unemp-rate-2">4.3%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Participation Rate</div>
+            <div class="metric-value" id="val-participation-rate-2">62.3%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Nonfarm Payroll Change</div>
+            <div class="metric-value" id="val-payroll-change">+XXX k</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Initial Claims (Weekly)</div>
+            <div class="metric-value" id="val-initial-claims">
+              218,000
+              <small>4W avg: <span id="val-initial-claims-4w">237,500</span></small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">JOLTS • Labor Flows</div>
+          <div class="kt-card-meta">Demand vs quits</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Job Openings</div>
+            <div class="metric-value" id="val-jolts-openings">7,227 k</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Hires</div>
+            <div class="metric-value" id="val-jolts-hires">5,126 k</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Quits</div>
+            <div class="metric-value" id="val-jolts-quits">—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Layoffs & Discharges</div>
+            <div class="metric-value" id="val-jolts-layoffs">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Wages • AHE</div>
+          <div class="kt-card-meta">Price of labor</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Average Hourly Earnings (Level)</div>
+            <div class="metric-value" id="val-ahe-level">$—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Average Hourly Earnings YoY</div>
+            <div class="metric-value" id="val-ahe-yoy">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">AHE Services YoY</div>
+            <div class="metric-value" id="val-ahe-services-yoy">—%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SENTIMENT & BUSINESS -->
+    <div class="kt-section-title">
+      Sentiment & Business Cycle
+      <span>Consumers, firms & housing</span>
+    </div>
+    <div class="kt-grid">
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Sentiment & Surveys</div>
+          <div class="kt-card-meta">Soft data</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Consumer Sentiment (U. Mich)</div>
+            <div class="metric-value" id="val-cons-sentiment">55.1</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">ISM Manufacturing PMI</div>
+            <div class="metric-value" id="val-ism-mfg">—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">ISM New Orders</div>
+            <div class="metric-value" id="val-ism-new-orders">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Housing & Mortgage</div>
+          <div class="kt-card-meta">Rates & spreads</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">30Y Mortgage Rate</div>
+            <div class="metric-value" id="val-mortgage-rate">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Mortgage Spread vs 10Y UST</div>
+            <div class="metric-value" id="val-mortgage-spread">— bps</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Housing Affordability Index</div>
+            <div class="metric-value" id="val-housing-afford">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Market Internals</div>
+          <div class="kt-card-meta">Breadth & positioning</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">% Stocks Outperform S&P 500 (1Y)</div>
+            <div class="metric-value" id="val-breadth-outperform">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">% Above 50D MA</div>
+            <div class="metric-value" id="val-breadth-ma50">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">% Above 200D MA</div>
+            <div class="metric-value" id="val-breadth-ma200">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">NAAIM Exposure Index</div>
+            <div class="metric-value" id="val-naaim">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">S&P 500 / Gold Ratio</div>
+            <div class="metric-value" id="val-spx-gold">—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Short Interest (Equity)</div>
+            <div class="metric-value" id="val-short-interest">—%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTIONS & VOL -->
+    <div class="kt-section-title">
+      Volatility & Options
+      <span>Risk pricing</span>
+    </div>
+    <div class="kt-grid">
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Volatility Structure</div>
+          <div class="kt-card-meta">Implied vs tail</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">VVIX / VIX Ratio</div>
+            <div class="metric-value" id="val-vvix-vix-2">1.25</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">VIX (30D Implied)</div>
+            <div class="metric-value" id="val-vix">—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">MOVE (Treasury Vol)</div>
+            <div class="metric-value" id="val-move">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Options Pricing • 1Y ATM</div>
+          <div class="kt-card-meta">S&P 500 & Gold</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">S&P 500 1Y ATM Put Price</div>
+            <div class="metric-value" id="val-opt-spx-put">$—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">S&P 500 1Y ATM Call Price</div>
+            <div class="metric-value" id="val-opt-spx-call">$—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Gold 1Y ATM Put Price</div>
+            <div class="metric-value" id="val-opt-gold-put">$—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Gold 1Y ATM Call Price</div>
+            <div class="metric-value" id="val-opt-gold-call">$—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Market Put/Call Ratio</div>
+            <div class="metric-value" id="val-putcall-ratio">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MONETARY & LIQUIDITY -->
+    <div class="kt-section-title">
+      Monetary Base & Liquidity
+      <span>M2, Fed balance sheet & dollar</span>
+    </div>
+    <div class="kt-grid">
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Money Supply • M2</div>
+          <div class="kt-card-meta">Quantity of money</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">M2 Level</div>
+            <div class="metric-value" id="val-m2-level">$— tn</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">M2 YoY</div>
+            <div class="metric-value" id="val-m2-yoy">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">M2 MoM (Annualised)</div>
+            <div class="metric-value" id="val-m2-mom">—%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Fed Balance Sheet</div>
+          <div class="kt-card-meta">Liquidity plumbing</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Total Assets</div>
+            <div class="metric-value" id="val-fed-assets">$— tn</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Treasury General Account (TGA)</div>
+            <div class="metric-value" id="val-fed-tga">$— bn</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Reverse Repo Facility (RRP)</div>
+            <div class="metric-value" id="val-fed-rrp">$— bn</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Net Liquidity (Fed BS – TGA – RRP)</div>
+            <div class="metric-value" id="val-fed-net-liq">$— tn</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Purchasing Power of the Dollar</div>
+          <div class="kt-card-meta">Real value vs history</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">CPI-Adjusted Dollar (Index)</div>
+            <div class="metric-value" id="val-dollar-pp-index">—</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Real Effective Exchange Rate</div>
+            <div class="metric-value" id="val-dollar-reer">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FISCAL & DEBT -->
+    <div class="kt-section-title">
+      Fiscal & Public Debt
+      <span>Solvency & flow</span>
+    </div>
+    <div class="kt-grid">
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Public Debt • Levels</div>
+          <div class="kt-card-meta">Stocks & ratios</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Total Public Debt</div>
+            <div class="metric-value" id="val-debt-total">$— tn</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Debt / GDP</div>
+            <div class="metric-value" id="val-debt-gdp">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Debt / M2</div>
+            <div class="metric-value" id="val-debt-m2">—x</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Foreign-Held Debt</div>
+            <div class="metric-value" id="val-debt-foreign">$— tn</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Interest Burden</div>
+          <div class="kt-card-meta">Cost of debt</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Interest Payments (Annualised)</div>
+            <div class="metric-value" id="val-debt-interest-payments">$— bn</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Effective Interest Rate on Debt</div>
+            <div class="metric-value" id="val-debt-effective-rate">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Interest Payments / Tax Revenue</div>
+            <div class="metric-value" id="val-interest-tax-ratio">—%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Budget Balance</div>
+          <div class="kt-card-meta">Flow deficit</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Federal Budget Balance (Monthly)</div>
+            <div class="metric-value" id="val-budget-monthly">$— bn</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Federal Budget Balance (TTM)</div>
+            <div class="metric-value" id="val-budget-yearly">$— bn</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Deficit / GDP</div>
+            <div class="metric-value" id="val-deficit-gdp">—%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CREDIT RISK -->
+    <div class="kt-section-title">
+      Credit Risk & Delinquency
+      <span>Households & corporates</span>
+    </div>
+    <div class="kt-grid">
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Consumer Credit Stress</div>
+          <div class="kt-card-meta">Household side</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Consumer Loan Delinquency Rate</div>
+            <div class="metric-value" id="val-delinquency-consumer">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Credit Card Delinquency Rate</div>
+            <div class="metric-value" id="val-delinquency-cc">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Credit Card Delinq. (Banks outside Top 100)</div>
+            <div class="metric-value" id="val-delinquency-cc-small">—%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Business Credit Stress</div>
+          <div class="kt-card-meta">Firms & defaults</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Commercial & Industrial Loan Delinq.</div>
+            <div class="metric-value" id="val-delinquency-business">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Bankruptcy Filings (12M)</div>
+            <div class="metric-value" id="val-bankruptcy-filings">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RATES & YIELD CURVE -->
+    <div class="kt-section-title">
+      Rates & Yield Curve
+      <span>Nominal & real term structure</span>
+    </div>
+    <div class="kt-grid">
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Policy & Money Market Rates</div>
+          <div class="kt-card-meta">Short end</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">Fed Funds Target Range</div>
+            <div class="metric-value" id="val-ffr-range">5.25% – 5.50%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">SOFR</div>
+            <div class="metric-value" id="val-sofr-2">5.32%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">3M Treasury Bill</div>
+            <div class="metric-value" id="val-ust-3m">—%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Treasury Curve (Nominal)</div>
+          <div class="kt-card-meta">1M–30Y</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">1M • 3M • 6M</div>
+            <div class="metric-value" id="val-curve-front">
+              <span id="val-ust-1m">—</span> | <span id="val-ust-3m-2">—</span> | <span id="val-ust-6m">—</span> %
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">1Y • 2Y • 3Y</div>
+            <div class="metric-value" id="val-curve-belly">
+              <span id="val-ust-1y">—</span> | <span id="val-ust-2y">—</span> | <span id="val-ust-3y">—</span> %
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">5Y • 7Y • 10Y • 30Y</div>
+            <div class="metric-value" id="val-curve-long">
+              <span id="val-ust-5y">—</span> | <span id="val-ust-7y">—</span> | <span id="val-ust-10y">—</span> | <span id="val-ust-30y">—</span> %
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">Key Spreads</div>
+            <div class="metric-value">
+              10Y–3M: <span id="val-spread-10y-3m-2">-95</span> bps<br/>
+              10Y–2Y: <span id="val-spread-10y-2y-2">-42</span> bps • 2Y–3M: <span id="val-spread-2y-3m">—</span> bps
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Real Rates</div>
+          <div class="kt-card-meta">Inflation-adjusted</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">5Y TIPS Real Yield</div>
+            <div class="metric-value" id="val-real-5y">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">10Y TIPS Real Yield</div>
+            <div class="metric-value" id="val-real-10y">—%</div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">30Y TIPS Real Yield</div>
+            <div class="metric-value" id="val-real-30y">—%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CORPORATE & EM CREDIT -->
+    <div class="kt-section-title">
+      Corporate & EM Bonds
+      <span>Spreads & risk premium</span>
+    </div>
+    <div class="kt-grid">
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">US Corporates • Investment Grade</div>
+          <div class="kt-card-meta">AAA–BBB • Yield / OAS</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">AAA Yield / OAS</div>
+            <div class="metric-value" id="val-ig-aaa">
+              <span id="val-ig-aaa-yield">—%</span> / <span id="val-ig-aaa-oas">— bps</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">AA Yield / OAS</div>
+            <div class="metric-value" id="val-ig-aa">
+              <span id="val-ig-aa-yield">—%</span> / <span id="val-ig-aa-oas">— bps</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">A Yield / OAS</div>
+            <div class="metric-value" id="val-ig-a">
+              <span id="val-ig-a-yield">—%</span> / <span id="val-ig-a-oas">— bps</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">BBB Yield / OAS</div>
+            <div class="metric-value" id="val-ig-bbb">
+              <span id="val-ig-bbb-yield">—%</span> / <span id="val-ig-bbb-oas">— bps</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">US High Yield</div>
+          <div class="kt-card-meta">BB–CCC • Yield / OAS</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">BB Yield / OAS</div>
+            <div class="metric-value" id="val-hy-bb">
+              <span id="val-hy-bb-yield">—%</span> / <span id="val-hy-bb-oas">— bps</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">B Yield / OAS</div>
+            <div class="metric-value" id="val-hy-b">
+              <span id="val-hy-b-yield">—%</span> / <span id="val-hy-b-oas">— bps</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">CCC Yield / OAS</div>
+            <div class="metric-value" id="val-hy-ccc">
+              <span id="val-hy-ccc-yield">—%</span> / <span id="val-hy-ccc-oas">— bps</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">EM Sovereign • USD</div>
+          <div class="kt-card-meta">High Grade & High Yield</div>
+        </div>
+        <div class="metric-list">
+          <div class="metric-row">
+            <div class="metric-label">EM High Grade Yield / OAS</div>
+            <div class="metric-value" id="val-em-hg">
+              <span id="val-em-hg-yield">—%</span> / <span id="val-em-hg-oas">— bps</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-label">EM High Yield Yield / OAS</div>
+            <div class="metric-value" id="val-em-hy">
+              <span id="val-em-hy-yield">—%</span> / <span id="val-em-hy-oas">— bps</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint">
+      Hint: backend cukup kirim JSON ke WebSocket/API dengan key = ID elemen (mis. <code>val-cpi-yoy</code>) lalu panggil <code>window.KuantaraMacroUpdate(payload)</code>.
+    </div>
+  </div>
+
+  <script>
+    // Basic helper: update any metric by element id.
+    function setMetricValue(id, value) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = value;
+      el.classList.remove('metric-updated');
+      // trigger flash animation
+      void el.offsetWidth;
+      el.classList.add('metric-updated');
+    }
+
+    // Public updater: expect an object where keys = element IDs (e.g., 'val-cpi-yoy')
+    window.KuantaraMacroUpdate = function (data) {
+      if (!data || typeof data !== 'object') return;
+      Object.keys(data).forEach(function (id) {
+        if (id === 'last_updated') {
+          var lu = document.getElementById('last-updated');
+          if (lu) lu.textContent = data[id];
+          return;
+        }
+        setMetricValue(id, data[id]);
+      });
+    };
+
+    // Optional: WebSocket example (backend: send JSON with keys = element IDs).
+    // Replace 'wss://your-macro-stream' with actual endpoint or remove if unused.
+    (function initWebSocket() {
+      var wsUrl = window.KuantaraMacroWsUrl || 'wss://your-macro-stream';
+      try {
+        var socket = new WebSocket(wsUrl);
+        socket.onopen = function () {
+          // Optionally send auth / subscribe message here
+          // socket.send(JSON.stringify({type:'subscribe', channel:'us_macro_dashboard'}));
+        };
+        socket.onmessage = function (event) {
+          try {
+            var payload = JSON.parse(event.data);
+            window.KuantaraMacroUpdate(payload);
+          } catch (e) {
+            console.error('Macro WS parse error:', e);
+          }
+        };
+        socket.onerror = function (e) {
+          console.warn('Macro WS error:', e);
+        };
+      } catch (err) {
+        console.warn('Macro WS init failed:', err);
+      }
+    })();
+
+    // Set initial last-updated to client time (can be overridden by backend)
+    (function initTimestamp() {
+      var lu = document.getElementById('last-updated');
+      if (!lu) return;
+      var now = new Date();
+      lu.textContent = now.toISOString();
+    })();
+  </script>
+</body>
+</html>
