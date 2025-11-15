@@ -70,14 +70,15 @@
       flex-shrink:0;
     }
 
+    /* === GRID: 2 atas, 4 bawah === */
     .kt-grid {
       flex:1;
       display:grid;
-      grid-template-columns:1.2fr 1.1fr 1.1fr;
+      grid-template-columns:repeat(4, 1fr);
       grid-template-rows:1fr 1fr;
       grid-template-areas:
-        "ai headlines headlines"
-        "quotes heatmap risk";
+        "ai ai calendar calendar"
+        "quotes heatmap headlines risk";
       gap:10px;
       min-height:0;
     }
@@ -121,9 +122,10 @@
 
     /* === Layout areas === */
     .ai-summary { grid-area:ai; }
-    .daily-headlines { grid-area:headlines; }
+    .economic-calendar { grid-area:calendar; }
     .market-quotes { grid-area:quotes; }
     .market-heatmap { grid-area:heatmap; }
+    .headline-bubbles { grid-area:headlines; }
     .risk-meter-card { grid-area:risk; }
 
     /* === AI Market Summary === */
@@ -133,35 +135,117 @@
       white-space:pre-wrap;
     }
 
-    /* === Daily Core Headlines === */
-    .headline-list {
-      list-style:none;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-
-    .headline-item {
+    /* === Economic Calendar === */
+    .calendar-table {
+      width:100%;
+      border-collapse:collapse;
       font-size:var(--fs-body);
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
     }
 
-    .headline-text {
-      color:var(--text-main);
-      flex:1;
-      min-width:0;
-      overflow:hidden;
-      text-overflow:ellipsis;
+    .calendar-table thead {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .calendar-table th,
+    .calendar-table td {
+      padding:3px 4px;
+      text-align:left;
+      border-bottom:1px solid rgba(43,43,43,0.7);
       white-space:nowrap;
     }
 
-    .headline-time {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      flex-shrink:0;
+    .calendar-table th:nth-child(4),
+    .calendar-table td:nth-child(4) {
+      text-align:right;
     }
+
+    .cal-impact-low {
+      color:#4caf50;
+    }
+
+    .cal-impact-medium {
+      color:#ffbf00;
+    }
+
+    .cal-impact-high {
+      color:#ff5252;
+    }
+
+    /* === Daily Core Headlines → Bubble Chart === */
+    .headline-bubble-chart {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      align-content:flex-start;
+      width:100%;
+      height:100%;
+      min-height:0;
+      overflow:auto;
+    }
+
+    .headline-bubble {
+      position:relative;
+      border-radius:999px;
+      padding:6px 10px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:flex-start;
+      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12), rgba(0,0,0,0.6));
+      border:1px solid rgba(255,255,255,0.06);
+      cursor:default;
+      overflow:hidden;
+    }
+
+    .headline-bubble.low {
+      box-shadow:0 0 0 1px rgba(76,175,80,0.5);
+    }
+
+    .headline-bubble.medium {
+      box-shadow:0 0 0 1px rgba(255,191,0,0.7);
+    }
+
+    .headline-bubble.high {
+      box-shadow:0 0 0 1px rgba(255,82,82,0.8);
+    }
+
+    .hb-title {
+      font-size:var(--fs-small);
+      color:var(--text-main);
+      white-space:nowrap;
+      text-overflow:ellipsis;
+      overflow:hidden;
+      max-width:100%;
+    }
+
+    .hb-meta {
+      font-size:8.5px;
+      color:var(--text-muted);
+      margin-top:2px;
+      white-space:nowrap;
+    }
+
+    .headline-bubbles-legend {
+      display:flex;
+      justify-content:flex-start;
+      gap:8px;
+      font-size:8.5px;
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    .legend-dot {
+      display:inline-block;
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      margin-right:4px;
+    }
+
+    .legend-low { background:#4caf50; }
+    .legend-medium { background:#ffbf00; }
+    .legend-high { background:#ff5252; }
 
     /* === Market Quotes === */
     .quotes-table {
@@ -326,16 +410,17 @@
       text-align:center;
     }
 
-    /* === Scroll helpers for smaller iframes === */
+    /* === Scroll helpers === */
     .ai-summary .kt-card-body,
-    .daily-headlines .kt-card-body,
+    .economic-calendar .kt-card-body,
     .market-quotes .kt-card-body {
       min-height:0;
       overflow:auto;
     }
 
     .market-heatmap .kt-card-body,
-    .risk-meter-card .kt-card-body {
+    .risk-meter-card .kt-card-body,
+    .headline-bubbles .kt-card-body {
       flex:1;
       min-height:0;
       overflow:hidden;
@@ -348,6 +433,7 @@
         grid-template-rows:auto;
         grid-template-areas:
           "ai"
+          "calendar"
           "headlines"
           "quotes"
           "heatmap"
@@ -367,7 +453,7 @@
     </div>
 
     <div class="kt-grid">
-      <!-- AI Market Summary -->
+      <!-- AI Market Summary (TOP LEFT, spanning 2 columns) -->
       <section class="kt-card ai-summary" data-section="ai-summary">
         <div class="kt-card-header">
           <div class="kt-card-title">AI Market Summary</div>
@@ -380,20 +466,30 @@
         </div>
       </section>
 
-      <!-- Daily Core Headlines -->
-      <section class="kt-card daily-headlines" data-section="daily-headlines">
+      <!-- Economic Calendar (TOP RIGHT, spanning 2 columns) -->
+      <section class="kt-card economic-calendar" data-section="economic-calendar">
         <div class="kt-card-header">
-          <div class="kt-card-title">Daily Core Headlines</div>
-          <div class="kt-card-subtitle">filtered macro & market drivers</div>
+          <div class="kt-card-title">Economic Calendar</div>
+          <div class="kt-card-subtitle">today's key releases & impact</div>
         </div>
         <div class="kt-card-body">
-          <ul id="headline-list" class="headline-list">
-            <!-- populated by JS -->
-          </ul>
+          <table class="calendar-table" id="calendar-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Event</th>
+                <th>Currency</th>
+                <th>Impact</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- rows from JS -->
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <!-- Market Quotes -->
+      <!-- Market Quotes (BOTTOM LEFT) -->
       <section class="kt-card market-quotes" data-section="market-quotes">
         <div class="kt-card-header">
           <div class="kt-card-title">Market Quotes</div>
@@ -416,7 +512,7 @@
         </div>
       </section>
 
-      <!-- Market Heatmap 3 x 6 -->
+      <!-- Market Heatmap 3 x 6 (BOTTOM, 2nd) -->
       <section class="kt-card market-heatmap" data-section="market-heatmap">
         <div class="kt-card-header">
           <div class="kt-card-title">Market Heatmap</div>
@@ -429,7 +525,25 @@
         </div>
       </section>
 
-      <!-- Risk-On / Risk-Off Meter -->
+      <!-- Daily Core Headlines → Bubble Chart (BOTTOM, 3rd) -->
+      <section class="kt-card headline-bubbles" data-section="headline-bubbles">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Daily Core Headlines</div>
+          <div class="kt-card-subtitle">impact-weighted bubble map (%)</div>
+        </div>
+        <div class="kt-card-body">
+          <div id="headline-bubble-chart" class="headline-bubble-chart">
+            <!-- bubbles from JS -->
+          </div>
+          <div class="headline-bubbles-legend">
+            <span><span class="legend-dot legend-low"></span>Low</span>
+            <span><span class="legend-dot legend-medium"></span>Medium</span>
+            <span><span class="legend-dot legend-high"></span>High</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Risk-On / Risk-Off Meter (BOTTOM RIGHT) -->
       <section class="kt-card risk-meter-card" data-section="risk-meter">
         <div class="kt-card-header">
           <div class="kt-card-title">Risk-On / Risk-Off</div>
@@ -472,42 +586,99 @@
       el.textContent = summaryText || "No summary available.";
     }
 
-    // === 2) Daily Core Headlines ===
-    // items: [{ title, time }, ...]
-    function updateHeadlines(items) {
-      const listEl = document.getElementById("headline-list");
-      if (!listEl) return;
-      listEl.innerHTML = "";
+    // === 2) Economic Calendar ===
+    // events: [{ time, event, currency, impactPct }, ...]
+    function updateEconomicCalendar(events) {
+      const tbody = document.querySelector("#calendar-table tbody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
 
-      (items || []).forEach(item => {
-        const li = document.createElement("li");
-        li.className = "headline-item";
+      (events || []).forEach(ev => {
+        const tr = document.createElement("tr");
 
-        const spanText = document.createElement("span");
-        spanText.className = "headline-text";
-        spanText.textContent = item.title || "";
+        const tdTime = document.createElement("td");
+        tdTime.textContent = ev.time || "--";
 
-        const spanTime = document.createElement("span");
-        spanTime.className = "headline-time";
-        spanTime.textContent = item.time || "";
+        const tdEvent = document.createElement("td");
+        tdEvent.textContent = ev.event || "";
 
-        li.appendChild(spanText);
-        li.appendChild(spanTime);
-        listEl.appendChild(li);
+        const tdCurr = document.createElement("td");
+        tdCurr.textContent = ev.currency || "";
+
+        const tdImpact = document.createElement("td");
+        const pct = Number(ev.impactPct || ev.impact || 0);
+        let cls = "cal-impact-low";
+        if (pct >= 66) cls = "cal-impact-high";
+        else if (pct >= 33) cls = "cal-impact-medium";
+        tdImpact.className = cls;
+        tdImpact.textContent = pct ? pct.toFixed(0) + "%" : "--";
+
+        tr.appendChild(tdTime);
+        tr.appendChild(tdEvent);
+        tr.appendChild(tdCurr);
+        tr.appendChild(tdImpact);
+        tbody.appendChild(tr);
       });
 
-      if (!items || !items.length) {
-        const li = document.createElement("li");
-        li.className = "headline-item";
-        const spanText = document.createElement("span");
-        spanText.className = "headline-text";
-        spanText.textContent = "No headlines received.";
-        li.appendChild(spanText);
-        listEl.appendChild(li);
+      if (!events || !events.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 4;
+        td.textContent = "No events received.";
+        td.style.color = "var(--text-muted)";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
       }
     }
 
-    // === 3) Market Quotes ===
+    // === 3) Daily Core Headlines → Bubble Chart ===
+    // items: [{ title, time, impactPct }, ...]
+    function updateHeadlines(items) {
+      const container = document.getElementById("headline-bubble-chart");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const list = items || [];
+
+      list.forEach((item, idx) => {
+        const bubble = document.createElement("div");
+        const impactRaw = Number(item.impactPct || item.impact || 0);
+        const impact = Math.max(0, Math.min(100, isNaN(impactRaw) ? 0 : impactRaw));
+        const size = 40 + (impact / 100) * 70; // radius scaling
+
+        bubble.className = "headline-bubble";
+
+        if (impact >= 66) bubble.classList.add("high");
+        else if (impact >= 33) bubble.classList.add("medium");
+        else bubble.classList.add("low");
+
+        bubble.style.width = size + "px";
+        bubble.style.height = size + "px";
+
+        const title = document.createElement("div");
+        title.className = "hb-title";
+        title.textContent = item.title || ("Headline " + (idx + 1));
+
+        const meta = document.createElement("div");
+        meta.className = "hb-meta";
+        meta.textContent =
+          (item.time ? item.time + " · " : "") +
+          (impact ? ("Impact " + impact.toFixed(0) + "%") : "Impact N/A");
+
+        bubble.appendChild(title);
+        bubble.appendChild(meta);
+        container.appendChild(bubble);
+      });
+
+      if (!list.length) {
+        const dummy = document.createElement("div");
+        dummy.className = "hb-title";
+        dummy.textContent = "No headlines received.";
+        container.appendChild(dummy);
+      }
+    }
+
+    // === 4) Market Quotes ===
     // rows: [{ symbol, name, last, change, changePct }, ...]
     function updateQuotes(rows) {
       const tbody = document.querySelector("#quotes-table tbody");
@@ -544,7 +715,7 @@
       });
     }
 
-    // === 4) Market Heatmap 3 x 6 ===
+    // === 5) Market Heatmap 3 x 6 ===
     // cells: [{ symbol, value, change, color }, ...] length up to 18
     function updateHeatmap(cells) {
       const grid = document.getElementById("heatmap-grid");
@@ -590,7 +761,7 @@
       }
     }
 
-    // === 5) Risk-On / Risk-Off Meter ===
+    // === 6) Risk-On / Risk-Off Meter ===
     // score: 0–100
     function updateRiskMeter(score) {
       const needle = document.getElementById("risk-needle");
@@ -614,27 +785,26 @@
     // ============================
     // WebSocket / API skeleton
     // ============================
-    // Contoh integrasi:
-    // - ganti URL WebSocket
-    // - sesuaikan payload parser
+    // Expected payload example:
+    // {
+    //   ts: "2025-11-15 13:05:00",
+    //   ai_summary: "...",
+    //   calendar: [{time, event, currency, impactPct}, ...],
+    //   headlines: [{title, time, impactPct}, ...],
+    //   quotes: [{symbol, name, last, change, changePct}, ...],
+    //   heatmap: [{symbol, value, change, color}, ...],
+    //   risk_score: 58
+    // }
 
     function connectWebSocket() {
       // const ws = new WebSocket("wss://your-websocket-endpoint");
       // ws.onopen = () => console.log("WS connected");
       // ws.onmessage = (event) => {
       //   const payload = JSON.parse(event.data);
-      //   // Contoh expected payload:
-      //   // {
-      //   //   ts: "2025-11-15 13:05:00",
-      //   //   ai_summary: "...",
-      //   //   headlines: [{title, time}, ...],
-      //   //   quotes: [{symbol, name, last, change, changePct}, ...],
-      //   //   heatmap: [{symbol, value, change, color}, ...],
-      //   //   risk_score: 58
-      //   // }
       //
       //   if (payload.ts) updateTimestamp(payload.ts);
       //   if (payload.ai_summary) updateAiSummary(payload.ai_summary);
+      //   if (payload.calendar) updateEconomicCalendar(payload.calendar);
       //   if (payload.headlines) updateHeadlines(payload.headlines);
       //   if (payload.quotes) updateQuotes(payload.quotes);
       //   if (payload.heatmap) updateHeatmap(payload.heatmap);
@@ -657,11 +827,20 @@
         "out of gold into energy and industrial metals."
       );
 
+      updateEconomicCalendar([
+        { time:"19:30", event:"US CPI YoY", currency:"USD", impactPct:85 },
+        { time:"19:30", event:"US Core CPI MoM", currency:"USD", impactPct:78 },
+        { time:"21:00", event:"Fed Chair Speech", currency:"USD", impactPct:90 },
+        { time:"14:00", event:"UK GDP MoM", currency:"GBP", impactPct:55 },
+        { time:"16:00", event:"EZ Industrial Production", currency:"EUR", impactPct:40 }
+      ]);
+
       updateHeadlines([
-        { title:"US yields stabilize as market waits next CPI print", time:"12:10" },
-        { title:"Dollar consolidates; JPY under pressure on policy divergence", time:"11:55" },
-        { title:"Tech outperforms cyclicals as earnings revisions improve", time:"11:20" },
-        { title:"Crude pulls back after sharp rally; positioning remains crowded", time:"10:45" }
+        { title:"US CPI in focus as markets reassess timing of first Fed cut", time:"12:10", impactPct:82 },
+        { title:"Dollar consolidates; JPY under pressure on policy divergence", time:"11:55", impactPct:68 },
+        { title:"Tech outperforms cyclicals as earnings revisions improve", time:"11:20", impactPct:51 },
+        { title:"Crude pulls back after sharp rally; positioning remains crowded", time:"10:45", impactPct:44 },
+        { title:"Credit spreads stay tight despite elevated yields", time:"10:05", impactPct:33 }
       ]);
 
       updateQuotes([
