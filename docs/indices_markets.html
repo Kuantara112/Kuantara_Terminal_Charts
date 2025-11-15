@@ -70,7 +70,7 @@
       display:grid;
       grid-template-columns:minmax(0,0.58fr) minmax(0,0.42fr);
       gap:12px;
-      height:calc(100vh - 16px - 10px - 16px); /* padding + title */
+      height:calc(100vh - 16px - 10px - 16px);
       max-height:calc(100vh - 42px);
     }
 
@@ -288,7 +288,7 @@
   <div class="kt-page">
     <div class="kt-title">
       <div>INDICES MARKET SNAPSHOT</div>
-      <span class="label">Universe: Global Equity Indices · Realtime via WebSocket/API</span>
+      <span class="label">Universe: Global Equity Indices · Dummy Data</span>
     </div>
 
     <div class="kt-layout">
@@ -321,7 +321,7 @@
                 </tr>
               </thead>
               <tbody>
-                <!-- Rows akan diisi via JS (updateQuotesTable) -->
+                <!-- Dummy rows via JS -->
               </tbody>
             </table>
           </div>
@@ -371,58 +371,7 @@
 
   <script>
     // ==========================
-    //  WebSocket Skeleton
-    // ==========================
-    let indicesSocket = null;
-
-    function connectIndicesWebSocket() {
-      const WS_URL = "wss://your-indices-stream.example"; // TODO: ganti dengan URL WebSocket asli
-
-      try {
-        indicesSocket = new WebSocket(WS_URL);
-
-        indicesSocket.onopen = () => {
-          console.log("[WS] Connected to indices stream");
-          // Contoh subscribe jika perlu:
-          // indicesSocket.send(JSON.stringify({ action:"subscribe", universe:"global_indices" }));
-        };
-
-        indicesSocket.onmessage = (event) => {
-          try {
-            const payload = JSON.parse(event.data);
-
-            // Struktur payload bebas, tapi contoh:
-            // { type:"quotes", data:[...] }
-            // { type:"capital_flow", data:[...] }
-            // { type:"rrg", data:[...] }
-
-            if (payload.type === "quotes") {
-              updateQuotesTable(payload.data || []);
-            } else if (payload.type === "capital_flow") {
-              updateCapitalFlow(payload.data || []);
-            } else if (payload.type === "rrg") {
-              updateRRG(payload.data || []);
-            }
-          } catch (e) {
-            console.error("[WS] Error parsing message:", e);
-          }
-        };
-
-        indicesSocket.onclose = () => {
-          console.warn("[WS] Disconnected. Reconnecting...");
-          setTimeout(connectIndicesWebSocket, 3000);
-        };
-
-        indicesSocket.onerror = (err) => {
-          console.error("[WS] Error:", err);
-        };
-      } catch (err) {
-        console.error("[WS] Connection failed:", err);
-      }
-    }
-
-    // ==========================
-    //  Quotes Table
+    //  QUOTES TABLE (Dummy)
     // ==========================
     const tableBody = document.querySelector("#indicesTable tbody");
     const searchInput = document.getElementById("searchInput");
@@ -430,9 +379,7 @@
     let latestQuotes = [];
 
     function updateQuotesTable(data) {
-      // Data: [{ symbol, name, last, change, changePct, session }, ...]
       latestQuotes = Array.isArray(data) ? data : [];
-
       renderQuotesTable();
     }
 
@@ -487,22 +434,17 @@
       return (num > 0 ? "+" : "") + num.toFixed(2);
     }
 
-    searchInput.addEventListener("input", () => {
-      renderQuotesTable();
-    });
+    searchInput.addEventListener("input", renderQuotesTable);
 
     // ==========================
-    //  Indices Capital Flow
+    //  CAPITAL FLOW (Dummy)
     // ==========================
     const capitalFlowCanvas = document.getElementById("capitalFlowCanvas");
     const capitalFlowCtx = capitalFlowCanvas.getContext("2d");
     let capitalFlowData = [];
 
     function updateCapitalFlow(data) {
-      // Data: [{ symbol, changePct }, ...]
       capitalFlowData = (Array.isArray(data) ? data : []).slice();
-
-      // Urutkan dari paling positif ke negatif
       capitalFlowData.sort((a, b) => (b.changePct || 0) - (a.changePct || 0));
       drawCapitalFlow();
     }
@@ -533,7 +475,7 @@
       if (!capitalFlowData.length) {
         ctx.fillStyle = "#555";
         ctx.font = "10px 'Fira Code'";
-        ctx.fillText("Waiting for data…", 8, 16);
+        ctx.fillText("Waiting for dummy data…", 8, 16);
         return;
       }
 
@@ -542,7 +484,6 @@
       const chartHeight = height - margin.top - margin.bottom;
       const zeroY = margin.top + chartHeight / 2;
 
-      // Axis line
       ctx.strokeStyle = "#444";
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -572,7 +513,6 @@
         const y = isPositive ? zeroY - barHeight : zeroY;
         ctx.fillRect(xCenter - barWidth / 2, y, barWidth, barHeight);
 
-        // Symbol label
         ctx.fillStyle = "#9b9b9b";
         ctx.save();
         ctx.translate(xCenter, height - 4);
@@ -583,14 +523,13 @@
     }
 
     // ==========================
-    //  Relative Rotation Graph (RRG)
+    //  RRG (Dummy)
     // ==========================
     const rrgCanvas = document.getElementById("rrgCanvas");
     const rrgCtx = rrgCanvas.getContext("2d");
     let rrgData = [];
 
     function updateRRG(data) {
-      // Data: [{ symbol, rsRatio, rsMomentum }, ...]
       rrgData = Array.isArray(data) ? data : [];
       drawRRG();
     }
@@ -611,30 +550,25 @@
       const centerX = margin.left + chartWidth / 2;
       const centerY = margin.top + chartHeight / 2;
 
-      // Draw quadrants & axes
       ctx.strokeStyle = "#444";
       ctx.lineWidth = 1;
 
-      // Vertical axis
       ctx.beginPath();
       ctx.moveTo(centerX, margin.top);
       ctx.lineTo(centerX, margin.top + chartHeight);
       ctx.stroke();
 
-      // Horizontal axis
       ctx.beginPath();
       ctx.moveTo(margin.left, centerY);
       ctx.lineTo(margin.left + chartWidth, centerY);
       ctx.stroke();
 
-      // Quadrant boxes (subtle)
       ctx.strokeStyle = "#2b2b2b";
-      ctx.strokeRect(margin.left, margin.top, chartWidth / 2, chartHeight / 2); // Leading
-      ctx.strokeRect(centerX, margin.top, chartWidth / 2, chartHeight / 2);     // Weakening
-      ctx.strokeRect(margin.left, centerY, chartWidth / 2, chartHeight / 2);    // Improving
-      ctx.strokeRect(centerX, centerY, chartWidth / 2, chartHeight / 2);        // Lagging
+      ctx.strokeRect(margin.left, margin.top, chartWidth / 2, chartHeight / 2);
+      ctx.strokeRect(centerX, margin.top, chartWidth / 2, chartHeight / 2);
+      ctx.strokeRect(margin.left, centerY, chartWidth / 2, chartHeight / 2);
+      ctx.strokeRect(centerX, centerY, chartWidth / 2, chartHeight / 2);
 
-      // Labels
       ctx.fillStyle = "#9b9b9b";
       ctx.font = "10px 'Fira Code'";
       ctx.fillText("RS-Ratio →", centerX + 4, margin.top + 10);
@@ -652,11 +586,10 @@
 
       if (!rrgData.length) {
         ctx.fillStyle = "#555";
-        ctx.fillText("Waiting for data…", margin.left + 4, margin.top + 26);
+        ctx.fillText("Waiting for dummy data…", margin.left + 4, margin.top + 26);
         return;
       }
 
-      // Normalize RS-Ratio & RS-Momentum around 100 (RRG-style)
       const baseRatio = 100;
       const baseMomentum = 100;
 
@@ -683,18 +616,16 @@
         const x = centerX + dx;
         const y = centerY - dy;
 
-        let color = "#3b82f6"; // improving default
-        if (ratio >= baseRatio && momentum >= baseMomentum) color = "#22c55e";     // leading
-        else if (ratio >= baseRatio && momentum < baseMomentum) color = "#ffbf00"; // weakening
-        else if (ratio < baseRatio && momentum < baseMomentum) color = "#ef4444";  // lagging
+        let color = "#3b82f6";
+        if (ratio >= baseRatio && momentum >= baseMomentum) color = "#22c55e";
+        else if (ratio >= baseRatio && momentum < baseMomentum) color = "#ffbf00";
+        else if (ratio < baseRatio && momentum < baseMomentum) color = "#ef4444";
 
-        // Dot
         ctx.fillStyle = color;
         ctx.beginPath();
         ctx.arc(x, y, 4, 0, Math.PI * 2);
         ctx.fill();
 
-        // Label
         ctx.fillStyle = "#f5f5f5";
         ctx.font = "8px 'Fira Code'";
         ctx.fillText((d.symbol || "").toUpperCase(), x + 5, y - 4);
@@ -702,21 +633,21 @@
     }
 
     // ==========================
-    //  Demo Mock Data (bisa dihapus di produksi)
+    //  DUMMY DATA
     // ==========================
     function loadMockData() {
       const mockQuotes = [
-        { symbol:"SPX",  name:"S&P 500",           last:5534.21, change:12.4,  changePct:0.22, session:"US" },
-        { symbol:"NDX",  name:"Nasdaq 100",        last:19642.3, change:-32.8, changePct:-0.17, session:"US" },
-        { symbol:"DJI",  name:"Dow Jones",         last:40251.8, change:88.2,  changePct:0.22, session:"US" },
-        { symbol:"DAX",  name:"DAX Germany",       last:18840.7, change:-56.2, changePct:-0.30, session:"EU" },
-        { symbol:"UKX",  name:"FTSE 100",          last:8356.4,  change:14.1,  changePct:0.17, session:"EU" },
-        { symbol:"NKY",  name:"Nikkei 225",        last:38742.9, change:221.1, changePct:0.57, session:"JP" },
-        { symbol:"HSI",  name:"Hang Seng",         last:18450.2, change:-95.4, changePct:-0.51, session:"HK" },
-        { symbol:"KS11", name:"KOSPI",             last:2790.5,  change:4.7,   changePct:0.17, session:"KR" },
-        { symbol:"STI",  name:"Straits Times",     last:3420.8,  change:1.1,   changePct:0.03, session:"SG" },
-        { symbol:"NIFTY",name:"Nifty 50 India",    last:23521.3, change:63.2,  changePct:0.27, session:"IN" },
-        { symbol:"AS51", name:"ASX 200",           last:8115.7,  change:-12.9, changePct:-0.16, session:"AU" }
+        { symbol:"SPX",   name:"S&P 500",           last:5534.21, change:12.4,  changePct:0.22,  session:"US" },
+        { symbol:"NDX",   name:"Nasdaq 100",        last:19642.3, change:-32.8, changePct:-0.17, session:"US" },
+        { symbol:"DJI",   name:"Dow Jones",         last:40251.8, change:88.2,  changePct:0.22,  session:"US" },
+        { symbol:"DAX",   name:"DAX Germany",       last:18840.7, change:-56.2, changePct:-0.30, session:"EU" },
+        { symbol:"UKX",   name:"FTSE 100",          last:8356.4,  change:14.1,  changePct:0.17,  session:"EU" },
+        { symbol:"NKY",   name:"Nikkei 225",        last:38742.9, change:221.1, changePct:0.57,  session:"JP" },
+        { symbol:"HSI",   name:"Hang Seng",         last:18450.2, change:-95.4, changePct:-0.51, session:"HK" },
+        { symbol:"KS11",  name:"KOSPI",             last:2790.5,  change:4.7,   changePct:0.17,  session:"KR" },
+        { symbol:"STI",   name:"Straits Times",     last:3420.8,  change:1.1,   changePct:0.03,  session:"SG" },
+        { symbol:"NIFTY", name:"Nifty 50 India",    last:23521.3, change:63.2,  changePct:0.27,  session:"IN" },
+        { symbol:"AS51",  name:"ASX 200",           last:8115.7,  change:-12.9, changePct:-0.16, session:"AU" }
       ];
 
       const mockFlow = mockQuotes.map(q => ({
@@ -744,7 +675,7 @@
     }
 
     // ==========================
-    //  Init
+    //  INIT
     // ==========================
     window.addEventListener("resize", () => {
       drawCapitalFlow();
@@ -752,11 +683,7 @@
     });
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Untuk development: pakai mock data dulu
-      loadMockData();
-
-      // Untuk produksi: aktifkan koneksi WS
-      // connectIndicesWebSocket();
+      loadMockData(); // full dummy mode
     });
   </script>
 </body>
