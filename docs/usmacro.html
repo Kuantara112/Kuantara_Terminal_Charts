@@ -8,6 +8,9 @@
   <!-- Fira Code -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
+  <!-- Chart.js for interactive charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     :root {
       --amber:#ffbf00;
@@ -275,7 +278,19 @@
     .trend-down  { border-color:var(--ok);     color:var(--ok); }
     .trend-flat  { border-color:var(--text-muted); color:var(--text-muted); }
 
-    /* SMALL HINT TEXT */
+    /* CHARTS */
+    .chart-container {
+      position:relative;
+      width:100%;
+      height:180px;
+    }
+
+    .chart-container canvas {
+      width:100% !important;
+      height:100% !important;
+      display:block;
+    }
+
     .hint {
       font-size:9px;
       color:var(--text-muted);
@@ -350,6 +365,57 @@
       </div>
     </div>
 
+    <!-- INTERACTIVE MACRO DASHBOARD (NOW AT TOP) -->
+    <div class="kt-section-title">
+      Interactive Macro Dashboard
+      <span>Curves, liquidity & risk – realtime</span>
+    </div>
+    <div class="kt-grid">
+      <!-- Chart 1: Yield Curve Nominal vs Real -->
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Yield Curve • Nominal vs Real</div>
+          <div class="kt-card-meta">1M–30Y • UST vs TIPS</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="chart-yield-curve"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Net Liquidity vs S&P 500 -->
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Net Liquidity vs S&P 500</div>
+          <div class="kt-card-meta">Fed BS – TGA – RRP • Index</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="chart-net-liquidity"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 3: Recession Probability vs Unemployment -->
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Recession Probability vs Unemployment</div>
+          <div class="kt-card-meta">Early warning vs labor slack</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="chart-recession-labor"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 4: Credit Spreads IG vs HY vs EM -->
+      <div class="kt-card">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Credit Spreads • IG vs HY vs EM</div>
+          <div class="kt-card-meta">OAS (bps)</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="chart-credit-spreads"></canvas>
+        </div>
+      </div>
+    </div>
+
     <!-- MACRO GROWTH & INFLATION -->
     <div class="kt-section-title">
       Macro Growth & Inflation
@@ -369,7 +435,7 @@
           <div class="metric-row">
             <div class="metric-label">Real GDP YoY</div>
             <div class="metric-value" id="val-gdp-yoy-row">
-              <span id="val-gdp-yoy">4.6%</span>
+              <span id="val-gdp-yoy-2">4.6%</span>
             </div>
           </div>
           <div class="metric-row">
@@ -847,89 +913,6 @@
       </div>
     </div>
 
-    <!-- RATES & YIELD CURVE -->
-    <div class="kt-section-title">
-      Rates & Yield Curve
-      <span>Nominal & real term structure</span>
-    </div>
-    <div class="kt-grid">
-      <div class="kt-card">
-        <div class="kt-card-header">
-          <div class="kt-card-title">Policy & Money Market Rates</div>
-          <div class="kt-card-meta">Short end</div>
-        </div>
-        <div class="metric-list">
-          <div class="metric-row">
-            <div class="metric-label">Fed Funds Target Range</div>
-            <div class="metric-value" id="val-ffr-range">5.25% – 5.50%</div>
-          </div>
-          <div class="metric-row">
-            <div class="metric-label">SOFR</div>
-            <div class="metric-value" id="val-sofr-2">5.32%</div>
-          </div>
-          <div class="metric-row">
-            <div class="metric-label">3M Treasury Bill</div>
-            <div class="metric-value" id="val-ust-3m">—%</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="kt-card">
-        <div class="kt-card-header">
-          <div class="kt-card-title">Treasury Curve (Nominal)</div>
-          <div class="kt-card-meta">1M–30Y</div>
-        </div>
-        <div class="metric-list">
-          <div class="metric-row">
-            <div class="metric-label">1M • 3M • 6M</div>
-            <div class="metric-value" id="val-curve-front">
-              <span id="val-ust-1m">—</span> | <span id="val-ust-3m-2">—</span> | <span id="val-ust-6m">—</span> %
-            </div>
-          </div>
-          <div class="metric-row">
-            <div class="metric-label">1Y • 2Y • 3Y</div>
-            <div class="metric-value" id="val-curve-belly">
-              <span id="val-ust-1y">—</span> | <span id="val-ust-2y">—</span> | <span id="val-ust-3y">—</span> %
-            </div>
-          </div>
-          <div class="metric-row">
-            <div class="metric-label">5Y • 7Y • 10Y • 30Y</div>
-            <div class="metric-value" id="val-curve-long">
-              <span id="val-ust-5y">—</span> | <span id="val-ust-7y">—</span> | <span id="val-ust-10y">—</span> | <span id="val-ust-30y">—</span> %
-            </div>
-          </div>
-          <div class="metric-row">
-            <div class="metric-label">Key Spreads</div>
-            <div class="metric-value">
-              10Y–3M: <span id="val-spread-10y-3m-2">-95</span> bps<br/>
-              10Y–2Y: <span id="val-spread-10y-2y-2">-42</span> bps • 2Y–3M: <span id="val-spread-2y-3m">—</span> bps
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="kt-card">
-        <div class="kt-card-header">
-          <div class="kt-card-title">Real Rates</div>
-          <div class="kt-card-meta">Inflation-adjusted</div>
-        </div>
-        <div class="metric-list">
-          <div class="metric-row">
-            <div class="metric-label">5Y TIPS Real Yield</div>
-            <div class="metric-value" id="val-real-5y">—%</div>
-          </div>
-          <div class="metric-row">
-            <div class="metric-label">10Y TIPS Real Yield</div>
-            <div class="metric-value" id="val-real-10y">—%</div>
-          </div>
-          <div class="metric-row">
-            <div class="metric-label">30Y TIPS Real Yield</div>
-            <div class="metric-value" id="val-real-30y">—%</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- CORPORATE & EM CREDIT -->
     <div class="kt-section-title">
       Corporate & EM Bonds
@@ -1019,43 +1002,261 @@
     </div>
 
     <div class="hint">
-      Hint: backend cukup kirim JSON ke WebSocket/API dengan key = ID elemen (mis. <code>val-cpi-yoy</code>) lalu panggil <code>window.KuantaraMacroUpdate(payload)</code>.
+      Hint: backend cukup kirim JSON ke WebSocket/API dengan key = ID elemen (mis. <code>val-cpi-yoy</code>)
+      dan/atau <code>charts[chartId]</code>, lalu panggil <code>window.KuantaraMacroUpdate(payload)</code>.
     </div>
   </div>
 
   <script>
-    // Basic helper: update any metric by element id.
+    // ===== Metric helpers =====
     function setMetricValue(id, value) {
       var el = document.getElementById(id);
       if (!el) return;
       el.textContent = value;
       el.classList.remove('metric-updated');
-      // trigger flash animation
-      void el.offsetWidth;
+      void el.offsetWidth; // restart animation
       el.classList.add('metric-updated');
     }
 
-    // Public updater: expect an object where keys = element IDs (e.g., 'val-cpi-yoy')
+    // ===== Chart init =====
+    window.KuantaraCharts = {};
+
+    function createChartYields(ctx) {
+      return new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['1M','3M','6M','1Y','2Y','3Y','5Y','7Y','10Y','30Y'],
+          datasets: [
+            {
+              label: 'Nominal UST',
+              data: [5.3,5.4,5.2,5.0,4.8,4.6,4.3,4.2,4.1,4.0],
+              borderWidth:1,
+              tension:0.25
+            },
+            {
+              label: 'Real TIPS',
+              data: [0.0,0.0,0.0,1.6,1.7,1.8,1.9,2.0,2.0,2.0],
+              borderWidth:1,
+              borderDash:[4,3],
+              tension:0.25
+            }
+          ]
+        },
+        options: {
+          responsive:true,
+          maintainAspectRatio:false,
+          interaction:{mode:'index', intersect:false},
+          plugins:{
+            legend:{labels:{font:{size:9}, color:'#f5f5f5'}},
+            tooltip:{titleFont:{size:10}, bodyFont:{size:9}}
+          },
+          scales:{
+            x:{ticks:{font:{size:9}, color:'#9b9b9b'}, grid:{color:'#2b2b2b'}},
+            y:{ticks:{font:{size:9}, color:'#9b9b9b'}, grid:{color:'#2b2b2b'}}
+          }
+        }
+      });
+    }
+
+    function createChartNetLiquidity(ctx) {
+      return new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label:'Net Liquidity (tn)',
+              data:[],
+              borderWidth:1,
+              yAxisID:'y',
+              tension:0.15
+            },
+            {
+              label:'S&P 500 (index)',
+              data:[],
+              borderWidth:1,
+              borderDash:[4,3],
+              yAxisID:'y1',
+              tension:0.15
+            }
+          ]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          interaction:{mode:'index', intersect:false},
+          plugins:{
+            legend:{labels:{font:{size:9}, color:'#f5f5f5'}},
+            tooltip:{titleFont:{size:10}, bodyFont:{size:9}}
+          },
+          scales:{
+            x:{ticks:{font:{size:9}, color:'#9b9b9b'}, grid:{color:'#2b2b2b'}},
+            y:{
+              position:'left',
+              ticks:{font:{size:9}, color:'#9b9b9b'},
+              grid:{color:'#2b2b2b'}
+            },
+            y1:{
+              position:'right',
+              ticks:{font:{size:9}, color:'#9b9b9b'},
+              grid:{drawOnChartArea:false}
+            }
+          }
+        }
+      });
+    }
+
+    function createChartRecessionLabor(ctx) {
+      return new Chart(ctx, {
+        type:'line',
+        data:{
+          labels:[],
+          datasets:[
+            {
+              label:'Recession Probability (%)',
+              data:[],
+              borderWidth:1,
+              yAxisID:'y',
+              tension:0.15
+            },
+            {
+              label:'Unemployment Rate (%)',
+              data:[],
+              borderWidth:1,
+              borderDash:[4,3],
+              yAxisID:'y1',
+              tension:0.15
+            }
+          ]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          interaction:{mode:'index', intersect:false},
+          plugins:{
+            legend:{labels:{font:{size:9}, color:'#f5f5f5'}},
+            tooltip:{titleFont:{size:10}, bodyFont:{size:9}}
+          },
+          scales:{
+            x:{ticks:{font:{size:9}, color:'#9b9b9b'}, grid:{color:'#2b2b2b'}},
+            y:{
+              position:'left',
+              ticks:{font:{size:9}, color:'#9b9b9b'},
+              grid:{color:'#2b2b2b'}
+            },
+            y1:{
+              position:'right',
+              ticks:{font:{size:9}, color:'#9b9b9b'},
+              grid:{drawOnChartArea:false}
+            }
+          }
+        }
+      });
+    }
+
+    function createChartCreditSpreads(ctx) {
+      return new Chart(ctx, {
+        type:'line',
+        data:{
+          labels:[],
+          datasets:[
+            {
+              label:'US IG OAS (bps)',
+              data:[],
+              borderWidth:1,
+              tension:0.15
+            },
+            {
+              label:'US HY OAS (bps)',
+              data:[],
+              borderWidth:1,
+              borderDash:[4,3],
+              tension:0.15
+            },
+            {
+              label:'EM USD OAS (bps)',
+              data:[],
+              borderWidth:1,
+              borderDash:[2,2],
+              tension:0.15
+            }
+          ]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          interaction:{mode:'index', intersect:false},
+          plugins:{
+            legend:{labels:{font:{size:9}, color:'#f5f5f5'}},
+            tooltip:{titleFont:{size:10}, bodyFont:{size:9}}
+          },
+          scales:{
+            x:{ticks:{font:{size:9}, color:'#9b9b9b'}, grid:{color:'#2b2b2b'}},
+            y:{ticks:{font:{size:9}, color:'#9b9b9b'}, grid:{color:'#2b2b2b'}}
+          }
+        }
+      });
+    }
+
+    function initCharts() {
+      var c1 = document.getElementById('chart-yield-curve');
+      var c2 = document.getElementById('chart-net-liquidity');
+      var c3 = document.getElementById('chart-recession-labor');
+      var c4 = document.getElementById('chart-credit-spreads');
+      if (c1) window.KuantaraCharts['chart-yield-curve'] = createChartYields(c1.getContext('2d'));
+      if (c2) window.KuantaraCharts['chart-net-liquidity'] = createChartNetLiquidity(c2.getContext('2d'));
+      if (c3) window.KuantaraCharts['chart-recession-labor'] = createChartRecessionLabor(c3.getContext('2d'));
+      if (c4) window.KuantaraCharts['chart-credit-spreads'] = createChartCreditSpreads(c4.getContext('2d'));
+    }
+
+    function updateChartFromPayload(id, cfg) {
+      var chart = window.KuantaraCharts[id];
+      if (!chart || !cfg) return;
+      if (Array.isArray(cfg.labels)) {
+        chart.data.labels = cfg.labels;
+      }
+      if (Array.isArray(cfg.datasets)) {
+        cfg.datasets.forEach(function(dsCfg, idx){
+          var ds = chart.data.datasets[idx];
+          if (!ds || !dsCfg) return;
+          if (Array.isArray(dsCfg.data)) ds.data = dsCfg.data;
+          if (typeof dsCfg.label === 'string') ds.label = dsCfg.label;
+        });
+      }
+      chart.update('none');
+    }
+
+    // ===== Public updater =====
     window.KuantaraMacroUpdate = function (data) {
       if (!data || typeof data !== 'object') return;
-      Object.keys(data).forEach(function (id) {
-        if (id === 'last_updated') {
-          var lu = document.getElementById('last-updated');
-          if (lu) lu.textContent = data[id];
-          return;
-        }
-        setMetricValue(id, data[id]);
+
+      // metrics: flat or under data.metrics
+      var metricSource = data.metrics || data;
+      Object.keys(metricSource).forEach(function (id) {
+        if (id === 'last_updated' || id === 'charts' || id === 'metrics') return;
+        setMetricValue(id, metricSource[id]);
       });
+
+      // charts: data.charts[chartId] = { labels:[], datasets:[{data:[]}, ...] }
+      if (data.charts && typeof data.charts === 'object') {
+        Object.keys(data.charts).forEach(function(chartId){
+          updateChartFromPayload(chartId, data.charts[chartId]);
+        });
+      }
+
+      // last updated
+      if (data.last_updated) {
+        var lu = document.getElementById('last-updated');
+        if (lu) lu.textContent = data.last_updated;
+      }
     };
 
-    // Optional: WebSocket example (backend: send JSON with keys = element IDs).
-    // Replace 'wss://your-macro-stream' with actual endpoint or remove if unused.
+    // ===== WebSocket example =====
     (function initWebSocket() {
       var wsUrl = window.KuantaraMacroWsUrl || 'wss://your-macro-stream';
       try {
         var socket = new WebSocket(wsUrl);
         socket.onopen = function () {
-          // Optionally send auth / subscribe message here
           // socket.send(JSON.stringify({type:'subscribe', channel:'us_macro_dashboard'}));
         };
         socket.onmessage = function (event) {
@@ -1074,7 +1275,8 @@
       }
     })();
 
-    // Set initial last-updated to client time (can be overridden by backend)
+    document.addEventListener('DOMContentLoaded', initCharts);
+
     (function initTimestamp() {
       var lu = document.getElementById('last-updated');
       if (!lu) return;
