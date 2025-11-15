@@ -52,9 +52,15 @@
 
     .kt-page-header {
       display:flex;
-      align-items:baseline;
+      align-items:center;
       justify-content:space-between;
       gap:8px;
+    }
+
+    .kt-page-header-left {
+      display:flex;
+      flex-direction:column;
+      gap:2px;
     }
 
     .kt-page-title {
@@ -66,19 +72,38 @@
     .kt-page-meta {
       font-size:var(--fs-small);
       color:var(--text-muted);
-      text-align:right;
+    }
+
+    .kt-page-header-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
       flex-shrink:0;
     }
 
-    /* === GRID: 2 atas, 4 bawah (quotes removed, heatmap diperlebar) === */
+    .kt-action-btn {
+      font-size:var(--fs-small);
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid var(--amber);
+      background:transparent;
+      color:var(--amber);
+      cursor:pointer;
+    }
+
+    .kt-action-btn:hover {
+      background:rgba(255,191,0,0.08);
+    }
+
+    /* === GRID: 2 atas, 3 bawah (semua panel bawah sama ukuran) === */
     .kt-grid {
       flex:1;
       display:grid;
-      grid-template-columns:repeat(4, 1fr);
+      grid-template-columns:repeat(3, 1fr);
       grid-template-rows:1fr 1fr;
       grid-template-areas:
-        "ai ai headlines headlines"
-        "heatmap heatmap calendar risk";
+        "ai ai headlines"
+        "heatmap calendar risk";
       gap:10px;
       min-height:0;
     }
@@ -134,7 +159,7 @@
       white-space:pre-wrap;
     }
 
-    /* === Economic Calendar (BOTTOM, COL 3) === */
+    /* === Economic Calendar === */
     .calendar-table {
       width:100%;
       border-collapse:collapse;
@@ -171,20 +196,17 @@
       color:#ff5252;
     }
 
-    /* === Core Catalyst → Bubble Chart (TOP RIGHT) === */
+    /* === Core Catalyst → Bubble Chart (sentris) === */
     .headline-bubble-chart {
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      align-content:flex-start;
+      position:relative;
       width:100%;
       height:100%;
       min-height:0;
-      overflow:auto;
+      overflow:hidden;
     }
 
     .headline-bubble {
-      position:relative;
+      position:absolute;
       border-radius:999px;
       padding:6px 10px;
       display:flex;
@@ -195,6 +217,7 @@
       border:1px solid rgba(255,255,255,0.06);
       cursor:default;
       overflow:hidden;
+      transform:translate(-50%, -50%);
     }
 
     .headline-bubble.low {
@@ -409,10 +432,14 @@
 <body>
   <div class="kt-page">
     <div class="kt-page-header">
-      <div class="kt-page-title">Kuantara Terminal – Main Dashboard</div>
-      <div class="kt-page-meta" id="kt-timestamp">
-        <!-- last update from API/WebSocket -->
-        last update: --
+      <div class="kt-page-header-left">
+        <div class="kt-page-title">Kuantara Terminal – Main Dashboard</div>
+        <div class="kt-page-meta" id="kt-timestamp">
+          last update: --
+        </div>
+      </div>
+      <div class="kt-page-header-right">
+        <button class="kt-action-btn" onclick="generateMarketReport()">Generate Market Report</button>
       </div>
     </div>
 
@@ -430,7 +457,7 @@
         </div>
       </section>
 
-      <!-- Core Catalyst Bubble Chart (TOP RIGHT, spanning 2 columns) -->
+      <!-- Core Catalyst Bubble Chart (TOP RIGHT) -->
       <section class="kt-card headline-bubbles" data-section="headline-bubbles">
         <div class="kt-card-header">
           <div class="kt-card-title">Core Catalyst</div>
@@ -448,7 +475,7 @@
         </div>
       </section>
 
-      <!-- Market Heatmap (BOTTOM LEFT, spanning 2 columns) -->
+      <!-- Market Heatmap (BOTTOM LEFT) -->
       <section class="kt-card market-heatmap" data-section="market-heatmap">
         <div class="kt-card-header">
           <div class="kt-card-title">Market Heatmap</div>
@@ -461,7 +488,7 @@
         </div>
       </section>
 
-      <!-- Economic Calendar (BOTTOM, COL 3) -->
+      <!-- Economic Calendar (BOTTOM MIDDLE) -->
       <section class="kt-card economic-calendar" data-section="economic-calendar">
         <div class="kt-card-header">
           <div class="kt-card-title">Economic Calendar</div>
@@ -533,6 +560,12 @@
       el.textContent = "last update: " + ts;
     }
 
+    function generateMarketReport() {
+      // Placeholder – diintegrasikan ke backend / API report
+      console.log("Generate Market Report clicked");
+      alert("Generate Market Report – integrate with your API backend.");
+    }
+
     // === 1) AI Market Summary ===
     function updateAiSummary(summaryText) {
       const el = document.getElementById("ai-market-summary");
@@ -585,7 +618,7 @@
       }
     }
 
-    // === 3) Core Catalyst → Bubble Chart ===
+    // === 3) Core Catalyst → Bubble Chart (sentris, pseudo-random) ===
     // items: [{ title, time, impactPct }, ...]
     function updateHeadlines(items) {
       const container = document.getElementById("headline-bubble-chart");
@@ -593,12 +626,13 @@
       container.innerHTML = "";
 
       const list = items || [];
+      const n = list.length || 1;
 
       list.forEach((item, idx) => {
         const bubble = document.createElement("div");
         const impactRaw = Number(item.impactPct || item.impact || 0);
         const impact = Math.max(0, Math.min(100, isNaN(impactRaw) ? 0 : impactRaw));
-        const size = 40 + (impact / 100) * 70; // radius scaling
+        const size = 40 + (impact / 100) * 70; // ukuran sesuai impact (40–110 px)
 
         bubble.className = "headline-bubble";
 
@@ -608,6 +642,17 @@
 
         bubble.style.width = size + "px";
         bubble.style.height = size + "px";
+
+        // Pseudo-random posisi tapi tetap sentris di sekitar tengah
+        const angle = (idx / n) * 2 * Math.PI + (idx * 0.7); // rotasi sedikit supaya kesan acak
+        const ringBase = 20 + (100 - impact) * 0.6;          // semakin besar impact, radius lebih kecil (lebih dekat pusat)
+        const radius = ringBase;
+
+        const offsetX = Math.cos(angle) * radius;
+        const offsetY = Math.sin(angle) * radius;
+
+        bubble.style.left = `calc(50% + ${offsetX}px)`;
+        bubble.style.top = `calc(50% + ${offsetY}px)`;
 
         const title = document.createElement("div");
         title.className = "hb-title";
