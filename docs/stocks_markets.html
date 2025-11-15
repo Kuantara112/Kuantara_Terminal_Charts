@@ -48,13 +48,15 @@
       padding:16px;
       background:var(--bg-root);
       color:var(--text-main);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
 
     .kt-title {
       font-size:var(--fs-title);
       font-weight:600;
       letter-spacing:0.03em;
-      margin-bottom:6px;
       color:var(--text-main);
       display:flex;
       align-items:center;
@@ -72,7 +74,6 @@
       display:flex;
       align-items:center;
       gap:8px;
-      margin-bottom:10px;
       flex-wrap:wrap;
     }
 
@@ -99,8 +100,10 @@
       display:grid;
       grid-template-columns:repeat(2, minmax(0,1fr));
       gap:12px;
-      height:calc(100vh - 16px - 10px - 16px - 22px);
-      max-height:calc(100vh - 56px);
+      /* lock height ke viewport, minus padding/title/universe kecil */
+      height:calc(100vh - 16px - 16px - 32px);
+      max-height:calc(100vh - 16px - 16px - 32px);
+      min-height:0;
     }
 
     .kt-column {
@@ -181,7 +184,7 @@
     .kt-table-wrapper {
       flex:1;
       min-height:0;
-      overflow:auto;           /* scroll internal untuk tabel */
+      overflow:auto;          /* scroll internal */
       margin-top:4px;
     }
 
@@ -189,7 +192,7 @@
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:720px;         /* di mobile akan horizontal-scroll */
+      min-width:720px;        /* di mobile → scroll horizontal di panel, bukan mengecil */
     }
 
     thead {
@@ -246,7 +249,7 @@
       min-height:0;
       position:relative;
       margin-top:4px;
-      overflow:auto;           /* scroll internal untuk panel chart */
+      overflow:auto;          /* scroll internal kalau canvas/content tinggi */
     }
 
     .kt-chart-canvas {
@@ -285,16 +288,16 @@
     /* === Responsive === */
     @media (max-width:900px) {
       .kt-layout {
-        grid-template-columns:1fr;   /* 1 kolom di mobile */
-        grid-template-rows:auto auto;
-        height:auto;                 /* jangan paksa setinggi viewport */
-        max-height:none;
+        grid-template-columns:1fr;             /* 1 kolom di mobile */
+        grid-auto-rows:minmax(0,1fr);         /* tiap baris share tinggi layout */
       }
+
       .kt-column {
-        min-height:260px;
+        min-height:0;
       }
+
       .kt-column > .kt-card {
-        min-height:260px;            /* tiap panel punya tinggi dasar */
+        min-height:0;                          /* biar scroll di dalam, bukan tinggi page */
       }
     }
 
@@ -308,6 +311,7 @@
 
       .kt-page {
         padding:12px;
+        gap:6px;
       }
 
       .kt-title {
@@ -714,36 +718,24 @@
     const mockData = {
       us: {
         quotes: [
-          // Mega/Large Cap – US
           { symbol:"AAPL", name:"Apple Inc.",            last:228.54, change:1.32,  changePct:0.58,  dailyHigh:230.40, dailyLow:225.80, weeklyHigh:234.60, weeklyLow:221.10, session:"New York" },
           { symbol:"MSFT", name:"Microsoft Corp.",       last:454.12, change:-0.84, changePct:-0.18, dailyHigh:459.60, dailyLow:450.50, weeklyHigh:467.80, weeklyLow:446.40, session:"New York" },
           { symbol:"GOOGL",name:"Alphabet Inc. Class A", last:182.24, change:0.76,  changePct:0.42,  dailyHigh:184.70, dailyLow:179.80, weeklyHigh:187.40, weeklyLow:176.60, session:"New York" },
           { symbol:"AMZN", name:"Amazon.com Inc.",       last:204.38, change:2.14,  changePct:1.06,  dailyHigh:207.90, dailyLow:199.40, weeklyHigh:211.80, weeklyLow:195.40, session:"New York" },
           { symbol:"META", name:"Meta Platforms Inc.",   last:512.76, change:-3.40, changePct:-0.66, dailyHigh:521.20, dailyLow:508.40, weeklyHigh:534.80, weeklyLow:498.10, session:"New York" },
-
-          // Financials
           { symbol:"JPM",  name:"JPMorgan Chase & Co.",  last:204.16, change:1.24,  changePct:0.61,  dailyHigh:206.40, dailyLow:201.20, weeklyHigh:209.80, weeklyLow:197.40, session:"New York" },
           { symbol:"BAC",  name:"Bank of America Corp.", last:41.52,  change:0.22,  changePct:0.53,  dailyHigh:41.98,  dailyLow:40.82,  weeklyHigh:42.80,  weeklyLow:39.90,  session:"New York" },
-
-          // Energy
           { symbol:"XOM",  name:"Exxon Mobil Corp.",     last:124.32, change:-0.62, changePct:-0.50, dailyHigh:126.10, dailyLow:123.10, weeklyHigh:129.40, weeklyLow:121.20, session:"New York" },
           { symbol:"CVX",  name:"Chevron Corp.",         last:153.48, change:0.18,  changePct:0.12,  dailyHigh:155.40, dailyLow:151.60, weeklyHigh:158.20, weeklyLow:148.90, session:"New York" },
-
-          // Defensives
           { symbol:"JNJ",  name:"Johnson & Johnson",      last:164.76, change:0.30,  changePct:0.18,  dailyHigh:166.10, dailyLow:163.20, weeklyHigh:168.40, weeklyLow:160.80, session:"New York" },
           { symbol:"PG",   name:"Procter & Gamble Co.",   last:172.20, change:0.54,  changePct:0.32,  dailyHigh:173.60, dailyLow:170.40, weeklyHigh:175.80, weeklyLow:168.40, session:"New York" },
-
-          // High Beta / Growth
           { symbol:"TSLA", name:"Tesla Inc.",             last:207.44, change:4.82,  changePct:2.38,  dailyHigh:211.80, dailyLow:200.60, weeklyHigh:219.40, weeklyLow:195.20, session:"New York" },
           { symbol:"NVDA", name:"NVIDIA Corp.",           last:132.60, change:-1.84, changePct:-1.37, dailyHigh:136.20, dailyLow:131.40, weeklyHigh:141.20, weeklyLow:128.10, session:"New York" },
           { symbol:"AMD",  name:"Advanced Micro Devices", last:178.32, change:1.92,  changePct:1.09,  dailyHigh:181.80, dailyLow:173.80, weeklyHigh:185.40, weeklyLow:169.40, session:"New York" },
-
-          // Industrials / Cyclicals
           { symbol:"CAT",  name:"Caterpillar Inc.",       last:342.88, change:1.46,  changePct:0.43,  dailyHigh:346.20, dailyLow:338.40, weeklyHigh:352.40, weeklyLow:331.40, session:"New York" },
           { symbol:"BA",   name:"Boeing Co.",             last:203.16, change:-1.18, changePct:-0.58, dailyHigh:207.40, dailyLow:201.20, weeklyHigh:211.60, weeklyLow:196.40, session:"New York" }
         ],
-        flow: [],   // to be derived
-        // Sector-level RRG for US
+        flow: [],
         rrg: [
           { symbol:"TECH",     rsRatio:108, rsMomentum:104 },
           { symbol:"FIN",      rsRatio:101, rsMomentum:100 },
@@ -759,35 +751,23 @@
       },
       id: {
         quotes: [
-          // Big 4 banks
           { symbol:"BBCA", name:"Bank Central Asia Tbk",      last:10250, change:50,   changePct:0.49,  dailyHigh:10350, dailyLow:10100, weeklyHigh:10475, weeklyLow:9950,  session:"Jakarta" },
           { symbol:"BBRI", name:"Bank Rakyat Indonesia Tbk",  last:5250,  change:40,   changePct:0.77,  dailyHigh:5325,  dailyLow:5150,  weeklyHigh:5400,  weeklyLow:5050,  session:"Jakarta" },
           { symbol:"BMRI", name:"Bank Mandiri Tbk",           last:8000,  change:60,   changePct:0.76,  dailyHigh:8100,  dailyLow:7880,  weeklyHigh:8200,  weeklyLow:7700,  session:"Jakarta" },
           { symbol:"BBNI", name:"Bank Negara Indonesia Tbk",  last:5075,  change:25,   changePct:0.50,  dailyHigh:5150,  dailyLow:4975,  weeklyHigh:5200,  weeklyLow:4875,  session:"Jakarta" },
-
-          // Consumer / Staples
           { symbol:"ICBP", name:"Indofood CBP Sukses Makmur", last:10500, change:-75,  changePct:-0.71, dailyHigh:10675, dailyLow:10350, weeklyHigh:10850, weeklyLow:10200, session:"Jakarta" },
           { symbol:"INDF", name:"Indofood Sukses Makmur",     last:6950,  change:-25,  changePct:-0.36, dailyHigh:7075,  dailyLow:6875,  weeklyHigh:7150,  weeklyLow:6750,  session:"Jakarta" },
           { symbol:"UNVR", name:"Unilever Indonesia Tbk",     last:3800,  change:20,   changePct:0.53,  dailyHigh:3850,  dailyLow:3720,  weeklyHigh:3920,  weeklyLow:3650,  session:"Jakarta" },
-
-          // Telco
           { symbol:"TLKM", name:"Telkom Indonesia Tbk",       last:3920,  change:10,   changePct:0.26,  dailyHigh:3980,  dailyLow:3850,  weeklyHigh:4050,  weeklyLow:3750,  session:"Jakarta" },
           { symbol:"EXCL", name:"XL Axiata Tbk",              last:2120,  change:30,   changePct:1.44,  dailyHigh:2160,  dailyLow:2060,  weeklyHigh:2200,  weeklyLow:1980,  session:"Jakarta" },
-
-          // Automotive / Cyclicals
           { symbol:"ASII", name:"Astra International Tbk",    last:6600,  change:25,   changePct:0.38,  dailyHigh:6725,  dailyLow:6500,  weeklyHigh:6850,  weeklyLow:6400,  session:"Jakarta" },
-
-          // Commodity-related
           { symbol:"MDKA", name:"Merdeka Copper Gold Tbk",    last:2620,  change:-40,  changePct:-1.50, dailyHigh:2700,  dailyLow:2600,  weeklyHigh:2820,  weeklyLow:2550,  session:"Jakarta" },
           { symbol:"ANTM", name:"Aneka Tambang Tbk",          last:2060,  change:-10,  changePct:-0.48, dailyHigh:2120,  dailyLow:2020,  weeklyHigh:2220,  weeklyLow:1980,  session:"Jakarta" },
           { symbol:"ADRO", name:"Adaro Energy Indonesia Tbk", last:2760,  change:20,   changePct:0.73,  dailyHigh:2820,  dailyLow:2700,  weeklyHigh:2900,  weeklyLow:2620,  session:"Jakarta" },
-
-          // Infra / Property
           { symbol:"SMRA", name:"Summarecon Agung Tbk",       last:690,   change:8,    changePct:1.17,  dailyHigh:710,   dailyLow:672,   weeklyHigh:740,   weeklyLow:648,   session:"Jakarta" },
           { symbol:"PWON", name:"Pakuwon Jati Tbk",           last:530,   change:4,    changePct:0.76,  dailyHigh:542,   dailyLow:520,   weeklyHigh:560,   weeklyLow:508,   session:"Jakarta" }
         ],
         flow: [],
-        // IDX sector-level RRG
         rrg: [
           { symbol:"FINANCE",   rsRatio:104, rsMomentum:105 },
           { symbol:"CONSUMER",  rsRatio:101, rsMomentum:102 },
@@ -845,7 +825,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       prepareFlowData();
-      applyUniverse("us"); // default US Stocks
+      applyUniverse("us");
     });
   </script>
 </body>
