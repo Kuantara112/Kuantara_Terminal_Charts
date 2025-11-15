@@ -181,7 +181,7 @@
     .kt-table-wrapper {
       flex:1;
       min-height:0;
-      overflow:auto;
+      overflow:auto;           /* scroll internal untuk tabel */
       margin-top:4px;
     }
 
@@ -189,7 +189,7 @@
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:720px;
+      min-width:720px;         /* di mobile akan horizontal-scroll */
     }
 
     thead {
@@ -246,7 +246,7 @@
       min-height:0;
       position:relative;
       margin-top:4px;
-      overflow:hidden;
+      overflow:auto;           /* scroll internal untuk panel chart */
     }
 
     .kt-chart-canvas {
@@ -285,16 +285,16 @@
     /* === Responsive === */
     @media (max-width:900px) {
       .kt-layout {
-        grid-template-columns:1fr;
+        grid-template-columns:1fr;   /* 1 kolom di mobile */
         grid-template-rows:auto auto;
-        height:auto;
+        height:auto;                 /* jangan paksa setinggi viewport */
         max-height:none;
       }
       .kt-column {
         min-height:260px;
       }
       .kt-column > .kt-card {
-        min-height:260px;
+        min-height:260px;            /* tiap panel punya tinggi dasar */
       }
     }
 
@@ -743,18 +743,18 @@
           { symbol:"BA",   name:"Boeing Co.",             last:203.16, change:-1.18, changePct:-0.58, dailyHigh:207.40, dailyLow:201.20, weeklyHigh:211.60, weeklyLow:196.40, session:"New York" }
         ],
         flow: [],   // to be derived
-        // Sector-level RRG for US (Technology, Financials, Energy, Healthcare, Consumer, Industrials, Utilities, Real Estate, Communication)
+        // Sector-level RRG for US
         rrg: [
-          { symbol:"TECH",     rsRatio:108, rsMomentum:104 }, // Tech
-          { symbol:"FIN",      rsRatio:101, rsMomentum:100 }, // Financials
-          { symbol:"ENERGY",   rsRatio:95,  rsMomentum:96  }, // Energy
-          { symbol:"HEALTH",   rsRatio:99,  rsMomentum:98  }, // Healthcare
-          { symbol:"CONS_DISC",rsRatio:103, rsMomentum:105 }, // Consumer Discretionary
-          { symbol:"CONS_STAP",rsRatio:98,  rsMomentum:101 }, // Consumer Staples
-          { symbol:"INDUSTR",  rsRatio:100, rsMomentum:102 }, // Industrials
-          { symbol:"UTIL",     rsRatio:94,  rsMomentum:95  }, // Utilities
-          { symbol:"REIT",     rsRatio:96,  rsMomentum:97  }, // Real Estate
-          { symbol:"COMM",     rsRatio:102, rsMomentum:103 }  // Communication Services
+          { symbol:"TECH",     rsRatio:108, rsMomentum:104 },
+          { symbol:"FIN",      rsRatio:101, rsMomentum:100 },
+          { symbol:"ENERGY",   rsRatio:95,  rsMomentum:96  },
+          { symbol:"HEALTH",   rsRatio:99,  rsMomentum:98  },
+          { symbol:"CONS_DISC",rsRatio:103, rsMomentum:105 },
+          { symbol:"CONS_STAP",rsRatio:98,  rsMomentum:101 },
+          { symbol:"INDUSTR",  rsRatio:100, rsMomentum:102 },
+          { symbol:"UTIL",     rsRatio:94,  rsMomentum:95  },
+          { symbol:"REIT",     rsRatio:96,  rsMomentum:97  },
+          { symbol:"COMM",     rsRatio:102, rsMomentum:103 }
         ]
       },
       id: {
@@ -782,13 +782,12 @@
           { symbol:"ANTM", name:"Aneka Tambang Tbk",          last:2060,  change:-10,  changePct:-0.48, dailyHigh:2120,  dailyLow:2020,  weeklyHigh:2220,  weeklyLow:1980,  session:"Jakarta" },
           { symbol:"ADRO", name:"Adaro Energy Indonesia Tbk", last:2760,  change:20,   changePct:0.73,  dailyHigh:2820,  dailyLow:2700,  weeklyHigh:2900,  weeklyLow:2620,  session:"Jakarta" },
 
-          // Infra / Construction / Property
-          { symbol:"TLKM", name:"Telkom Indonesia Tbk",       last:3920,  change:10,   changePct:0.26,  dailyHigh:3980,  dailyLow:3850,  weeklyHigh:4050,  weeklyLow:3750,  session:"Jakarta" },
+          // Infra / Property
           { symbol:"SMRA", name:"Summarecon Agung Tbk",       last:690,   change:8,    changePct:1.17,  dailyHigh:710,   dailyLow:672,   weeklyHigh:740,   weeklyLow:648,   session:"Jakarta" },
           { symbol:"PWON", name:"Pakuwon Jati Tbk",           last:530,   change:4,    changePct:0.76,  dailyHigh:542,   dailyLow:520,   weeklyHigh:560,   weeklyLow:508,   session:"Jakarta" }
         ],
         flow: [],
-        // IDX sector-level RRG (Finance, Consumer, Infrastructure, Basic Materials, Energy, Property, Telco, Healthcare)
+        // IDX sector-level RRG
         rrg: [
           { symbol:"FINANCE",   rsRatio:104, rsMomentum:105 },
           { symbol:"CONSUMER",  rsRatio:101, rsMomentum:102 },
@@ -802,7 +801,6 @@
       }
     };
 
-    // build flow arrays from quotes
     function prepareFlowData() {
       Object.keys(mockData).forEach(u => {
         mockData[u].flow = mockData[u].quotes.map(q => ({
