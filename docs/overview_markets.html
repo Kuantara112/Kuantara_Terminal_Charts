@@ -70,15 +70,15 @@
       flex-shrink:0;
     }
 
-    /* === GRID: 2 atas, 4 bawah === */
+    /* === GRID: 2 atas, 4 bawah (quotes removed, heatmap diperlebar) === */
     .kt-grid {
       flex:1;
       display:grid;
       grid-template-columns:repeat(4, 1fr);
       grid-template-rows:1fr 1fr;
       grid-template-areas:
-        "ai ai calendar calendar"
-        "quotes heatmap headlines risk";
+        "ai ai headlines headlines"
+        "heatmap heatmap calendar risk";
       gap:10px;
       min-height:0;
     }
@@ -123,7 +123,6 @@
     /* === Layout areas === */
     .ai-summary { grid-area:ai; }
     .economic-calendar { grid-area:calendar; }
-    .market-quotes { grid-area:quotes; }
     .market-heatmap { grid-area:heatmap; }
     .headline-bubbles { grid-area:headlines; }
     .risk-meter-card { grid-area:risk; }
@@ -135,7 +134,7 @@
       white-space:pre-wrap;
     }
 
-    /* === Economic Calendar === */
+    /* === Economic Calendar (BOTTOM, COL 3) === */
     .calendar-table {
       width:100%;
       border-collapse:collapse;
@@ -172,7 +171,7 @@
       color:#ff5252;
     }
 
-    /* === Daily Core Headlines → Bubble Chart === */
+    /* === Core Catalyst → Bubble Chart (TOP RIGHT) === */
     .headline-bubble-chart {
       display:flex;
       flex-wrap:wrap;
@@ -247,44 +246,6 @@
     .legend-medium { background:#ffbf00; }
     .legend-high { background:#ff5252; }
 
-    /* === Market Quotes === */
-    .quotes-table {
-      width:100%;
-      border-collapse:collapse;
-      font-size:var(--fs-body);
-    }
-
-    .quotes-table thead {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .quotes-table th,
-    .quotes-table td {
-      padding:3px 4px;
-      text-align:right;
-      border-bottom:1px solid rgba(43,43,43,0.7);
-      white-space:nowrap;
-    }
-
-    .quotes-table th:first-child,
-    .quotes-table td:first-child {
-      text-align:left;
-    }
-
-    .quote-symbol {
-      color:var(--amber);
-      font-weight:500;
-    }
-
-    .quote-change.pos {
-      color:#4caf50;
-    }
-
-    .quote-change.neg {
-      color:#ff5252;
-    }
-
     /* === Market Heatmap (3 x 6) === */
     .heatmap-grid {
       display:grid;
@@ -325,70 +286,31 @@
       font-size:var(--fs-small);
     }
 
-    /* === Risk-On / Risk-Off Speedometer === */
+    /* === Risk-On / Risk-Off – Horizontal Bar Meter + Quotes === */
     .risk-meter-wrapper {
       display:flex;
       flex-direction:column;
       gap:6px;
-      height:100%;
     }
 
-    .risk-meter-gauge {
+    .risk-meter-bar {
       position:relative;
       width:100%;
-      aspect-ratio:2 / 1;
-      border-radius:100% 100% 0 0;
+      height:18px;
+      border-radius:999px;
+      background:linear-gradient(90deg, #ff5252 0%, #ffbf00 50%, #4caf50 100%);
+      border:1px solid var(--border-soft);
       overflow:hidden;
-      background:
-        conic-gradient(
-          from 180deg,
-          #4caf50 0deg,
-          #4caf50 60deg,
-          #ffbf00 60deg,
-          #ffbf00 120deg,
-          #ff5252 120deg,
-          #ff5252 180deg
-        );
-      border:1px solid var(--border-soft);
     }
 
-    .risk-meter-gauge::after {
-      content:"";
+    .risk-meter-pointer {
       position:absolute;
-      left:50%;
-      bottom:-40%;
-      transform:translateX(-50%);
-      width:70%;
-      height:70%;
-      background:var(--bg-main);
-      border-radius:50%;
-      border:1px solid var(--border-soft);
-    }
-
-    .risk-meter-needle {
-      position:absolute;
-      left:50%;
-      bottom:0;
+      top:50%;
       width:2px;
-      height:60%;
-      background:var(--text-main);
-      transform-origin:50% 100%;
-      transform:rotate(0deg);
-      transition:transform 0.4s ease-out;
-      z-index:2;
-    }
-
-    .risk-meter-center {
-      position:absolute;
-      left:50%;
-      bottom:0;
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      background:var(--bg-main);
-      border:2px solid var(--amber);
-      transform:translate(-50%, 50%);
-      z-index:3;
+      height:26px;
+      background:#ffffff;
+      transform:translate(-50%, -50%);
+      box-shadow:0 0 4px rgba(0,0,0,0.8);
     }
 
     .risk-meter-scale {
@@ -408,18 +330,61 @@
       font-size:var(--fs-small);
       color:var(--text-muted);
       text-align:center;
+      margin-bottom:4px;
+    }
+
+    /* Quotes di bawah meter */
+    .quotes-table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:var(--fs-body);
+      margin-top:4px;
+    }
+
+    .quotes-table thead {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .quotes-table th,
+    .quotes-table td {
+      padding:3px 4px;
+      text-align:right;
+      border-bottom:1px solid rgba(43,43,43,0.7);
+      white-space:nowrap;
+    }
+
+    .quotes-table th:first-child,
+    .quotes-table td:first-child {
+      text-align:left;
+    }
+
+    .quote-symbol {
+      color:var(--amber);
+      font-weight:500;
+    }
+
+    .quote-change.pos {
+      color:#4caf50;
+    }
+
+    .quote-change.neg {
+      color:#ff5252;
+    }
+
+    .risk-meter-card .kt-card-body {
+      min-height:0;
+      overflow:auto;
     }
 
     /* === Scroll helpers === */
     .ai-summary .kt-card-body,
-    .economic-calendar .kt-card-body,
-    .market-quotes .kt-card-body {
+    .economic-calendar .kt-card-body {
       min-height:0;
       overflow:auto;
     }
 
     .market-heatmap .kt-card-body,
-    .risk-meter-card .kt-card-body,
     .headline-bubbles .kt-card-body {
       flex:1;
       min-height:0;
@@ -433,10 +398,9 @@
         grid-template-rows:auto;
         grid-template-areas:
           "ai"
-          "calendar"
           "headlines"
-          "quotes"
           "heatmap"
+          "calendar"
           "risk";
       }
     }
@@ -466,7 +430,38 @@
         </div>
       </section>
 
-      <!-- Economic Calendar (TOP RIGHT, spanning 2 columns) -->
+      <!-- Core Catalyst Bubble Chart (TOP RIGHT, spanning 2 columns) -->
+      <section class="kt-card headline-bubbles" data-section="headline-bubbles">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Core Catalyst</div>
+          <div class="kt-card-subtitle">impact-weighted bubble map (%)</div>
+        </div>
+        <div class="kt-card-body">
+          <div id="headline-bubble-chart" class="headline-bubble-chart">
+            <!-- bubbles from JS -->
+          </div>
+          <div class="headline-bubbles-legend">
+            <span><span class="legend-dot legend-low"></span>Low</span>
+            <span><span class="legend-dot legend-medium"></span>Medium</span>
+            <span><span class="legend-dot legend-high"></span>High</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Market Heatmap (BOTTOM LEFT, spanning 2 columns) -->
+      <section class="kt-card market-heatmap" data-section="market-heatmap">
+        <div class="kt-card-header">
+          <div class="kt-card-title">Market Heatmap</div>
+          <div class="kt-card-subtitle">3 × 6 grid | multi-asset</div>
+        </div>
+        <div class="kt-card-body">
+          <div class="heatmap-grid" id="heatmap-grid">
+            <!-- 18 cells (3 cols x 6 rows) -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Economic Calendar (BOTTOM, COL 3) -->
       <section class="kt-card economic-calendar" data-section="economic-calendar">
         <div class="kt-card-header">
           <div class="kt-card-title">Economic Calendar</div>
@@ -489,14 +484,27 @@
         </div>
       </section>
 
-      <!-- Market Quotes (BOTTOM LEFT) -->
-      <section class="kt-card market-quotes" data-section="market-quotes">
+      <!-- Risk-On / Risk-Off – Horizontal Meter + Market Quotes (BOTTOM RIGHT) -->
+      <section class="kt-card risk-meter-card" data-section="risk-meter">
         <div class="kt-card-header">
-          <div class="kt-card-title">Market Quotes</div>
-          <div class="kt-card-subtitle">key indices, FX, commodities</div>
+          <div class="kt-card-title">Risk-On / Risk-Off</div>
+          <div class="kt-card-subtitle">composite sentiment & key quotes</div>
         </div>
         <div class="kt-card-body">
-          <table class="quotes-table" id="quotes-table">
+          <div class="risk-meter-wrapper">
+            <div class="risk-meter-bar">
+              <div id="risk-meter-pointer" class="risk-meter-pointer"></div>
+            </div>
+            <div class="risk-meter-scale">
+              <span>Risk-Off</span>
+              <span>Neutral</span>
+              <span>Risk-On</span>
+            </div>
+            <div id="risk-meter-value" class="risk-meter-value">Score: -- / 100</div>
+            <div id="risk-meter-tag" class="risk-meter-tag">waiting for data...</div>
+          </div>
+
+          <table class="quotes-table" id="risk-quotes-table">
             <thead>
               <tr>
                 <th>Asset</th>
@@ -509,60 +517,6 @@
               <!-- rows from JS -->
             </tbody>
           </table>
-        </div>
-      </section>
-
-      <!-- Market Heatmap 3 x 6 (BOTTOM, 2nd) -->
-      <section class="kt-card market-heatmap" data-section="market-heatmap">
-        <div class="kt-card-header">
-          <div class="kt-card-title">Market Heatmap</div>
-          <div class="kt-card-subtitle">3 × 6 grid | multi-asset</div>
-        </div>
-        <div class="kt-card-body">
-          <div class="heatmap-grid" id="heatmap-grid">
-            <!-- 18 cells (3 cols x 6 rows) -->
-          </div>
-        </div>
-      </section>
-
-      <!-- Daily Core Headlines → Bubble Chart (BOTTOM, 3rd) -->
-      <section class="kt-card headline-bubbles" data-section="headline-bubbles">
-        <div class="kt-card-header">
-          <div class="kt-card-title">Daily Core Headlines</div>
-          <div class="kt-card-subtitle">impact-weighted bubble map (%)</div>
-        </div>
-        <div class="kt-card-body">
-          <div id="headline-bubble-chart" class="headline-bubble-chart">
-            <!-- bubbles from JS -->
-          </div>
-          <div class="headline-bubbles-legend">
-            <span><span class="legend-dot legend-low"></span>Low</span>
-            <span><span class="legend-dot legend-medium"></span>Medium</span>
-            <span><span class="legend-dot legend-high"></span>High</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Risk-On / Risk-Off Meter (BOTTOM RIGHT) -->
-      <section class="kt-card risk-meter-card" data-section="risk-meter">
-        <div class="kt-card-header">
-          <div class="kt-card-title">Risk-On / Risk-Off</div>
-          <div class="kt-card-subtitle">composite sentiment gauge</div>
-        </div>
-        <div class="kt-card-body">
-          <div class="risk-meter-wrapper">
-            <div class="risk-meter-gauge">
-              <div id="risk-needle" class="risk-meter-needle"></div>
-              <div class="risk-meter-center"></div>
-            </div>
-            <div class="risk-meter-scale">
-              <span>Risk-Off</span>
-              <span>Neutral</span>
-              <span>Risk-On</span>
-            </div>
-            <div id="risk-meter-value" class="risk-meter-value">Score: -- / 100</div>
-            <div id="risk-meter-tag" class="risk-meter-tag">waiting for data...</div>
-          </div>
         </div>
       </section>
     </div>
@@ -631,7 +585,7 @@
       }
     }
 
-    // === 3) Daily Core Headlines → Bubble Chart ===
+    // === 3) Core Catalyst → Bubble Chart ===
     // items: [{ title, time, impactPct }, ...]
     function updateHeadlines(items) {
       const container = document.getElementById("headline-bubble-chart");
@@ -678,44 +632,7 @@
       }
     }
 
-    // === 4) Market Quotes ===
-    // rows: [{ symbol, name, last, change, changePct }, ...]
-    function updateQuotes(rows) {
-      const tbody = document.querySelector("#quotes-table tbody");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-
-      (rows || []).forEach(row => {
-        const tr = document.createElement("tr");
-
-        const tdAsset = document.createElement("td");
-        tdAsset.innerHTML =
-          '<span class="quote-symbol">' + (row.symbol || "") + "</span>" +
-          (row.name ? ' <span style="color:var(--text-muted);font-size:9px;">' + row.name + "</span>" : "");
-
-        const tdLast = document.createElement("td");
-        tdLast.textContent = row.last != null ? row.last : "--";
-
-        const tdChg = document.createElement("td");
-        const chg = row.change;
-        const sign = chg > 0 ? "pos" : chg < 0 ? "neg" : "";
-        tdChg.className = "quote-change " + sign;
-        tdChg.textContent = chg != null ? chg : "--";
-
-        const tdPct = document.createElement("td");
-        const pct = row.changePct;
-        tdPct.className = "quote-change " + sign;
-        tdPct.textContent = pct != null ? (pct.toFixed(2) + "%") : "--";
-
-        tr.appendChild(tdAsset);
-        tr.appendChild(tdLast);
-        tr.appendChild(tdChg);
-        tr.appendChild(tdPct);
-        tbody.appendChild(tr);
-      });
-    }
-
-    // === 5) Market Heatmap 3 x 6 ===
+    // === 4) Market Heatmap 3 x 6 ===
     // cells: [{ symbol, value, change, color }, ...] length up to 18
     function updateHeatmap(cells) {
       const grid = document.getElementById("heatmap-grid");
@@ -761,17 +678,17 @@
       }
     }
 
-    // === 6) Risk-On / Risk-Off Meter ===
+    // === 5) Risk-On / Risk-Off Meter (horizontal bar) ===
     // score: 0–100
     function updateRiskMeter(score) {
-      const needle = document.getElementById("risk-needle");
+      const pointer = document.getElementById("risk-meter-pointer");
       const valueEl = document.getElementById("risk-meter-value");
       const tagEl = document.getElementById("risk-meter-tag");
-      if (!needle || !valueEl || !tagEl) return;
+      if (!pointer || !valueEl || !tagEl) return;
 
       const s = Math.max(0, Math.min(100, Number(score)));
-      const angle = -90 + (s / 100) * 180; // -90 (risk-off) to +90 (risk-on)
-      needle.style.transform = "rotate(" + angle + "deg)";
+      const pct = s; // 0–100
+      pointer.style.left = pct + "%";
 
       valueEl.textContent = "Score: " + s.toFixed(0) + " / 100";
 
@@ -780,6 +697,43 @@
       else if (s >= 67) label = "Risk-On";
 
       tagEl.textContent = "Composite regime: " + label;
+    }
+
+    // === 6) Market Quotes (inside Risk Meter card) ===
+    // rows: [{ symbol, name, last, change, changePct }, ...]
+    function updateQuotes(rows) {
+      const tbody = document.querySelector("#risk-quotes-table tbody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      (rows || []).forEach(row => {
+        const tr = document.createElement("tr");
+
+        const tdAsset = document.createElement("td");
+        tdAsset.innerHTML =
+          '<span class="quote-symbol">' + (row.symbol || "") + "</span>" +
+          (row.name ? ' <span style="color:var(--text-muted);font-size:9px;">' + row.name + "</span>" : "");
+
+        const tdLast = document.createElement("td");
+        tdLast.textContent = row.last != null ? row.last : "--";
+
+        const tdChg = document.createElement("td");
+        const chg = row.change;
+        const sign = chg > 0 ? "pos" : chg < 0 ? "neg" : "";
+        tdChg.className = "quote-change " + sign;
+        tdChg.textContent = chg != null ? chg : "--";
+
+        const tdPct = document.createElement("td");
+        const pct = row.changePct;
+        tdPct.className = "quote-change " + sign;
+        tdPct.textContent = pct != null ? (pct.toFixed(2) + "%") : "--";
+
+        tr.appendChild(tdAsset);
+        tr.appendChild(tdLast);
+        tr.appendChild(tdChg);
+        tr.appendChild(tdPct);
+        tbody.appendChild(tr);
+      });
     }
 
     // ============================
