@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara – Commodities Market Snapshot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <style>
+    :root {
+      --amber:#ffbf00;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+
+      --green:#22c55e;
+      --red:#ef4444;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+    }
+
+    html, body {
+      width:100%;
+      height:100%;
+    }
+
+    body {
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    .kt-page {
+      min-height:100vh;
+      padding:16px;
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    .kt-title {
+      font-size:var(--fs-title);
+      font-weight:600;
+      letter-spacing:0.03em;
+      margin-bottom:10px;
+      color:var(--text-main);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .kt-title span.label {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-layout {
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:12px;
+      height:calc(100vh - 16px - 10px - 16px);
+      max-height:calc(100vh - 42px);
+    }
+
+    .kt-column {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:0;
+    }
+
+    .kt-column > .kt-card {
+      flex:1;
+      min-height:0;
+    }
+
+    .kt-card {
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .kt-card-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      font-size:var(--fs-subtitle);
+      color:var(--text-main);
+      flex-wrap:wrap;
+    }
+
+    .kt-card-header .subtitle {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-toolbar {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .kt-pill {
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:2px 8px;
+      font-size:var(--fs-small);
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .kt-pill.active {
+      border-color:var(--amber);
+      color:var(--amber);
+    }
+
+    .kt-search {
+      flex:1;
+      min-width:140px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      border-radius:4px;
+      border:1px solid var(--border-soft);
+      padding:2px 6px;
+    }
+
+    .kt-search input {
+      flex:1;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--text-main);
+      font-size:var(--fs-small);
+      min-width:0;
+    }
+
+    .kt-search span {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    /* === Quotes Table === */
+    .kt-table-wrapper {
+      flex:1;
+      min-height:0;
+      overflow:auto;
+      margin-top:4px;
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:var(--fs-body);
+      min-width:720px;
+    }
+
+    thead {
+      position:sticky;
+      top:0;
+      background:linear-gradient(to bottom,#111111,#0b0b0b);
+      z-index:2;
+    }
+
+    th, td {
+      padding:5px 4px;
+      text-align:right;
+      white-space:nowrap;
+    }
+
+    th:first-child, td:first-child {
+      text-align:left;
+    }
+
+    th:nth-child(2), td:nth-child(2) {
+      text-align:left;
+    }
+
+    th {
+      font-size:var(--fs-small);
+      font-weight:500;
+      color:var(--text-muted);
+      border-bottom:1px solid var(--border-soft);
+    }
+
+    tbody tr:nth-child(even) {
+      background:#0d0d0d;
+    }
+
+    tbody tr:nth-child(odd) {
+      background:#090909;
+    }
+
+    tbody tr:hover {
+      background:#151515;
+    }
+
+    .text-up {
+      color:var(--green);
+    }
+
+    .text-down {
+      color:var(--red);
+    }
+
+    /* === Charts === */
+    .kt-chart-wrapper {
+      flex:1;
+      min-height:0;
+      position:relative;
+      margin-top:4px;
+      overflow:hidden;
+    }
+
+    .kt-chart-canvas {
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+    }
+
+    .kt-legend {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    .kt-legend-item {
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
+
+    .kt-dot {
+      width:8px;
+      height:8px;
+      border-radius:999px;
+    }
+
+    .dot-leading { background:var(--green); }
+    .dot-weakening { background:var(--amber); }
+    .dot-lagging { background:var(--red); }
+    .dot-improving { background:#3b82f6; }
+
+    /* === Responsive === */
+    @media (max-width:900px) {
+      .kt-layout {
+        grid-template-columns:1fr;
+        grid-template-rows:auto auto;
+        height:auto;
+        max-height:none;
+      }
+      .kt-column {
+        min-height:260px;
+      }
+      .kt-column > .kt-card {
+        min-height:260px;
+      }
+    }
+
+    @media (max-width:600px) {
+      :root {
+        --fs-title:13px;
+        --fs-subtitle:11px;
+        --fs-body:10px;
+        --fs-small:9px;
+      }
+
+      .kt-page {
+        padding:12px;
+      }
+
+      .kt-title {
+        flex-direction:column;
+        align-items:flex-start;
+        gap:4px;
+      }
+
+      .kt-toolbar {
+        justify-content:flex-start;
+      }
+
+      .kt-card {
+        padding:10px 10px;
+      }
+
+      th, td {
+        padding:4px 3px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-page">
+    <div class="kt-title">
+      <div>COMMODITIES MARKET SNAPSHOT</div>
+      <span class="label">Universe: Energy, Metals, Agriculture · Dummy Data</span>
+    </div>
+
+    <div class="kt-layout">
+      <!-- LEFT: Commodities Market Quotes -->
+      <div class="kt-column">
+        <section class="kt-card">
+          <header class="kt-card-header">
+            <div>Commodities Market Quotes</div>
+            <div class="kt-toolbar">
+              <div class="kt-pill active" data-scope="all">All</div>
+              <div class="kt-pill" data-scope="energy">Energy</div>
+              <div class="kt-pill" data-scope="metals">Metals</div>
+              <div class="kt-pill" data-scope="agri">Agri</div>
+              <div class="kt-search">
+                <span>🔍</span>
+                <input id="searchInput" type="text" placeholder="Filter commodity (e.g. XAU, CL, ZC)" />
+              </div>
+            </div>
+          </header>
+
+          <div class="kt-table-wrapper">
+            <table id="indicesTable">
+              <thead>
+                <tr>
+                  <th>Symbol</th>
+                  <th>Asset</th>
+                  <th>Last</th>
+                  <th>Δ</th>
+                  <th>Δ%</th>
+                  <th>D Hi</th>
+                  <th>D Lo</th>
+                  <th>W Hi</th>
+                  <th>W Lo</th>
+                  <th>Session</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Dummy rows via JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT: Capital Flow (top) + RRG (bottom) -->
+      <div class="kt-column">
+        <!-- Commodities Capital Flow -->
+        <section class="kt-card">
+          <header class="kt-card-header">
+            <div>Commodities Capital Flow</div>
+            <div class="subtitle">Intraday % Change · Sorted from Strongest to Weakest</div>
+          </header>
+          <div class="kt-chart-wrapper">
+            <canvas id="capitalFlowCanvas" class="kt-chart-canvas"></canvas>
+          </div>
+        </section>
+
+        <!-- Commodities Relative Rotation Graph -->
+        <section class="kt-card">
+          <header class="kt-card-header">
+            <div>Commodities Relative Rotation Graph (RRG)</div>
+            <div class="subtitle">RS-Ratio vs RS-Momentum · RRG-Style Quadrants</div>
+          </header>
+          <div class="kt-chart-wrapper">
+            <canvas id="rrgCanvas" class="kt-chart-canvas"></canvas>
+          </div>
+          <div class="kt-legend">
+            <div class="kt-legend-item">
+              <span class="kt-dot dot-leading"></span><span>Leading</span>
+            </div>
+            <div class="kt-legend-item">
+              <span class="kt-dot dot-weakening"></span><span>Weakening</span>
+            </div>
+            <div class="kt-legend-item">
+              <span class="kt-dot dot-lagging"></span><span>Lagging</span>
+            </div>
+            <div class="kt-legend-item">
+              <span class="kt-dot dot-improving"></span><span>Improving</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================
+    //  QUOTES TABLE (Dummy)
+    // ==========================
+    const tableBody = document.querySelector("#indicesTable tbody");
+    const searchInput = document.getElementById("searchInput");
+
+    let latestQuotes = [];
+
+    function updateQuotesTable(data) {
+      latestQuotes = Array.isArray(data) ? data : [];
+      renderQuotesTable();
+    }
+
+    function renderQuotesTable() {
+      const filter = (searchInput.value || "").trim().toLowerCase();
+      tableBody.innerHTML = "";
+
+      latestQuotes
+        .filter(row => {
+          if (!filter) return true;
+          const symbol = (row.symbol || "").toLowerCase();
+          const name = (row.name || "").toLowerCase();
+          return symbol.includes(filter) || name.includes(filter);
+        })
+        .forEach(row => {
+          const tr = document.createElement("tr");
+
+          const changePct = Number(row.changePct || 0);
+          const change = Number(row.change || 0);
+          const isUp = changePct > 0;
+          const isDown = changePct < 0;
+
+          tr.innerHTML = `
+            <td>${row.symbol || ""}</td>
+            <td>${row.name || ""}</td>
+            <td>${formatNumber(row.last)}</td>
+            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
+              ${formatSigned(change)}
+            </td>
+            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
+              ${formatSigned(changePct)}%
+            </td>
+            <td>${formatNumber(row.dailyHigh)}</td>
+            <td>${formatNumber(row.dailyLow)}</td>
+            <td>${formatNumber(row.weeklyHigh)}</td>
+            <td>${formatNumber(row.weeklyLow)}</td>
+            <td>${row.session || ""}</td>
+          `;
+
+          tableBody.appendChild(tr);
+        });
+    }
+
+    function formatNumber(value) {
+      const num = Number(value);
+      if (Number.isNaN(num)) return "";
+      const abs = Math.abs(num);
+
+      if (abs >= 1000) {
+        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      }
+      if (abs >= 1) {
+        return num.toFixed(2);
+      }
+      return num.toFixed(4);
+    }
+
+    function formatSigned(value) {
+      const num = Number(value);
+      if (Number.isNaN(num) || num === 0) return formatNumber(0);
+      const sign = num > 0 ? "+" : "";
+      return sign + formatNumber(num);
+    }
+
+    searchInput.addEventListener("input", renderQuotesTable);
+
+    // ==========================
+    //  CAPITAL FLOW (Dummy)
+    // ==========================
+    const capitalFlowCanvas = document.getElementById("capitalFlowCanvas");
+    const capitalFlowCtx = capitalFlowCanvas.getContext("2d");
+    let capitalFlowData = [];
+
+    function updateCapitalFlow(data) {
+      capitalFlowData = (Array.isArray(data) ? data : []).slice();
+      capitalFlowData.sort((a, b) => (b.changePct || 0) - (a.changePct || 0));
+      drawCapitalFlow();
+    }
+
+    function resizeCanvasToContainer(canvas) {
+      const parent = canvas.parentElement;
+      const rect = parent.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + "px";
+      canvas.style.height = rect.height + "px";
+
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function drawCapitalFlow() {
+      if (!capitalFlowCanvas) return;
+      resizeCanvasToContainer(capitalFlowCanvas);
+      const ctx = capitalFlowCtx;
+      const width = capitalFlowCanvas.clientWidth;
+      const height = capitalFlowCanvas.clientHeight;
+
+      ctx.clearRect(0, 0, width, height);
+
+      if (!capitalFlowData.length) {
+        ctx.fillStyle = "#555";
+        ctx.font = "10px 'Fira Code'";
+        ctx.fillText("Waiting for dummy data…", 8, 16);
+        return;
+      }
+
+      const margin = { top: 8, right: 16, bottom: 20, left: 40 };
+      const chartWidth = width - margin.left - margin.right;
+      const chartHeight = height - margin.top - margin.bottom;
+      const zeroY = margin.top + chartHeight / 2;
+
+      ctx.strokeStyle = "#444";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(margin.left, zeroY);
+      ctx.lineTo(margin.left + chartWidth, zeroY);
+      ctx.stroke();
+
+      const maxAbsChange = capitalFlowData.reduce((acc, d) => {
+        const val = Math.abs(d.changePct || 0);
+        return val > acc ? val : acc;
+      }, 0.01);
+
+      const barWidth = (chartWidth / Math.max(capitalFlowData.length, 1)) * 0.7;
+      const xStep = chartWidth / Math.max(capitalFlowData.length, 1);
+
+      ctx.textAlign = "center";
+      ctx.font = "9px 'Fira Code'";
+
+      const upColor = "#22c55e";
+      const downColor = "#ef4444";
+
+      capitalFlowData.forEach((d, idx) => {
+        const xCenter = margin.left + xStep * idx + xStep / 2;
+        const value = d.changePct || 0;
+        const barHeight = (Math.abs(value) / maxAbsChange) * (chartHeight / 2);
+
+        const isPositive = value >= 0;
+        ctx.fillStyle = isPositive ? upColor : downColor;
+
+        const y = isPositive ? zeroY - barHeight : zeroY;
+        ctx.fillRect(xCenter - barWidth / 2, y, barWidth, barHeight);
+
+        ctx.fillStyle = "#9b9b9b";
+        ctx.save();
+        ctx.translate(xCenter, height - 4);
+        ctx.rotate(-Math.PI / 4);
+        ctx.fillText((d.symbol || "").toUpperCase(), 0, 0);
+        ctx.restore();
+      });
+    }
+
+    // ==========================
+    //  RRG (Dummy)
+    // ==========================
+    const rrgCanvas = document.getElementById("rrgCanvas");
+    const rrgCtx = rrgCanvas.getContext("2d");
+    let rrgData = [];
+
+    function updateRRG(data) {
+      rrgData = Array.isArray(data) ? data : [];
+      drawRRG();
+    }
+
+    function drawRRG() {
+      if (!rrgCanvas) return;
+      resizeCanvasToContainer(rrgCanvas);
+      const ctx = rrgCtx;
+      const width = rrgCanvas.clientWidth;
+      const height = rrgCanvas.clientHeight;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const margin = { top: 10, right: 10, bottom: 16, left: 16 };
+      const chartWidth = width - margin.left - margin.right;
+      const chartHeight = height - margin.top - margin.bottom;
+
+      const centerX = margin.left + chartWidth / 2;
+      const centerY = margin.top + chartHeight / 2;
+
+      ctx.strokeStyle = "#444";
+      ctx.lineWidth = 1;
+
+      ctx.beginPath();
+      ctx.moveTo(centerX, margin.top);
+      ctx.lineTo(centerX, margin.top + chartHeight);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(margin.left, centerY);
+      ctx.lineTo(margin.left + chartWidth, centerY);
+      ctx.stroke();
+
+      ctx.strokeStyle = "#2b2b2b";
+      ctx.strokeRect(margin.left, margin.top, chartWidth / 2, chartHeight / 2);
+      ctx.strokeRect(centerX, margin.top, chartWidth / 2, chartHeight / 2);
+      ctx.strokeRect(margin.left, centerY, chartWidth / 2, chartHeight / 2);
+      ctx.strokeRect(centerX, centerY, chartWidth / 2, chartHeight / 2);
+
+      ctx.fillStyle = "#9b9b9b";
+      ctx.font = "10px 'Fira Code'";
+      ctx.fillText("RS-Ratio →", centerX + 4, margin.top + 10);
+      ctx.save();
+      ctx.translate(margin.left + 4, centerY - 4);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText("RS-Momentum ↑", 0, 0);
+      ctx.restore();
+
+      ctx.font = "9px 'Fira Code'";
+      ctx.fillText("Leading",   margin.left + 4, margin.top + 12);
+      ctx.fillText("Weakening", centerX + 4,    margin.top + 12);
+      ctx.fillText("Improving", margin.left + 4, centerY + 12);
+      ctx.fillText("Lagging",   centerX + 4,    centerY + 12);
+
+      if (!rrgData.length) {
+        ctx.fillStyle = "#555";
+        ctx.fillText("Waiting for dummy data…", margin.left + 4, margin.top + 26);
+        return;
+      }
+
+      const baseRatio = 100;
+      const baseMomentum = 100;
+
+      const maxDeltaRatio = rrgData.reduce((acc, d) => {
+        const diff = Math.abs((d.rsRatio || baseRatio) - baseRatio);
+        return diff > acc ? diff : acc;
+      }, 1);
+
+      const maxDeltaMomentum = rrgData.reduce((acc, d) => {
+        const diff = Math.abs((d.rsMomentum || baseMomentum) - baseMomentum);
+        return diff > acc ? diff : acc;
+      }, 1);
+
+      const maxRadiusX = chartWidth / 2 - 10;
+      const maxRadiusY = chartHeight / 2 - 10;
+
+      rrgData.forEach(d => {
+        const ratio = d.rsRatio || baseRatio;
+        const momentum = d.rsMomentum || baseMomentum;
+
+        const dx = ((ratio - baseRatio) / maxDeltaRatio) * maxRadiusX;
+        const dy = ((momentum - baseMomentum) / maxDeltaMomentum) * maxRadiusY;
+
+        const x = centerX + dx;
+        const y = centerY - dy;
+
+        let color = "#3b82f6";
+        if (ratio >= baseRatio && momentum >= baseMomentum) color = "#22c55e";   // Leading
+        else if (ratio >= baseRatio && momentum < baseMomentum) color = "#ffbf00"; // Weakening
+        else if (ratio < baseRatio && momentum < baseMomentum) color = "#ef4444";  // Lagging
+
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#f5f5f5";
+        ctx.font = "8px 'Fira Code'";
+        ctx.fillText((d.symbol || "").toUpperCase(), x + 5, y - 4);
+      });
+    }
+
+    // ==========================
+    //  DUMMY DATA – COMMODITIES
+    // ==========================
+    function loadMockData() {
+      const mockQuotes = [
+        // === Precious Metals ===
+        { symbol:"XAUUSD",  name:"Gold · Precious Metal",      last:2412.35, change:8.20,   changePct:0.34,  dailyHigh:2428.90, dailyLow:2388.40, weeklyHigh:2455.50, weeklyLow:2360.20, session:"London" },
+        { symbol:"XAGUSD",  name:"Silver · Precious Metal",    last:29.72,   change:-0.18,  changePct:-0.60, dailyHigh:30.20,   dailyLow:29.10,   weeklyHigh:31.05,   weeklyLow:28.40,  session:"London" },
+        { symbol:"XPTUSD",  name:"Platinum · Precious Metal",  last:1075.40, change:6.30,   changePct:0.59,  dailyHigh:1084.90, dailyLow:1058.10, weeklyHigh:1105.20,  weeklyLow:1032.80, session:"London" },
+        { symbol:"XPDUSD",  name:"Palladium · Precious Metal", last:1120.80, change:-14.50, changePct:-1.28, dailyHigh:1148.60, dailyLow:1102.40, weeklyHigh:1185.30,  weeklyLow:1080.20, session:"London" },
+
+        // === Base Metals ===
+        { symbol:"HG1!",    name:"Copper (COMEX) · Base Metal",last:4.18,    change:0.03,   changePct:0.72,  dailyHigh:4.23,    dailyLow:4.10,    weeklyHigh:4.32,    weeklyLow:3.98,    session:"New York" },
+        { symbol:"ALI1!",   name:"Aluminium (LME) · Base Metal",last:2460.50,change:-12.40, changePct:-0.50, dailyHigh:2498.00, dailyLow:2430.20, weeklyHigh:2525.40,  weeklyLow:2385.10, session:"London" },
+        { symbol:"ZN1!",    name:"Zinc (LME) · Base Metal",    last:2980.10, change:24.30,  changePct:0.82,  dailyHigh:3012.00, dailyLow:2935.50, weeklyHigh:3058.40,  weeklyLow:2884.20, session:"London" },
+
+        // === Energy: Crude & Products ===
+        { symbol:"CL1!",    name:"WTI Crude Oil (NYMEX) · Energy", last:82.45, change:-0.62, changePct:-0.75, dailyHigh:83.90,  dailyLow:81.60,   weeklyHigh:85.25,   weeklyLow:79.40,   session:"New York" },
+        { symbol:"BRN1!",   name:"Brent Crude (ICE) · Energy",     last:86.32, change:-0.48, changePct:-0.55, dailyHigh:87.60,  dailyLow:85.40,   weeklyHigh:89.10,   weeklyLow:83.25,   session:"London" },
+        { symbol:"NG1!",    name:"Natural Gas (NYMEX) · Energy",   last:3.42,  change:0.07,  changePct:2.09,  dailyHigh:3.50,   dailyLow:3.28,    weeklyHigh:3.72,    weeklyLow:3.05,    session:"New York" },
+        { symbol:"RB1!",    name:"RBOB Gasoline (NYMEX) · Energy", last:2.54,  change:-0.03, changePct:-1.17, dailyHigh:2.61,   dailyLow:2.50,    weeklyHigh:2.72,    weeklyLow:2.44,    session:"New York" },
+        { symbol:"HO1!",    name:"Heating Oil (NYMEX) · Energy",   last:2.88,  change:0.02,  changePct:0.70,  dailyHigh:2.92,   dailyLow:2.80,    weeklyHigh:2.99,    weeklyLow:2.72,    session:"New York" },
+
+        // === Agriculture: Grains ===
+        { symbol:"ZC1!",    name:"Corn (CBOT) · Grain",       last:482.25, change:4.50,   changePct:0.94,  dailyHigh:486.40, dailyLow:474.20, weeklyHigh:495.80, weeklyLow:462.10, session:"Chicago" },
+        { symbol:"ZW1!",    name:"Wheat (CBOT) · Grain",      last:633.75, change:-5.25,  changePct:-0.82, dailyHigh:642.20, dailyLow:628.10, weeklyHigh:658.00, weeklyLow:610.90, session:"Chicago" },
+        { symbol:"ZS1!",    name:"Soybeans (CBOT) · Oilseed", last:1296.50,change:9.80,   changePct:0.76,  dailyHigh:1308.40,dailyLow:1280.20,weeklyHigh:1325.60,weeklyLow:1248.30,session:"Chicago" },
+
+        // === Agriculture: Softs ===
+        { symbol:"KC1!",    name:"Coffee (ICE) · Soft",       last:192.80, change:-1.60,  changePct:-0.82, dailyHigh:196.40, dailyLow:190.10, weeklyHigh:202.80, weeklyLow:185.20, session:"New York" },
+        { symbol:"SB1!",    name:"Sugar #11 (ICE) · Soft",    last:18.92,  change:0.14,   changePct:0.75,  dailyHigh:19.20,  dailyLow:18.60,  weeklyHigh:19.68,  weeklyLow:18.10,  session:"New York" },
+        { symbol:"CC1!",    name:"Cocoa (ICE) · Soft",        last:9520.00,change:110.00, changePct:1.17,  dailyHigh:9680.00,dailyLow:9385.00,weeklyHigh:9890.00,weeklyLow:9100.00,session:"London" },
+        { symbol:"CT1!",    name:"Cotton #2 (ICE) · Soft",    last:81.45,  change:-0.52,  changePct:-0.63, dailyHigh:82.60,  dailyLow:80.80,  weeklyHigh:84.10,  weeklyLow:79.40,  session:"New York" },
+
+        // === Indices / Baskets (pseudo-tickers) ===
+        { symbol:"BCOM",    name:"Bloomberg Commodity Index", last:105.82, change:0.42,   changePct:0.40,  dailyHigh:106.40, dailyLow:104.90, weeklyHigh:107.10, weeklyLow:103.40, session:"New York" },
+        { symbol:"GSCI",    name:"S&P GSCI · Index",          last:596.20, change:-2.80,  changePct:-0.47, dailyHigh:602.40, dailyLow:592.10, weeklyHigh:612.80, weeklyLow:583.90, session:"New York" }
+      ];
+
+      const mockFlow = mockQuotes.map(q => ({
+        symbol: q.symbol,
+        changePct: q.changePct
+      }));
+
+      const mockRRG = [
+        // Precious metals
+        { symbol:"XAUUSD", rsRatio:104, rsMomentum:103 },
+        { symbol:"XAGUSD", rsRatio:99,  rsMomentum:97  },
+        { symbol:"XPTUSD", rsRatio:101, rsMomentum:102 },
+        { symbol:"XPDUSD", rsRatio:95,  rsMomentum:94  },
+
+        // Base metals
+        { symbol:"HG1!",   rsRatio:103, rsMomentum:105 },
+        { symbol:"ALI1!",  rsRatio:97,  rsMomentum:96  },
+        { symbol:"ZN1!",   rsRatio:102, rsMomentum:101 },
+
+        // Energy
+        { symbol:"CL1!",   rsRatio:98,  rsMomentum:97  },
+        { symbol:"BRN1!",  rsRatio:99,  rsMomentum:98  },
+        { symbol:"NG1!",   rsRatio:106, rsMomentum:108 },
+        { symbol:"RB1!",   rsRatio:96,  rsMomentum:95  },
+        { symbol:"HO1!",   rsRatio:100, rsMomentum:101 },
+
+        // Grains & Softs
+        { symbol:"ZC1!",   rsRatio:101, rsMomentum:102 },
+        { symbol:"ZW1!",   rsRatio:94,  rsMomentum:93  },
+        { symbol:"ZS1!",   rsRatio:103, rsMomentum:104 },
+        { symbol:"KC1!",   rsRatio:95,  rsMomentum:96  },
+        { symbol:"SB1!",   rsRatio:100, rsMomentum:100 },
+        { symbol:"CC1!",   rsRatio:107, rsMomentum:109 },
+        { symbol:"CT1!",   rsRatio:98,  rsMomentum:99  },
+
+        // Indices
+        { symbol:"BCOM",   rsRatio:101, rsMomentum:101 },
+        { symbol:"GSCI",   rsRatio:99,  rsMomentum:98  }
+      ];
+
+      updateQuotesTable(mockQuotes);
+      updateCapitalFlow(mockFlow);
+      updateRRG(mockRRG);
+    }
+
+    // ==========================
+    //  INIT
+    // ==========================
+    window.addEventListener("resize", () => {
+      drawCapitalFlow();
+      drawRRG();
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadMockData(); // full dummy mode
+    });
+  </script>
+</body>
+</html>
