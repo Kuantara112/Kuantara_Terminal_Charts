@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara Technical Analysis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <!-- Chart.js (untuk grafik harga & pattern) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --amber:#ffbf00;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace!important;
+    }
+
+    html,body { height:100%; }
+    body {
+      background-color:var(--bg-root);
+      color:var(--text-main);
+      overflow:hidden;
+    }
+
+    .kt-root {
+      height:100vh;
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .page-title {
+      font-size:14px;
+      font-weight:600;
+      color:var(--amber);
+      letter-spacing:0.03em;
+    }
+
+    .page-subtitle {
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .grid-2x2 {
+      flex:1;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      grid-template-rows:1fr 1fr;
+      gap:12px;
+      min-height:0;
+      min-width:0;
+    }
+
+    .card {
+      background-color:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width:0;
+      min-height:0;
+    }
+
+    .card-title {
+      font-size:12px;
+      font-weight:500;
+      color:var(--text-main);
+    }
+
+    .card-subtitle {
+      font-size:9px;
+      color:var(--text-muted);
+    }
+
+    .controls-grid {
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:8px;
+      margin-top:6px;
+    }
+
+    .control-group {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    label {
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    select {
+      background:#000000;
+      color:var(--text-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:4px 6px;
+      font-size:10px;
+      outline:none;
+    }
+
+    select:focus {
+      border-color:var(--amber);
+    }
+
+    .controls-footer {
+      margin-top:8px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      font-size:9px;
+      color:var(--text-muted);
+    }
+
+    .btn-apply {
+      background-color:var(--amber);
+      color:#000000;
+      border:none;
+      border-radius:4px;
+      padding:4px 10px;
+      font-size:10px;
+      cursor:pointer;
+    }
+
+    .btn-apply:hover {
+      filter:brightness(1.05);
+    }
+
+    .chart-wrapper {
+      flex:1;
+      min-height:0;
+      position:relative;
+    }
+
+    canvas {
+      width:100%!important;
+      height:100%!important;
+      border:none;
+    }
+
+    .legend {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      font-size:9px;
+      color:var(--text-muted);
+    }
+
+    .legend span {
+      white-space:nowrap;
+    }
+
+    .summary-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
+
+    .rating-pill {
+      font-size:11px;
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid var(--amber);
+      color:var(--amber);
+    }
+
+    .summary-table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:9px;
+      margin-top:6px;
+    }
+
+    .summary-table th,
+    .summary-table td {
+      border:1px solid var(--border-soft);
+      padding:4px 6px;
+      text-align:center;
+      white-space:nowrap;
+    }
+
+    .summary-table th {
+      background-color:#000000;
+      color:var(--text-muted);
+      font-weight:400;
+    }
+
+    .summary-table td.signal-buy { color:#4caf50; }
+    .summary-table td.signal-sell { color:#f44336; }
+    .summary-table td.signal-neutral { color:var(--text-muted); }
+
+    .pattern-list {
+      font-size:9px;
+      color:var(--text-muted);
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px 10px;
+    }
+
+    .pattern-tag {
+      border:1px solid var(--border-soft);
+      border-radius:3px;
+      padding:2px 6px;
+    }
+
+    .pattern-tag.active {
+      border-color:var(--amber);
+      color:var(--amber);
+    }
+
+    .meta-line {
+      font-size:9px;
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    @media (max-width:900px) {
+      body { overflow:auto; }
+      .kt-root { height:auto; }
+      .grid-2x2 {
+        grid-template-columns:1fr;
+        grid-template-rows:auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-root">
+    <div>
+      <div class="page-title">Technical Analysis Matrix</div>
+      <div class="page-subtitle">
+        Multi-asset | yfinance backend | SMA · Volume · MACD · Patterns · Multi-timeframe Summary
+      </div>
+    </div>
+
+    <div class="grid-2x2">
+      <!-- TOP LEFT: CONTROLS -->
+      <section class="card">
+        <div class="card-title">Asset & Timeframe Selector</div>
+        <div class="card-subtitle">Pilih kelas aset, ticker, dan timeframe untuk dianalisa.</div>
+
+        <div class="controls-grid">
+          <div class="control-group">
+            <label for="assetClassSelect">Asset Class</label>
+            <select id="assetClassSelect">
+              <option value="forex">Forex</option>
+              <option value="commodities">Commodities</option>
+              <option value="indices">Indices</option>
+              <option value="bonds">Bonds</option>
+              <option value="stocks">Stocks</option>
+              <option value="crypto">Cryptocurrencies</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="tickerSelect">Tickers</label>
+            <select id="tickerSelect">
+              <!-- Contoh default, nanti bisa diisi dinamis dari backend -->
+              <option value="EURUSD=X">EURUSD (Forex)</option>
+              <option value="XAUUSD=X">XAUUSD (Gold)</option>
+              <option value="GC=F">GC=F (Gold Futures)</option>
+              <option value="ES=F">ES=F (S&P 500 Futures)</option>
+              <option value="^GSPC">^GSPC (S&P 500 Index)</option>
+              <option value="BTC-USD">BTC-USD (Bitcoin)</option>
+              <option value="AAPL">AAPL (Apple)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="timeframeSelect">Timeframe</label>
+            <select id="timeframeSelect">
+              <option value="1h">1H</option>
+              <option value="4h" selected>4H</option>
+              <option value="1d">1D</option>
+              <option value="1wk">1W</option>
+              <option value="1mo">1M</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>&nbsp;</label>
+            <button class="btn-apply" id="applyBtn">Apply</button>
+          </div>
+        </div>
+
+        <div class="controls-footer">
+          <span id="selectionInfo">EURUSD (4H, Forex)</span>
+          <span id="lastUpdated">Last update: -</span>
+        </div>
+      </section>
+
+      <!-- TOP RIGHT: MAIN CHART (SMA, VOLUME, MACD) -->
+      <section class="card">
+        <div class="card-title">Price & Core Indicators</div>
+        <div class="card-subtitle">
+          Close price + SMA(50/100/200), Volume, MACD (12,26,9).
+        </div>
+
+        <div class="chart-wrapper">
+          <canvas id="priceChart"></canvas>
+        </div>
+
+        <div class="legend">
+          <span>• Price (Close)</span>
+          <span>• SMA 50</span>
+          <span>• SMA 100</span>
+          <span>• SMA 200</span>
+          <span>• Volume (bar)</span>
+          <span>• MACD (line & histogram)</span>
+        </div>
+
+        <div class="meta-line" id="priceMeta">
+          Loading sample data...
+        </div>
+      </section>
+
+      <!-- BOTTOM LEFT: MULTI-TF SUMMARY -->
+      <section class="card">
+        <div class="summary-header">
+          <div>
+            <div class="card-title">Multi-Timeframe Indicator Summary</div>
+            <div class="card-subtitle">
+              SMA · Stoch · RSI · CCI · OBV · ATR · MACD
+            </div>
+          </div>
+          <div class="rating-pill" id="overallRating">
+            Neutral
+          </div>
+        </div>
+
+        <table class="summary-table" id="summaryTable">
+          <thead>
+            <tr>
+              <th>TF</th>
+              <th>SMA</th>
+              <th>Stoch</th>
+              <th>RSI</th>
+              <th>CCI</th>
+              <th>OBV</th>
+              <th>ATR</th>
+              <th>MACD</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Diisi via JS -->
+          </tbody>
+        </table>
+
+        <div class="meta-line" id="summaryConclusion">
+          Conclusion: Waiting for fresh data...
+        </div>
+      </section>
+
+      <!-- BOTTOM RIGHT: PATTERN FINDER CHART -->
+      <section class="card">
+        <div class="card-title">Pattern Finder</div>
+        <div class="card-subtitle">
+          Deteksi: Cup &amp; Handle, Double Bottom, Double Top, Falling Wedge, dan pola lainnya.
+        </div>
+
+        <div class="chart-wrapper">
+          <canvas id="patternChart"></canvas>
+        </div>
+
+        <div class="pattern-list" id="patternList">
+          <span class="pattern-tag">Cup &amp; Handle</span>
+          <span class="pattern-tag">Double Bottom</span>
+          <span class="pattern-tag">Double Top</span>
+          <span class="pattern-tag">Falling Wedge</span>
+          <span class="pattern-tag">Rising Wedge</span>
+          <span class="pattern-tag">Head &amp; Shoulders</span>
+        </div>
+
+        <div class="meta-line" id="patternMeta">
+          Detected patterns (sample only). Hubungkan ke backend pattern-finder untuk hasil real-time.
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // =========================
+    //  UTIL DUMMY DATA (DEMO)
+    // =========================
+    function generateDummySeries(points, base = 100, volatility = 1.0) {
+      const data = [];
+      let v = base;
+      for (let i = 0; i < points; i++) {
+        v += (Math.random() - 0.5) * volatility;
+        data.push(parseFloat(v.toFixed(2)));
+      }
+      return data;
+    }
+
+    function simpleMovingAverage(values, period) {
+      const sma = [];
+      for (let i = 0; i < values.length; i++) {
+        if (i < period - 1) {
+          sma.push(null);
+        } else {
+          let sum = 0;
+          for (let j = i - period + 1; j <= i; j++) {
+            sum += values[j];
+          }
+          sma.push(sum / period);
+        }
+      }
+      return sma;
+    }
+
+    function computeMACD(values, fast = 12, slow = 26, signal = 9) {
+      function ema(period) {
+        const k = 2 / (period + 1);
+        const result = [];
+        let prev = values[0];
+        result.push(prev);
+        for (let i = 1; i < values.length; i++) {
+          const val = values[i] * k + prev * (1 - k);
+          result.push(val);
+          prev = val;
+        }
+        return result;
+      }
+      const emaFast = ema(fast);
+      const emaSlow = ema(slow);
+      const macdLine = emaFast.map((v, i) => v - emaSlow[i]);
+      const signalLine = (function(){
+        const k = 2 / (signal + 1);
+        const result = [];
+        let prev = macdLine[0];
+        result.push(prev);
+        for (let i = 1; i < macdLine.length; i++) {
+          const val = macdLine[i] * k + prev * (1 - k);
+          result.push(val);
+          prev = val;
+        }
+        return result;
+      })();
+      const histogram = macdLine.map((v, i) => v - signalLine[i]);
+      return { macdLine, signalLine, histogram };
+    }
+
+    // =========================
+    //  CHART INIT
+    // =========================
+    let priceChart, patternChart;
+
+    function initCharts() {
+      const ctxPrice = document.getElementById('priceChart').getContext('2d');
+      const ctxPattern = document.getElementById('patternChart').getContext('2d');
+
+      // Dummy labels (misal 100 candle)
+      const points = 100;
+      const labels = Array.from({length: points}, (_, i) => 'C' + (i+1));
+
+      // Dummy close price & volume
+      const close = generateDummySeries(points, 100, 1.5);
+      const volume = generateDummySeries(points, 5000, 500);
+
+      // SMA
+      const sma50 = simpleMovingAverage(close, 20);
+      const sma100 = simpleMovingAverage(close, 50);
+      const sma200 = simpleMovingAverage(close, 80);
+
+      // MACD
+      const macdObj = computeMACD(close);
+
+      priceChart = new Chart(ctxPrice, {
+        type:'bar',
+        data:{
+          labels:labels,
+          datasets:[
+            {
+              type:'line',
+              label:'Close',
+              data:close,
+              yAxisID:'y',
+              borderWidth:1.2,
+              pointRadius:0,
+            },
+            {
+              type:'line',
+              label:'SMA 50',
+              data:sma50,
+              yAxisID:'y',
+              borderWidth:0.8,
+              pointRadius:0,
+            },
+            {
+              type:'line',
+              label:'SMA 100',
+              data:sma100,
+              yAxisID:'y',
+              borderWidth:0.8,
+              pointRadius:0,
+            },
+            {
+              type:'line',
+              label:'SMA 200',
+              data:sma200,
+              yAxisID:'y',
+              borderWidth:0.8,
+              pointRadius:0,
+            },
+            {
+              type:'bar',
+              label:'Volume',
+              data:volume,
+              yAxisID:'y1',
+              borderWidth:0,
+            },
+            {
+              type:'line',
+              label:'MACD',
+              data:macdObj.macdLine,
+              yAxisID:'y2',
+              borderWidth:0.8,
+              pointRadius:0,
+            },
+            {
+              type:'bar',
+              label:'MACD Hist',
+              data:macdObj.histogram,
+              yAxisID:'y2',
+              borderWidth:0,
+            },
+          ]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{
+            legend:{ display:false },
+          },
+          scales:{
+            y:{
+              position:'left',
+              ticks:{ font:{ size:9 } }
+            },
+            y1:{
+              position:'right',
+              grid:{ drawOnChartArea:false },
+              ticks:{ font:{ size:9 } }
+            },
+            y2:{
+              position:'right',
+              grid:{ drawOnChartArea:false },
+              ticks:{ display:false }
+            },
+            x:{
+              ticks:{ display:false }
+            }
+          }
+        }
+      });
+
+      // Pattern chart: gunakan close yang sama
+      patternChart = new Chart(ctxPattern, {
+        type:'line',
+        data:{
+          labels:labels,
+          datasets:[
+            {
+              label:'Close',
+              data:close,
+              borderWidth:1,
+              pointRadius:0,
+            }
+          ]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{ legend:{ display:false } },
+          scales:{
+            y:{ ticks:{ font:{ size:9 } } },
+            x:{ ticks:{ display:false } }
+          }
+        }
+      });
+
+      document.getElementById('priceMeta').textContent =
+        'Sample data only. Hubungkan ke backend yfinance untuk data real-time.';
+    }
+
+    // =========================
+    //  MULTI-TF SUMMARY
+    // =========================
+    function updateSummaryDummy() {
+      const tfs = ['1H','4H','1D','1W'];
+      const indicators = ['SMA','Stoch','RSI','CCI','OBV','ATR','MACD'];
+      const tbody = document.querySelector('#summaryTable tbody');
+      tbody.innerHTML = '';
+
+      const signals = ['Buy','Sell','Neutral'];
+      function randomSignal() {
+        return signals[Math.floor(Math.random()*signals.length)];
+      }
+
+      tfs.forEach(tf => {
+        const tr = document.createElement('tr');
+        const tfTd = document.createElement('td');
+        tfTd.textContent = tf;
+        tr.appendChild(tfTd);
+
+        indicators.forEach(ind => {
+          const td = document.createElement('td');
+          const sig = randomSignal();
+          td.textContent = sig;
+          if (sig === 'Buy') td.classList.add('signal-buy');
+          else if (sig === 'Sell') td.classList.add('signal-sell');
+          else td.classList.add('signal-neutral');
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      });
+
+      // Hitung overall rating sederhana
+      let buyCount = document.querySelectorAll('.signal-buy').length;
+      let sellCount = document.querySelectorAll('.signal-sell').length;
+      let ratingText = 'Neutral';
+      if (buyCount >= sellCount * 2 && buyCount > 4) ratingText = 'Strong Buy';
+      else if (buyCount > sellCount) ratingText = 'Buy';
+      else if (sellCount >= buyCount * 2 && sellCount > 4) ratingText = 'Strong Sell';
+      else if (sellCount > buyCount) ratingText = 'Sell';
+
+      const ratingEl = document.getElementById('overallRating');
+      ratingEl.textContent = ratingText;
+      document.getElementById('summaryConclusion').textContent =
+        'Conclusion: ' + ratingText + ' (dummy calculation). Integrasikan dengan hasil indikator multi-timeframe dari backend.';
+
+    }
+
+    // =========================
+    //  PATTERN LIST (DUMMY)
+    // =========================
+    function updatePatternDummy() {
+      const tags = document.querySelectorAll('#patternList .pattern-tag');
+      tags.forEach(tag => tag.classList.remove('active'));
+      // random aktifkan 1-2 pola
+      const arr = Array.from(tags);
+      if (arr.length === 0) return;
+      const first = arr[Math.floor(Math.random()*arr.length)];
+      first.classList.add('active');
+      if (Math.random() > 0.6) {
+        const second = arr[Math.floor(Math.random()*arr.length)];
+        if (second !== first) second.classList.add('active');
+      }
+      document.getElementById('patternMeta').textContent =
+        'Detected patterns (dummy): gunakan engine pattern-finder di backend (Python + yfinance) dan kirim hasilnya ke iframe ini.';
+    }
+
+    // =========================
+    //  BACKEND HOOK (YFINANCE)
+    // =========================
+    async function fetchTaFromBackend(assetClass, ticker, timeframe) {
+      // NOTE:
+      // Di sisi server, kamu bisa pakai Python + yfinance untuk ambil OHLCV,
+      // hitung indikator (SMA, Stoch, RSI, CCI, OBV, ATR, MACD, pattern, dll),
+      // lalu expose via endpoint JSON, misalnya:
+      //
+      // GET /api/ta?assetClass=forex&ticker=EURUSD=X&timeframe=4h
+      //
+      // Contoh struktur respon (disarankan):
+      // {
+      //   ohlc: [{time: "...", open:..., high:..., low:..., close:..., volume:...}, ...],
+      //   indicators: {
+      //     sma50: [...],
+      //     sma100: [...],
+      //     sma200: [...],
+      //     macd: { line:[...], signal:[...], hist:[...] },
+      //     multi_tf_summary: {...},
+      //     patterns: ["Double Bottom","Falling Wedge"]
+      //   }
+      // }
+      //
+      // Di sini aku pakai dummy supaya halaman tetap jalan out-of-the-box.
+      return null;
+      /*
+      const url = `/api/ta?assetClass=${encodeURIComponent(assetClass)}&ticker=${encodeURIComponent(ticker)}&timeframe=${encodeURIComponent(timeframe)}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Failed to fetch TA data');
+      return await res.json();
+      */
+    }
+
+    async function applySelection() {
+      const assetClass = document.getElementById('assetClassSelect').value;
+      const ticker = document.getElementById('tickerSelect').value;
+      const timeframe = document.getElementById('timeframeSelect').value;
+
+      document.getElementById('selectionInfo').textContent =
+        `${ticker} (${timeframe.toUpperCase()}, ${assetClass})`;
+      document.getElementById('lastUpdated').textContent =
+        'Last update: ' + new Date().toLocaleString();
+
+      // Saat backend sudah siap, kamu bisa pakai data real:
+      // const data = await fetchTaFromBackend(assetClass, ticker, timeframe);
+      // lalu update chart, summary, dan pattern berdasarkan data tsb.
+
+      updateSummaryDummy();
+      updatePatternDummy();
+    }
+
+    // =========================
+    //  INIT
+    // =========================
+    window.addEventListener('load', () => {
+      initCharts();
+      updateSummaryDummy();
+      updatePatternDummy();
+      applySelection();
+
+      document.getElementById('applyBtn').addEventListener('click', () => {
+        applySelection();
+      });
+    });
+  </script>
+</body>
+</html>
