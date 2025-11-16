@@ -13,7 +13,34 @@
       --amber:#ffbf00; --bg-root:#000; --bg-main:#111; --border-soft:#2b2b2b;
       --text-main:#f5f5f5; --text-muted:#9b9b9b; --overlay:rgba(0,0,0,0.6);
     }
-    *{box-sizing:border-box;margin:0;padding:0;font-family:"Fira Code",monospace!important}
+
+    /* GLOBAL RESET + SCROLLBAR HITAM */
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace!important;
+      /* Firefox scrollbar */
+      scrollbar-width:thin;
+      scrollbar-color:#000000 #000000; /* thumb | track */
+    }
+
+    /* WebKit scrollbar (Chrome, Edge, Safari) */
+    ::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    ::-webkit-scrollbar-track{
+      background:#000000; /* track hitam */
+    }
+    ::-webkit-scrollbar-thumb{
+      background:#000000; /* thumb hitam */
+      border-radius:4px;
+    }
+    ::-webkit-scrollbar-thumb:hover{
+      background:#050505; /* sedikit lebih terang saat hover */
+    }
+
     html,body{height:100%}
 
     /* Scroll behavior */
@@ -661,7 +688,7 @@
         updateIframeInteractivity();
       }
 
-      /* 👇 SEKARANG pointerEvents SELALU di-allow supaya mobile bisa scroll */
+      /* pointerEvents SELALU auto supaya mobile bisa scroll */
       function updateIframeInteractivity(){
         iframeLayer.style.pointerEvents = "auto";
       }
