@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Kuantara – Indices Market Snapshot</title>
+  <title>Kuantara – Equities Market Snapshot</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Fira Code -->
@@ -73,7 +73,7 @@
       font-size:var(--fs-title);
       font-weight:600;
       letter-spacing:0.03em;
-      margin-bottom:10px;
+      margin-bottom:6px;
       color:var(--text-main);
       display:flex;
       align-items:center;
@@ -86,7 +86,31 @@
       color:var(--text-muted);
     }
 
-    /* Single-column layout – biar fleksibel, nggak ngunci tinggi di mobile */
+    .kt-page-tabs {
+      display:flex;
+      gap:8px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .kt-pill-page {
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:3px 10px;
+      font-size:var(--fs-small);
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+      color:var(--text-muted);
+      background:#050505;
+    }
+    .kt-pill-page.active {
+      border-color:var(--amber);
+      color:#000;
+      background:var(--amber);
+    }
+
+    /* layout */
     .kt-layout {
       display:grid;
       grid-template-columns:1fr;
@@ -194,7 +218,7 @@
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:880px;        /* tetap horizontal scroll kalau terlalu lebar, bukan mengecil tak terbaca */
+      min-width:880px;        /* horizontal scroll kalau terlalu lebar */
     }
 
     thead {
@@ -262,7 +286,7 @@
       color:var(--amber);
     }
 
-    /* === Responsive – panel benar-benar fit di mobile === */
+    /* === Responsive === */
     @media (max-width:900px) {
       .kt-page {
         padding:12px;
@@ -302,7 +326,7 @@
       }
 
       .kt-table-wrapper {
-        max-height:none; /* biar ngikut tinggi konten di mobile */
+        max-height:none;
       }
     }
   </style>
@@ -310,23 +334,31 @@
 <body>
   <div class="kt-page">
     <div class="kt-title">
-      <div>Indices Market Snapshot</div>
-      <span class="label">Live Global Index Monitor · Kuantara Terminal</span>
+      <div>Equities Market Snapshot</div>
+      <span class="label">Global Indices · ETFs · US &amp; ID Stocks · Kuantara Terminal</span>
+    </div>
+
+    <!-- PAGE SWITCHER -->
+    <div class="kt-page-tabs">
+      <div class="kt-pill-page active" data-page="indices">Indices</div>
+      <div class="kt-pill-page" data-page="etf">ETF</div>
+      <div class="kt-pill-page" data-page="usstocks">US Stocks</div>
+      <div class="kt-pill-page" data-page="idstocks">ID Stocks</div>
     </div>
 
     <div class="kt-layout">
-      <!-- FULL PAGE: Indices Market Quotes -->
+      <!-- FULL PAGE: Equities Quotes -->
       <div class="kt-column">
         <section class="kt-card">
           <header class="kt-card-header">
-            <div>Indices Market Quotes</div>
+            <div id="quotesTitle">Indices Market Quotes</div>
             <div class="kt-toolbar">
               <div class="kt-pill active" data-scope="global">Global</div>
               <div class="kt-pill" data-scope="developed">DM</div>
               <div class="kt-pill" data-scope="emerging">EM</div>
               <div class="kt-search">
                 <span>🔍</span>
-                <input id="searchInput" type="text" placeholder="Filter index (e.g. SPX, NIKKEI, DAX)">
+                <input id="searchInput" type="text" placeholder="Filter symbol / name">
               </div>
             </div>
           </header>
@@ -361,13 +393,24 @@
 
   <script>
     // ==========================
-    //  QUOTES TABLE
+    //  STATE
     // ==========================
     const tableBody = document.querySelector("#indicesTable tbody");
     const searchInput = document.getElementById("searchInput");
+    const quotesTitleEl = document.getElementById("quotesTitle");
+    const pagePills = document.querySelectorAll(".kt-pill-page");
 
     let latestQuotes = [];
+    let currentPage = "indices";
 
+    let mockIndices = [];
+    let mockEtf = [];
+    let mockUSStocks = [];
+    let mockIDStocks = [];
+
+    // ==========================
+    //  RENDER TABLE
+    // ==========================
     function updateQuotesTable(data) {
       latestQuotes = Array.isArray(data) ? data : [];
       renderQuotesTable();
@@ -415,7 +458,6 @@
             <td>${row.session || ""}</td>
           `;
 
-          // Add copy OHLC button
           const tdCopy = document.createElement("td");
           const btn = document.createElement("button");
           btn.className = "copy-btn";
@@ -482,59 +524,94 @@
     searchInput.addEventListener("input", renderQuotesTable);
 
     // ==========================
-    //  DUMMY DATA (with daily OHLC + %YTD + Close)
+    //  PAGE SWITCHING
+    // ==========================
+    function applyPageDataset() {
+      let title = "";
+      let placeholder = "";
+
+      if (currentPage === "indices") {
+        title = "Indices Market Quotes";
+        placeholder = "Filter index (e.g. SPX, NIKKEI, DAX)";
+        updateQuotesTable(mockIndices);
+      } else if (currentPage === "etf") {
+        title = "ETF Market Quotes";
+        placeholder = "Filter ETF (e.g. SPY, QQQ, EEM)";
+        updateQuotesTable(mockEtf);
+      } else if (currentPage === "usstocks") {
+        title = "US Stocks Market Quotes";
+        placeholder = "Filter US stocks (e.g. AAPL, MSFT)";
+        updateQuotesTable(mockUSStocks);
+      } else if (currentPage === "idstocks") {
+        title = "ID Stocks Market Quotes";
+        placeholder = "Filter ID stocks (e.g. BBCA, BBRI)";
+        updateQuotesTable(mockIDStocks);
+      }
+
+      quotesTitleEl.textContent = title;
+      searchInput.placeholder = placeholder;
+    }
+
+    pagePills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        pagePills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        currentPage = pill.dataset.page;
+        applyPageDataset();
+      });
+    });
+
+    // ==========================
+    //  DUMMY DATA
     // ==========================
     function loadMockData() {
-      const mockQuotes = [
-        // US
+      // Indices
+      mockIndices = [
         { symbol:"SPX",    name:"S&P 500",            open:5510.00, high:5560.00, low:5490.15, last:5534.21, close:5534.21, change:12.40,  changePct:0.22,  ytdPct:15.30, session:"New York" },
         { symbol:"NDX",    name:"Nasdaq 100",         open:19690.0, high:19780.0, low:19510.2, last:19642.3, close:19642.3, change:-32.80, changePct:-0.17, ytdPct:21.45, session:"New York" },
         { symbol:"DJI",    name:"Dow Jones",          open:40163.6, high:40420.5, low:39980.0, last:40251.8, close:40251.8, change:88.20,  changePct:0.22,  ytdPct:8.95,  session:"New York" },
         { symbol:"RUT",    name:"Russell 2000",       open:2146.2,  high:2175.0,  low:2120.5,  last:2155.9,  close:2155.9,  change:9.70,   changePct:0.45,  ytdPct:4.10,  session:"New York" },
-
-        // Europe
-        { symbol:"SX5E",   name:"Euro Stoxx 50",      open:5070.0,  high:5090.5,  low:5020.0,  last:5050.1,  close:5050.1,  change:-18.40, changePct:-0.36, ytdPct:7.80,  session:"London" },
         { symbol:"DAX",    name:"DAX Germany",        open:18910.0, high:18990.0, low:18720.3, last:18840.7, close:18840.7, change:-56.20, changePct:-0.30, ytdPct:6.55,  session:"Frankfurt" },
-        { symbol:"UKX",    name:"FTSE 100",           open:8342.3,  high:8385.0,  low:8290.2,  last:8356.4,  close:8356.4,  change:14.10,  changePct:0.17,  ytdPct:3.20,  session:"London" },
-        { symbol:"CAC",    name:"CAC 40",             open:7687.4,  high:7725.0,  low:7630.5,  last:7695.3,  close:7695.3,  change:7.90,   changePct:0.10,  ytdPct:5.85,  session:"Paris" },
-        { symbol:"SMI",    name:"Swiss SMI",          open:12066.9, high:12110.0, low:11980.4, last:12045.6, close:12045.6, change:-21.30, changePct:-0.18, ytdPct:2.90,  session:"Zurich" },
-        { symbol:"IBEX",   name:"IBEX 35",            open:11323.3, high:11385.0, low:11240.0, last:11340.2, close:11340.2, change:16.90,  changePct:0.15,  ytdPct:4.75,  session:"Madrid" },
-
-        // Japan
         { symbol:"NKY",    name:"Nikkei 225",         open:38521.8, high:38980.0, low:38250.0, last:38742.9, close:38742.9, change:221.10, changePct:0.57,  ytdPct:9.60,  session:"Tokyo" },
-        { symbol:"TOPIX",  name:"TOPIX",              open:2808.7,  high:2830.5,  low:2780.0,  last:2815.2,  close:2815.2,  change:6.50,   changePct:0.23,  ytdPct:8.20,  session:"Tokyo" },
-
-        // China / HK
-        { symbol:"HSI",    name:"Hang Seng",          open:18532.0, high:18620.0, low:18320.0, last:18450.2, close:18450.2, change:-95.40, changePct:-0.51, ytdPct:-3.40, session:"Hong Kong" },
-        { symbol:"SHCOMP", name:"Shanghai Composite", open:3148.4,  high:3170.0,  low:3120.0,  last:3155.6,  close:3155.6,  change:4.80,   changePct:0.15,  ytdPct:1.75,  session:"Shanghai" },
-        { symbol:"SZCOMP", name:"Shenzhen Component", open:10157.4, high:10210.0, low:10040.0, last:10125.3, close:10125.3, change:-32.10, changePct:-0.32, ytdPct:-1.20, session:"Shenzhen" },
-
-        // Asia ex-Japan
-        { symbol:"KS11",   name:"KOSPI",              open:2785.8,  high:2810.0,  low:2755.0,  last:2790.5,  close:2790.5,  change:4.70,   changePct:0.17,  ytdPct:2.95,  session:"Seoul" },
-        { symbol:"TWII",   name:"Taiwan Weighted",    open:21030.6, high:21110.0, low:20820.0, last:20985.4, close:20985.4, change:-45.20, changePct:-0.21, ytdPct:18.10, session:"Taipei" },
-        { symbol:"STI",    name:"Straits Times",      open:3419.7,  high:3435.0,  low:3385.0,  last:3420.8,  close:3420.8,  change:1.10,   changePct:0.03,  ytdPct:0.75,  session:"Singapore" },
-        { symbol:"NIFTY",  name:"Nifty 50 India",     open:23458.1, high:23620.0, low:23280.0, last:23521.3, close:23521.3, change:63.20,  changePct:0.27,  ytdPct:12.60, session:"Mumbai" },
-        { symbol:"SENSEX", name:"BSE Sensex",         open:78415.1, high:78820.0, low:77880.0, last:78550.7, close:78550.7, change:135.60, changePct:0.17,  ytdPct:11.90, session:"Mumbai" },
-
-        // Australia / NZ
-        { symbol:"AS51",   name:"ASX 200",            open:8128.6,  high:8160.0,  low:8050.0,  last:8115.7,  close:8115.7,  change:-12.90, changePct:-0.16, ytdPct:4.05,  session:"Sydney" },
-        { symbol:"NZ50",   name:"NZX 50",             open:1202.1,  high:1211.0,  low:1188.0,  last:1203.9,  close:1203.9,  change:1.80,   changePct:0.15,  ytdPct:1.10,  session:"Wellington" },
-
-        // Americas / EM
-        { symbol:"TSX",    name:"S&P/TSX Composite",  open:22626.1, high:22780.0, low:22480.0, last:22650.4, close:22650.4, change:24.30,  changePct:0.11,  ytdPct:6.20,  session:"Toronto" },
-        { symbol:"BVSP",   name:"Ibovespa",           open:132720,  high:133420,  low:131800,  last:132540,  close:132540,  change:-180,   changePct:-0.14, ytdPct:2.40,  session:"São Paulo" },
-        { symbol:"MEXBOL", name:"S&P/BMV IPC",        open:57117.8, high:57525.0, low:56780.0, last:57210.5, close:57210.5, change:92.70,  changePct:0.16,  ytdPct:5.10,  session:"Mexico City" },
-        { symbol:"TOP40",  name:"FTSE/JSE Top 40",    open:74596.0, high:74980.0, low:73920.0, last:74520.1, close:74520.1, change:-75.90, changePct:-0.10, ytdPct:1.85,  session:"Johannesburg" }
+        { symbol:"HSI",    name:"Hang Seng",          open:18532.0, high:18620.0, low:18320.0, last:18450.2, close:18450.2, change:-95.40, changePct:-0.51, ytdPct:-3.40, session:"Hong Kong" }
       ];
 
-      updateQuotesTable(mockQuotes);
+      // ETFs
+      mockEtf = [
+        { symbol:"SPY",   name:"SPDR S&P 500 ETF",     open:550.10, high:554.30, low:548.00, last:552.85, close:552.85, change:1.75,  changePct:0.32,  ytdPct:15.10, session:"New York" },
+        { symbol:"QQQ",   name:"Invesco QQQ",          open:470.20, high:474.90, low:468.10, last:471.35, close:471.35, change:-0.85, changePct:-0.18, ytdPct:20.25, session:"New York" },
+        { symbol:"IWM",   name:"iShares Russell 2000", open:205.40, high:208.10, low:203.80, last:206.95, close:206.95, change:0.90,  changePct:0.44,  ytdPct:3.90,  session:"New York" },
+        { symbol:"EEM",   name:"iShares MSCI EM",      open:42.10,  high:42.60,  low:41.85,  last:42.25,  close:42.25,  change:0.05,  changePct:0.12,  ytdPct:2.80,  session:"New York" },
+        { symbol:"EWJ",   name:"iShares MSCI Japan",   open:70.30,  high:71.20,  low:69.85,  last:70.95,  close:70.95,  change:0.40,  changePct:0.57,  ytdPct:8.50,  session:"Tokyo" }
+      ];
+
+      // US Stocks
+      mockUSStocks = [
+        { symbol:"AAPL",  name:"Apple Inc.",           open:220.50, high:223.20, low:219.30, last:221.85, close:221.85, change:1.35,  changePct:0.61,  ytdPct:18.40, session:"New York" },
+        { symbol:"MSFT",  name:"Microsoft Corp.",      open:435.60, high:439.80, low:434.20, last:438.10, close:438.10, change:2.50,  changePct:0.57,  ytdPct:19.75, session:"New York" },
+        { symbol:"GOOGL", name:"Alphabet Inc. A",      open:190.10, high:192.40, low:188.90, last:191.35, close:191.35, change:1.25,  changePct:0.66,  ytdPct:22.30, session:"New York" },
+        { symbol:"AMZN",  name:"Amazon.com Inc.",      open:188.20, high:191.00, low:187.10, last:189.75, close:189.75, change:1.55,  changePct:0.82,  ytdPct:25.10, session:"New York" },
+        { symbol:"TSLA",  name:"Tesla Inc.",           open:245.30, high:249.90, low:242.80, last:247.15, close:247.15, change:1.85,  changePct:0.75,  ytdPct:-5.20, session:"New York" },
+        { symbol:"NVDA",  name:"NVIDIA Corp.",         open:125.40, high:128.90, low:124.50, last:127.65, close:127.65, change:2.25,  changePct:1.79,  ytdPct:35.90, session:"New York" }
+      ];
+
+      // ID Stocks
+      mockIDStocks = [
+        { symbol:"BBCA",  name:"Bank Central Asia Tbk", open:9350,  high:9450,  low:9300,  last:9400,  close:9400,  change:50,   changePct:0.53,  ytdPct:7.20,  session:"Jakarta" },
+        { symbol:"BBRI",  name:"Bank Rakyat Indonesia", open:5200,  high:5275,  low:5150,  last:5230,  close:5230,  change:30,   changePct:0.58,  ytdPct:5.40,  session:"Jakarta" },
+        { symbol:"BMRI",  name:"Bank Mandiri Tbk",      open:6750,  high:6825,  low:6700,  last:6790,  close:6790,  change:40,   changePct:0.59,  ytdPct:6.85,  session:"Jakarta" },
+        { symbol:"TLKM",  name:"Telkom Indonesia Tbk",  open:4100,  high:4160,  low:4060,  last:4120,  close:4120,  change:20,   changePct:0.49,  ytdPct:3.10,  session:"Jakarta" },
+        { symbol:"UNVR",  name:"Unilever Indonesia",    open:3950,  high:4000,  low:3920,  last:3980,  close:3980,  change:30,   changePct:0.76,  ytdPct:-1.80, session:"Jakarta" }
+      ];
+
+      applyPageDataset(); // default indices
     }
 
     // ==========================
     //  INIT
     // ==========================
     document.addEventListener("DOMContentLoaded", () => {
-      loadMockData(); // dummy mode
+      loadMockData();
     });
   </script>
 </body>
