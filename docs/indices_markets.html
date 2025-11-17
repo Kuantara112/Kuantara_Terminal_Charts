@@ -1,10 +1,12 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
   <title>Kuantara – Indices Market Snapshot</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
     :root {
@@ -65,22 +67,20 @@
       color:var(--text-muted);
     }
 
+    /* Single-column full-page layout */
     .kt-layout {
       display:grid;
-      grid-template-columns:repeat(2, minmax(0,1fr)); /* kiri-kanan simetris */
-      gap:12px;
-      height:calc(100vh - 16px - 10px - 16px);
+      grid-template-columns:1fr;
+      height:calc(100vh - 42px);
       max-height:calc(100vh - 42px);
     }
 
     .kt-column {
       display:flex;
       flex-direction:column;
-      gap:12px;
       min-height:0;
     }
 
-    /* cards dalam column full height sehingga tinggi panel kiri = total dua panel kanan */
     .kt-column > .kt-card {
       flex:1;
       min-height:0;
@@ -174,7 +174,7 @@
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:720px;        /* force horizontal scroll on mobile instead of super kecil */
+      min-width:880px;        /* more columns: enforce horizontal scroll on mobile */
     }
 
     thead {
@@ -225,64 +225,7 @@
       color:var(--red);
     }
 
-    /* === Charts === */
-    .kt-chart-wrapper {
-      flex:1;
-      min-height:0;
-      position:relative;
-      margin-top:4px;
-      overflow:hidden;
-    }
-
-    .kt-chart-canvas {
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-    }
-
-    .kt-legend {
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      margin-top:4px;
-    }
-
-    .kt-legend-item {
-      display:flex;
-      align-items:center;
-      gap:4px;
-    }
-
-    .kt-dot {
-      width:8px;
-      height:8px;
-      border-radius:999px;
-    }
-
-    .dot-leading { background:var(--green); }
-    .dot-weakening { background:var(--amber); }
-    .dot-lagging { background:var(--red); }
-    .dot-improving { background:#3b82f6; }
-
     /* === Responsive === */
-    @media (max-width:900px) {
-      .kt-layout {
-        grid-template-columns:1fr;
-        grid-template-rows:auto auto;
-        height:auto;
-        max-height:none;
-      }
-      .kt-column {
-        min-height:260px;
-      }
-      .kt-column > .kt-card {
-        min-height:260px;
-      }
-    }
-
     @media (max-width:600px) {
       :root {
         --fs-title:13px;
@@ -312,534 +255,23 @@
       th, td {
         padding:4px 3px;
       }
+
+      .kt-layout {
+        height:auto;
+        max-height:none;
+      }
     }
   </style>
-<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 2147483647;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.immersive-translate-attach-loading::after {
-  content: " ";
-
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-2000%, -50%);
-  z-index: 100;
-}
-
-.immersive-translate-loading-spinner {
-  vertical-align: middle !important;
-  width: 10px !important;
-  height: 10px !important;
-  display: inline-block !important;
-  margin: 0 4px !important;
-  border: 2px rgba(221, 244, 255, 0.6) solid !important;
-  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-}
-
-@-webkit-keyframes immersive-translate-loading-animation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-
-@keyframes immersive-translate-loading-animation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.immersive-translate-input-loading {
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-}
-
-@keyframes immersiveTranslateShadowRolling {
-  0% {
-    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  12% {
-    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  25% {
-    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  36% {
-    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
-      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  50% {
-    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
-      110px 0 var(--loading-color), 100px 0 var(--loading-color);
-  }
-
-  62% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
-      120px 0 var(--loading-color), 110px 0 var(--loading-color);
-  }
-
-  75% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      130px 0 var(--loading-color), 120px 0 var(--loading-color);
-  }
-
-  87% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
-  }
-
-  100% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.immersive-translate-toast {
-  display: flex;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  right: 0;
-  top: 1%;
-  width: fit-content;
-  padding: 12px 20px;
-  margin: auto;
-  overflow: auto;
-  background: #fef6f9;
-  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
-  font-size: 15px;
-  border-radius: 8px;
-  color: #333;
-}
-
-.immersive-translate-toast-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.immersive-translate-toast-hidden {
-  margin: 0 20px 0 72px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.immersive-translate-toast-close {
-  color: #666666;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-toast {
-    top: 0;
-    padding: 12px 0px 0 10px;
-  }
-  .immersive-translate-toast-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .immersive-translate-toast-hidden {
-    margin: 10px auto;
-  }
-}
-
-.immersive-translate-dialog {
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  display: flex;
-  width: 300px;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: fit-content;
-  border-radius: 20px;
-  background-color: #fff;
-}
-
-.immersive-translate-modal {
-  display: none;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-}
-
-.immersive-translate-modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 40px 24px 24px;
-  border-radius: 12px;
-  width: 350px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
-    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-content {
-    margin: 25% auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .immersive-translate-modal-content {
-    width: 80vw !important;
-    margin: 20vh auto !important;
-    padding: 20px 12px 12px !important;
-  }
-
-  .immersive-translate-modal-title {
-    font-size: 14px !important;
-  }
-
-  .immersive-translate-modal-body {
-    font-size: 13px !important;
-    max-height: 60vh !important;
-  }
-
-  .immersive-translate-btn {
-    font-size: 13px !important;
-    padding: 8px 16px !important;
-    margin: 0 4px !important;
-  }
-
-  .immersive-translate-modal-footer {
-    gap: 6px !important;
-    margin-top: 16px !important;
-  }
-}
-
-.immersive-translate-modal .immersive-translate-modal-content-in-input {
-  max-width: 500px;
-}
-.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
-  text-align: left;
-  max-height: unset;
-}
-
-.immersive-translate-modal-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333333;
-}
-
-.immersive-translate-modal-body {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #333333;
-  margin-top: 24px;
-  word-break: break-all;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-body {
-    max-height: 250px;
-    overflow-y: auto;
-  }
-}
-
-.immersive-translate-close {
-  color: #666666;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.immersive-translate-close:hover,
-.immersive-translate-close:focus {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.immersive-translate-modal-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.immersive-translate-btn {
-  width: fit-content;
-  color: #fff;
-  background-color: #ea4c89;
-  border: none;
-  font-size: 14px;
-  margin: 0 8px;
-  padding: 9px 30px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.immersive-translate-btn-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.immersive-translate-btn:hover {
-  background-color: #f082ac;
-}
-.immersive-translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.immersive-translate-btn:disabled:hover {
-  background-color: #ea4c89;
-}
-
-.immersive-translate-link-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: none;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-}
-
-.immersive-translate-cancel-btn {
-  /* gray color */
-  background-color: rgb(89, 107, 120);
-}
-
-.immersive-translate-cancel-btn:hover {
-  background-color: hsl(205, 20%, 32%);
-}
-
-.immersive-translate-action-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: 1px solid #ea4c89;
-}
-
-.immersive-translate-btn svg {
-  margin-right: 5px;
-}
-
-.immersive-translate-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-primary-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-modal input[type="radio"] {
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.immersive-translate-modal label {
-  cursor: pointer;
-}
-
-.immersive-translate-close-action {
-  position: absolute;
-  top: 2px;
-  right: 0px;
-  cursor: pointer;
-}
-
-.imt-image-status {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 16px !important;
-}
-.imt-image-status img,
-.imt-image-status svg,
-.imt-img-loading {
-  width: 28px !important;
-  height: 28px !important;
-  margin: 0 0 8px 0 !important;
-  min-height: 28px !important;
-  min-width: 28px !important;
-  position: relative !important;
-}
-.imt-img-loading {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
-  background-size: 28px 28px;
-  animation: image-loading-rotate 1s linear infinite !important;
-}
-
-.imt-image-status span {
-  color: var(--bg-2, #fff) !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
-  font-weight: 500 !important;
-  font-family: "PingFang SC", Arial, sans-serif !important;
-}
-
-.imt-primary-button {
-  display: flex;
-  padding: 12px 80px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #ea4c89;
-  color: #fff;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.imt-retry-text {
-  color: #999;
-  text-align: center;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  cursor: pointer;
-}
-
-.imt-action-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.imt-modal-content-text {
-  text-align: left;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-@keyframes image-loading-rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.imt-linear-gradient-text {
-  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.imt-flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.imt-linear-black-btn {
-  border-radius: 50px;
-  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
-  height: 48px;
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
-</style></head>
+</head>
 <body>
   <div class="kt-page">
-    
+    <div class="kt-title">
+      <div>Indices Market Snapshot</div>
+      <span class="label">Live Global Index Monitor · Kuantara Terminal</span>
+    </div>
 
     <div class="kt-layout">
-      <!-- LEFT: Indices Market Quotes -->
+      <!-- FULL PAGE: Indices Market Quotes -->
       <div class="kt-column">
         <section class="kt-card">
           <header class="kt-card-header">
@@ -861,447 +293,20 @@
                 <tr>
                   <th>Symbol</th>
                   <th>Index</th>
+                  <th>Open</th>
+                  <th>High</th>
+                  <th>Low</th>
                   <th>Last</th>
                   <th>Δ</th>
                   <th>Δ%</th>
-                  <th>D Hi</th>
-                  <th>D Lo</th>
-                  <th>W Hi</th>
-                  <th>W Lo</th>
+                  <th>%YTD</th>
                   <th>Session</th>
                 </tr>
               </thead>
-              <tbody><tr>
-            <td>SPX</td>
-            <td>S&amp;P 500</td>
-            <td>5,534.21</td>
-            <td class="text-up">
-              +12.40
-            </td>
-            <td class="text-up">
-              +0.22%
-            </td>
-            <td>5,560</td>
-            <td>5,490.15</td>
-            <td>5,605.4</td>
-            <td>5,430.2</td>
-            <td>New York</td>
-          </tr><tr>
-            <td>NDX</td>
-            <td>Nasdaq 100</td>
-            <td>19,642.3</td>
-            <td class="text-down">
-              -32.80
-            </td>
-            <td class="text-down">
-              -0.17%
-            </td>
-            <td>19,780</td>
-            <td>19,510.2</td>
-            <td>19,950.1</td>
-            <td>19,320.4</td>
-            <td>New York</td>
-          </tr><tr>
-            <td>DJI</td>
-            <td>Dow Jones</td>
-            <td>40,251.8</td>
-            <td class="text-up">
-              +88.20
-            </td>
-            <td class="text-up">
-              +0.22%
-            </td>
-            <td>40,420.5</td>
-            <td>39,980</td>
-            <td>40,650</td>
-            <td>39,600</td>
-            <td>New York</td>
-          </tr><tr>
-            <td>RUT</td>
-            <td>Russell 2000</td>
-            <td>2,155.9</td>
-            <td class="text-up">
-              +9.70
-            </td>
-            <td class="text-up">
-              +0.45%
-            </td>
-            <td>2,175</td>
-            <td>2,120.5</td>
-            <td>2,190</td>
-            <td>2,085</td>
-            <td>New York</td>
-          </tr><tr>
-            <td>SX5E</td>
-            <td>Euro Stoxx 50</td>
-            <td>5,050.1</td>
-            <td class="text-down">
-              -18.40
-            </td>
-            <td class="text-down">
-              -0.36%
-            </td>
-            <td>5,090.5</td>
-            <td>5,020</td>
-            <td>5,140</td>
-            <td>4,985</td>
-            <td>London</td>
-          </tr><tr>
-            <td>DAX</td>
-            <td>DAX Germany</td>
-            <td>18,840.7</td>
-            <td class="text-down">
-              -56.20
-            </td>
-            <td class="text-down">
-              -0.30%
-            </td>
-            <td>18,990</td>
-            <td>18,720.3</td>
-            <td>19,120</td>
-            <td>18,550</td>
-            <td>Frankfurt</td>
-          </tr><tr>
-            <td>UKX</td>
-            <td>FTSE 100</td>
-            <td>8,356.4</td>
-            <td class="text-up">
-              +14.10
-            </td>
-            <td class="text-up">
-              +0.17%
-            </td>
-            <td>8,385</td>
-            <td>8,290.2</td>
-            <td>8,425</td>
-            <td>8,225</td>
-            <td>London</td>
-          </tr><tr>
-            <td>CAC</td>
-            <td>CAC 40</td>
-            <td>7,695.3</td>
-            <td class="text-up">
-              +7.90
-            </td>
-            <td class="text-up">
-              +0.10%
-            </td>
-            <td>7,725</td>
-            <td>7,630.5</td>
-            <td>7,775</td>
-            <td>7,550</td>
-            <td>Paris</td>
-          </tr><tr>
-            <td>SMI</td>
-            <td>Swiss SMI</td>
-            <td>12,045.6</td>
-            <td class="text-down">
-              -21.30
-            </td>
-            <td class="text-down">
-              -0.18%
-            </td>
-            <td>12,110</td>
-            <td>11,980.4</td>
-            <td>12,220</td>
-            <td>11,850</td>
-            <td>Zurich</td>
-          </tr><tr>
-            <td>IBEX</td>
-            <td>IBEX 35</td>
-            <td>11,340.2</td>
-            <td class="text-up">
-              +16.90
-            </td>
-            <td class="text-up">
-              +0.15%
-            </td>
-            <td>11,385</td>
-            <td>11,240</td>
-            <td>11,460</td>
-            <td>11,120</td>
-            <td>Madrid</td>
-          </tr><tr>
-            <td>NKY</td>
-            <td>Nikkei 225</td>
-            <td>38,742.9</td>
-            <td class="text-up">
-              +221.10
-            </td>
-            <td class="text-up">
-              +0.57%
-            </td>
-            <td>38,980</td>
-            <td>38,250</td>
-            <td>39,250</td>
-            <td>37,820</td>
-            <td>Tokyo</td>
-          </tr><tr>
-            <td>TOPIX</td>
-            <td>TOPIX</td>
-            <td>2,815.2</td>
-            <td class="text-up">
-              +6.50
-            </td>
-            <td class="text-up">
-              +0.23%
-            </td>
-            <td>2,830.5</td>
-            <td>2,780</td>
-            <td>2,850</td>
-            <td>2,745</td>
-            <td>Tokyo</td>
-          </tr><tr>
-            <td>HSI</td>
-            <td>Hang Seng</td>
-            <td>18,450.2</td>
-            <td class="text-down">
-              -95.40
-            </td>
-            <td class="text-down">
-              -0.51%
-            </td>
-            <td>18,620</td>
-            <td>18,320</td>
-            <td>18,890</td>
-            <td>18,150</td>
-            <td>Hong Kong</td>
-          </tr><tr>
-            <td>SHCOMP</td>
-            <td>Shanghai Composite</td>
-            <td>3,155.6</td>
-            <td class="text-up">
-              +4.80
-            </td>
-            <td class="text-up">
-              +0.15%
-            </td>
-            <td>3,170</td>
-            <td>3,120</td>
-            <td>3,195</td>
-            <td>3,085</td>
-            <td>Shanghai</td>
-          </tr><tr>
-            <td>SZCOMP</td>
-            <td>Shenzhen Component</td>
-            <td>10,125.3</td>
-            <td class="text-down">
-              -32.10
-            </td>
-            <td class="text-down">
-              -0.32%
-            </td>
-            <td>10,210</td>
-            <td>10,040</td>
-            <td>10,350</td>
-            <td>9,930</td>
-            <td>Shenzhen</td>
-          </tr><tr>
-            <td>KS11</td>
-            <td>KOSPI</td>
-            <td>2,790.5</td>
-            <td class="text-up">
-              +4.70
-            </td>
-            <td class="text-up">
-              +0.17%
-            </td>
-            <td>2,810</td>
-            <td>2,755</td>
-            <td>2,835</td>
-            <td>2,720</td>
-            <td>Seoul</td>
-          </tr><tr>
-            <td>TWII</td>
-            <td>Taiwan Weighted</td>
-            <td>20,985.4</td>
-            <td class="text-down">
-              -45.20
-            </td>
-            <td class="text-down">
-              -0.21%
-            </td>
-            <td>21,110</td>
-            <td>20,820</td>
-            <td>21,280</td>
-            <td>20,550</td>
-            <td>Taipei</td>
-          </tr><tr>
-            <td>STI</td>
-            <td>Straits Times</td>
-            <td>3,420.8</td>
-            <td class="text-up">
-              +1.10
-            </td>
-            <td class="text-up">
-              +0.03%
-            </td>
-            <td>3,435</td>
-            <td>3,385</td>
-            <td>3,460</td>
-            <td>3,350</td>
-            <td>Singapore</td>
-          </tr><tr>
-            <td>NIFTY</td>
-            <td>Nifty 50 India</td>
-            <td>23,521.3</td>
-            <td class="text-up">
-              +63.20
-            </td>
-            <td class="text-up">
-              +0.27%
-            </td>
-            <td>23,620</td>
-            <td>23,280</td>
-            <td>23,850</td>
-            <td>22,990</td>
-            <td>Mumbai</td>
-          </tr><tr>
-            <td>SENSEX</td>
-            <td>BSE Sensex</td>
-            <td>78,550.7</td>
-            <td class="text-up">
-              +135.60
-            </td>
-            <td class="text-up">
-              +0.17%
-            </td>
-            <td>78,820</td>
-            <td>77,880</td>
-            <td>79,250</td>
-            <td>77,150</td>
-            <td>Mumbai</td>
-          </tr><tr>
-            <td>AS51</td>
-            <td>ASX 200</td>
-            <td>8,115.7</td>
-            <td class="text-down">
-              -12.90
-            </td>
-            <td class="text-down">
-              -0.16%
-            </td>
-            <td>8,160</td>
-            <td>8,050</td>
-            <td>8,220</td>
-            <td>7,990</td>
-            <td>Sydney</td>
-          </tr><tr>
-            <td>NZ50</td>
-            <td>NZX 50</td>
-            <td>1,203.9</td>
-            <td class="text-up">
-              +1.80
-            </td>
-            <td class="text-up">
-              +0.15%
-            </td>
-            <td>1,211</td>
-            <td>1,188</td>
-            <td>1,225</td>
-            <td>1,170</td>
-            <td>Wellington</td>
-          </tr><tr>
-            <td>TSX</td>
-            <td>S&amp;P/TSX Composite</td>
-            <td>22,650.4</td>
-            <td class="text-up">
-              +24.30
-            </td>
-            <td class="text-up">
-              +0.11%
-            </td>
-            <td>22,780</td>
-            <td>22,480</td>
-            <td>22,940</td>
-            <td>22,150</td>
-            <td>Toronto</td>
-          </tr><tr>
-            <td>BVSP</td>
-            <td>Ibovespa</td>
-            <td>132,540</td>
-            <td class="text-down">
-              -180.00
-            </td>
-            <td class="text-down">
-              -0.14%
-            </td>
-            <td>133,420</td>
-            <td>131,800</td>
-            <td>134,950</td>
-            <td>129,500</td>
-            <td>São Paulo</td>
-          </tr><tr>
-            <td>MEXBOL</td>
-            <td>S&amp;P/BMV IPC</td>
-            <td>57,210.5</td>
-            <td class="text-up">
-              +92.70
-            </td>
-            <td class="text-up">
-              +0.16%
-            </td>
-            <td>57,525</td>
-            <td>56,780</td>
-            <td>57,980</td>
-            <td>56,150</td>
-            <td>Mexico City</td>
-          </tr><tr>
-            <td>TOP40</td>
-            <td>FTSE/JSE Top 40</td>
-            <td>74,520.1</td>
-            <td class="text-down">
-              -75.90
-            </td>
-            <td class="text-down">
-              -0.10%
-            </td>
-            <td>74,980</td>
-            <td>73,920</td>
-            <td>75,440</td>
-            <td>73,250</td>
-            <td>Johannesburg</td>
-          </tr></tbody>
+              <tbody>
+                <!-- Filled by JS -->
+              </tbody>
             </table>
-          </div>
-        </section>
-      </div>
-
-      <!-- RIGHT: Capital Flow (top) + RRG (bottom) -->
-      <div class="kt-column">
-        <!-- Indices Capital Flow -->
-        <section class="kt-card">
-          <header class="kt-card-header">
-            <div>Indices Capital Flow</div>
-            <div class="subtitle">Intraday % Change · Sorted from Strongest to Weakest</div>
-          </header>
-          <div class="kt-chart-wrapper">
-            <canvas id="capitalFlowCanvas" class="kt-chart-canvas" width="1080" height="310" style="width: 720px; height: 206.667px;"></canvas>
-          </div>
-        </section>
-
-        <!-- Relative Rotation Graph -->
-        <section class="kt-card">
-          <header class="kt-card-header">
-            <div>Relative Rotation Graph (RRG)</div>
-            <div class="subtitle">RS-Ratio vs RS-Momentum · RRG-Style Quadrants</div>
-          </header>
-          <div class="kt-chart-wrapper">
-            <canvas id="rrgCanvas" class="kt-chart-canvas" width="1080" height="273" style="width: 720px; height: 182px;"></canvas>
-          </div>
-          <div class="kt-legend">
-            <div class="kt-legend-item">
-              <span class="kt-dot dot-leading"></span><span>Leading</span>
-            </div>
-            <div class="kt-legend-item">
-              <span class="kt-dot dot-weakening"></span><span>Weakening</span>
-            </div>
-            <div class="kt-legend-item">
-              <span class="kt-dot dot-lagging"></span><span>Lagging</span>
-            </div>
-            <div class="kt-legend-item">
-              <span class="kt-dot dot-improving"></span><span>Improving</span>
-            </div>
           </div>
         </section>
       </div>
@@ -1310,7 +315,7 @@
 
   <script>
     // ==========================
-    //  QUOTES TABLE (Dummy)
+    //  QUOTES TABLE
     // ==========================
     const tableBody = document.querySelector("#indicesTable tbody");
     const searchInput = document.getElementById("searchInput");
@@ -1338,12 +343,18 @@
 
           const changePct = Number(row.changePct || 0);
           const change = Number(row.change || 0);
+          const ytdPct = Number(row.ytdPct || 0);
           const isUp = changePct > 0;
           const isDown = changePct < 0;
+          const isYtdUp = ytdPct > 0;
+          const isYtdDown = ytdPct < 0;
 
           tr.innerHTML = `
             <td>${row.symbol || ""}</td>
             <td>${row.name || ""}</td>
+            <td>${formatNumber(row.open)}</td>
+            <td>${formatNumber(row.high)}</td>
+            <td>${formatNumber(row.low)}</td>
             <td>${formatNumber(row.last)}</td>
             <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
               ${formatSigned(change)}
@@ -1351,10 +362,9 @@
             <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
               ${formatSigned(changePct)}%
             </td>
-            <td>${formatNumber(row.dailyHigh)}</td>
-            <td>${formatNumber(row.dailyLow)}</td>
-            <td>${formatNumber(row.weeklyHigh)}</td>
-            <td>${formatNumber(row.weeklyLow)}</td>
+            <td class="${isYtdUp ? "text-up" : isYtdDown ? "text-down" : ""}">
+              ${formatSigned(ytdPct)}%
+            </td>
             <td>${row.session || ""}</td>
           `;
 
@@ -1380,307 +390,60 @@
     searchInput.addEventListener("input", renderQuotesTable);
 
     // ==========================
-    //  CAPITAL FLOW (Dummy)
-    // ==========================
-    const capitalFlowCanvas = document.getElementById("capitalFlowCanvas");
-    const capitalFlowCtx = capitalFlowCanvas.getContext("2d");
-    let capitalFlowData = [];
-
-    function updateCapitalFlow(data) {
-      capitalFlowData = (Array.isArray(data) ? data : []).slice();
-      capitalFlowData.sort((a, b) => (b.changePct || 0) - (a.changePct || 0));
-      drawCapitalFlow();
-    }
-
-    function resizeCanvasToContainer(canvas) {
-      const parent = canvas.parentElement;
-      const rect = parent.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      canvas.style.width = rect.width + "px";
-      canvas.style.height = rect.height + "px";
-
-      const ctx = canvas.getContext("2d");
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    function drawCapitalFlow() {
-      if (!capitalFlowCanvas) return;
-      resizeCanvasToContainer(capitalFlowCanvas);
-      const ctx = capitalFlowCtx;
-      const width = capitalFlowCanvas.clientWidth;
-      const height = capitalFlowCanvas.clientHeight;
-
-      ctx.clearRect(0, 0, width, height);
-
-      if (!capitalFlowData.length) {
-        ctx.fillStyle = "#555";
-        ctx.font = "10px 'Fira Code'";
-        ctx.fillText("Waiting for dummy data…", 8, 16);
-        return;
-      }
-
-      const margin = { top: 8, right: 16, bottom: 20, left: 40 };
-      const chartWidth = width - margin.left - margin.right;
-      const chartHeight = height - margin.top - margin.bottom;
-      const zeroY = margin.top + chartHeight / 2;
-
-      ctx.strokeStyle = "#444";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(margin.left, zeroY);
-      ctx.lineTo(margin.left + chartWidth, zeroY);
-      ctx.stroke();
-
-      const maxAbsChange = capitalFlowData.reduce((acc, d) => {
-        const val = Math.abs(d.changePct || 0);
-        return val > acc ? val : acc;
-      }, 0.01);
-
-      const barWidth = (chartWidth / Math.max(capitalFlowData.length, 1)) * 0.7;
-      const xStep = chartWidth / Math.max(capitalFlowData.length, 1);
-
-      ctx.textAlign = "center";
-      ctx.font = "9px 'Fira Code'";
-
-      const upColor = "#22c55e";   // hijau
-      const downColor = "#ef4444"; // merah
-
-      capitalFlowData.forEach((d, idx) => {
-        const xCenter = margin.left + xStep * idx + xStep / 2;
-        const value = d.changePct || 0;
-        const barHeight = (Math.abs(value) / maxAbsChange) * (chartHeight / 2);
-
-        const isPositive = value >= 0;
-        ctx.fillStyle = isPositive ? upColor : downColor;
-
-        const y = isPositive ? zeroY - barHeight : zeroY;
-        ctx.fillRect(xCenter - barWidth / 2, y, barWidth, barHeight);
-
-        ctx.fillStyle = "#9b9b9b";
-        ctx.save();
-        ctx.translate(xCenter, height - 4);
-        ctx.rotate(-Math.PI / 4);
-        ctx.fillText((d.symbol || "").toUpperCase(), 0, 0);
-        ctx.restore();
-      });
-    }
-
-    // ==========================
-    //  RRG (Dummy)
-    // ==========================
-    const rrgCanvas = document.getElementById("rrgCanvas");
-    const rrgCtx = rrgCanvas.getContext("2d");
-    let rrgData = [];
-
-    function updateRRG(data) {
-      rrgData = Array.isArray(data) ? data : [];
-      drawRRG();
-    }
-
-    function drawRRG() {
-      if (!rrgCanvas) return;
-      resizeCanvasToContainer(rrgCanvas);
-      const ctx = rrgCtx;
-      const width = rrgCanvas.clientWidth;
-      const height = rrgCanvas.clientHeight;
-
-      ctx.clearRect(0, 0, width, height);
-
-      const margin = { top: 10, right: 10, bottom: 16, left: 16 };
-      const chartWidth = width - margin.left - margin.right;
-      const chartHeight = height - margin.top - margin.bottom;
-
-      const centerX = margin.left + chartWidth / 2;
-      const centerY = margin.top + chartHeight / 2;
-
-      ctx.strokeStyle = "#444";
-      ctx.lineWidth = 1;
-
-      ctx.beginPath();
-      ctx.moveTo(centerX, margin.top);
-      ctx.lineTo(centerX, margin.top + chartHeight);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(margin.left, centerY);
-      ctx.lineTo(margin.left + chartWidth, centerY);
-      ctx.stroke();
-
-      ctx.strokeStyle = "#2b2b2b";
-      ctx.strokeRect(margin.left, margin.top, chartWidth / 2, chartHeight / 2);
-      ctx.strokeRect(centerX, margin.top, chartWidth / 2, chartHeight / 2);
-      ctx.strokeRect(margin.left, centerY, chartWidth / 2, chartHeight / 2);
-      ctx.strokeRect(centerX, centerY, chartWidth / 2, chartHeight / 2);
-
-      ctx.fillStyle = "#9b9b9b";
-      ctx.font = "10px 'Fira Code'";
-      ctx.fillText("RS-Ratio →", centerX + 4, margin.top + 10);
-      ctx.save();
-      ctx.translate(margin.left + 4, centerY - 4);
-      ctx.rotate(-Math.PI / 2);
-      ctx.fillText("RS-Momentum ↑", 0, 0);
-      ctx.restore();
-
-      ctx.font = "9px 'Fira Code'";
-      ctx.fillText("Leading",   margin.left + 4, margin.top + 12);
-      ctx.fillText("Weakening", centerX + 4,    margin.top + 12);
-      ctx.fillText("Improving", margin.left + 4, centerY + 12);
-      ctx.fillText("Lagging",   centerX + 4,    centerY + 12);
-
-      if (!rrgData.length) {
-        ctx.fillStyle = "#555";
-        ctx.fillText("Waiting for dummy data…", margin.left + 4, margin.top + 26);
-        return;
-      }
-
-      const baseRatio = 100;
-      const baseMomentum = 100;
-
-      const maxDeltaRatio = rrgData.reduce((acc, d) => {
-        const diff = Math.abs((d.rsRatio || baseRatio) - baseRatio);
-        return diff > acc ? diff : acc;
-      }, 1);
-
-      const maxDeltaMomentum = rrgData.reduce((acc, d) => {
-        const diff = Math.abs((d.rsMomentum || baseMomentum) - baseMomentum);
-        return diff > acc ? diff : acc;
-      }, 1);
-
-      const maxRadiusX = chartWidth / 2 - 10;
-      const maxRadiusY = chartHeight / 2 - 10;
-
-      rrgData.forEach(d => {
-        const ratio = d.rsRatio || baseRatio;
-        const momentum = d.rsMomentum || baseMomentum;
-
-        const dx = ((ratio - baseRatio) / maxDeltaRatio) * maxRadiusX;
-        const dy = ((momentum - baseMomentum) / maxDeltaMomentum) * maxRadiusY;
-
-        const x = centerX + dx;
-        const y = centerY - dy;
-
-        let color = "#3b82f6";
-        if (ratio >= baseRatio && momentum >= baseMomentum) color = "#22c55e";   // Leading
-        else if (ratio >= baseRatio && momentum < baseMomentum) color = "#ffbf00"; // Weakening
-        else if (ratio < baseRatio && momentum < baseMomentum) color = "#ef4444";  // Lagging
-
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = "#f5f5f5";
-        ctx.font = "8px 'Fira Code'";
-        ctx.fillText((d.symbol || "").toUpperCase(), x + 5, y - 4);
-      });
-    }
-
-    // ==========================
-    //  DUMMY DATA (extended)
+    //  DUMMY DATA (with daily OHLC + %YTD)
     // ==========================
     function loadMockData() {
       const mockQuotes = [
         // US
-        { symbol:"SPX",    name:"S&P 500",            last:5534.21, change:12.4,  changePct:0.22,  dailyHigh:5560.00, dailyLow:5490.15, weeklyHigh:5605.40, weeklyLow:5430.20, session:"New York" },
-        { symbol:"NDX",    name:"Nasdaq 100",         last:19642.3, change:-32.8, changePct:-0.17, dailyHigh:19780.0, dailyLow:19510.2, weeklyHigh:19950.1, weeklyLow:19320.4, session:"New York" },
-        { symbol:"DJI",    name:"Dow Jones",          last:40251.8, change:88.2,  changePct:0.22,  dailyHigh:40420.5, dailyLow:39980.0, weeklyHigh:40650.0, weeklyLow:39600.0, session:"New York" },
-        { symbol:"RUT",    name:"Russell 2000",       last:2155.9,  change:9.7,   changePct:0.45,  dailyHigh:2175.0,  dailyLow:2120.5,  weeklyHigh:2190.0,  weeklyLow:2085.0,  session:"New York" },
+        { symbol:"SPX",    name:"S&P 500",            open:5510.00, high:5560.00, low:5490.15, last:5534.21, change:12.40,  changePct:0.22,  ytdPct:15.30, session:"New York" },
+        { symbol:"NDX",    name:"Nasdaq 100",         open:19690.0, high:19780.0, low:19510.2, last:19642.3, change:-32.80, changePct:-0.17, ytdPct:21.45, session:"New York" },
+        { symbol:"DJI",    name:"Dow Jones",          open:40163.6, high:40420.5, low:39980.0, last:40251.8, change:88.20,  changePct:0.22,  ytdPct:8.95,  session:"New York" },
+        { symbol:"RUT",    name:"Russell 2000",       open:2146.2,  high:2175.0,  low:2120.5,  last:2155.9,  change:9.70,   changePct:0.45,  ytdPct:4.10,  session:"New York" },
 
         // Europe
-        { symbol:"SX5E",   name:"Euro Stoxx 50",      last:5050.1,  change:-18.4, changePct:-0.36, dailyHigh:5090.5,  dailyLow:5020.0,  weeklyHigh:5140.0,  weeklyLow:4985.0,  session:"London" },
-        { symbol:"DAX",    name:"DAX Germany",        last:18840.7, change:-56.2, changePct:-0.30, dailyHigh:18990.0, dailyLow:18720.3, weeklyHigh:19120.0, weeklyLow:18550.0, session:"Frankfurt" },
-        { symbol:"UKX",    name:"FTSE 100",           last:8356.4,  change:14.1,  changePct:0.17,  dailyHigh:8385.0,  dailyLow:8290.2,  weeklyHigh:8425.0,  weeklyLow:8225.0,  session:"London" },
-        { symbol:"CAC",    name:"CAC 40",             last:7695.3,  change:7.9,   changePct:0.10,  dailyHigh:7725.0,  dailyLow:7630.5,  weeklyHigh:7775.0,  weeklyLow:7550.0,  session:"Paris" },
-        { symbol:"SMI",    name:"Swiss SMI",          last:12045.6, change:-21.3, changePct:-0.18, dailyHigh:12110.0, dailyLow:11980.4, weeklyHigh:12220.0, weeklyLow:11850.0, session:"Zurich" },
-        { symbol:"IBEX",   name:"IBEX 35",            last:11340.2, change:16.9,  changePct:0.15,  dailyHigh:11385.0, dailyLow:11240.0, weeklyHigh:11460.0, weeklyLow:11120.0, session:"Madrid" },
+        { symbol:"SX5E",   name:"Euro Stoxx 50",      open:5070.0,  high:5090.5,  low:5020.0,  last:5050.1,  change:-18.40, changePct:-0.36, ytdPct:7.80,  session:"London" },
+        { symbol:"DAX",    name:"DAX Germany",        open:18910.0, high:18990.0, low:18720.3, last:18840.7, change:-56.20, changePct:-0.30, ytdPct:6.55,  session:"Frankfurt" },
+        { symbol:"UKX",    name:"FTSE 100",           open:8342.3,  high:8385.0,  low:8290.2,  last:8356.4,  change:14.10,  changePct:0.17,  ytdPct:3.20,  session:"London" },
+        { symbol:"CAC",    name:"CAC 40",             open:7687.4,  high:7725.0,  low:7630.5,  last:7695.3,  change:7.90,   changePct:0.10,  ytdPct:5.85,  session:"Paris" },
+        { symbol:"SMI",    name:"Swiss SMI",          open:12066.9, high:12110.0, low:11980.4, last:12045.6, change:-21.30, changePct:-0.18, ytdPct:2.90,  session:"Zurich" },
+        { symbol:"IBEX",   name:"IBEX 35",            open:11323.3, high:11385.0, low:11240.0, last:11340.2, change:16.90,  changePct:0.15,  ytdPct:4.75,  session:"Madrid" },
 
         // Japan
-        { symbol:"NKY",    name:"Nikkei 225",         last:38742.9, change:221.1, changePct:0.57,  dailyHigh:38980.0, dailyLow:38250.0, weeklyHigh:39250.0, weeklyLow:37820.0, session:"Tokyo" },
-        { symbol:"TOPIX",  name:"TOPIX",              last:2815.2,  change:6.5,   changePct:0.23,  dailyHigh:2830.5,  dailyLow:2780.0,  weeklyHigh:2850.0,  weeklyLow:2745.0,  session:"Tokyo" },
+        { symbol:"NKY",    name:"Nikkei 225",         open:38521.8, high:38980.0, low:38250.0, last:38742.9, change:221.10, changePct:0.57,  ytdPct:9.60,  session:"Tokyo" },
+        { symbol:"TOPIX",  name:"TOPIX",              open:2808.7,  high:2830.5,  low:2780.0,  last:2815.2,  change:6.50,   changePct:0.23,  ytdPct:8.20,  session:"Tokyo" },
 
         // China / HK
-        { symbol:"HSI",    name:"Hang Seng",          last:18450.2, change:-95.4, changePct:-0.51, dailyHigh:18620.0, dailyLow:18320.0, weeklyHigh:18890.0, weeklyLow:18150.0, session:"Hong Kong" },
-        { symbol:"SHCOMP", name:"Shanghai Composite", last:3155.6,  change:4.8,   changePct:0.15,  dailyHigh:3170.0,  dailyLow:3120.0,  weeklyHigh:3195.0,  weeklyLow:3085.0,  session:"Shanghai" },
-        { symbol:"SZCOMP", name:"Shenzhen Component", last:10125.3, change:-32.1, changePct:-0.32, dailyHigh:10210.0, dailyLow:10040.0, weeklyHigh:10350.0, weeklyLow:9930.0, session:"Shenzhen" },
+        { symbol:"HSI",    name:"Hang Seng",          open:18532.0, high:18620.0, low:18320.0, last:18450.2, change:-95.40, changePct:-0.51, ytdPct:-3.40, session:"Hong Kong" },
+        { symbol:"SHCOMP", name:"Shanghai Composite", open:3148.4,  high:3170.0,  low:3120.0,  last:3155.6,  change:4.80,   changePct:0.15,  ytdPct:1.75,  session:"Shanghai" },
+        { symbol:"SZCOMP", name:"Shenzhen Component", open:10157.4, high:10210.0, low:10040.0, last:10125.3, change:-32.10, changePct:-0.32, ytdPct:-1.20, session:"Shenzhen" },
 
         // Asia ex-Japan
-        { symbol:"KS11",   name:"KOSPI",              last:2790.5,  change:4.7,   changePct:0.17,  dailyHigh:2810.0,  dailyLow:2755.0,  weeklyHigh:2835.0,  weeklyLow:2720.0,  session:"Seoul" },
-        { symbol:"TWII",   name:"Taiwan Weighted",    last:20985.4, change:-45.2, changePct:-0.21, dailyHigh:21110.0, dailyLow:20820.0, weeklyHigh:21280.0, weeklyLow:20550.0, session:"Taipei" },
-        { symbol:"STI",    name:"Straits Times",      last:3420.8,  change:1.1,   changePct:0.03,  dailyHigh:3435.0,  dailyLow:3385.0,  weeklyHigh:3460.0,  weeklyLow:3350.0,  session:"Singapore" },
-        { symbol:"NIFTY",  name:"Nifty 50 India",     last:23521.3, change:63.2,  changePct:0.27,  dailyHigh:23620.0, dailyLow:23280.0, weeklyHigh:23850.0, weeklyLow:22990.0, session:"Mumbai" },
-        { symbol:"SENSEX", name:"BSE Sensex",         last:78550.7, change:135.6, changePct:0.17,  dailyHigh:78820.0, dailyLow:77880.0, weeklyHigh:79250.0, weeklyLow:77150.0, session:"Mumbai" },
+        { symbol:"KS11",   name:"KOSPI",              open:2785.8,  high:2810.0,  low:2755.0,  last:2790.5,  change:4.70,   changePct:0.17,  ytdPct:2.95,  session:"Seoul" },
+        { symbol:"TWII",   name:"Taiwan Weighted",    open:21030.6, high:21110.0, low:20820.0, last:20985.4, change:-45.20, changePct:-0.21, ytdPct:18.10, session:"Taipei" },
+        { symbol:"STI",    name:"Straits Times",      open:3419.7,  high:3435.0,  low:3385.0,  last:3420.8,  change:1.10,   changePct:0.03,  ytdPct:0.75,  session:"Singapore" },
+        { symbol:"NIFTY",  name:"Nifty 50 India",     open:23458.1, high:23620.0, low:23280.0, last:23521.3, change:63.20,  changePct:0.27,  ytdPct:12.60, session:"Mumbai" },
+        { symbol:"SENSEX", name:"BSE Sensex",         open:78415.1, high:78820.0, low:77880.0, last:78550.7, change:135.60, changePct:0.17,  ytdPct:11.90, session:"Mumbai" },
 
         // Australia / NZ
-        { symbol:"AS51",   name:"ASX 200",            last:8115.7,  change:-12.9, changePct:-0.16, dailyHigh:8160.0,  dailyLow:8050.0,  weeklyHigh:8220.0,  weeklyLow:7990.0,  session:"Sydney" },
-        { symbol:"NZ50",   name:"NZX 50",             last:1203.9,  change:1.8,   changePct:0.15,  dailyHigh:1211.0,  dailyLow:1188.0,  weeklyHigh:1225.0,  weeklyLow:1170.0,  session:"Wellington" },
+        { symbol:"AS51",   name:"ASX 200",            open:8128.6,  high:8160.0,  low:8050.0,  last:8115.7,  change:-12.90, changePct:-0.16, ytdPct:4.05,  session:"Sydney" },
+        { symbol:"NZ50",   name:"NZX 50",             open:1202.1,  high:1211.0,  low:1188.0,  last:1203.9,  change:1.80,   changePct:0.15,  ytdPct:1.10,  session:"Wellington" },
 
         // Americas / EM
-        { symbol:"TSX",    name:"S&P/TSX Composite",  last:22650.4, change:24.3,  changePct:0.11,  dailyHigh:22780.0, dailyLow:22480.0, weeklyHigh:22940.0, weeklyLow:22150.0, session:"Toronto" },
-        { symbol:"BVSP",   name:"Ibovespa",           last:132540,  change:-180,  changePct:-0.14, dailyHigh:133420,  dailyLow:131800, weeklyHigh:134950,  weeklyLow:129500, session:"São Paulo" },
-        { symbol:"MEXBOL", name:"S&P/BMV IPC",        last:57210.5, change:92.7,  changePct:0.16,  dailyHigh:57525.0, dailyLow:56780.0, weeklyHigh:57980.0, weeklyLow:56150.0, session:"Mexico City" },
-        { symbol:"TOP40",  name:"FTSE/JSE Top 40",    last:74520.1, change:-75.9, changePct:-0.10, dailyHigh:74980.0, dailyLow:73920.0, weeklyHigh:75440.0, weeklyLow:73250.0, session:"Johannesburg" }
-      ];
-
-      const mockFlow = mockQuotes.map(q => ({
-        symbol: q.symbol,
-        changePct: q.changePct
-      }));
-
-      const mockRRG = [
-        { symbol:"SPX",    rsRatio:104, rsMomentum:103 },
-        { symbol:"NDX",    rsRatio:107, rsMomentum:99  },
-        { symbol:"DJI",    rsRatio:101, rsMomentum:98  },
-        { symbol:"RUT",    rsRatio:99,  rsMomentum:101 },
-
-        { symbol:"SX5E",   rsRatio:102, rsMomentum:100 },
-        { symbol:"DAX",    rsRatio:96,  rsMomentum:97  },
-        { symbol:"UKX",    rsRatio:95,  rsMomentum:101 },
-        { symbol:"CAC",    rsRatio:97,  rsMomentum:102 },
-        { symbol:"SMI",    rsRatio:93,  rsMomentum:98  },
-        { symbol:"IBEX",   rsRatio:98,  rsMomentum:99  },
-
-        { symbol:"NKY",    rsRatio:103, rsMomentum:106 },
-        { symbol:"TOPIX",  rsRatio:101, rsMomentum:104 },
-
-        { symbol:"HSI",    rsRatio:92,  rsMomentum:94  },
-        { symbol:"SHCOMP", rsRatio:94,  rsMomentum:97  },
-        { symbol:"SZCOMP", rsRatio:91,  rsMomentum:93  },
-
-        { symbol:"KS11",   rsRatio:100, rsMomentum:99  },
-        { symbol:"TWII",   rsRatio:102, rsMomentum:95  },
-        { symbol:"STI",    rsRatio:99,  rsMomentum:101 },
-        { symbol:"NIFTY",  rsRatio:105, rsMomentum:104 },
-        { symbol:"SENSEX", rsRatio:106, rsMomentum:103 },
-
-        { symbol:"AS51",   rsRatio:98,  rsMomentum:102 },
-        { symbol:"NZ50",   rsRatio:97,  rsMomentum:100 },
-
-        { symbol:"TSX",    rsRatio:101, rsMomentum:101 },
-        { symbol:"BVSP",   rsRatio:95,  rsMomentum:96  },
-        { symbol:"MEXBOL", rsRatio:99,  rsMomentum:98  },
-        { symbol:"TOP40",  rsRatio:96,  rsMomentum:95  }
+        { symbol:"TSX",    name:"S&P/TSX Composite",  open:22626.1, high:22780.0, low:22480.0, last:22650.4, change:24.30,  changePct:0.11,  ytdPct:6.20,  session:"Toronto" },
+        { symbol:"BVSP",   name:"Ibovespa",           open:132720,  high:133420,  low:131800,  last:132540,  change:-180,   changePct:-0.14, ytdPct:2.40,  session:"São Paulo" },
+        { symbol:"MEXBOL", name:"S&P/BMV IPC",        open:57117.8, high:57525.0, low:56780.0, last:57210.5, change:92.70,  changePct:0.16,  ytdPct:5.10,  session:"Mexico City" },
+        { symbol:"TOP40",  name:"FTSE/JSE Top 40",    open:74596.0, high:74980.0, low:73920.0, last:74520.1, change:-75.90, changePct:-0.10, ytdPct:1.85,  session:"Johannesburg" }
       ];
 
       updateQuotesTable(mockQuotes);
-      updateCapitalFlow(mockFlow);
-      updateRRG(mockRRG);
     }
 
     // ==========================
     //  INIT
     // ==========================
-    window.addEventListener("resize", () => {
-      drawCapitalFlow();
-      drawRRG();
-    });
-
     document.addEventListener("DOMContentLoaded", () => {
-      loadMockData(); // full dummy mode
+      loadMockData(); // dummy mode
     });
   </script>
-
-
-</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
+</body>
+</html>
