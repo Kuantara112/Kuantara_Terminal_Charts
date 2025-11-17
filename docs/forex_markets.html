@@ -1,10 +1,12 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
-  <title>Kuantara – FX Market Snapshot</title>
+  <title>Kuantara – Forex Market Snapshot</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
     :root {
@@ -29,6 +31,9 @@
       margin:0;
       padding:0;
       font-family:"Fira Code",monospace !important;
+      /* Firefox scrollbar */
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.6) transparent;
     }
 
     html, body {
@@ -39,6 +44,22 @@
     body {
       background:var(--bg-root);
       color:var(--text-main);
+    }
+
+    /* Webkit scrollbar – hitam transparan */
+    ::-webkit-scrollbar {
+      width:6px;
+      height:6px;
+    }
+    ::-webkit-scrollbar-track {
+      background:transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background:rgba(0,0,0,0.6);
+      border-radius:999px;
+    }
+    ::-webkit-scrollbar-corner {
+      background:transparent;
     }
 
     .kt-page {
@@ -52,7 +73,7 @@
       font-size:var(--fs-title);
       font-weight:600;
       letter-spacing:0.03em;
-      margin-bottom:10px;
+      margin-bottom:6px;
       color:var(--text-main);
       display:flex;
       align-items:center;
@@ -65,22 +86,43 @@
       color:var(--text-muted);
     }
 
+    .kt-page-tabs {
+      display:flex;
+      gap:8px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .kt-pill-page {
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:3px 10px;
+      font-size:var(--fs-small);
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+      color:var(--text-muted);
+      background:#050505;
+    }
+    .kt-pill-page.active {
+      border-color:var(--amber);
+      color:#000;
+      background:var(--amber);
+    }
+
     .kt-layout {
       display:grid;
-      grid-template-columns:repeat(2, minmax(0,1fr)); /* kiri-kanan simetris */
-      gap:12px;
-      height:calc(100vh - 16px - 10px - 16px);
-      max-height:calc(100vh - 42px);
+      grid-template-columns:1fr;
+      height:auto;
+      max-height:none;
     }
 
     .kt-column {
       display:flex;
       flex-direction:column;
-      gap:12px;
       min-height:0;
     }
 
-    /* cards dalam column full height sehingga tinggi panel kiri = total dua panel kanan */
     .kt-column > .kt-card {
       flex:1;
       min-height:0;
@@ -99,7 +141,7 @@
 
     .kt-card-header {
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       gap:8px;
       font-size:var(--fs-subtitle);
@@ -110,6 +152,14 @@
     .kt-card-header .subtitle {
       font-size:var(--fs-small);
       color:var(--text-muted);
+      margin-top:2px;
+    }
+
+    .kt-header-left {
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
     }
 
     .kt-toolbar {
@@ -122,26 +172,11 @@
       justify-content:flex-end;
     }
 
-    .kt-pill {
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      padding:2px 8px;
-      font-size:var(--fs-small);
-      cursor:pointer;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .kt-pill.active {
-      border-color:var(--amber);
-      color:var(--amber);
-    }
-
     .kt-search {
       flex:1;
       min-width:140px;
       display:flex;
       align-items:center;
-      gap:6px;
       border-radius:4px;
       border:1px solid var(--border-soft);
       padding:2px 6px;
@@ -157,24 +192,20 @@
       min-width:0;
     }
 
-    .kt-search span {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
     /* === Quotes Table === */
     .kt-table-wrapper {
       flex:1;
       min-height:0;
-      overflow:auto;          /* vertical + horizontal scroll on small screen */
+      overflow:auto;
       margin-top:4px;
+      max-height:100%;
     }
 
     table {
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:720px;        /* force horizontal scroll on mobile instead of super kecil */
+      min-width:880px;
     }
 
     thead {
@@ -225,61 +256,26 @@
       color:var(--red);
     }
 
-    /* === Charts === */
-    .kt-chart-wrapper {
-      flex:1;
-      min-height:0;
-      position:relative;
-      margin-top:4px;
-      overflow:hidden;
-    }
-
-    .kt-chart-canvas {
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-    }
-
-    .kt-legend {
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      margin-top:4px;
-    }
-
-    .kt-legend-item {
-      display:flex;
-      align-items:center;
-      gap:4px;
-    }
-
-    .kt-dot {
-      width:8px;
-      height:8px;
+    .copy-btn {
       border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:transparent;
+      color:var(--text-muted);
+      font-size:var(--fs-small);
+      padding:2px 6px;
+      cursor:pointer;
+      white-space:nowrap;
+      transition:all 0.15s ease;
     }
 
-    .dot-leading { background:var(--green); }
-    .dot-weakening { background:var(--amber); }
-    .dot-lagging { background:var(--red); }
-    .dot-improving { background:#3b82f6; }
+    .copy-btn:hover {
+      border-color:var(--amber);
+      color:var(--amber);
+    }
 
-    /* === Responsive === */
     @media (max-width:900px) {
-      .kt-layout {
-        grid-template-columns:1fr;
-        grid-template-rows:auto auto;
-        height:auto;
-        max-height:none;
-      }
-      .kt-column {
-        min-height:260px;
-      }
-      .kt-column > .kt-card {
-        min-height:260px;
+      .kt-page {
+        padding:12px;
       }
     }
 
@@ -291,18 +287,10 @@
         --fs-small:9px;
       }
 
-      .kt-page {
-        padding:12px;
-      }
-
       .kt-title {
         flex-direction:column;
         align-items:flex-start;
         gap:4px;
-      }
-
-      .kt-toolbar {
-        justify-content:flex-start;
       }
 
       .kt-card {
@@ -312,551 +300,45 @@
       th, td {
         padding:4px 3px;
       }
+
+      .kt-layout {
+        grid-template-columns:1fr;
+        height:auto;
+        max-height:none;
+      }
+
+      .kt-table-wrapper {
+        max-height:none;
+      }
     }
   </style>
-<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 2147483647;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.immersive-translate-attach-loading::after {
-  content: " ";
-
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-2000%, -50%);
-  z-index: 100;
-}
-
-.immersive-translate-loading-spinner {
-  vertical-align: middle !important;
-  width: 10px !important;
-  height: 10px !important;
-  display: inline-block !important;
-  margin: 0 4px !important;
-  border: 2px rgba(221, 244, 255, 0.6) solid !important;
-  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-}
-
-@-webkit-keyframes immersive-translate-loading-animation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-
-@keyframes immersive-translate-loading-animation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.immersive-translate-input-loading {
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-}
-
-@keyframes immersiveTranslateShadowRolling {
-  0% {
-    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  12% {
-    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  25% {
-    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  36% {
-    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
-      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  50% {
-    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
-      110px 0 var(--loading-color), 100px 0 var(--loading-color);
-  }
-
-  62% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
-      120px 0 var(--loading-color), 110px 0 var(--loading-color);
-  }
-
-  75% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      130px 0 var(--loading-color), 120px 0 var(--loading-color);
-  }
-
-  87% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
-  }
-
-  100% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.immersive-translate-toast {
-  display: flex;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  right: 0;
-  top: 1%;
-  width: fit-content;
-  padding: 12px 20px;
-  margin: auto;
-  overflow: auto;
-  background: #fef6f9;
-  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
-  font-size: 15px;
-  border-radius: 8px;
-  color: #333;
-}
-
-.immersive-translate-toast-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.immersive-translate-toast-hidden {
-  margin: 0 20px 0 72px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.immersive-translate-toast-close {
-  color: #666666;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-toast {
-    top: 0;
-    padding: 12px 0px 0 10px;
-  }
-  .immersive-translate-toast-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .immersive-translate-toast-hidden {
-    margin: 10px auto;
-  }
-}
-
-.immersive-translate-dialog {
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  display: flex;
-  width: 300px;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: fit-content;
-  border-radius: 20px;
-  background-color: #fff;
-}
-
-.immersive-translate-modal {
-  display: none;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-}
-
-.immersive-translate-modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 40px 24px 24px;
-  border-radius: 12px;
-  width: 350px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
-    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-content {
-    margin: 25% auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .immersive-translate-modal-content {
-    width: 80vw !important;
-    margin: 20vh auto !important;
-    padding: 20px 12px 12px !important;
-  }
-
-  .immersive-translate-modal-title {
-    font-size: 14px !important;
-  }
-
-  .immersive-translate-modal-body {
-    font-size: 13px !important;
-    max-height: 60vh !important;
-  }
-
-  .immersive-translate-btn {
-    font-size: 13px !important;
-    padding: 8px 16px !important;
-    margin: 0 4px !important;
-  }
-
-  .immersive-translate-modal-footer {
-    gap: 6px !important;
-    margin-top: 16px !important;
-  }
-}
-
-.immersive-translate-modal .immersive-translate-modal-content-in-input {
-  max-width: 500px;
-}
-.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
-  text-align: left;
-  max-height: unset;
-}
-
-.immersive-translate-modal-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333333;
-}
-
-.immersive-translate-modal-body {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #333333;
-  margin-top: 24px;
-  word-break: break-all;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-body {
-    max-height: 250px;
-    overflow-y: auto;
-  }
-}
-
-.immersive-translate-close {
-  color: #666666;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.immersive-translate-close:hover,
-.immersive-translate-close:focus {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.immersive-translate-modal-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.immersive-translate-btn {
-  width: fit-content;
-  color: #fff;
-  background-color: #ea4c89;
-  border: none;
-  font-size: 14px;
-  margin: 0 8px;
-  padding: 9px 30px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.immersive-translate-btn-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.immersive-translate-btn:hover {
-  background-color: #f082ac;
-}
-.immersive-translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.immersive-translate-btn:disabled:hover {
-  background-color: #ea4c89;
-}
-
-.immersive-translate-link-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: none;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-}
-
-.immersive-translate-cancel-btn {
-  /* gray color */
-  background-color: rgb(89, 107, 120);
-}
-
-.immersive-translate-cancel-btn:hover {
-  background-color: hsl(205, 20%, 32%);
-}
-
-.immersive-translate-action-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: 1px solid #ea4c89;
-}
-
-.immersive-translate-btn svg {
-  margin-right: 5px;
-}
-
-.immersive-translate-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-primary-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-modal input[type="radio"] {
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.immersive-translate-modal label {
-  cursor: pointer;
-}
-
-.immersive-translate-close-action {
-  position: absolute;
-  top: 2px;
-  right: 0px;
-  cursor: pointer;
-}
-
-.imt-image-status {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 16px !important;
-}
-.imt-image-status img,
-.imt-image-status svg,
-.imt-img-loading {
-  width: 28px !important;
-  height: 28px !important;
-  margin: 0 0 8px 0 !important;
-  min-height: 28px !important;
-  min-width: 28px !important;
-  position: relative !important;
-}
-.imt-img-loading {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
-  background-size: 28px 28px;
-  animation: image-loading-rotate 1s linear infinite !important;
-}
-
-.imt-image-status span {
-  color: var(--bg-2, #fff) !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
-  font-weight: 500 !important;
-  font-family: "PingFang SC", Arial, sans-serif !important;
-}
-
-.imt-primary-button {
-  display: flex;
-  padding: 12px 80px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #ea4c89;
-  color: #fff;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.imt-retry-text {
-  color: #999;
-  text-align: center;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  cursor: pointer;
-}
-
-.imt-action-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.imt-modal-content-text {
-  text-align: left;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-@keyframes image-loading-rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.imt-linear-gradient-text {
-  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.imt-flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.imt-linear-black-btn {
-  border-radius: 50px;
-  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
-  height: 48px;
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
-</style></head>
+</head>
 <body>
   <div class="kt-page">
-    
+    <!-- PAGE SWITCHER -->
+    <div class="kt-page-tabs">
+      <div class="kt-pill-page active" data-page="major">Major</div>
+      <div class="kt-pill-page" data-page="minor">Minor</div>
+      <div class="kt-pill-page" data-page="exotic">Exotic</div>
+    </div>
 
     <div class="kt-layout">
-      <!-- LEFT: FX Market Quotes -->
       <div class="kt-column">
         <section class="kt-card">
           <header class="kt-card-header">
-            <div>FX Market Quotes</div>
+            <div class="kt-header-left">
+              <div id="quotesTitle">Major FX Market Quotes</div>
+              <div id="tickerMeta" class="subtitle">Tickers: 0</div>
+            </div>
             <div class="kt-toolbar">
-              <div class="kt-pill active" data-scope="global">All</div>
-              <div class="kt-pill" data-scope="majors">Majors</div>
-              <div class="kt-pill" data-scope="exotics">Exotics</div>
               <div class="kt-search">
-                <span>🔍</span>
-                <input id="searchInput" type="text" placeholder="Filter pair (e.g. EURUSD, GBPJPY)">
+                <input id="searchInput" type="text" placeholder="Filter FX pair (e.g. EURUSD, GBPUSD)">
               </div>
             </div>
           </header>
 
           <div class="kt-table-wrapper">
-            <table id="indicesTable">
+            <table id="fxTable">
               <thead>
                 <tr>
                   <th>Symbol</th>
@@ -864,519 +346,19 @@
                   <th>Last</th>
                   <th>Δ</th>
                   <th>Δ%</th>
-                  <th>D Hi</th>
-                  <th>D Lo</th>
-                  <th>W Hi</th>
-                  <th>W Lo</th>
+                  <th>Open</th>
+                  <th>High</th>
+                  <th>Low</th>
+                  <th>Close</th>
+                  <th>%YTD</th>
                   <th>Session</th>
+                  <th>Copy OHLC</th>
                 </tr>
               </thead>
-              <tbody><tr>
-            <td>EURUSD</td>
-            <td>EUR / USD · Major</td>
-            <td>1.0865</td>
-            <td class="text-up">
-              +0.0028
-            </td>
-            <td class="text-up">
-              +0.2600%
-            </td>
-            <td>1.0890</td>
-            <td>1.0812</td>
-            <td>1.0935</td>
-            <td>1.0740</td>
-            <td>London</td>
-          </tr><tr>
-            <td>GBPUSD</td>
-            <td>GBP / USD · Major</td>
-            <td>1.2742</td>
-            <td class="text-down">
-              -0.0015
-            </td>
-            <td class="text-down">
-              -0.1200%
-            </td>
-            <td>1.2785</td>
-            <td>1.2690</td>
-            <td>1.2840</td>
-            <td>1.2615</td>
-            <td>London</td>
-          </tr><tr>
-            <td>USDJPY</td>
-            <td>USD / JPY · Major</td>
-            <td>154.3200</td>
-            <td class="text-up">
-              +0.3800
-            </td>
-            <td class="text-up">
-              +0.2500%
-            </td>
-            <td>154.9000</td>
-            <td>153.5000</td>
-            <td>155.8000</td>
-            <td>151.9000</td>
-            <td>Tokyo</td>
-          </tr><tr>
-            <td>USDCHF</td>
-            <td>USD / CHF · Major</td>
-            <td>0.8968</td>
-            <td class="text-down">
-              -0.0019
-            </td>
-            <td class="text-down">
-              -0.2100%
-            </td>
-            <td>0.9015</td>
-            <td>0.8932</td>
-            <td>0.9070</td>
-            <td>0.8895</td>
-            <td>Zurich</td>
-          </tr><tr>
-            <td>USDCAD</td>
-            <td>USD / CAD · Major</td>
-            <td>1.3645</td>
-            <td class="text-up">
-              +0.0010
-            </td>
-            <td class="text-up">
-              +0.0700%
-            </td>
-            <td>1.3682</td>
-            <td>1.3594</td>
-            <td>1.3725</td>
-            <td>1.3532</td>
-            <td>New York</td>
-          </tr><tr>
-            <td>AUDUSD</td>
-            <td>AUD / USD · Major</td>
-            <td>0.6674</td>
-            <td class="text-up">
-              +0.0009
-            </td>
-            <td class="text-up">
-              +0.1400%
-            </td>
-            <td>0.6701</td>
-            <td>0.6615</td>
-            <td>0.6745</td>
-            <td>0.6588</td>
-            <td>Sydney</td>
-          </tr><tr>
-            <td>NZDUSD</td>
-            <td>NZD / USD · Major</td>
-            <td>0.6142</td>
-            <td class="text-down">
-              -0.0007
-            </td>
-            <td class="text-down">
-              -0.1100%
-            </td>
-            <td>0.6170</td>
-            <td>0.6095</td>
-            <td>0.6215</td>
-            <td>0.6050</td>
-            <td>Wellington</td>
-          </tr><tr>
-            <td>EURGBP</td>
-            <td>EUR / GBP · Minor</td>
-            <td>0.8525</td>
-            <td class="text-up">
-              +0.0006
-            </td>
-            <td class="text-up">
-              +0.0700%
-            </td>
-            <td>0.8541</td>
-            <td>0.8488</td>
-            <td>0.8575</td>
-            <td>0.8460</td>
-            <td>London</td>
-          </tr><tr>
-            <td>EURJPY</td>
-            <td>EUR / JPY · Minor</td>
-            <td>167.8000</td>
-            <td class="text-up">
-              +0.4200
-            </td>
-            <td class="text-up">
-              +0.2500%
-            </td>
-            <td>168.6000</td>
-            <td>166.4000</td>
-            <td>169.9000</td>
-            <td>164.9000</td>
-            <td>Tokyo</td>
-          </tr><tr>
-            <td>EURAUD</td>
-            <td>EUR / AUD · Minor</td>
-            <td>1.6289</td>
-            <td class="text-up">
-              +0.0023
-            </td>
-            <td class="text-up">
-              +0.1400%
-            </td>
-            <td>1.6345</td>
-            <td>1.6190</td>
-            <td>1.6430</td>
-            <td>1.6120</td>
-            <td>Frankfurt</td>
-          </tr><tr>
-            <td>EURNZD</td>
-            <td>EUR / NZD · Minor</td>
-            <td>1.7685</td>
-            <td class="text-up">
-              +0.0044
-            </td>
-            <td class="text-up">
-              +0.2500%
-            </td>
-            <td>1.7760</td>
-            <td>1.7550</td>
-            <td>1.7850</td>
-            <td>1.7425</td>
-            <td>Frankfurt</td>
-          </tr><tr>
-            <td>EURCHF</td>
-            <td>EUR / CHF · Minor</td>
-            <td>0.9736</td>
-            <td class="text-down">
-              -0.0011
-            </td>
-            <td class="text-down">
-              -0.1100%
-            </td>
-            <td>0.9780</td>
-            <td>0.9704</td>
-            <td>0.9815</td>
-            <td>0.9670</td>
-            <td>Zurich</td>
-          </tr><tr>
-            <td>GBPJPY</td>
-            <td>GBP / JPY · Minor</td>
-            <td>196.7200</td>
-            <td class="text-up">
-              +0.5500
-            </td>
-            <td class="text-up">
-              +0.2800%
-            </td>
-            <td>197.8000</td>
-            <td>194.9000</td>
-            <td>199.1000</td>
-            <td>192.8000</td>
-            <td>Tokyo</td>
-          </tr><tr>
-            <td>GBPCAD</td>
-            <td>GBP / CAD · Minor</td>
-            <td>1.7392</td>
-            <td class="text-down">
-              -0.0020
-            </td>
-            <td class="text-down">
-              -0.1100%
-            </td>
-            <td>1.7460</td>
-            <td>1.7315</td>
-            <td>1.7535</td>
-            <td>1.7240</td>
-            <td>London</td>
-          </tr><tr>
-            <td>GBPCHF</td>
-            <td>GBP / CHF · Minor</td>
-            <td>1.1425</td>
-            <td class="text-up">
-              +0.0015
-            </td>
-            <td class="text-up">
-              +0.1300%
-            </td>
-            <td>1.1468</td>
-            <td>1.1350</td>
-            <td>1.1520</td>
-            <td>1.1310</td>
-            <td>London</td>
-          </tr><tr>
-            <td>AUDJPY</td>
-            <td>AUD / JPY · Minor</td>
-            <td>102.9800</td>
-            <td class="text-up">
-              +0.2200
-            </td>
-            <td class="text-up">
-              +0.2100%
-            </td>
-            <td>103.6000</td>
-            <td>101.8000</td>
-            <td>104.4000</td>
-            <td>100.9000</td>
-            <td>Tokyo</td>
-          </tr><tr>
-            <td>AUDCAD</td>
-            <td>AUD / CAD · Minor</td>
-            <td>0.9104</td>
-            <td class="text-up">
-              +0.0008
-            </td>
-            <td class="text-up">
-              +0.0900%
-            </td>
-            <td>0.9135</td>
-            <td>0.9050</td>
-            <td>0.9180</td>
-            <td>0.8985</td>
-            <td>Sydney</td>
-          </tr><tr>
-            <td>AUDNZD</td>
-            <td>AUD / NZD · Minor</td>
-            <td>1.0866</td>
-            <td class="text-up">
-              +0.0014
-            </td>
-            <td class="text-up">
-              +0.1300%
-            </td>
-            <td>1.0905</td>
-            <td>1.0780</td>
-            <td>1.0955</td>
-            <td>1.0725</td>
-            <td>Sydney</td>
-          </tr><tr>
-            <td>NZDJPY</td>
-            <td>NZD / JPY · Minor</td>
-            <td>94.8800</td>
-            <td class="text-up">
-              +0.1200
-            </td>
-            <td class="text-up">
-              +0.1300%
-            </td>
-            <td>95.4000</td>
-            <td>93.9000</td>
-            <td>96.1000</td>
-            <td>92.8000</td>
-            <td>Tokyo</td>
-          </tr><tr>
-            <td>CADJPY</td>
-            <td>CAD / JPY · Minor</td>
-            <td>113.1000</td>
-            <td class="text-up">
-              +0.2800
-            </td>
-            <td class="text-up">
-              +0.2500%
-            </td>
-            <td>113.8000</td>
-            <td>111.9000</td>
-            <td>114.6000</td>
-            <td>110.9000</td>
-            <td>Tokyo</td>
-          </tr><tr>
-            <td>CHFJPY</td>
-            <td>CHF / JPY · Minor</td>
-            <td>172.1000</td>
-            <td class="text-up">
-              +0.2000
-            </td>
-            <td class="text-up">
-              +0.1200%
-            </td>
-            <td>172.9000</td>
-            <td>170.8000</td>
-            <td>173.8000</td>
-            <td>169.4000</td>
-            <td>Tokyo</td>
-          </tr><tr>
-            <td>USDTRY</td>
-            <td>USD / TRY · Exotic</td>
-            <td>34.8520</td>
-            <td class="text-up">
-              +0.1120
-            </td>
-            <td class="text-up">
-              +0.3200%
-            </td>
-            <td>35.1200</td>
-            <td>34.4200</td>
-            <td>35.5800</td>
-            <td>33.9500</td>
-            <td>Istanbul</td>
-          </tr><tr>
-            <td>USDZAR</td>
-            <td>USD / ZAR · Exotic</td>
-            <td>18.4520</td>
-            <td class="text-down">
-              -0.0650
-            </td>
-            <td class="text-down">
-              -0.3500%
-            </td>
-            <td>18.7200</td>
-            <td>18.2100</td>
-            <td>19.0500</td>
-            <td>18.0200</td>
-            <td>Johannesburg</td>
-          </tr><tr>
-            <td>USDMXN</td>
-            <td>USD / MXN · Exotic</td>
-            <td>18.1520</td>
-            <td class="text-up">
-              +0.0240
-            </td>
-            <td class="text-up">
-              +0.1300%
-            </td>
-            <td>18.3200</td>
-            <td>17.9200</td>
-            <td>18.6500</td>
-            <td>17.6500</td>
-            <td>Mexico City</td>
-          </tr><tr>
-            <td>USDSEK</td>
-            <td>USD / SEK · Exotic</td>
-            <td>10.4520</td>
-            <td class="text-down">
-              -0.0180
-            </td>
-            <td class="text-down">
-              -0.1700%
-            </td>
-            <td>10.5400</td>
-            <td>10.3200</td>
-            <td>10.7400</td>
-            <td>10.2100</td>
-            <td>Stockholm</td>
-          </tr><tr>
-            <td>USDNOK</td>
-            <td>USD / NOK · Exotic</td>
-            <td>10.8920</td>
-            <td class="text-up">
-              +0.0210
-            </td>
-            <td class="text-up">
-              +0.1900%
-            </td>
-            <td>11.0200</td>
-            <td>10.7500</td>
-            <td>11.2800</td>
-            <td>10.6200</td>
-            <td>Oslo</td>
-          </tr><tr>
-            <td>USDPLN</td>
-            <td>USD / PLN · Exotic</td>
-            <td>3.9820</td>
-            <td class="text-down">
-              -0.0060
-            </td>
-            <td class="text-down">
-              -0.1500%
-            </td>
-            <td>4.0200</td>
-            <td>3.9450</td>
-            <td>4.0650</td>
-            <td>3.9100</td>
-            <td>Warsaw</td>
-          </tr><tr>
-            <td>USDTHB</td>
-            <td>USD / THB · Exotic</td>
-            <td>35.4520</td>
-            <td class="text-up">
-              +0.0320
-            </td>
-            <td class="text-up">
-              +0.0900%
-            </td>
-            <td>35.6800</td>
-            <td>35.1200</td>
-            <td>36.0500</td>
-            <td>34.9800</td>
-            <td>Bangkok</td>
-          </tr><tr>
-            <td>EURTRY</td>
-            <td>EUR / TRY · Exotic</td>
-            <td>37.8520</td>
-            <td class="text-up">
-              +0.1280
-            </td>
-            <td class="text-up">
-              +0.3400%
-            </td>
-            <td>38.2100</td>
-            <td>37.3200</td>
-            <td>38.9200</td>
-            <td>36.9500</td>
-            <td>Istanbul</td>
-          </tr><tr>
-            <td>EURZAR</td>
-            <td>EUR / ZAR · Exotic</td>
-            <td>20.4520</td>
-            <td class="text-down">
-              -0.0750
-            </td>
-            <td class="text-down">
-              -0.3700%
-            </td>
-            <td>20.8200</td>
-            <td>20.1900</td>
-            <td>21.1500</td>
-            <td>19.9800</td>
-            <td>Johannesburg</td>
-          </tr><tr>
-            <td>EURPLN</td>
-            <td>EUR / PLN · Exotic</td>
-            <td>4.3220</td>
-            <td class="text-down">
-              -0.0080
-            </td>
-            <td class="text-down">
-              -0.1800%
-            </td>
-            <td>4.3600</td>
-            <td>4.2850</td>
-            <td>4.4100</td>
-            <td>4.2500</td>
-            <td>Warsaw</td>
-          </tr></tbody>
+              <tbody>
+                <!-- Filled by JS -->
+              </tbody>
             </table>
-          </div>
-        </section>
-      </div>
-
-      <!-- RIGHT: Capital Flow (top) + RRG (bottom) -->
-      <div class="kt-column">
-        <!-- FX Capital Flow -->
-        <section class="kt-card">
-          <header class="kt-card-header">
-            <div>FX Capital Flow</div>
-            <div class="subtitle">Intraday % Change · Sorted from Strongest to Weakest</div>
-          </header>
-          <div class="kt-chart-wrapper">
-            <canvas id="capitalFlowCanvas" class="kt-chart-canvas" width="1080" height="310" style="width: 720px; height: 206.667px;"></canvas>
-          </div>
-        </section>
-
-        <!-- FX Relative Rotation Graph -->
-        <section class="kt-card">
-          <header class="kt-card-header">
-            <div>FX Relative Rotation Graph (RRG)</div>
-            <div class="subtitle">RS-Ratio vs RS-Momentum · RRG-Style Quadrants</div>
-          </header>
-          <div class="kt-chart-wrapper">
-            <canvas id="rrgCanvas" class="kt-chart-canvas" width="1080" height="273" style="width: 720px; height: 182px;"></canvas>
-          </div>
-          <div class="kt-legend">
-            <div class="kt-legend-item">
-              <span class="kt-dot dot-leading"></span><span>Leading</span>
-            </div>
-            <div class="kt-legend-item">
-              <span class="kt-dot dot-weakening"></span><span>Weakening</span>
-            </div>
-            <div class="kt-legend-item">
-              <span class="kt-dot dot-lagging"></span><span>Lagging</span>
-            </div>
-            <div class="kt-legend-item">
-              <span class="kt-dot dot-improving"></span><span>Improving</span>
-            </div>
           </div>
         </section>
       </div>
@@ -1385,13 +367,24 @@
 
   <script>
     // ==========================
-    //  QUOTES TABLE (Dummy)
+    //  STATE
     // ==========================
-    const tableBody = document.querySelector("#indicesTable tbody");
+    const tableBody = document.querySelector("#fxTable tbody");
     const searchInput = document.getElementById("searchInput");
+    const quotesTitleEl = document.getElementById("quotesTitle");
+    const tickerMetaEl = document.getElementById("tickerMeta");
+    const pagePills = document.querySelectorAll(".kt-pill-page");
 
     let latestQuotes = [];
+    let currentPage = "major";
 
+    let mockMajor = [];
+    let mockMinor = [];
+    let mockExotic = [];
+
+    // ==========================
+    //  RENDER TABLE
+    // ==========================
     function updateQuotesTable(data) {
       latestQuotes = Array.isArray(data) ? data : [];
       renderQuotesTable();
@@ -1413,348 +406,192 @@
 
           const changePct = Number(row.changePct || 0);
           const change = Number(row.change || 0);
+          const ytdPct = Number(row.ytdPct || 0);
           const isUp = changePct > 0;
           const isDown = changePct < 0;
+          const isYtdUp = ytdPct > 0;
+          const isYtdDown = ytdPct < 0;
 
           tr.innerHTML = `
             <td>${row.symbol || ""}</td>
             <td>${row.name || ""}</td>
-            <td>${formatNumber(row.last)}</td>
+            <td>${formatNumber(row.last, true)}</td>
             <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
-              ${formatSigned(change)}
+              ${formatSigned(change, true)}
             </td>
             <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
-              ${formatSigned(changePct)}%
+              ${formatSigned(changePct, true)}%
             </td>
-            <td>${formatNumber(row.dailyHigh)}</td>
-            <td>${formatNumber(row.dailyLow)}</td>
-            <td>${formatNumber(row.weeklyHigh)}</td>
-            <td>${formatNumber(row.weeklyLow)}</td>
+            <td>${formatNumber(row.open, true)}</td>
+            <td>${formatNumber(row.high, true)}</td>
+            <td>${formatNumber(row.low, true)}</td>
+            <td>${formatNumber(row.close, true)}</td>
+            <td class="${isYtdUp ? "text-up" : isYtdDown ? "text-down" : ""}">
+              ${formatSigned(ytdPct, true)}%
+            </td>
             <td>${row.session || ""}</td>
           `;
+
+          const tdCopy = document.createElement("td");
+          const btn = document.createElement("button");
+          btn.className = "copy-btn";
+          btn.textContent = "Copy";
+          btn.title = "Copy OHLC";
+          btn.addEventListener("click", () => {
+            const text = [
+              `Symbol=${row.symbol || ""}`,
+              `O=${row.open}`,
+              `H=${row.high}`,
+              `L=${row.low}`,
+              `C=${row.close}`
+            ].join(" ");
+            copyTextToClipboard(text);
+          });
+          tdCopy.appendChild(btn);
+          tr.appendChild(tdCopy);
 
           tableBody.appendChild(tr);
         });
     }
 
-    function formatNumber(value) {
+    function formatNumber(value, isFx=false) {
       const num = Number(value);
       if (Number.isNaN(num)) return "";
-      if (Math.abs(num) >= 1000) {
-        return num.toLocaleString(undefined, { maximumFractionDigits: 4 });
+      // FX biasanya 4–5 desimal, tapi tetap fleksibel
+      if (isFx) {
+        if (Math.abs(num) >= 10) {
+          return num.toFixed(4);
+        }
+        return num.toFixed(5);
       }
-      return num.toFixed(4);
+      if (Math.abs(num) >= 1000) {
+        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      }
+      return num.toFixed(2);
     }
 
-    function formatSigned(value) {
+    function formatSigned(value, isFx=false) {
       const num = Number(value);
-      if (Number.isNaN(num) || num === 0) return num.toFixed(4);
-      return (num > 0 ? "+" : "") + num.toFixed(4);
+      if (Number.isNaN(num)) return "";
+      const decimals = isFx ? 4 : 2;
+      if (num === 0) return num.toFixed(decimals);
+      return (num > 0 ? "+" : "") + num.toFixed(decimals);
+    }
+
+    function copyTextToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => {
+          fallbackCopyText(text);
+        });
+      } else {
+        fallbackCopyText(text);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        document.execCommand("copy");
+      } catch (e) {
+        console.warn("Copy failed", e);
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function updateTickerMeta(count) {
+      tickerMetaEl.textContent = `Tickers: ${count}`;
     }
 
     searchInput.addEventListener("input", renderQuotesTable);
 
     // ==========================
-    //  CAPITAL FLOW (Dummy)
+    //  PAGE SWITCHING
     // ==========================
-    const capitalFlowCanvas = document.getElementById("capitalFlowCanvas");
-    const capitalFlowCtx = capitalFlowCanvas.getContext("2d");
-    let capitalFlowData = [];
+    function applyPageDataset() {
+      let title = "";
+      let placeholder = "";
+      let dataset = [];
 
-    function updateCapitalFlow(data) {
-      capitalFlowData = (Array.isArray(data) ? data : []).slice();
-      capitalFlowData.sort((a, b) => (b.changePct || 0) - (a.changePct || 0));
-      drawCapitalFlow();
-    }
-
-    function resizeCanvasToContainer(canvas) {
-      const parent = canvas.parentElement;
-      const rect = parent.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      canvas.style.width = rect.width + "px";
-      canvas.style.height = rect.height + "px";
-
-      const ctx = canvas.getContext("2d");
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    function drawCapitalFlow() {
-      if (!capitalFlowCanvas) return;
-      resizeCanvasToContainer(capitalFlowCanvas);
-      const ctx = capitalFlowCtx;
-      const width = capitalFlowCanvas.clientWidth;
-      const height = capitalFlowCanvas.clientHeight;
-
-      ctx.clearRect(0, 0, width, height);
-
-      if (!capitalFlowData.length) {
-        ctx.fillStyle = "#555";
-        ctx.font = "10px 'Fira Code'";
-        ctx.fillText("Waiting for dummy data…", 8, 16);
-        return;
+      if (currentPage === "major") {
+        title = "Major FX Market Quotes";
+        placeholder = "Filter major FX pair (e.g. EURUSD, GBPUSD)";
+        dataset = mockMajor;
+      } else if (currentPage === "minor") {
+        title = "Minor FX Market Quotes";
+        placeholder = "Filter minor FX pair (e.g. EURGBP, EURJPY)";
+        dataset = mockMinor;
+      } else if (currentPage === "exotic") {
+        title = "Exotic FX Market Quotes";
+        placeholder = "Filter exotic FX pair (e.g. USDTRY, USDIDR)";
+        dataset = mockExotic;
       }
 
-      const margin = { top: 8, right: 16, bottom: 20, left: 40 };
-      const chartWidth = width - margin.left - margin.right;
-      const chartHeight = height - margin.top - margin.bottom;
-      const zeroY = margin.top + chartHeight / 2;
+      quotesTitleEl.textContent = title;
+      searchInput.placeholder = placeholder;
 
-      ctx.strokeStyle = "#444";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(margin.left, zeroY);
-      ctx.lineTo(margin.left + chartWidth, zeroY);
-      ctx.stroke();
+      updateQuotesTable(dataset);
+      updateTickerMeta(dataset.length);
+    }
 
-      const maxAbsChange = capitalFlowData.reduce((acc, d) => {
-        const val = Math.abs(d.changePct || 0);
-        return val > acc ? val : acc;
-      }, 0.01);
-
-      const barWidth = (chartWidth / Math.max(capitalFlowData.length, 1)) * 0.7;
-      const xStep = chartWidth / Math.max(capitalFlowData.length, 1);
-
-      ctx.textAlign = "center";
-      ctx.font = "9px 'Fira Code'";
-
-      const upColor = "#22c55e";   // hijau
-      const downColor = "#ef4444"; // merah
-
-      capitalFlowData.forEach((d, idx) => {
-        const xCenter = margin.left + xStep * idx + xStep / 2;
-        const value = d.changePct || 0;
-        const barHeight = (Math.abs(value) / maxAbsChange) * (chartHeight / 2);
-
-        const isPositive = value >= 0;
-        ctx.fillStyle = isPositive ? upColor : downColor;
-
-        const y = isPositive ? zeroY - barHeight : zeroY;
-        ctx.fillRect(xCenter - barWidth / 2, y, barWidth, barHeight);
-
-        ctx.fillStyle = "#9b9b9b";
-        ctx.save();
-        ctx.translate(xCenter, height - 4);
-        ctx.rotate(-Math.PI / 4);
-        ctx.fillText((d.symbol || "").toUpperCase(), 0, 0);
-        ctx.restore();
+    pagePills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        pagePills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        currentPage = pill.dataset.page;
+        applyPageDataset();
       });
-    }
+    });
 
     // ==========================
-    //  RRG (Dummy)
-    // ==========================
-    const rrgCanvas = document.getElementById("rrgCanvas");
-    const rrgCtx = rrgCanvas.getContext("2d");
-    let rrgData = [];
-
-    function updateRRG(data) {
-      rrgData = Array.isArray(data) ? data : [];
-      drawRRG();
-    }
-
-    function drawRRG() {
-      if (!rrgCanvas) return;
-      resizeCanvasToContainer(rrgCanvas);
-      const ctx = rrgCtx;
-      const width = rrgCanvas.clientWidth;
-      const height = rrgCanvas.clientHeight;
-
-      ctx.clearRect(0, 0, width, height);
-
-      const margin = { top: 10, right: 10, bottom: 16, left: 16 };
-      const chartWidth = width - margin.left - margin.right;
-      const chartHeight = height - margin.top - margin.bottom;
-
-      const centerX = margin.left + chartWidth / 2;
-      const centerY = margin.top + chartHeight / 2;
-
-      ctx.strokeStyle = "#444";
-      ctx.lineWidth = 1;
-
-      ctx.beginPath();
-      ctx.moveTo(centerX, margin.top);
-      ctx.lineTo(centerX, margin.top + chartHeight);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(margin.left, centerY);
-      ctx.lineTo(margin.left + chartWidth, centerY);
-      ctx.stroke();
-
-      ctx.strokeStyle = "#2b2b2b";
-      ctx.strokeRect(margin.left, margin.top, chartWidth / 2, chartHeight / 2);
-      ctx.strokeRect(centerX, margin.top, chartWidth / 2, chartHeight / 2);
-      ctx.strokeRect(margin.left, centerY, chartWidth / 2, chartHeight / 2);
-      ctx.strokeRect(centerX, centerY, chartWidth / 2, chartHeight / 2);
-
-      ctx.fillStyle = "#9b9b9b";
-      ctx.font = "10px 'Fira Code'";
-      ctx.fillText("RS-Ratio →", centerX + 4, margin.top + 10);
-      ctx.save();
-      ctx.translate(margin.left + 4, centerY - 4);
-      ctx.rotate(-Math.PI / 2);
-      ctx.fillText("RS-Momentum ↑", 0, 0);
-      ctx.restore();
-
-      ctx.font = "9px 'Fira Code'";
-      ctx.fillText("Leading",   margin.left + 4, margin.top + 12);
-      ctx.fillText("Weakening", centerX + 4,    margin.top + 12);
-      ctx.fillText("Improving", margin.left + 4, centerY + 12);
-      ctx.fillText("Lagging",   centerX + 4,    centerY + 12);
-
-      if (!rrgData.length) {
-        ctx.fillStyle = "#555";
-        ctx.fillText("Waiting for dummy data…", margin.left + 4, margin.top + 26);
-        return;
-      }
-
-      const baseRatio = 100;
-      const baseMomentum = 100;
-
-      const maxDeltaRatio = rrgData.reduce((acc, d) => {
-        const diff = Math.abs((d.rsRatio || baseRatio) - baseRatio);
-        return diff > acc ? diff : acc;
-      }, 1);
-
-      const maxDeltaMomentum = rrgData.reduce((acc, d) => {
-        const diff = Math.abs((d.rsMomentum || baseMomentum) - baseMomentum);
-        return diff > acc ? diff : acc;
-      }, 1);
-
-      const maxRadiusX = chartWidth / 2 - 10;
-      const maxRadiusY = chartHeight / 2 - 10;
-
-      rrgData.forEach(d => {
-        const ratio = d.rsRatio || baseRatio;
-        const momentum = d.rsMomentum || baseMomentum;
-
-        const dx = ((ratio - baseRatio) / maxDeltaRatio) * maxRadiusX;
-        const dy = ((momentum - baseMomentum) / maxDeltaMomentum) * maxRadiusY;
-
-        const x = centerX + dx;
-        const y = centerY - dy;
-
-        let color = "#3b82f6";
-        if (ratio >= baseRatio && momentum >= baseMomentum) color = "#22c55e";   // Leading
-        else if (ratio >= baseRatio && momentum < baseMomentum) color = "#ffbf00"; // Weakening
-        else if (ratio < baseRatio && momentum < baseMomentum) color = "#ef4444";  // Lagging
-
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = "#f5f5f5";
-        ctx.font = "8px 'Fira Code'";
-        ctx.fillText((d.symbol || "").toUpperCase(), x + 5, y - 4);
-      });
-    }
-
-    // ==========================
-    //  DUMMY DATA – FX (Majors, Minors, Exotics)
+    //  DUMMY DATA
     // ==========================
     function loadMockData() {
-      const mockQuotes = [
-        // === Majors ===
-        { symbol:"EURUSD", name:"EUR / USD · Major", last:1.0865, change:0.0028,  changePct:0.26,  dailyHigh:1.0890, dailyLow:1.0812, weeklyHigh:1.0935, weeklyLow:1.0740, session:"London" },
-        { symbol:"GBPUSD", name:"GBP / USD · Major", last:1.2742, change:-0.0015, changePct:-0.12, dailyHigh:1.2785, dailyLow:1.2690, weeklyHigh:1.2840, weeklyLow:1.2615, session:"London" },
-        { symbol:"USDJPY", name:"USD / JPY · Major", last:154.32, change:0.38,   changePct:0.25,  dailyHigh:154.90, dailyLow:153.50, weeklyHigh:155.80, weeklyLow:151.90, session:"Tokyo" },
-        { symbol:"USDCHF", name:"USD / CHF · Major", last:0.8968, change:-0.0019, changePct:-0.21, dailyHigh:0.9015, dailyLow:0.8932, weeklyHigh:0.9070, weeklyLow:0.8895, session:"Zurich" },
-        { symbol:"USDCAD", name:"USD / CAD · Major", last:1.3645, change:0.0010,  changePct:0.07,  dailyHigh:1.3682, dailyLow:1.3594, weeklyHigh:1.3725, weeklyLow:1.3532, session:"New York" },
-        { symbol:"AUDUSD", name:"AUD / USD · Major", last:0.6674, change:0.0009,  changePct:0.14,  dailyHigh:0.6701, dailyLow:0.6615, weeklyHigh:0.6745, weeklyLow:0.6588, session:"Sydney" },
-        { symbol:"NZDUSD", name:"NZD / USD · Major", last:0.6142, change:-0.0007, changePct:-0.11, dailyHigh:0.6170, dailyLow:0.6095, weeklyHigh:0.6215, weeklyLow:0.6050, session:"Wellington" },
-
-        // === Minor EUR-cross ===
-        { symbol:"EURGBP", name:"EUR / GBP · Minor", last:0.8525, change:0.0006,  changePct:0.07,  dailyHigh:0.8541, dailyLow:0.8488, weeklyHigh:0.8575, weeklyLow:0.8460, session:"London" },
-        { symbol:"EURJPY", name:"EUR / JPY · Minor", last:167.80, change:0.42,   changePct:0.25,  dailyHigh:168.60, dailyLow:166.40, weeklyHigh:169.90, weeklyLow:164.90, session:"Tokyo" },
-        { symbol:"EURAUD", name:"EUR / AUD · Minor", last:1.6289, change:0.0023,  changePct:0.14,  dailyHigh:1.6345, dailyLow:1.6190, weeklyHigh:1.6430, weeklyLow:1.6120, session:"Frankfurt" },
-        { symbol:"EURNZD", name:"EUR / NZD · Minor", last:1.7685, change:0.0044,  changePct:0.25,  dailyHigh:1.7760, dailyLow:1.7550, weeklyHigh:1.7850, weeklyLow:1.7425, session:"Frankfurt" },
-        { symbol:"EURCHF", name:"EUR / CHF · Minor", last:0.9736, change:-0.0011, changePct:-0.11, dailyHigh:0.9780, dailyLow:0.9704, weeklyHigh:0.9815, weeklyLow:0.9670, session:"Zurich" },
-
-        // === Minor GBP / JPY / CAD / AUD / NZD crosses ===
-        { symbol:"GBPJPY", name:"GBP / JPY · Minor", last:196.72, change:0.55,   changePct:0.28,  dailyHigh:197.80, dailyLow:194.90, weeklyHigh:199.10, weeklyLow:192.80, session:"Tokyo" },
-        { symbol:"GBPCAD", name:"GBP / CAD · Minor", last:1.7392, change:-0.0020, changePct:-0.11, dailyHigh:1.7460, dailyLow:1.7315, weeklyHigh:1.7535, weeklyLow:1.7240, session:"London" },
-        { symbol:"GBPCHF", name:"GBP / CHF · Minor", last:1.1425, change:0.0015,  changePct:0.13,  dailyHigh:1.1468, dailyLow:1.1350, weeklyHigh:1.1520, weeklyLow:1.1310, session:"London" },
-
-        { symbol:"AUDJPY", name:"AUD / JPY · Minor", last:102.98, change:0.22,   changePct:0.21,  dailyHigh:103.60, dailyLow:101.80, weeklyHigh:104.40, weeklyLow:100.90, session:"Tokyo" },
-        { symbol:"AUDCAD", name:"AUD / CAD · Minor", last:0.9104, change:0.0008,  changePct:0.09,  dailyHigh:0.9135, dailyLow:0.9050, weeklyHigh:0.9180, weeklyLow:0.8985, session:"Sydney" },
-        { symbol:"AUDNZD", name:"AUD / NZD · Minor", last:1.0866, change:0.0014,  changePct:0.13,  dailyHigh:1.0905, dailyLow:1.0780, weeklyHigh:1.0955, weeklyLow:1.0725, session:"Sydney" },
-
-        { symbol:"NZDJPY", name:"NZD / JPY · Minor", last:94.88,  change:0.12,   changePct:0.13,  dailyHigh:95.40,  dailyLow:93.90,  weeklyHigh:96.10,  weeklyLow:92.80,  session:"Tokyo" },
-
-        { symbol:"CADJPY", name:"CAD / JPY · Minor", last:113.10, change:0.28,   changePct:0.25,  dailyHigh:113.80, dailyLow:111.90, weeklyHigh:114.60, weeklyLow:110.90, session:"Tokyo" },
-        { symbol:"CHFJPY", name:"CHF / JPY · Minor", last:172.10, change:0.20,   changePct:0.12,  dailyHigh:172.90, dailyLow:170.80, weeklyHigh:173.80, weeklyLow:169.40, session:"Tokyo" },
-
-        // === Exotics vs USD ===
-        { symbol:"USDTRY", name:"USD / TRY · Exotic", last:34.852, change:0.112,  changePct:0.32,  dailyHigh:35.120, dailyLow:34.420, weeklyHigh:35.580, weeklyLow:33.950, session:"Istanbul" },
-        { symbol:"USDZAR", name:"USD / ZAR · Exotic", last:18.452, change:-0.065, changePct:-0.35, dailyHigh:18.720, dailyLow:18.210, weeklyHigh:19.050, weeklyLow:18.020, session:"Johannesburg" },
-        { symbol:"USDMXN", name:"USD / MXN · Exotic", last:18.152, change:0.024,  changePct:0.13,  dailyHigh:18.320, dailyLow:17.920, weeklyHigh:18.650, weeklyLow:17.650, session:"Mexico City" },
-        { symbol:"USDSEK", name:"USD / SEK · Exotic", last:10.452, change:-0.018, changePct:-0.17, dailyHigh:10.540, dailyLow:10.320, weeklyHigh:10.740, weeklyLow:10.210, session:"Stockholm" },
-        { symbol:"USDNOK", name:"USD / NOK · Exotic", last:10.892, change:0.021,  changePct:0.19,  dailyHigh:11.020, dailyLow:10.750, weeklyHigh:11.280, weeklyLow:10.620, session:"Oslo" },
-        { symbol:"USDPLN", name:"USD / PLN · Exotic", last:3.982,  change:-0.006, changePct:-0.15, dailyHigh:4.020,  dailyLow:3.945,  weeklyHigh:4.065,  weeklyLow:3.910,  session:"Warsaw" },
-        { symbol:"USDTHB", name:"USD / THB · Exotic", last:35.452, change:0.032,  changePct:0.09,  dailyHigh:35.680, dailyLow:35.120, weeklyHigh:36.050, weeklyLow:34.980, session:"Bangkok" },
-
-        // === Exotics vs EUR ===
-        { symbol:"EURTRY", name:"EUR / TRY · Exotic", last:37.852, change:0.128,  changePct:0.34,  dailyHigh:38.210, dailyLow:37.320, weeklyHigh:38.920, weeklyLow:36.950, session:"Istanbul" },
-        { symbol:"EURZAR", name:"EUR / ZAR · Exotic", last:20.452, change:-0.075, changePct:-0.37, dailyHigh:20.820, dailyLow:20.190, weeklyHigh:21.150, weeklyLow:19.980, session:"Johannesburg" },
-        { symbol:"EURPLN", name:"EUR / PLN · Exotic", last:4.322,  change:-0.008, changePct:-0.18, dailyHigh:4.360,  dailyLow:4.285,  weeklyHigh:4.410,  weeklyLow:4.250,  session:"Warsaw" }
+      // Major pairs
+      mockMajor = [
+        { symbol:"EURUSD", name:"EUR/USD", open:1.0850, high:1.0895, low:1.0820, last:1.0872, close:1.0872, change:0.0022,  changePct:0.20,  ytdPct:2.35,  session:"London" },
+        { symbol:"GBPUSD", name:"GBP/USD", open:1.2760, high:1.2815, low:1.2725, last:1.2788, close:1.2788, change:0.0028,  changePct:0.22,  ytdPct:1.95,  session:"London" },
+        { symbol:"USDJPY", name:"USD/JPY", open:151.25, high:151.90, low:150.80, last:151.55, close:151.55, change:0.30,   changePct:0.20,  ytdPct:5.40,  session:"Tokyo" },
+        { symbol:"AUDUSD", name:"AUD/USD", open:0.6640, high:0.6682, low:0.6615, last:0.6665, close:0.6665, change:0.0025,  changePct:0.38,  ytdPct:1.10,  session:"Sydney" },
+        { symbol:"NZDUSD", name:"NZD/USD", open:0.6125, high:0.6158, low:0.6100, last:0.6142, close:0.6142, change:0.0017,  changePct:0.28,  ytdPct:0.75,  session:"Sydney" },
+        { symbol:"USDCHF", name:"USD/CHF", open:0.8990, high:0.9030, low:0.8962, last:0.9005, close:0.9005, change:0.0015,  changePct:0.17,  ytdPct:-1.25, session:"Zurich" },
+        { symbol:"USDCAD", name:"USD/CAD", open:1.3620, high:1.3665, low:1.3595, last:1.3640, close:1.3640, change:0.0020,  changePct:0.15,  ytdPct:0.95,  session:"New York" }
       ];
 
-      const mockFlow = mockQuotes.map(q => ({
-        symbol: q.symbol,
-        changePct: q.changePct
-      }));
-
-      const mockRRG = [
-        // Majors
-        { symbol:"EURUSD", rsRatio:104, rsMomentum:103 },
-        { symbol:"GBPUSD", rsRatio:101, rsMomentum:99  },
-        { symbol:"USDJPY", rsRatio:103, rsMomentum:106 },
-        { symbol:"USDCHF", rsRatio:96,  rsMomentum:97  },
-        { symbol:"USDCAD", rsRatio:99,  rsMomentum:101 },
-        { symbol:"AUDUSD", rsRatio:102, rsMomentum:104 },
-        { symbol:"NZDUSD", rsRatio:98,  rsMomentum:99  },
-
-        // Minors
-        { symbol:"EURGBP", rsRatio:100, rsMomentum:100 },
-        { symbol:"EURJPY", rsRatio:105, rsMomentum:103 },
-        { symbol:"EURAUD", rsRatio:99,  rsMomentum:98  },
-        { symbol:"GBPJPY", rsRatio:106, rsMomentum:104 },
-        { symbol:"AUDJPY", rsRatio:103, rsMomentum:102 },
-        { symbol:"NZDJPY", rsRatio:101, rsMomentum:101 },
-        { symbol:"CADJPY", rsRatio:100, rsMomentum:99  },
-
-        // Exotics
-        { symbol:"USDTRY", rsRatio:95,  rsMomentum:96  },
-        { symbol:"USDZAR", rsRatio:94,  rsMomentum:94  },
-        { symbol:"USDMXN", rsRatio:97,  rsMomentum:98  },
-        { symbol:"USDSEK", rsRatio:98,  rsMomentum:97  },
-        { symbol:"USDNOK", rsRatio:99,  rsMomentum:96  },
-        { symbol:"USDPLN", rsRatio:96,  rsMomentum:95  },
-        { symbol:"EURTRY", rsRatio:93,  rsMomentum:94  },
-        { symbol:"EURZAR", rsRatio:92,  rsMomentum:93  }
+      // Minor pairs
+      mockMinor = [
+        { symbol:"EURGBP", name:"EUR/GBP", open:0.8505, high:0.8532, low:0.8488, last:0.8518, close:0.8518, change:0.0013,  changePct:0.15,  ytdPct:-0.80, session:"London" },
+        { symbol:"EURJPY", name:"EUR/JPY", open:164.10, high:165.05, low:163.60, last:164.85, close:164.85, change:0.75,   changePct:0.46,  ytdPct:6.10,  session:"London" },
+        { symbol:"GBPJPY", name:"GBP/JPY", open:193.20, high:194.35, low:192.70, last:193.90, close:193.90, change:0.70,   changePct:0.36,  ytdPct:5.85,  session:"London" },
+        { symbol:"AUDJPY", name:"AUD/JPY", open:100.40, high:101.10, low:100.05, last:100.85, close:100.85, change:0.45,   changePct:0.45,  ytdPct:4.20,  session:"Tokyo" },
+        { symbol:"CHFJPY", name:"CHF/JPY", open:168.50, high:169.20, low:168.05, last:168.95, close:168.95, change:0.45,   changePct:0.27,  ytdPct:3.90,  session:"Zurich" },
+        { symbol:"EURAUD", name:"EUR/AUD", open:1.6330, high:1.6395, low:1.6305, last:1.6368, close:1.6368, change:0.0038,  changePct:0.23,  ytdPct:1.20,  session:"London" }
       ];
 
-      updateQuotesTable(mockQuotes);
-      updateCapitalFlow(mockFlow);
-      updateRRG(mockRRG);
+      // Exotic pairs
+      mockExotic = [
+        { symbol:"USDTRY", name:"USD/TRY", open:33.250, high:33.580, low:33.100, last:33.520, close:33.520, change:0.270,  changePct:0.81,  ytdPct:24.50, session:"Istanbul" },
+        { symbol:"USDZAR", name:"USD/ZAR", open:18.250, high:18.480, low:18.180, last:18.390, close:18.390, change:0.140,  changePct:0.77,  ytdPct:8.10,  session:"Johannesburg" },
+        { symbol:"USDMXN", name:"USD/MXN", open:18.150, high:18.320, low:18.020, last:18.260, close:18.260, change:0.110,  changePct:0.61,  ytdPct:6.80,  session:"New York" },
+        { symbol:"USDIDR", name:"USD/IDR", open:15680,  high:15740,  low:15640,  last:15710,  close:15710,  change:30,     changePct:0.19,  ytdPct:3.20,  session:"Jakarta" },
+        { symbol:"EURTRY", name:"EUR/TRY", open:36.050, high:36.420, low:35.920, last:36.310, close:36.310, change:0.260,  changePct:0.72,  ytdPct:22.40, session:"Istanbul" },
+        { symbol:"EURPLN", name:"EUR/PLN", open:4.3200, high:4.3380, low:4.3100, last:4.3325, close:4.3325, change:0.0125, changePct:0.29,  ytdPct:1.95,  session:"Warsaw" }
+      ];
+
+      applyPageDataset();
     }
 
     // ==========================
     //  INIT
     // ==========================
-    window.addEventListener("resize", () => {
-      drawCapitalFlow();
-      drawRRG();
-    });
-
     document.addEventListener("DOMContentLoaded", () => {
-      loadMockData(); // full dummy mode
+      loadMockData();
     });
   </script>
-
-
-</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
+</body>
+</html>
