@@ -46,7 +46,7 @@
       color:var(--text-main);
     }
 
-    /* Webkit scrollbar (Chrome, Edge, etc.) – hitam transparan */
+    /* Webkit scrollbar – hitam transparan */
     ::-webkit-scrollbar {
       width:6px;
       height:6px;
@@ -110,7 +110,6 @@
       background:var(--amber);
     }
 
-    /* layout */
     .kt-layout {
       display:grid;
       grid-template-columns:1fr;
@@ -142,7 +141,7 @@
 
     .kt-card-header {
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       gap:8px;
       font-size:var(--fs-subtitle);
@@ -153,6 +152,14 @@
     .kt-card-header .subtitle {
       font-size:var(--fs-small);
       color:var(--text-muted);
+      margin-top:2px;
+    }
+
+    .kt-header-left {
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
     }
 
     .kt-toolbar {
@@ -165,26 +172,11 @@
       justify-content:flex-end;
     }
 
-    .kt-pill {
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      padding:2px 8px;
-      font-size:var(--fs-small);
-      cursor:pointer;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .kt-pill.active {
-      border-color:var(--amber);
-      color:var(--amber);
-    }
-
     .kt-search {
       flex:1;
       min-width:140px;
       display:flex;
       align-items:center;
-      gap:6px;
       border-radius:4px;
       border:1px solid var(--border-soft);
       padding:2px 6px;
@@ -200,16 +192,11 @@
       min-width:0;
     }
 
-    .kt-search span {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
     /* === Quotes Table === */
     .kt-table-wrapper {
       flex:1;
       min-height:0;
-      overflow:auto;          /* vertical + horizontal scroll on small screen */
+      overflow:auto;
       margin-top:4px;
       max-height:100%;
     }
@@ -218,7 +205,7 @@
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:880px;        /* horizontal scroll kalau terlalu lebar */
+      min-width:880px;
     }
 
     thead {
@@ -286,7 +273,6 @@
       color:var(--amber);
     }
 
-    /* === Responsive === */
     @media (max-width:900px) {
       .kt-page {
         padding:12px;
@@ -305,10 +291,6 @@
         flex-direction:column;
         align-items:flex-start;
         gap:4px;
-      }
-
-      .kt-toolbar {
-        justify-content:flex-start;
       }
 
       .kt-card {
@@ -347,17 +329,15 @@
     </div>
 
     <div class="kt-layout">
-      <!-- FULL PAGE: Equities Quotes -->
       <div class="kt-column">
         <section class="kt-card">
           <header class="kt-card-header">
-            <div id="quotesTitle">Indices Market Quotes</div>
+            <div class="kt-header-left">
+              <div id="quotesTitle">Indices Market Quotes</div>
+              <div id="tickerMeta" class="subtitle">Tickers: --</div>
+            </div>
             <div class="kt-toolbar">
-              <div class="kt-pill active" data-scope="global">Global</div>
-              <div class="kt-pill" data-scope="developed">DM</div>
-              <div class="kt-pill" data-scope="emerging">EM</div>
               <div class="kt-search">
-                <span>🔍</span>
                 <input id="searchInput" type="text" placeholder="Filter symbol / name">
               </div>
             </div>
@@ -398,6 +378,7 @@
     const tableBody = document.querySelector("#indicesTable tbody");
     const searchInput = document.getElementById("searchInput");
     const quotesTitleEl = document.getElementById("quotesTitle");
+    const tickerMetaEl = document.getElementById("tickerMeta");
     const pagePills = document.querySelectorAll(".kt-pill-page");
 
     let latestQuotes = [];
@@ -521,6 +502,10 @@
       document.body.removeChild(textarea);
     }
 
+    function updateTickerMeta(count) {
+      tickerMetaEl.textContent = `Tickers: ${count}`;
+    }
+
     searchInput.addEventListener("input", renderQuotesTable);
 
     // ==========================
@@ -529,27 +514,31 @@
     function applyPageDataset() {
       let title = "";
       let placeholder = "";
+      let dataset = [];
 
       if (currentPage === "indices") {
         title = "Indices Market Quotes";
         placeholder = "Filter index (e.g. SPX, NIKKEI, DAX)";
-        updateQuotesTable(mockIndices);
+        dataset = mockIndices;
       } else if (currentPage === "etf") {
         title = "ETF Market Quotes";
         placeholder = "Filter ETF (e.g. SPY, QQQ, EEM)";
-        updateQuotesTable(mockEtf);
+        dataset = mockEtf;
       } else if (currentPage === "usstocks") {
         title = "US Stocks Market Quotes";
         placeholder = "Filter US stocks (e.g. AAPL, MSFT)";
-        updateQuotesTable(mockUSStocks);
+        dataset = mockUSStocks;
       } else if (currentPage === "idstocks") {
         title = "ID Stocks Market Quotes";
         placeholder = "Filter ID stocks (e.g. BBCA, BBRI)";
-        updateQuotesTable(mockIDStocks);
+        dataset = mockIDStocks;
       }
 
       quotesTitleEl.textContent = title;
       searchInput.placeholder = placeholder;
+
+      updateQuotesTable(dataset);
+      updateTickerMeta(dataset.length);
     }
 
     pagePills.forEach(pill => {
@@ -604,7 +593,7 @@
         { symbol:"UNVR",  name:"Unilever Indonesia",    open:3950,  high:4000,  low:3920,  last:3980,  close:3980,  change:30,   changePct:0.76,  ytdPct:-1.80, session:"Jakarta" }
       ];
 
-      applyPageDataset(); // default indices
+      applyPageDataset();
     }
 
     // ==========================
