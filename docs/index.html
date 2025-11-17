@@ -309,16 +309,53 @@
     }
 
     .kt-ai-panel{
-      position:fixed;right:16px;bottom:140px;width:min(360px,92vw);max-height:60vh;background:#111;border-radius:10px;border:1px solid var(--border-soft);
-      box-shadow:0 10px 26px rgba(0,0,0,.8);display:none;flex-direction:column;overflow:hidden;z-index:3000
+      position:fixed;
+      right:16px;
+      bottom:140px;
+      width:min(400px,92vw);
+      height:min(440px,78vh);      /* PANEL TINGGI SAMA UNTUK SEMUA MODE */
+      max-height:78vh;
+      background:#111;
+      border-radius:10px;
+      border:1px solid var(--border-soft);
+      box-shadow:0 10px 26px rgba(0,0,0,.8);
+      display:none;
+      flex-direction:column;
+      overflow:hidden;
+      z-index:3000;
     }
-    .kt-ai-panel-header{padding:8px 10px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;justify-content:space-between;font-size:11px}
+    .kt-ai-panel-header{
+      padding:8px 10px;
+      border-bottom:1px solid var(--border-soft);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size:11px;
+      flex:0 0 auto;
+    }
     .kt-ai-panel-title{display:flex;flex-direction:column;gap:2px}
     .kt-ai-panel-title span:first-child{color:var(--amber);font-weight:500;font-size:11px}
     .kt-ai-panel-title span:last-child{color:var(--text-muted);font-size:10px}
     .kt-ai-panel-close{cursor:pointer;font-size:12px;color:var(--text-muted);padding:2px 6px;border-radius:3px}
-    .kt-ai-panel-body{padding:8px 10px;font-size:11px;color:var(--text-muted);display:flex;flex-direction:column;gap:6px}
-    .kt-ai-footer{padding:6px 10px 8px;border-top:1px solid var(--border-soft);display:flex;justify-content:flex-end;gap:6px}
+
+    .kt-ai-panel-body{
+      padding:8px 10px;
+      font-size:11px;
+      color:var(--text-muted);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      flex:1;                 /* BODY MENGISI PANEL */
+      overflow:auto;          /* JIKA KONTEN PANJANG, SCROLL DI DALAM BODY */
+    }
+    .kt-ai-footer{
+      padding:6px 10px 8px;
+      border-top:1px solid var(--border-soft);
+      display:flex;
+      justify-content:flex-end;
+      gap:6px;
+      flex:0 0 auto;
+    }
     .kt-ai-btn{padding:4px 10px;border-radius:3px;font-size:11px;border:1px solid var(--border-soft);background:#181818;color:var(--text-muted);cursor:pointer}
     .kt-ai-btn.primary{background:var(--amber);color:#000;border-color:#f0f0f0}
 
@@ -990,9 +1027,11 @@
           aiTitle.textContent = "Mini Chart";
           aiSubtitle.textContent = "Chart kecil untuk quick view XAUUSD.";
           aiBody.innerHTML =
-            '<div style="border:1px solid var(--border-soft);border-radius:6px;overflow:hidden;height:260px;">' +
-              '<iframe src="'+MINI_CHART_URL+'" ' +
-              'title="Mini Chart" loading="lazy" style="width:100%;height:100%;border:0;"></iframe>' +
+            '<div style="display:flex;flex-direction:column;height:100%;">' +
+              '<div style="flex:1;border:1px solid var(--border-soft);border-radius:6px;overflow:hidden;min-height:260px;">' +
+                '<iframe src="'+MINI_CHART_URL+'" ' +
+                'title="Mini Chart" loading="lazy" style="width:100%;height:100%;border:0;"></iframe>' +
+              '</div>' +
             '</div>';
           aiFooter.innerHTML = '<button class="kt-ai-btn" disabled>Detach</button>';
           aiPanel.style.display="flex";
@@ -1008,7 +1047,7 @@
           aiTitle.textContent = "Notes";
           aiSubtitle.textContent = "Catatan cepat untuk ide trade dan macro view.";
           aiBody.innerHTML =
-            '<textarea id="kt-notes-area" style="width:100%;min-height:180px;background:#111;border:1px solid var(--border-soft);border-radius:6px;color:var(--text-main);padding:6px;font-size:11px;resize:vertical;" placeholder="Tulis catatan di sini..."></textarea>';
+            '<textarea id="kt-notes-area" style="width:100%;flex:1;min-height:180px;background:#111;border:1px solid var(--border-soft);border-radius:6px;color:var(--text-main);padding:6px;font-size:11px;resize:vertical;" placeholder="Tulis catatan di sini..."></textarea>';
           aiFooter.innerHTML = '<button class="kt-ai-btn" id="kt-notes-clear">Clear</button>';
 
           const clearBtn = document.getElementById("kt-notes-clear");
