@@ -31,6 +31,9 @@
       margin:0;
       padding:0;
       font-family:"Fira Code",monospace !important;
+      /* Firefox scrollbar */
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.6) transparent;
     }
 
     html, body {
@@ -41,6 +44,22 @@
     body {
       background:var(--bg-root);
       color:var(--text-main);
+    }
+
+    /* Webkit scrollbar (Chrome, Edge, etc.) – hitam transparan */
+    ::-webkit-scrollbar {
+      width:6px;
+      height:6px;
+    }
+    ::-webkit-scrollbar-track {
+      background:transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background:rgba(0,0,0,0.6);
+      border-radius:999px;
+    }
+    ::-webkit-scrollbar-corner {
+      background:transparent;
     }
 
     .kt-page {
@@ -67,12 +86,12 @@
       color:var(--text-muted);
     }
 
-    /* Single-column full-page layout */
+    /* Single-column layout – biar fleksibel, nggak ngunci tinggi di mobile */
     .kt-layout {
       display:grid;
       grid-template-columns:1fr;
-      height:calc(100vh - 42px);
-      max-height:calc(100vh - 42px);
+      height:auto;
+      max-height:none;
     }
 
     .kt-column {
@@ -168,13 +187,14 @@
       min-height:0;
       overflow:auto;          /* vertical + horizontal scroll on small screen */
       margin-top:4px;
+      max-height:100%;
     }
 
     table {
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:980px;        /* more columns: enforce horizontal scroll on mobile */
+      min-width:880px;        /* tetap horizontal scroll kalau terlalu lebar, bukan mengecil tak terbaca */
     }
 
     thead {
@@ -242,17 +262,19 @@
       color:var(--amber);
     }
 
-    /* === Responsive === */
+    /* === Responsive – panel benar-benar fit di mobile === */
+    @media (max-width:900px) {
+      .kt-page {
+        padding:12px;
+      }
+    }
+
     @media (max-width:600px) {
       :root {
         --fs-title:13px;
         --fs-subtitle:11px;
         --fs-body:10px;
         --fs-small:9px;
-      }
-
-      .kt-page {
-        padding:12px;
       }
 
       .kt-title {
@@ -274,8 +296,13 @@
       }
 
       .kt-layout {
+        grid-template-columns:1fr;
         height:auto;
         max-height:none;
+      }
+
+      .kt-table-wrapper {
+        max-height:none; /* biar ngikut tinggi konten di mobile */
       }
     }
   </style>
