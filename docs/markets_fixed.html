@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuantara – Fixed Income Market Snapshot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
+
+  <style>
+    :root {
+      --amber:#ffbf00;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+
+      --green:#22c55e;
+      --red:#ef4444;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+      /* Firefox scrollbar */
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.6) transparent;
+    }
+
+    html, body {
+      width:100%;
+      height:100%;
+    }
+
+    body {
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    /* Webkit scrollbar – hitam transparan */
+    ::-webkit-scrollbar {
+      width:6px;
+      height:6px;
+    }
+    ::-webkit-scrollbar-track {
+      background:transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background:rgba(0,0,0,0.6);
+      border-radius:999px;
+    }
+    ::-webkit-scrollbar-corner {
+      background:transparent;
+    }
+
+    .kt-page {
+      min-height:100vh;
+      padding:16px;
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    .kt-title {
+      font-size:var(--fs-title);
+      font-weight:600;
+      letter-spacing:0.03em;
+      margin-bottom:6px;
+      color:var(--text-main);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .kt-title span.label {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-page-tabs {
+      display:flex;
+      gap:8px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .kt-pill-page {
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:3px 10px;
+      font-size:var(--fs-small);
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+      color:var(--text-muted);
+      background:#050505;
+    }
+    .kt-pill-page.active {
+      border-color:var(--amber);
+      color:#000;
+      background:var(--amber);
+    }
+
+    .kt-layout {
+      display:grid;
+      grid-template-columns:1fr;
+      height:auto;
+      max-height:none;
+    }
+
+    .kt-column {
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+
+    .kt-column > .kt-card {
+      flex:1;
+      min-height:0;
+    }
+
+    .kt-card {
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .kt-card-header {
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:8px;
+      font-size:var(--fs-subtitle);
+      color:var(--text-main);
+      flex-wrap:wrap;
+    }
+
+    .kt-card-header .subtitle {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:2px;
+    }
+
+    .kt-header-left {
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+    }
+
+    .kt-toolbar {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .kt-search {
+      flex:1;
+      min-width:140px;
+      display:flex;
+      align-items:center;
+      border-radius:4px;
+      border:1px solid var(--border-soft);
+      padding:2px 6px;
+    }
+
+    .kt-search input {
+      flex:1;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--text-main);
+      font-size:var(--fs-small);
+      min-width:0;
+    }
+
+    /* === Quotes Table === */
+    .kt-table-wrapper {
+      flex:1;
+      min-height:0;
+      overflow:auto;
+      margin-top:4px;
+      max-height:100%;
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:var(--fs-body);
+      min-width:880px;
+    }
+
+    thead {
+      position:sticky;
+      top:0;
+      background:linear-gradient(to bottom,#111111,#0b0b0b);
+      z-index:2;
+    }
+
+    th, td {
+      padding:5px 4px;
+      text-align:right;
+      white-space:nowrap;
+    }
+
+    th:first-child, td:first-child {
+      text-align:left;
+    }
+
+    th:nth-child(2), td:nth-child(2) {
+      text-align:left;
+    }
+
+    th {
+      font-size:var(--fs-small);
+      font-weight:500;
+      color:var(--text-muted);
+      border-bottom:1px solid var(--border-soft);
+    }
+
+    tbody tr:nth-child(even) {
+      background:#0d0d0d;
+    }
+
+    tbody tr:nth-child(odd) {
+      background:#090909;
+    }
+
+    tbody tr:hover {
+      background:#151515;
+    }
+
+    .text-up {
+      color:var(--green);
+    }
+
+    .text-down {
+      color:var(--red);
+    }
+
+    .copy-btn {
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:transparent;
+      color:var(--text-muted);
+      font-size:var(--fs-small);
+      padding:2px 6px;
+      cursor:pointer;
+      white-space:nowrap;
+      transition:all 0.15s ease;
+    }
+
+    .copy-btn:hover {
+      border-color:var(--amber);
+      color:var(--amber);
+    }
+
+    @media (max-width:900px) {
+      .kt-page {
+        padding:12px;
+      }
+    }
+
+    @media (max-width:600px) {
+      :root {
+        --fs-title:13px;
+        --fs-subtitle:11px;
+        --fs-body:10px;
+        --fs-small:9px;
+      }
+
+      .kt-title {
+        flex-direction:column;
+        align-items:flex-start;
+        gap:4px;
+      }
+
+      .kt-card {
+        padding:10px 10px;
+      }
+
+      th, td {
+        padding:4px 3px;
+      }
+
+      .kt-layout {
+        grid-template-columns:1fr;
+        height:auto;
+        max-height:none;
+      }
+
+      .kt-table-wrapper {
+        max-height:none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-page">
+    <!-- PAGE SWITCHER -->
+    <div class="kt-page-tabs">
+      <div class="kt-pill-page active" data-page="bonds">Bonds</div>
+      <div class="kt-pill-page" data-page="rates">Rates</div>
+      <div class="kt-pill-page" data-page="credits">Credits</div>
+    </div>
+
+    <div class="kt-layout">
+      <div class="kt-column">
+        <section class="kt-card">
+          <header class="kt-card-header">
+            <div class="kt-header-left">
+              <div id="quotesTitle">Bonds Market Quotes</div>
+              <div id="tickerMeta" class="subtitle">Tickers: 0</div>
+            </div>
+            <div class="kt-toolbar">
+              <div class="kt-search">
+                <input id="searchInput" type="text" placeholder="Filter bonds (e.g. US10Y, BUND)">
+              </div>
+            </div>
+          </header>
+
+          <div class="kt-table-wrapper">
+            <table id="fixedIncomeTable">
+              <thead>
+                <tr>
+                  <th>Symbol</th>
+                  <th>Name</th>
+                  <th>Last</th>
+                  <th>Δ</th>
+                  <th>Δ%</th>
+                  <th>Open</th>
+                  <th>High</th>
+                  <th>Low</th>
+                  <th>Close</th>
+                  <th>%YTD</th>
+                  <th>Session</th>
+                  <th>Copy OHLC</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Filled by JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================
+    //  STATE
+    // ==========================
+    const tableBody = document.querySelector("#fixedIncomeTable tbody");
+    const searchInput = document.getElementById("searchInput");
+    const quotesTitleEl = document.getElementById("quotesTitle");
+    const tickerMetaEl = document.getElementById("tickerMeta");
+    const pagePills = document.querySelectorAll(".kt-pill-page");
+
+    let latestQuotes = [];
+    let currentPage = "bonds";
+
+    let mockBonds = [];
+    let mockRates = [];
+    let mockCredits = [];
+
+    // ==========================
+    //  RENDER TABLE
+    // ==========================
+    function updateQuotesTable(data) {
+      latestQuotes = Array.isArray(data) ? data : [];
+      renderQuotesTable();
+    }
+
+    function renderQuotesTable() {
+      const filter = (searchInput.value || "").trim().toLowerCase();
+      tableBody.innerHTML = "";
+
+      latestQuotes
+        .filter(row => {
+          if (!filter) return true;
+          const symbol = (row.symbol || "").toLowerCase();
+          const name = (row.name || "").toLowerCase();
+          return symbol.includes(filter) || name.includes(filter);
+        })
+        .forEach(row => {
+          const tr = document.createElement("tr");
+
+          const changePct = Number(row.changePct || 0);
+          const change = Number(row.change || 0);
+          const ytdPct = Number(row.ytdPct || 0);
+          const isUp = changePct > 0;
+          const isDown = changePct < 0;
+          const isYtdUp = ytdPct > 0;
+          const isYtdDown = ytdPct < 0;
+
+          tr.innerHTML = `
+            <td>${row.symbol || ""}</td>
+            <td>${row.name || ""}</td>
+            <td>${formatNumber(row.last)}</td>
+            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
+              ${formatSigned(change)}
+            </td>
+            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
+              ${formatSigned(changePct)}%
+            </td>
+            <td>${formatNumber(row.open)}</td>
+            <td>${formatNumber(row.high)}</td>
+            <td>${formatNumber(row.low)}</td>
+            <td>${formatNumber(row.close)}</td>
+            <td class="${isYtdUp ? "text-up" : isYtdDown ? "text-down" : ""}">
+              ${formatSigned(ytdPct)}%
+            </td>
+            <td>${row.session || ""}</td>
+          `;
+
+          const tdCopy = document.createElement("td");
+          const btn = document.createElement("button");
+          btn.className = "copy-btn";
+          btn.textContent = "Copy";
+          btn.title = "Copy OHLC";
+          btn.addEventListener("click", () => {
+            const text = [
+              `Symbol=${row.symbol || ""}`,
+              `O=${row.open}`,
+              `H=${row.high}`,
+              `L=${row.low}`,
+              `C=${row.close}`
+            ].join(" ");
+            copyTextToClipboard(text);
+          });
+          tdCopy.appendChild(btn);
+          tr.appendChild(tdCopy);
+
+          tableBody.appendChild(tr);
+        });
+    }
+
+    function formatNumber(value) {
+      const num = Number(value);
+      if (Number.isNaN(num)) return "";
+      // For yields and spreads, keep 2 decimals; for prices, allow thousands separator
+      if (Math.abs(num) >= 1000 && Number.isInteger(num)) {
+        return num.toLocaleString(undefined, { maximumFractionDigits: 0 });
+      }
+      if (Math.abs(num) >= 1000) {
+        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      }
+      return num.toFixed(2);
+    }
+
+    function formatSigned(value) {
+      const num = Number(value);
+      if (Number.isNaN(num)) return "";
+      if (num === 0) return num.toFixed(2);
+      return (num > 0 ? "+" : "") + num.toFixed(2);
+    }
+
+    function copyTextToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => {
+          fallbackCopyText(text);
+        });
+      } else {
+        fallbackCopyText(text);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        document.execCommand("copy");
+      } catch (e) {
+        console.warn("Copy failed", e);
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function updateTickerMeta(count) {
+      tickerMetaEl.textContent = `Tickers: ${count}`;
+    }
+
+    searchInput.addEventListener("input", renderQuotesTable);
+
+    // ==========================
+    //  PAGE SWITCHING
+    // ==========================
+    function applyPageDataset() {
+      let title = "";
+      let placeholder = "";
+      let dataset = [];
+
+      if (currentPage === "bonds") {
+        title = "Bonds Market Quotes";
+        placeholder = "Filter bonds (e.g. US10Y, BUND, JGB10Y)";
+        dataset = mockBonds;
+      } else if (currentPage === "rates") {
+        title = "Rates Market Quotes";
+        placeholder = "Filter rates (e.g. FEDFUNDS, SOFR, ESTR)";
+        dataset = mockRates;
+      } else if (currentPage === "credits") {
+        title = "Credits Market Quotes";
+        placeholder = "Filter credits (e.g. HYG, JNK, CDXIG)";
+        dataset = mockCredits;
+      }
+
+      quotesTitleEl.textContent = title;
+      searchInput.placeholder = placeholder;
+
+      updateQuotesTable(dataset);
+      updateTickerMeta(dataset.length);
+    }
+
+    pagePills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        pagePills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        currentPage = pill.dataset.page;
+        applyPageDataset();
+      });
+    });
+
+    // ==========================
+    //  DUMMY DATA
+    // ==========================
+    function loadMockData() {
+      // Bonds (yields, in %)
+      mockBonds = [
+        { symbol:"US02Y",  name:"US 2Y Treasury Yield",   open:4.35, high:4.41, low:4.30, last:4.38, close:4.38, change:0.03,  changePct:0.69,  ytdPct:-4.10, session:"New York" },
+        { symbol:"US10Y",  name:"US 10Y Treasury Yield",  open:3.95, high:4.02, low:3.92, last:3.99, close:3.99, change:0.04,  changePct:1.01,  ytdPct:-6.25, session:"New York" },
+        { symbol:"US30Y",  name:"US 30Y Treasury Yield",  open:4.05, high:4.12, low:4.01, last:4.09, close:4.09, change:0.04,  changePct:0.99,  ytdPct:-5.80, session:"New York" },
+        { symbol:"BUND10", name:"Germany 10Y Bund Yield", open:2.15, high:2.21, low:2.10, last:2.18, close:2.18, change:0.03,  changePct:1.39,  ytdPct:-3.40, session:"Frankfurt" },
+        { symbol:"JGB10",  name:"Japan 10Y JGB Yield",    open:0.96, high:1.00, low:0.94, last:0.98, close:0.98, change:0.02,  changePct:2.08,  ytdPct:1.10,  session:"Tokyo" },
+        { symbol:"GILT10", name:"UK 10Y Gilt Yield",      open:3.60, high:3.68, low:3.56, last:3.65, close:3.65, change:0.05,  changePct:1.39,  ytdPct:-4.50, session:"London" }
+      ];
+
+      // Rates (policy / reference rates, in %)
+      mockRates = [
+        { symbol:"FEDFUNDS", name:"Fed Funds Target Mid",  open:4.88, high:4.88, low:4.88, last:4.88, close:4.88, change:0.00, changePct:0.00,  ytdPct:-18.00, session:"Washington" },
+        { symbol:"SOFR",     name:"SOFR Overnight",        open:4.86, high:4.88, low:4.86, last:4.87, close:4.87, change:0.01, changePct:0.21,  ytdPct:-17.50, session:"New York" },
+        { symbol:"ECBDEP",   name:"ECB Deposit Rate",      open:3.00, high:3.00, low:3.00, last:3.00, close:3.00, change:0.00, changePct:0.00,  ytdPct:-25.00, session:"Frankfurt" },
+        { symbol:"BOERATE",  name:"BoE Bank Rate",         open:4.75, high:4.75, low:4.75, last:4.75, close:4.75, change:0.00, changePct:0.00,  ytdPct:-15.00, session:"London" },
+        { symbol:"RBA",      name:"RBA Cash Rate",         open:3.85, high:3.85, low:3.85, last:3.85, close:3.85, change:0.00, changePct:0.00,  ytdPct:0.00,   session:"Sydney" },
+        { symbol:"BI7DRR",   name:"BI 7-Day Reverse Repo", open:6.25, high:6.25, low:6.25, last:6.25, close:6.25, change:0.00, changePct:0.00,  ytdPct:0.00,   session:"Jakarta" }
+      ];
+
+      // Credits (credit ETFs / indices, levels or prices)
+      mockCredits = [
+        { symbol:"HYG",    name:"iShares iBoxx HY Corp",           open:79.20, high:79.85, low:78.95, last:79.60, close:79.60, change:0.40,  changePct:0.51,  ytdPct:4.25,  session:"New York" },
+        { symbol:"JNK",    name:"SPDR Bloomberg HY Bond",          open:96.10, high:96.65, low:95.80, last:96.45, close:96.45, change:0.35,  changePct:0.36,  ytdPct:3.90,  session:"New York" },
+        { symbol:"LQD",    name:"iShares iBoxx IG Corp",           open:110.80,high:111.35,low:110.40,last:111.10,close:111.10,change:0.30,  changePct:0.27,  ytdPct:2.60,  session:"New York" },
+        { symbol:"CDXIG",  name:"CDX IG 5Y Spread (bps)",          open:67.0,  high:69.2,  low:66.5,  last:68.3,  close:68.3,  change:1.3,   changePct:1.94,  ytdPct:-8.50, session:"New York" },
+        { symbol:"CDXHY",  name:"CDX HY 5Y Spread (bps)",          open:335.0, high:342.5, low:332.0, last:339.8, close:339.8, change:4.8,   changePct:1.43,  ytdPct:-6.20, session:"New York" },
+        { symbol:"EMB",    name:"iShares JPM USD EM Bond",         open:90.50, high:91.10, low:90.10, last:90.85, close:90.85, change:0.35,  changePct:0.39,  ytdPct:3.15,  session:"New York" }
+      ];
+
+      applyPageDataset();
+    }
+
+    // ==========================
+    //  INIT
+    // ==========================
+    document.addEventListener("DOMContentLoaded", () => {
+      loadMockData();
+    });
+  </script>
+</body>
+</html>
