@@ -325,36 +325,50 @@
       z-index:3000;
     }
 
-    /* HEADER & FOOTER DIHILANGKAN AGAR IFRAME FULL SPACE */
+    /* HEADER DIPAKAI HANYA SEBAGAI HOLDER TOMBOL CLOSE (NO BEZEL) */
     .kt-ai-panel-header{
-      padding:8px 10px;
-      border-bottom:1px solid var(--border-soft);
-      display:none;              /* <== HIDDEN */
-      align-items:center;
-      justify-content:space-between;
-      font-size:11px;
+      position:relative;
+      padding:0;
+      border:none;
+      height:0;
+      overflow:visible;   /* biar tombol close bisa nongol di atas */
       flex:0 0 auto;
     }
-    .kt-ai-panel-title{display:flex;flex-direction:column;gap:2px}
-    .kt-ai-panel-title span:first-child{color:var(--amber);font-weight:500;font-size:11px}
-    .kt-ai-panel-title span:last-child{color:var(--text-muted);font-size:10px}
-    .kt-ai-panel-close{cursor:pointer;font-size:12px;color:var(--text-muted);padding:2px 6px;border-radius:3px}
+    .kt-ai-panel-title{
+      display:none;       /* hidden, full space untuk iframe */
+    }
+    .kt-ai-panel-close{
+      position:absolute;
+      top:4px;
+      right:6px;
+      cursor:pointer;
+      font-size:12px;
+      color:var(--text-main);
+      padding:2px 7px;
+      border-radius:999px;
+      background:rgba(0,0,0,0.7);
+      border:1px solid var(--border-soft);
+    }
+    .kt-ai-panel-close:hover{
+      background:rgba(0,0,0,0.9);
+    }
 
     .kt-ai-panel-body{
-      padding:0;                 /* 0 padding supaya iframe benar-benar full */
+      padding:0;                 /* no padding, agar iframe full */
       font-size:11px;
       color:var(--text-muted);
       display:flex;
       flex-direction:column;
       gap:0;
-      flex:1;                    /* BODY MENGISI SELURUH PANEL */
-      overflow:auto;             /* SCROLLING DI DALAM PANEL */
+      flex:1;                    /* body isi penuh panel */
+      min-height:0;
+      overflow:hidden;           /* scrolling di dalam child (iframe/textarea) */
     }
 
     .kt-ai-footer{
-      padding:6px 10px 8px;
-      border-top:1px solid var(--border-soft);
-      display:none;              /* <== HIDDEN */
+      padding:0;
+      border-top:none;
+      display:none;              /* footer di-hide supaya tidak ambil space */
       justify-content:flex-end;
       gap:6px;
       flex:0 0 auto;
@@ -1023,10 +1037,9 @@
           aiTitle.textContent = "Kuantara AI Assistant";
           aiSubtitle.textContent = "Kuantara AI terintegrasi langsung di dalam panel ini.";
           aiBody.innerHTML =
-            '<div style="flex:1;min-height:100%;border:none;overflow:hidden;">' +
-              '<iframe src="'+KUANTARA_AI_URL+'" ' +
-              'title="Kuantara AI" loading="lazy" style="width:100%;height:100%;border:0;display:block;"></iframe>' +
-            '</div>';
+            '<iframe src="'+KUANTARA_AI_URL+'" ' +
+            'title="Kuantara AI" loading="lazy" ' +
+            'style="width:100%;height:100%;border:0;display:block;"></iframe>';
           aiFooter.innerHTML = '';
           aiPanel.style.display="flex";
           if(activeBottom==="home") showAllBars();
@@ -1034,10 +1047,9 @@
           aiTitle.textContent = "Mini Chart";
           aiSubtitle.textContent = "Chart kecil untuk quick view XAUUSD.";
           aiBody.innerHTML =
-            '<div style="flex:1;min-height:100%;border:none;overflow:hidden;">' +
-              '<iframe src="'+MINI_CHART_URL+'" ' +
-              'title="Mini Chart" loading="lazy" style="width:100%;height:100%;border:0;display:block;"></iframe>' +
-            '</div>';
+            '<iframe src="'+MINI_CHART_URL+'" ' +
+            'title="Mini Chart" loading="lazy" ' +
+            'style="width:100%;height:100%;border:0;display:block;"></iframe>';
           aiFooter.innerHTML = '';
           aiPanel.style.display="flex";
           if(activeBottom==="home") showAllBars();
@@ -1045,7 +1057,10 @@
           aiTitle.textContent = "Notes";
           aiSubtitle.textContent = "Catatan cepat untuk ide trade dan macro view.";
           aiBody.innerHTML =
-            '<textarea id="kt-notes-area" style="width:100%;flex:1;min-height:100%;background:#111;border:none;border-radius:0;color:var(--text-main);padding:6px;font-size:11px;resize:none;box-sizing:border-box;" placeholder="Tulis catatan di sini..."></textarea>';
+            '<textarea id="kt-notes-area" ' +
+            'style="width:100%;height:100%;background:#111;border:none;border-radius:0;' +
+            'color:var(--text-main);padding:6px;font-size:11px;resize:none;box-sizing:border-box;outline:none;overflow:auto;" ' +
+            'placeholder="Tulis catatan di sini..."></textarea>';
           aiFooter.innerHTML = '';
 
           const notesArea = document.getElementById("kt-notes-area");
@@ -1060,7 +1075,7 @@
           aiTitle.textContent = "Signals";
           aiSubtitle.textContent = "Ringkasan sinyal trading & alert utama.";
           aiBody.innerHTML =
-            '<div style="flex:1;min-height:100%;padding:8px 10px;box-sizing:border-box;font-size:10px;line-height:1.5;color:var(--text-muted);overflow:auto;">' +
+            '<div style="width:100%;height:100%;padding:8px 10px;box-sizing:border-box;font-size:10px;line-height:1.5;color:var(--text-muted);overflow:auto;">' +
             'Panel ini akan menampilkan sinyal dari sistem Kuantara (algo, screener, atau alert eksternal). ' +
             'Integrasi backend bisa diarahkan untuk push sinyal terbaru ke area ini secara realtime.' +
             '</div>';
@@ -1071,7 +1086,7 @@
           aiTitle.textContent = "Group Chat";
           aiSubtitle.textContent = "Chat antar user Kuantara Terminal (prototype).";
           aiBody.innerHTML =
-            '<div style="flex:1;min-height:100%;padding:8px 10px;box-sizing:border-box;font-size:10px;line-height:1.5;color:var(--text-muted);overflow:auto;">' +
+            '<div style="width:100%;height:100%;padding:8px 10px;box-sizing:border-box;font-size:10px;line-height:1.5;color:var(--text-muted);overflow:auto;">' +
               'Fitur ini didesain sebagai ruang obrolan realtime antar pengguna Kuantara Terminal. ' +
               'Integrasi backend (Telegram/Discord/WebSocket) bisa dihubungkan ke panel ini di tahap berikutnya.' +
               '<div style="margin-top:8px;padding:6px 8px;border-radius:6px;border:1px dashed var(--border-soft);font-size:10px;color:var(--text-muted);">' +
