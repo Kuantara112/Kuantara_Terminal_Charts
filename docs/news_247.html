@@ -2,7 +2,1428 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
+  <title>Kuantara – Latest 24/<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
   <title>Kuantara – Latest 24/7 & Catalyst</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <style>
+    :root {
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+
+      --green:#22c55e;
+      --red:#ef4444;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+    }
+
+    html,body {
+      height:100%;
+    }
+
+    body {
+      background:var(--bg-root);
+      color:var(--text-main);
+      overflow:hidden;
+    }
+
+    /* SCROLLBARS – HITAM TRANSPARAN */
+    * {
+      scrollbar-width:thin;
+      scrollbar-color:#00000088 #000000;
+    }
+    *::-webkit-scrollbar {
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track {
+      background:#000000;
+    }
+    *::-webkit-scrollbar-thumb {
+      background:#00000088;
+      border-radius:3px;
+    }
+
+    .kt-shell {
+      padding:16px;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      background:var(--bg-root);
+    }
+
+    .kt-title {
+      font-size:var(--fs-title);
+      letter-spacing:0.16em;
+      text-transform:uppercase;
+      color:var(--text-main);
+    }
+
+    .kt-sub {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    .kt-card {
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:14px 16px;
+    }
+
+    .kt-row {
+      display:flex;
+      flex-direction:row;
+      align-items:flex-start;
+      gap:12px;
+      height:calc(100vh - 56px);
+    }
+
+    .kt-col {
+      flex:1;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    @media (max-width:768px) {
+      body {
+        overflow:auto;
+      }
+      .kt-row {
+        flex-direction:column;
+        height:auto;
+      }
+    }
+
+    /* HEADER BAR DI CARD */
+    .card-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .card-header-left {
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .card-label {
+      font-size:var(--fs-subtitle);
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      color:var(--accent);
+    }
+
+    .card-meta {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .card-header-right {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      display:flex;
+      align-items:center;
+      gap:6px;
+      white-space:nowrap;
+    }
+
+    .dot-live {
+      width:7px;
+      height:7px;
+      border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 12px var(--accent);
+      animation:pulse 1.4s ease-out infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform:scale(1); opacity:1; }
+      60% { transform:scale(1.8); opacity:0; }
+      100% { transform:scale(1.8); opacity:0; }
+    }
+
+    /* TABS: LATEST VS CATALYST */
+    .tab-bar {
+      display:flex;
+      align-items:center;
+      gap:6px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .tab-btn {
+      border-radius:999px;
+      padding:4px 10px;
+      font-size:var(--fs-small);
+      text-transform:uppercase;
+      letter-spacing:0.14em;
+      border:1px solid var(--border-soft);
+      background:#000;
+      color:var(--text-muted);
+      cursor:pointer;
+      transition:background .15s ease, color .15s ease, border-color .15s ease;
+    }
+
+    .tab-btn.active {
+      background:var(--accent);
+      color:#000;
+      border-color:var(--accent);
+    }
+
+    .tab-btn:disabled {
+      opacity:.5;
+      cursor:default;
+    }
+
+    /* PANEL WRAPPER */
+    .panel {
+      display:none;
+      flex:1;
+      min-height:0;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .panel.active {
+      display:flex;
+    }
+
+    /* FILTER BAR */
+    .filter-row {
+      display:flex;
+      flex-direction:row;
+      gap:8px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+
+    .filter-group {
+      flex:1 1 220px;
+      min-width:0;
+    }
+
+    .filter-label {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-bottom:3px;
+    }
+
+    select.category-select {
+      width:100%;
+      background:#000;
+      color:var(--text-main);
+      border:1px solid var(--border-soft);
+      padding:5px 8px;
+      font-size:var(--fs-small);
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+    }
+
+    .btn-recap {
+      flex:0 0 auto;
+      white-space:nowrap;
+      border-radius:3px;
+      border:1px solid var(--accent);
+      background:#000;
+      color:var(--accent);
+      padding:6px 10px;
+      font-size:var(--fs-small);
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .btn-recap span.icon {
+      font-size:11px;
+    }
+
+    .btn-recap:disabled {
+      opacity:.5;
+      cursor:default;
+    }
+
+    /* STATUS BAR */
+    .status-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    .status-left {
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .status-dot {
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#555;
+    }
+
+    /* LIST */
+    .feed-container {
+      margin-top:8px;
+      border-radius:4px;
+      border:1px solid var(--border-soft);
+      background:#080808;
+      padding:8px;
+      flex:1;
+      min-height:0;
+      overflow:auto;
+    }
+
+    .feed-list {
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .feed-card {
+      border:1px solid var(--border-soft);
+      border-radius:3px;
+      padding:8px 9px;
+      background:#111111;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      font-size:var(--fs-body);
+    }
+
+    .feed-card.important {
+      border-color:var(--accent);
+      box-shadow:0 0 18px rgba(255,191,0,0.18);
+    }
+
+    .feed-header-row {
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .feed-headline-wrap {
+      display:flex;
+      align-items:flex-start;
+      gap:6px;
+      flex:1;
+      min-width:0;
+    }
+
+    .head-dot {
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 10px rgba(255,191,0,0.6);
+      margin-top:3px;
+      flex-shrink:0;
+    }
+
+    .headline {
+      font-size:var(--fs-body);
+      color:var(--text-main);
+    }
+
+    .headline span.source {
+      color:var(--text-muted);
+      font-size:var(--fs-small);
+    }
+
+    .copy-btn {
+      border:none;
+      outline:none;
+      cursor:pointer;
+      padding:4px 6px;
+      border-radius:3px;
+      font-size:var(--fs-small);
+      background:#000000;
+      color:var(--text-muted);
+      border:1px solid var(--border-soft);
+      flex-shrink:0;
+    }
+
+    .copy-btn.copied {
+      background:var(--accent);
+      color:#000;
+      border-color:var(--accent);
+    }
+
+    .feed-meta {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .feed-time {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .feed-tags {
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+      margin-top:2px;
+    }
+
+    .chip {
+      border-radius:999px;
+      padding:2px 6px;
+      border:1px solid var(--border-soft);
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      background:#000000;
+    }
+
+    .chip-high {
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+
+    .impact-badge {
+      font-size:var(--fs-small);
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#000;
+      color:var(--text-muted);
+    }
+
+    .impact-high {
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+
+    .impact-medium {
+      border-color:#f97316;
+      color:#f97316;
+    }
+
+    .impact-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:6px;
+    }
+
+    .feed-body {
+      font-size:var(--fs-body);
+      color:var(--text-main);
+      margin-top:2px;
+    }
+
+    /* SHIMMER / SKELETON */
+    .shimmer-line {
+      position:relative;
+      overflow:hidden;
+      background:#1b1b1b;
+      border-radius:3px;
+    }
+
+    .shimmer-line::after {
+      content:"";
+      position:absolute;
+      inset:0;
+      transform:translateX(-100%);
+      background-image:linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.10),
+        transparent
+      );
+      animation:shimmer 1.3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform:translateX(-100%); }
+      100% { transform:translateX(100%); }
+    }
+
+    .skeleton-title {
+      height:11px;
+      width:72%;
+      margin-bottom:4px;
+    }
+
+    .skeleton-sub {
+      height:9px;
+      width:40%;
+    }
+
+    .skeleton-body {
+      height:9px;
+      width:100%;
+      margin-top:2px;
+    }
+
+    .skeleton-tags {
+      margin-top:4px;
+      display:flex;
+      gap:4px;
+    }
+
+    .skeleton-tag {
+      height:9px;
+      width:50px;
+    }
+
+    /* MODAL KUANTARA AI RECAP */
+    .modal-overlay {
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.78);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:40;
+    }
+
+    .modal-overlay.active {
+      display:flex;
+    }
+
+    .modal-card {
+      background:#111;
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:14px 16px;
+      width:min(640px,100% - 32px);
+      max-height:80vh;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .modal-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:4px;
+    }
+
+    .modal-title {
+      font-size:var(--fs-subtitle);
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+      color:var(--accent);
+    }
+
+    .modal-close {
+      border:none;
+      background:#000;
+      color:var(--text-muted);
+      border-radius:3px;
+      padding:3px 7px;
+      font-size:var(--fs-small);
+      cursor:pointer;
+    }
+
+    .modal-body {
+      font-size:var(--fs-body);
+      color:var(--text-main);
+      overflow:auto;
+      padding-top:4px;
+    }
+
+    .modal-body p + p {
+      margin-top:4px;
+    }
+
+    .modal-status {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-shell">
+    <header>
+      <div class="kt-title">Latest 24/7 & Catalyst</div>
+      <div class="kt-sub">Realtime headline feed & catalyst monitor · terhubung ke WebSocket/API Kuantara (FastBull + Google Script)</div>
+    </header>
+
+    <main class="kt-row">
+      <section class="kt-col">
+        <article class="kt-card" id="latestCatalystCard">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-label">Global Macro Newswire</div>
+              <div class="card-meta">FastBull · Catalyst Google Script · Kuantara AI Recap</div>
+            </div>
+            <div class="card-header-right">
+              <div class="dot-live"></div>
+              <span id="globalStatusText">Live 24/7 feed</span>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="tab-bar" id="tabBar">
+            <button class="tab-btn active" data-target="latestPanel">Latest 24/7</button>
+            <button class="tab-btn" data-target="catalystPanel">Catalyst</button>
+          </div>
+
+          <!-- LATEST 24/7 PANEL -->
+          <div class="panel active" id="latestPanel">
+            <div class="filter-row">
+              <div class="filter-group">
+                <div class="filter-label">Filter kategori</div>
+                <select id="latestCategoryDropdown" class="category-select">
+                  <option value="-1">Semua</option>
+                  <option value="central_banks">Central Banks</option>
+                  <option value="crypto">Cryptocurrencies</option>
+                  <option value="equities">Equities</option>
+                  <option value="macro">Macro & Data</option>
+                  <option value="topics">Themes & Geopolitik</option>
+                </select>
+              </div>
+              <button id="latestRecapBtn" class="btn-recap">
+                <span class="icon">⚡</span>
+                <span>Recap Semua Catalyst by Kuantara AI</span>
+              </button>
+            </div>
+
+            <div class="status-row">
+              <div class="status-left">
+                <div class="status-dot"></div>
+                <span>HEADLINE 24/7</span>
+              </div>
+              <div id="latestStatus">Waiting feed…</div>
+            </div>
+
+            <div class="feed-container">
+              <ul id="latestTicker" class="feed-list">
+                <!-- diisi JS -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- CATALYST PANEL -->
+          <div class="panel" id="catalystPanel">
+            <div class="filter-row">
+              <div class="filter-group">
+                <div class="filter-label">Filter kategori catalyst</div>
+                <select id="catalystCategoryDropdown" class="category-select">
+                  <option value="all">Semua</option>
+                  <!-- opsi lain diisi otomatis dari feed -->
+                </select>
+              </div>
+              <button id="catalystRecapBtn" class="btn-recap">
+                <span class="icon">🧠</span>
+                <span>Recap Catalyst Terpilih</span>
+              </button>
+            </div>
+
+            <div class="status-row">
+              <div class="status-left">
+                <div class="status-dot"></div>
+                <span>Catalyst Feed</span>
+              </div>
+              <div id="catalystStatus">Waiting feed…</div>
+            </div>
+
+            <div class="feed-container">
+              <ul id="catalystList" class="feed-list">
+                <!-- diisi JS -->
+              </ul>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal Kuantara AI Recap -->
+  <div id="kuantaraModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title" id="kuantaraTitle">Kuantara AI Recap</div>
+        <button class="modal-close" id="kuantaraClose">CLOSE</button>
+      </div>
+      <div class="modal-status" id="kuantaraStatus">Menyiapkan ringkasan…</div>
+      <div class="modal-body" id="kuantaraBody">
+        <p>Stub recap untuk demo. Hubungkan ke backend AI (OpenAI / HF / internal) untuk menghasilkan insight otomatis.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== KONFIG REAL-TIME (DISAMAKAN DENGAN HTML SOURCE) ======
+    const AUTO_REFRESH_INTERVAL = 15000; // 15 detik
+
+    // FastBull latest 24/7
+    const FASTBULL_NEWS_ENDPOINT =
+      "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
+    const FASTBULL_HEADERS = {
+      Accept: "application/json",
+      "client-type": "4",
+      clientversion: "latest",
+      langid: "13",
+    };
+
+    // Mapping tag FastBull -> label (dipersingkat dari source asli)
+    const FASTBULL_TAG_LABELS = {
+      100: "Central Banks",
+      126: "RBNZ",
+      124: "RBA",
+      123: "BOJ",
+      121: "SNB",
+      120: "BOE",
+      118: "ECB",
+      116: "BOC",
+      115: "FED",
+      114: "PBOC",
+      110: "Inflation",
+      111: "Interest Rates",
+      109: "Macroeconomic Indicators",
+      119: "Economic Forecasts/Analysis/Surveys",
+      112: "Population/Employment/Income",
+      117: "International Economics and Trade",
+      127: "Fiscal Policy",
+      125: "Monetary Policy",
+      143: "Top/Focus/Breaking News",
+      142: "Other Financial Markets",
+      133: "Banking/Financial Institution Updates",
+      140: "Tech/Innovation",
+      136: "National Security/Geopolitics",
+      135: "Government/Political/Diplomatic Updates",
+      108: "Russia-Ukraine Conflict",
+      177: "Middle East Flashpoint",
+      176: "Trump Trade",
+      137: "Major Crypto",
+      134: "Top Crypto",
+      166: "Other Crypto News",
+      164: "Blockchain/Public Blockchain",
+      162: "Web3",
+      160: "NFT",
+      159: "Metaverse",
+      157: "Airdrops/Tokens",
+      155: "Mining/Miners",
+    };
+
+    const fastbullTagMap = new Map(
+      Object.entries(FASTBULL_TAG_LABELS).map(([key, value]) => [String(key), value])
+    );
+
+    // Preset kategori -> tagIds (disesuaikan dari source)
+    const LATEST_CATEGORY_TAGS = {
+      "-1": "-1", // semua
+      central_banks: "100,132,125,115,118,116,120,121,114,124,126",
+      crypto: "137,134,166,164,162,160,159,157,155",
+      equities: "142,133,143",
+      macro: "109,110,111,112,119,117,127,129,122",
+      topics: "108,177,176,140,135,136",
+    };
+
+    // Catalyst feed dari Google Script Kuantara (isi dengan URL penuh milikmu)
+    const CATALYST_FEED_API =
+      "https://script.googleusercontent.com/macros/echo?user_conte...DDH4tUkDSY2SdlvYhf5nZmmY36BH4ncn8t63S2Ua7iCwCMVRs8Ey8R2aWWd6C0Sv39n4V0anX6oX-zfP8&lib=MakTJ382BM__YWV6a2eDZUSqaUOX12Qs5";
+
+    // ====== DOM ELEMENTS ======
+    const tabBar = document.getElementById("tabBar");
+    const latestPanel = document.getElementById("latestPanel");
+    const catalystPanel = document.getElementById("catalystPanel");
+
+    const latestListEl = document.getElementById("latestTicker");
+    const latestStatusEl = document.getElementById("latestStatus");
+    const latestDropdownEl = document.getElementById("latestCategoryDropdown");
+    const latestRecapBtn = document.getElementById("latestRecapBtn");
+
+    const catalystListEl = document.getElementById("catalystList");
+    const catalystStatusEl = document.getElementById("catalystStatus");
+    const catalystDropdownEl = document.getElementById("catalystCategoryDropdown");
+    const catalystRecapBtn = document.getElementById("catalystRecapBtn");
+
+    const kuantaraModal = document.getElementById("kuantaraModal");
+    const kuantaraClose = document.getElementById("kuantaraClose");
+    const kuantaraTitle = document.getElementById("kuantaraTitle");
+    const kuantaraStatus = document.getElementById("kuantaraStatus");
+    const kuantaraBody = document.getElementById("kuantaraBody");
+
+    // ====== STATE ======
+    const latestCache = new Map();
+    let latestFetchToken = 0;
+    let latestCurrentTagIds = "-1";
+
+    let catalystItems = [];
+    let catalystFetched = false;
+    let catalystLoading = false;
+    let catalystSelected = "all";
+
+    let autoRefreshTimer = null;
+    let autoRefreshInProgress = false;
+
+    // ====== UTIL ======
+    const COPY_TEXT = "Copy";
+    const COPIED_TEXT = "Copied";
+
+    function clearList(el) {
+      if (!el) return;
+      while (el.firstChild) el.removeChild(el.firstChild);
+    }
+
+    function resolveFastbullTagNames(tagString) {
+      if (!tagString) return [];
+      return tagString
+        .split(",")
+        .map((token) => fastbullTagMap.get(token.trim()))
+        .filter(Boolean)
+        .flatMap((entry) =>
+          entry
+            .split("/")
+            .map((name) => name.trim())
+            .filter(Boolean)
+        );
+    }
+
+    function formatFastbullUTC(value) {
+      if (!value) return "Unknown time";
+      let timestamp = Number(value);
+      if (Number.isNaN(timestamp)) {
+        const parsed = new Date(value);
+        timestamp = parsed.getTime();
+      }
+      if (!timestamp) return "Unknown time";
+      const date = new Date(timestamp);
+      if (Number.isNaN(date.getTime())) return "Unknown time";
+      const iso = date.toISOString();
+      return iso.slice(0, 16).replace("T", " ") + " UTC";
+    }
+
+    function setLatestStatus(text) {
+      if (latestStatusEl) latestStatusEl.textContent = text;
+    }
+
+    function copyTextToClipboard(text, button) {
+      if (!text || !button) return;
+      const original = button.textContent;
+      const markCopied = () => {
+        button.classList.add("copied");
+        button.textContent = COPIED_TEXT;
+        setTimeout(() => {
+          button.classList.remove("copied");
+          button.textContent = original;
+        }, 1400);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(markCopied).catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
+
+      function fallbackCopy() {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand("copy");
+        } catch (_) {}
+        document.body.removeChild(ta);
+        markCopied();
+      }
+    }
+
+    // ====== LATEST 24/7 ======
+    function createLatestSkeletonCard() {
+      const li = document.createElement("li");
+      li.className = "feed-card";
+      li.innerHTML = `
+        <div class="skeleton-title shimmer-line"></div>
+        <div class="skeleton-sub shimmer-line"></div>
+        <div class="skeleton-body shimmer-line"></div>
+        <div class="skeleton-tags">
+          <div class="skeleton-tag shimmer-line"></div>
+          <div class="skeleton-tag shimmer-line"></div>
+        </div>
+      `;
+      return li;
+    }
+
+    function renderLatestSkeleton() {
+      if (!latestListEl) return;
+      clearList(latestListEl);
+      Array.from({ length: 3 }).forEach(() => {
+        latestListEl.appendChild(createLatestSkeletonCard());
+      });
+    }
+
+    function normalizeFastbullNews(item) {
+      if (!item) return null;
+      const title = (item.newsTitle || "").trim();
+      const tags = typeof item.tags === "string" ? item.tags : "";
+      return {
+        id: item.newsId || item.path || title || String(item.releasedDate || Math.random()),
+        title: title || "Untitled headline",
+        tagIds: tags,
+        tagNames: resolveFastbullTagNames(tags),
+        timestamp: item.releasedDate || Date.now(),
+        important: Number(item.important) === 1,
+        source: item.simWebsiteName || item.simWebsite || "FastBull",
+      };
+    }
+
+    function createLatestCardElement(item) {
+      const li = document.createElement("li");
+      li.className = "feed-card";
+      if (item.important) li.classList.add("important");
+
+      const headerRow = document.createElement("div");
+      headerRow.className = "feed-header-row";
+
+      const headlineWrap = document.createElement("div");
+      headlineWrap.className = "feed-headline-wrap";
+
+      if (item.important) {
+        const dot = document.createElement("div");
+        dot.className = "head-dot";
+        headlineWrap.appendChild(dot);
+      }
+
+      const headlineBox = document.createElement("div");
+      const headline = document.createElement("div");
+      headline.className = "headline";
+      headline.textContent = item.title;
+      const sourceSpan = document.createElement("span");
+      sourceSpan.className = "source";
+      sourceSpan.textContent = " · " + (item.source || "FastBull");
+
+      headline.appendChild(sourceSpan);
+      headlineBox.appendChild(headline);
+      headlineWrap.appendChild(headlineBox);
+
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "copy-btn";
+      copyBtn.type = "button";
+      copyBtn.textContent = COPY_TEXT;
+      copyBtn.setAttribute("aria-label", "Salin headline");
+      copyBtn.addEventListener("click", () => copyTextToClipboard(item.title, copyBtn));
+
+      headerRow.appendChild(headlineWrap);
+      headerRow.appendChild(copyBtn);
+
+      const metaRow = document.createElement("div");
+      metaRow.className = "feed-meta";
+
+      const timeEl = document.createElement("span");
+      timeEl.className = "feed-time";
+      timeEl.textContent = formatFastbullUTC(item.timestamp);
+
+      metaRow.appendChild(timeEl);
+
+      const tagsRow = document.createElement("div");
+      tagsRow.className = "feed-tags";
+      const tags = item.tagNames && item.tagNames.length ? item.tagNames : ["Berita"];
+      tags.slice(0, 4).forEach((tagName) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = tagName;
+        tagsRow.appendChild(chip);
+      });
+
+      li.appendChild(headerRow);
+      li.appendChild(metaRow);
+      li.appendChild(tagsRow);
+      return li;
+    }
+
+    function renderLatestFeed(items) {
+      if (!latestListEl) return;
+      clearList(latestListEl);
+
+      if (!items || !items.length) {
+        const li = document.createElement("li");
+        li.className = "feed-card";
+        li.innerHTML =
+          '<div class="feed-body" style="color:var(--text-muted)">Belum ada headline untuk kategori ini.</div>';
+        latestListEl.appendChild(li);
+        return;
+      }
+
+      items.forEach((item) => {
+        const card = createLatestCardElement(item);
+        latestListEl.appendChild(card);
+      });
+    }
+
+    function mapLatestCategoryToTagIds(value) {
+      if (!value) return "-1";
+      return LATEST_CATEGORY_TAGS[value] || "-1";
+    }
+
+    function buildFastbullUrl(tagIds = "-1") {
+      const url = new URL(FASTBULL_NEWS_ENDPOINT);
+      url.searchParams.set("checkImportant", "0");
+      url.searchParams.set("pageSize", "20");
+      url.searchParams.set("timestamp", "");
+      url.searchParams.set("includeCalendar", "0");
+      url.searchParams.set("tagIds", tagIds);
+      return url.toString();
+    }
+
+    async function fetchFastbullNews(tagIds = "-1", { silent = false } = {}) {
+      if (!latestListEl) return;
+
+      const existing = latestCache.get(tagIds);
+      const shouldRenderCached = !silent || !existing || !existing.items.length;
+      if (shouldRenderCached) {
+        if (existing && existing.items.length) {
+          renderLatestFeed(existing.items);
+          setLatestStatus("Cached feed");
+        } else {
+          renderLatestSkeleton();
+          setLatestStatus("Loading feed…");
+        }
+      }
+
+      const token = ++latestFetchToken;
+      try {
+        const response = await fetch(buildFastbullUrl(tagIds), { headers: FASTBULL_HEADERS });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const payload = await response.json();
+        const body =
+          typeof payload.bodyMessage === "string"
+            ? JSON.parse(payload.bodyMessage)
+            : payload.bodyMessage || {};
+        const list = Array.isArray(body?.pageDatas) ? body.pageDatas : [];
+        const normalized = list.map(normalizeFastbullNews).filter(Boolean);
+
+        latestCache.set(tagIds, { items: normalized, updatedIso: new Date().toISOString() });
+        if (token !== latestFetchToken) return;
+
+        renderLatestFeed(normalized);
+        setLatestStatus("Updated just now");
+      } catch (error) {
+        console.error("FastBull feed error:", error);
+        if (token !== latestFetchToken) return;
+        setLatestStatus("Feed error · " + (error.message || "Network error"));
+      }
+    }
+
+    // ====== CATALYST ======
+    function normalizeCatalystItem(item) {
+      if (!item) return null;
+      const rawContent = item.content ?? item.summary ?? "";
+      const contentValue =
+        rawContent === null || rawContent === undefined
+          ? ""
+          : typeof rawContent === "string"
+          ? rawContent.trim()
+          : String(rawContent);
+      return {
+        timestamp: item.timestamp || item.time || "",
+        headline: item.headline || item.title || "Untitled catalyst",
+        content: contentValue,
+        impact: item.impact || "Low Impact",
+        category1: item.category1 || "",
+        category2: item.category2 || "",
+      };
+    }
+
+    function formatImpactBadgeClass(impact = "") {
+      if (/high/i.test(impact)) return "impact-high";
+      if (/medium/i.test(impact)) return "impact-medium";
+      return "";
+    }
+
+    function catalystCategories() {
+      const map = new Map();
+      catalystItems.forEach((item) => {
+        const key = item.category1 || "Lainnya";
+        if (!map.has(key)) map.set(key, key);
+      });
+      return Array.from(map.keys()).sort();
+    }
+
+    function renderCatalystSkeleton() {
+      if (!catalystListEl) return;
+      clearList(catalystListEl);
+      Array.from({ length: 3 }).forEach(() => {
+        const li = document.createElement("li");
+        li.className = "feed-card";
+        li.innerHTML = `
+          <div class="skeleton-title shimmer-line"></div>
+          <div class="skeleton-body shimmer-line"></div>
+          <div class="skeleton-body shimmer-line"></div>
+        `;
+        catalystListEl.appendChild(li);
+      });
+    }
+
+    function filterCatalystItems() {
+      if (catalystSelected === "all") return catalystItems;
+      return catalystItems.filter((item) => (item.category1 || "") === catalystSelected);
+    }
+
+    function buildCatalystCard(item) {
+      const li = document.createElement("li");
+      li.className = "feed-card";
+
+      const headerRow = document.createElement("div");
+      headerRow.className = "feed-header-row";
+
+      const headlineWrap = document.createElement("div");
+      headlineWrap.className = "feed-headline-wrap";
+
+      const dot = document.createElement("div");
+      dot.className = "head-dot";
+      headlineWrap.appendChild(dot);
+
+      const titleBox = document.createElement("div");
+      const titleEl = document.createElement("div");
+      titleEl.className = "headline";
+      titleEl.textContent = item.headline;
+      titleBox.appendChild(titleEl);
+      headlineWrap.appendChild(titleBox);
+
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "copy-btn";
+      copyBtn.type = "button";
+      copyBtn.textContent = COPY_TEXT;
+      copyBtn.setAttribute("aria-label", "Salin catalyst");
+      copyBtn.addEventListener("click", () =>
+        copyTextToClipboard(item.headline, copyBtn)
+      );
+
+      headerRow.appendChild(headlineWrap);
+      headerRow.appendChild(copyBtn);
+
+      const metaRow = document.createElement("div");
+      metaRow.className = "feed-meta";
+      const timeEl = document.createElement("span");
+      timeEl.className = "feed-time";
+      timeEl.textContent = formatFastbullUTC(item.timestamp);
+      metaRow.appendChild(timeEl);
+
+      const bodyEl = document.createElement("div");
+      bodyEl.className = "feed-body";
+      bodyEl.textContent = item.content || "";
+
+      const tagsRow = document.createElement("div");
+      tagsRow.className = "feed-tags";
+      const cats = [item.category1, item.category2].filter(Boolean);
+      cats.forEach((c) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = c;
+        tagsRow.appendChild(chip);
+      });
+
+      const impactRow = document.createElement("div");
+      impactRow.className = "impact-row";
+      const impactBadge = document.createElement("span");
+      impactBadge.className = "impact-badge " + formatImpactBadgeClass(item.impact);
+      impactBadge.textContent = item.impact || "Impact";
+      impactRow.appendChild(impactBadge);
+
+      // copy button sudah di header; di sini cukup badge
+      li.appendChild(headerRow);
+      li.appendChild(metaRow);
+      li.appendChild(bodyEl);
+      if (cats.length) li.appendChild(tagsRow);
+      li.appendChild(impactRow);
+
+      return li;
+    }
+
+    function renderCatalystFeed() {
+      if (!catalystListEl) return;
+      const items = filterCatalystItems();
+      clearList(catalystListEl);
+
+      if (!items.length) {
+        const li = document.createElement("li");
+        li.className = "feed-card";
+        li.innerHTML =
+          '<div class="feed-body" style="color:var(--text-muted)">Tidak ada catalyst untuk kategori ini.</div>';
+        catalystListEl.appendChild(li);
+        return;
+      }
+
+      items.forEach((item) => {
+        const card = buildCatalystCard(item);
+        catalystListEl.appendChild(card);
+      });
+    }
+
+    function populateCatalystDropdown() {
+      if (!catalystDropdownEl) return;
+      const selected = catalystDropdownEl.value || "all";
+      const cats = catalystCategories();
+
+      catalystDropdownEl.innerHTML = "";
+      const allOpt = document.createElement("option");
+      allOpt.value = "all";
+      allOpt.textContent = "Semua";
+      catalystDropdownEl.appendChild(allOpt);
+
+      cats.forEach((cat) => {
+        const option = document.createElement("option");
+        option.value = cat;
+        option.textContent = cat;
+        catalystDropdownEl.appendChild(option);
+      });
+
+      if (Array.from(catalystDropdownEl.options).some((opt) => opt.value === selected)) {
+        catalystDropdownEl.value = selected;
+        catalystSelected = selected;
+      } else {
+        catalystDropdownEl.value = "all";
+        catalystSelected = "all";
+      }
+
+      updateCatalystRecapButton();
+    }
+
+    function updateCatalystRecapButton() {
+      if (!catalystRecapBtn || !catalystDropdownEl) return;
+      const value = catalystDropdownEl.value;
+      const label =
+        value === "all"
+          ? "Semua"
+          : catalystDropdownEl.options[catalystDropdownEl.selectedIndex]?.textContent || "Semua";
+      catalystRecapBtn.textContent = `Recap ${label} Catalyst By Kuantara AI`;
+    }
+
+    async function fetchCatalystFeed({ force = false, silent = false } = {}) {
+      if (catalystLoading) return;
+      if (!force && catalystFetched) return;
+      catalystLoading = true;
+
+      const needsInitialUi = !catalystFetched || !catalystItems.length;
+      if (needsInitialUi) {
+        if (catalystStatusEl) catalystStatusEl.textContent = "Loading feed…";
+        renderCatalystSkeleton();
+      } else if (!silent && catalystStatusEl) {
+        catalystStatusEl.textContent = "Refreshing…";
+      }
+
+      try {
+        const response = await fetch(CATALYST_FEED_API, { headers: { Accept: "application/json" } });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const data = await response.json();
+        const list = Array.isArray(data) ? data : data?.items || [];
+        catalystItems = list.map(normalizeCatalystItem).filter(Boolean);
+        catalystFetched = true;
+        populateCatalystDropdown();
+        renderCatalystFeed();
+        if (catalystStatusEl) catalystStatusEl.textContent = "Updated";
+      } catch (error) {
+        console.error("Catalyst feed error:", error);
+        if (catalystStatusEl)
+          catalystStatusEl.textContent = "Feed error • " + (error.message || "Network error");
+      } finally {
+        catalystLoading = false;
+      }
+    }
+
+    // ====== KUANTARA AI MODAL (RECAP STUB) ======
+    function openRecapModal(context) {
+      if (!kuantaraModal) return;
+      const { title, description } = context || {};
+      kuantaraModal.classList.add("active");
+      document.body.style.overflow = "hidden";
+
+      if (kuantaraTitle) kuantaraTitle.textContent = title || "Kuantara AI Recap";
+      if (kuantaraStatus)
+        kuantaraStatus.textContent =
+          "Ini masih demo. Hubungkan ke backend AI untuk ringkasan otomatis berbasis feed real-time.";
+      if (kuantaraBody) {
+        kuantaraBody.innerHTML = "";
+        const p1 = document.createElement("p");
+        p1.textContent =
+          description ||
+          "Contoh prompt: 'Ringkas semua catalyst penting, jelaskan implikasi ke USD, saham, dan komoditas.'";
+        const p2 = document.createElement("p");
+        p2.textContent =
+          "Di production, tombol ini bisa memanggil endpoint AI (misalnya /api/ai/recap) dengan payload headline/catalyst terbaru.";
+        kuantaraBody.appendChild(p1);
+        kuantaraBody.appendChild(p2);
+      }
+    }
+
+    function closeRecapModal() {
+      if (!kuantaraModal) return;
+      kuantaraModal.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+
+    // ====== AUTO REFRESH LOOP ======
+    function stopAutoRefreshLoop() {
+      if (autoRefreshTimer) {
+        clearInterval(autoRefreshTimer);
+        autoRefreshTimer = null;
+      }
+    }
+
+    function runAutoRefreshCycle() {
+      if (autoRefreshInProgress || document.hidden) return;
+      autoRefreshInProgress = true;
+      const tagIds = latestCurrentTagIds || "-1";
+      const tasks = [
+        fetchFastbullNews(tagIds, { silent: true }),
+        fetchCatalystFeed({ silent: true, force: true }),
+      ];
+      Promise.allSettled(tasks).finally(() => {
+        autoRefreshInProgress = false;
+      });
+    }
+
+    function startAutoRefreshLoop() {
+      stopAutoRefreshLoop();
+      autoRefreshTimer = setInterval(runAutoRefreshCycle, AUTO_REFRESH_INTERVAL);
+    }
+
+    // ====== INIT ======
+    function initTabs() {
+      if (!tabBar) return;
+      const buttons = Array.from(tabBar.querySelectorAll(".tab-btn"));
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const target = btn.getAttribute("data-target");
+          buttons.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          [latestPanel, catalystPanel].forEach((p) => {
+            if (!p) return;
+            if (p.id === target) p.classList.add("active");
+            else p.classList.remove("active");
+          });
+        });
+      });
+    }
+
+    function initLatestPanel() {
+      if (!latestListEl) return;
+      renderLatestSkeleton();
+      const initialValue = latestDropdownEl ? latestDropdownEl.value || "-1" : "-1";
+      latestCurrentTagIds = mapLatestCategoryToTagIds(initialValue);
+      fetchFastbullNews(latestCurrentTagIds, { silent: false });
+
+      if (latestDropdownEl) {
+        latestDropdownEl.addEventListener("change", (event) => {
+          const value = event.target.value || "-1";
+          latestCurrentTagIds = mapLatestCategoryToTagIds(value);
+          fetchFastbullNews(latestCurrentTagIds, { silent: false });
+        });
+      }
+
+      if (latestRecapBtn) {
+        latestRecapBtn.addEventListener("click", () => {
+          openRecapModal({
+            title: "Kuantara AI – Latest 24/7 Recap",
+            description:
+              "Gunakan headline 24/7 di panel ini untuk membuat narasi makro harian dan bias cross-asset.",
+          });
+        });
+      }
+    }
+
+    function initCatalystPanel() {
+      if (!catalystListEl) return;
+      renderCatalystSkeleton();
+      fetchCatalystFeed({ force: true });
+
+      if (catalystDropdownEl) {
+        catalystDropdownEl.addEventListener("change", (event) => {
+          catalystSelected = event.target.value || "all";
+          renderCatalystFeed();
+          updateCatalystRecapButton();
+        });
+      }
+
+      if (catalystRecapBtn) {
+        catalystRecapBtn.addEventListener("click", () => {
+          openRecapModal({
+            title: "Kuantara AI – Catalyst Recap",
+            description:
+              "Gabungkan catalyst terfilter untuk menyusun skenario base, bull, dan bear market.",
+          });
+        });
+      }
+    }
+
+    function initModal() {
+      kuantaraClose?.addEventListener("click", closeRecapModal);
+      kuantaraModal?.addEventListener("click", (e) => {
+        if (e.target === kuantaraModal) closeRecapModal();
+      });
+    }
+
+    function initAutoRefresh() {
+      if (AUTO_REFRESH_INTERVAL <= 0) return;
+      startAutoRefreshLoop();
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          stopAutoRefreshLoop();
+        } else {
+          runAutoRefreshCycle();
+          startAutoRefreshLoop();
+        }
+      });
+      window.addEventListener("beforeunload", stopAutoRefreshLoop);
+    }
+
+    function initPage() {
+      initTabs();
+      initLatestPanel();
+      initCatalystPanel();
+      initModal();
+      initAutoRefresh();
+    }
+
+    window.addEventListener("load", initPage);
+  </script>
+</body>
+</html>
+7 & Catalyst</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Fira Code -->
