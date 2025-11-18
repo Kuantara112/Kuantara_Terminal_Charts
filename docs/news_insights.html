@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara – Insights · TV · X Feeds</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" />
+
+  <style>
+    :root{
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace!important;
+      /* Firefox scrollbar */
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.7) transparent;
+    }
+
+    /* WebKit scrollbar (hitam transparan) */
+    *::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track{
+      background:transparent;
+    }
+    *::-webkit-scrollbar-thumb{
+      background:rgba(0,0,0,0.7);
+      border-radius:3px;
+    }
+
+    html,body{
+      height:100%;
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    body{
+      padding:16px;
+    }
+
+    .kt-shell{
+      max-width:1440px;
+      margin:0 auto;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .kt-grid{
+      flex:1;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      min-height:0;
+    }
+
+    @media (max-width:1024px){
+      .kt-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .panel{
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px 12px 10px;
+      display:flex;
+      flex-direction:column;
+      min-height:320px;
+      gap:8px;
+    }
+
+    .panel-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:2px;
+    }
+
+    .panel-title{
+      font-size:var(--fs-title);
+      font-weight:600;
+      letter-spacing:0.03em;
+      text-transform:uppercase;
+    }
+
+    .panel-meta{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .badge{
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:2px 6px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .badge-live{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      border-radius:999px;
+      border:1px solid rgba(255,191,0,0.4);
+      padding:2px 8px;
+      font-size:var(--fs-small);
+      color:var(--accent);
+      text-transform:uppercase;
+    }
+
+    .dot-live{
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 6px rgba(255,191,0,0.9);
+      animation:blink 1.2s infinite ease-in-out;
+    }
+
+    @keyframes blink{
+      0%,100%{opacity:0.25;transform:scale(0.9);}
+      50%{opacity:1;transform:scale(1);}
+    }
+
+    .panel-body{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .controls-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+      flex:1;
+      min-width:120px;
+    }
+
+    .field-label{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    select{
+      background:#000;
+      color:var(--text-main);
+      border:1px solid var(--border-soft);
+      border-radius:3px;
+      padding:4px 8px;
+      font-size:var(--fs-body);
+      outline:none;
+    }
+
+    select:focus{
+      border-color:var(--accent);
+    }
+
+    .btn{
+      border-radius:3px;
+      border:1px solid var(--border-soft);
+      background:#000000;
+      color:var(--accent);
+      font-size:var(--fs-small);
+      padding:5px 10px;
+      cursor:pointer;
+      white-space:nowrap;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      transition:background 0.15s,border-color 0.15s,transform 0.1s;
+    }
+
+    .btn span{
+      font-size:10px;
+    }
+
+    .btn:hover{
+      background:#181818;
+      border-color:var(--accent);
+      transform:translateY(-0.5px);
+    }
+
+    .btn:active{
+      transform:translateY(0.5px);
+    }
+
+    .btn-ghost{
+      border-style:dashed;
+    }
+
+    .list-shell{
+      flex:1;
+      min-height:0;
+      border-radius:3px;
+      border:1px solid var(--border-soft);
+      background:#0b0b0b;
+      padding:6px;
+      overflow-y:auto;
+    }
+
+    .item{
+      padding:6px 4px;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+
+    .item:last-child{
+      border-bottom:none;
+    }
+
+    .item-title{
+      font-size:var(--fs-body);
+      margin-bottom:3px;
+    }
+
+    .item-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .tag{
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:1px 6px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .caption-ai-shell{
+      margin-top:4px;
+      border-radius:3px;
+      border:1px dashed var(--border-soft);
+      padding:6px;
+      background:#0b0b0b;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .caption-ai-label{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      text-transform:uppercase;
+      letter-spacing:0.03em;
+    }
+
+    .caption-ai-body{
+      font-size:var(--fs-body);
+      color:var(--text-main);
+      max-height:120px;
+      overflow-y:auto;
+      line-height:1.4;
+    }
+
+    .video-shell{
+      position:relative;
+      width:100%;
+      border-radius:3px;
+      border:1px solid var(--border-soft);
+      background:#000;
+      overflow:hidden;
+      margin-bottom:4px;
+    }
+
+    .video-inner{
+      position:relative;
+      width:100%;
+      padding-top:56.25%; /* 16:9 */
+      background:#000;
+    }
+
+    .video-placeholder{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--text-muted);
+      font-size:var(--fs-body);
+      background:radial-gradient(circle at top,rgba(255,191,0,0.14),#000);
+    }
+
+    .video-overlay-top{
+      position:absolute;
+      top:6px;
+      left:6px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:var(--fs-small);
+    }
+
+    .video-overlay-bottom{
+      position:absolute;
+      inset-inline:6px;
+      bottom:6px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .pill{
+      border-radius:999px;
+      background:rgba(0,0,0,0.65);
+      padding:3px 8px;
+      border:1px solid rgba(255,255,255,0.08);
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .pill-label{
+      text-transform:uppercase;
+      font-size:var(--fs-small);
+    }
+
+    .pill-channel{
+      font-size:var(--fs-small);
+      color:var(--accent);
+    }
+
+    .pill-viewers{
+      font-size:var(--fs-small);
+    }
+
+    /* X Feeds */
+    .x-feed-item{
+      padding:6px 4px;
+      border-bottom:1px solid rgba(255,255,255,0.04);
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+
+    .x-handle-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .x-handle{
+      font-weight:500;
+      color:var(--text-main);
+    }
+
+    .x-body{
+      font-size:var(--fs-body);
+      line-height:1.4;
+      white-space:pre-wrap;
+    }
+
+    .x-meta-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:2px;
+    }
+
+    .x-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+    }
+
+    .x-tag{
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:1px 6px;
+    }
+
+    .hint{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    @media (max-width:600px){
+      body{
+        padding:10px;
+      }
+      .panel{
+        padding:10px;
+      }
+      .controls-row{
+        flex-direction:column;
+        align-items:stretch;
+      }
+      .btn{
+        width:100%;
+        justify-content:center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-shell">
+    <div class="kt-grid">
+      <!-- PANEL KIRI: Market Insights / FX & CMD Analysis -->
+      <section class="panel" id="panel-research">
+        <header class="panel-header">
+          <div>
+            <div class="panel-title">Research Streams</div>
+            <div class="panel-meta">
+              <span class="badge">Market Insights</span>
+              <span class="badge">FX &amp; CMD Analysis</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="panel-body">
+          <!-- Tab switch -->
+          <div class="controls-row" id="researchTabs">
+            <button class="btn btn-ghost tab-btn active" data-target="insights">
+              <span>Market Insights</span>
+            </button>
+            <button class="btn btn-ghost tab-btn" data-target="fxcmd">
+              <span>FX &amp; CMD Analysis</span>
+            </button>
+          </div>
+
+          <!-- Controls per tab -->
+          <div class="controls-row" id="researchControls">
+            <div class="field">
+              <span class="field-label">Topic</span>
+              <select id="researchTopic">
+                <option value="global_macro">Global Macro</option>
+                <option value="equities">Equities</option>
+                <option value="credit">Credit &amp; Spreads</option>
+                <option value="rates">Rates &amp; Curves</option>
+              </select>
+            </div>
+            <button class="btn" id="btnResearchRecap">
+              <span>Recap with AI</span>
+            </button>
+          </div>
+
+          <!-- List container (ready for API / WebSocket feed) -->
+          <div class="list-shell" id="researchList" data-role="market-insights-feed">
+            <!-- Dummy items – replace via backend -->
+          </div>
+
+          <div class="hint">
+            Hint: hubungkan ke WebSocket / REST API lalu timpa isi <code>#researchList</code> secara real-time.
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL TENGAH: Bloomberg TV+ + AI Summary -->
+      <section class="panel" id="panel-tv">
+        <header class="panel-header">
+          <div>
+            <div class="panel-title">Bloomberg TV+</div>
+            <div class="panel-meta">
+              <span class="badge-live"><span class="dot-live"></span><span>Live</span></span>
+              <span class="badge">Global Market Coverage</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="panel-body">
+          <!-- Video area (embed Bloomberg TV+ iframe di sini) -->
+          <div class="video-shell" data-role="bloomberg-video-container">
+            <div class="video-inner">
+              <!-- Ganti DIV ini dengan iframe Bloomberg TV+ sesuai ketentuan lisensi -->
+              <!--
+                Contoh:
+                <iframe src="..." frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+              -->
+              <div class="video-placeholder">
+                <div>
+                  <div style="font-size:var(--fs-body);margin-bottom:4px;">Bloomberg TV+ Placeholder</div>
+                  <div style="font-size:var(--fs-small);color:var(--text-muted);">
+                    Embed iframe streaming di sini via backend
+                  </div>
+                </div>
+              </div>
+
+              <div class="video-overlay-top">
+                <div class="pill">
+                  <span class="pill-label">Channel</span>
+                  <span class="pill-channel">Bloomberg TV+</span>
+                </div>
+              </div>
+
+              <div class="video-overlay-bottom">
+                <div class="pill">
+                  <span class="pill-viewers">~12.4K viewers</span>
+                </div>
+                <div class="pill">
+                  <span class="pill-label">Caption Source</span>
+                  <span class="pill-viewers">CC / STT</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Summary dari caption / transcript -->
+          <div class="caption-ai-shell" data-role="ai-tv-summary">
+            <div class="caption-ai-label">AI Summary (Live Caption)</div>
+            <div class="caption-ai-body" id="tvAiSummary">
+              Waiting for caption stream... sambungkan caption / transcript dari backend untuk ringkasan real-time.
+            </div>
+          </div>
+
+          <div class="controls-row">
+            <button class="btn" id="btnTvRecap">
+              <span>Recap with AI</span>
+            </button>
+          </div>
+
+          <div class="hint">
+            Backend flow ide: <code>caption stream → aggregator → AI summarizer → update #tvAiSummary</code>.
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL KANAN: X Feeds -->
+      <section class="panel" id="panel-xfeeds">
+        <header class="panel-header">
+          <div>
+            <div class="panel-title">X Feeds</div>
+            <div class="panel-meta">
+              <span class="badge">@macro · @markets · @fed</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="panel-body">
+          <div class="controls-row">
+            <div class="field">
+              <span class="field-label">Stream</span>
+              <select id="xStreamSelect">
+                <option value="macro">Macro &amp; Policy</option>
+                <option value="fx">FX &amp; Commodities</option>
+                <option value="equities">Equities &amp; Earnings</option>
+                <option value="crypto">Crypto &amp; Liquidity</option>
+              </select>
+            </div>
+            <button class="btn" id="btnXRecap">
+              <span>Recap with AI</span>
+            </button>
+          </div>
+
+          <div class="list-shell" id="xFeedList" data-role="x-feed-container">
+            <!-- Dummy X posts – replace dengan data dari backend -->
+          </div>
+
+          <div class="hint">
+            Integrasi: gunakan streaming API / polling dari backend → render ke <code>#xFeedList</code>.
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ===============================
+    // Dummy data (gampang diganti API)
+    // ===============================
+
+    const dummyInsights = {
+      insights: [
+        {
+          title: "US CPI surprise, Fed cut odds repriced",
+          source: "Macro Desk",
+          assetClass: "Global Macro",
+          horizon: "1-3m",
+          ts: "Today · 10:15"
+        },
+        {
+          title: "Rotation from growth to value picks up",
+          source: "Equity Strategy",
+          assetClass: "Equities",
+          horizon: "Swing",
+          ts: "Today · 09:42"
+        }
+      ],
+      fxcmd: [
+        {
+          title: "DXY pulls back as real yields soften",
+          source: "FX Strategy",
+          assetClass: "FX",
+          horizon: "1-2w",
+          ts: "Today · 10:05"
+        },
+        {
+          title: "Gold holds bid despite higher nominal yields",
+          source: "Commodity Desk",
+          assetClass: "Commodities",
+          horizon: "Position",
+          ts: "Today · 08:37"
+        }
+      ]
+    };
+
+    const dummyXFeeds = {
+      macro: [
+        {
+          handle: "@TheTerminal",
+          name: "Macro Terminal",
+          body: "Fed speaker hints that 'policy is restrictive but data dependent'. Front-end yields fade intraday as the market prices in slightly higher odds of a cut next quarter.",
+          ts: "10:21",
+          tags: ["#Fed", "#Rates", "#Macro"]
+        },
+        {
+          handle: "@FlowWatcher",
+          name: "Flow Watcher",
+          body: "Large buy program in S&P futures into the European close while cash market breadth still weak. Unterminated divergence building.",
+          ts: "09:58",
+          tags: ["#Flows", "#Equities"]
+        }
+      ],
+      fx: [
+        {
+          handle: "@FXDaily",
+          name: "FX Daily",
+          body: "JPY squeezes higher as UST 10y yields slide back below 4%. Watch 150 handle in USDJPY as a key line in the sand.",
+          ts: "10:03",
+          tags: ["#FX", "#USDJPY"]
+        }
+      ],
+      equities: [
+        {
+          handle: "@EquityTape",
+          name: "Equity Tape",
+          body: "Tech leads again but advance-decline ratio stays below 1. Market still very narrow despite index strength.",
+          ts: "09:44",
+          tags: ["#Equities", "#Breadth"]
+        }
+      ],
+      crypto: [
+        {
+          handle: "@OnChainRadar",
+          name: "On-Chain Radar",
+          body: "BTC funding flips positive as price pushes into prior supply zone. Derivatives getting excited again.",
+          ts: "10:11",
+          tags: ["#BTC", "#Derivatives"]
+        }
+      ]
+    };
+
+    // ===============================
+    // Helper untuk render list
+    // ===============================
+
+    function renderResearchList(mode){
+      const listEl = document.getElementById("researchList");
+      const data = mode === "fxcmd" ? dummyInsights.fxcmd : dummyInsights.insights;
+
+      listEl.innerHTML = "";
+      data.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <div class="item-title">${item.title}</div>
+          <div class="item-meta">
+            <span>${item.source}</span>
+            <span>${item.assetClass}</span>
+            <span>${item.horizon}</span>
+            <span>${item.ts}</span>
+          </div>
+        `;
+        listEl.appendChild(div);
+      });
+    }
+
+    function renderXFeed(streamKey){
+      const listEl = document.getElementById("xFeedList");
+      const data = dummyXFeeds[streamKey] || [];
+      listEl.innerHTML = "";
+
+      data.forEach(post => {
+        const div = document.createElement("div");
+        div.className = "x-feed-item";
+        div.innerHTML = `
+          <div class="x-handle-row">
+            <span class="x-handle">${post.name} <span style="color:var(--text-muted);">${post.handle}</span></span>
+            <span>${post.ts}</span>
+          </div>
+          <div class="x-body">${post.body}</div>
+          <div class="x-meta-row">
+            <div class="x-tags">
+              ${(post.tags || []).map(t => `<span class="x-tag">${t}</span>`).join("")}
+            </div>
+          </div>
+        `;
+        listEl.appendChild(div);
+      });
+    }
+
+    // ===============================
+    // Tab & control events
+    // ===============================
+    (function initResearchTabs(){
+      const tabs = document.querySelectorAll(".tab-btn");
+      let currentMode = "insights";
+
+      tabs.forEach(btn => {
+        btn.addEventListener("click", () => {
+          tabs.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentMode = btn.dataset.target;
+          renderResearchList(currentMode);
+        });
+      });
+
+      // tombol recap
+      const recapBtn = document.getElementById("btnResearchRecap");
+      recapBtn.addEventListener("click", () => {
+        const topic = document.getElementById("researchTopic").value;
+        console.log("[Research Recap] mode:", currentMode, "topic:", topic);
+        // Di backend: kirim request ke AI summarizer dengan payload feed + topic
+        recapBtn.disabled = true;
+        recapBtn.innerHTML = "<span>Summarizing...</span>";
+        setTimeout(() => {
+          recapBtn.disabled = false;
+          recapBtn.innerHTML = "<span>Recap with AI</span>";
+        }, 900);
+      });
+
+      // initial render
+      renderResearchList(currentMode);
+    })();
+
+    (function initXFeeds(){
+      const select = document.getElementById("xStreamSelect");
+      renderXFeed(select.value);
+
+      select.addEventListener("change", () => {
+        renderXFeed(select.value);
+      });
+
+      const recapBtn = document.getElementById("btnXRecap");
+      recapBtn.addEventListener("click", () => {
+        console.log("[X Feeds Recap] stream:", select.value);
+        recapBtn.disabled = true;
+        recapBtn.innerHTML = "<span>Summarizing...</span>";
+        setTimeout(() => {
+          recapBtn.disabled = false;
+          recapBtn.innerHTML = "<span>Recap with AI</span>";
+        }, 900);
+      });
+    })();
+
+    (function initTvRecap(){
+      const btn = document.getElementById("btnTvRecap");
+      const summaryEl = document.getElementById("tvAiSummary");
+      btn.addEventListener("click", () => {
+        console.log("[TV Recap] trigger AI recap from caption stream");
+        btn.disabled = true;
+        btn.innerHTML = "<span>Summarizing...</span>";
+        const prev = summaryEl.textContent;
+        summaryEl.textContent = "Generating AI recap from latest caption window...";
+        setTimeout(() => {
+          summaryEl.textContent = prev || "Sample: Desk highlights focus on softer labor data, stickiness in services inflation, dan posisi risk-on yang mulai rapuh menjelang data besar berikutnya.";
+          btn.disabled = false;
+          btn.innerHTML = "<span>Recap with AI</span>";
+        }, 1000);
+      });
+    })();
+
+    // CATATAN BACKEND:
+    // - Gunakan atribut data-role pada container untuk hook WebSocket/API.
+    // - Ganti dummyInsights & dummyXFeeds dengan data nyata dari backend.
+    // - Update isi list & summary dengan innerHTML/innerText atau framework sesuai stack kamu.
+  </script>
+</body>
+</html>
