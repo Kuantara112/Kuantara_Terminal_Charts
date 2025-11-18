@@ -1,1860 +1,1419 @@
-<html lang="id"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PulseWire Overview</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/css-skeleton-screen/1.1.0/skeleton-screen.min.css" referrerpolicy="no-referrer">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://s3.tradingview.com/tv.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              slate: {
-                950: "#020617",
-              },
-            },
-          },
-        },
-      };
-    </script>
-    <style>
-      :root {
-        color-scheme: dark;
-      }
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara – Latest 24/7 & Catalyst</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <style>
+    :root {
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+      scrollbar-width:thin;
+      scrollbar-color:#00000088 #000000;
+    }
+
+    *::-webkit-scrollbar {
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track {
+      background:#000000;
+    }
+    *::-webkit-scrollbar-thumb {
+      background:#00000088;
+      border-radius:3px;
+    }
+
+    html,body {
+      height:100%;
+    }
+
+    body {
+      background:var(--bg-root);
+      color:var(--text-main);
+      overflow:hidden;
+    }
+
+    .kt-shell {
+      padding:16px;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      background:var(--bg-root);
+    }
+
+    .kt-title {
+      font-size:var(--fs-title);
+      letter-spacing:0.16em;
+      text-transform:uppercase;
+      color:var(--text-main);
+    }
+
+    .kt-sub {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    .kt-card {
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:14px 16px;
+    }
+
+    .kt-row {
+      display:flex;
+      flex-direction:row;
+      align-items:flex-start;
+      gap:12px;
+      height:calc(100vh - 56px);
+    }
+
+    .kt-col {
+      flex:1;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    @media (max-width:768px) {
       body {
-        margin: 0;
-        min-height: 100vh;
-        background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 60%, #000 100%);
-        font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      }
-      .overview-layout {
-        max-width: 1240px;
-        margin: 0 auto;
-        padding: 1.5rem;
-      }
-      .border-frame {
-        border-color: rgba(148, 163, 184, 0.35);
-      }
-      .bg-ink {
-        background: radial-gradient(circle at top left, rgba(30, 64, 175, 0.4), rgba(15, 23, 42, 0.96));
-      }
-      .bg-slate\/90 {
-        background-color: rgba(15, 23, 42, 0.96);
-      }
-      .skeleton-line {
-        background: linear-gradient(
-          90deg,
-          rgba(30, 64, 175, 0.05),
-          rgba(30, 64, 175, 0.25),
-          rgba(30, 64, 175, 0.05)
-        );
-        background-size: 200% 100%;
-        animation: shimmer 1.3s infinite;
-      }
-      .shimmer-line {
-        position: relative;
-        overflow: hidden;
-      }
-      .shimmer-line::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        transform: translateX(-100%);
-        background-image: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.2),
-          transparent
-        );
-        animation: shimmer-slide 1.3s infinite;
-      }
-      @keyframes shimmer-slide {
-        100% {
-          transform: translateX(100%);
-        }
-      }
-      .live-indicator {
-        width: 0.55rem;
-        height: 0.55rem;
-        border-radius: 999px;
-        background: #22c55e;
-        box-shadow: 0 0 18px rgba(34, 197, 94, 0.75);
-      }
-      .latest-widget,
-      .catalyst-widget {
-        border-radius: 0.9rem;
-        border: 1px solid rgba(148, 163, 184, 0.35);
-        background: radial-gradient(circle at top left, rgba(30, 64, 175, 0.35), rgba(15, 23, 42, 0.96));
-        padding: 1.25rem;
-        box-shadow: 0 30px 80px rgba(15, 23, 42, 0.85);
-      }
-      .latest-widget .widget-header,
-      .catalyst-widget .widget-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.16em;
-      }
-      .latest-widget .widget-header span,
-      .catalyst-widget .widget-header span {
-        font-size: 0.7rem;
-        letter-spacing: 0.18em;
-      }
-      .latest-ticker-container,
-      .catalyst-ticker-container {
-        margin-top: 0.75rem;
-        border-radius: 0.9rem;
-        border: 1px dashed rgba(148, 163, 184, 0.35);
-        padding: 0.75rem;
-        background: radial-gradient(circle at top left, rgba(30, 64, 175, 0.18), rgba(15, 23, 42, 0.94));
-      }
-      .latest-ticker,
-      .catalyst-ticker,
-      .x-feed-ticker {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-        max-height: 340px;
-        overflow-y: auto;
-      }
-      .latest-card,
-      .catalyst-card {
-        border-radius: 0.75rem;
-        border: 1px solid rgba(148, 163, 184, 0.35);
-        background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.15), rgba(15, 23, 42, 0.98));
-        padding: 0.75rem 0.85rem;
-        font-size: 0.72rem;
-        line-height: 1.4;
-      }
-      .latest-card.important {
-        border-color: rgba(250, 204, 21, 0.95);
-        box-shadow:
-          0 0 0 1px rgba(251, 191, 36, 0.4),
-          0 16px 60px rgba(251, 191, 36, 0.4);
-      }
-      .latest-meta,
-      .catalyst-meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        font-size: 0.68rem;
-        color: rgba(148, 163, 184, 0.9);
-        margin-bottom: 0.25rem;
-        gap: 0.75rem;
-      }
-      .latest-tags,
-      .catalyst-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.35rem;
-        margin-top: 0.35rem;
-      }
-      .label-tag {
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        padding: 0.15rem 0.55rem;
-        font-size: 0.62rem;
-        letter-spacing: 0.095em;
-        text-transform: uppercase;
-        color: rgba(226, 232, 240, 0.95);
-        background: linear-gradient(120deg, rgba(15, 23, 42, 0.9), rgba(30, 64, 175, 0.45));
-      }
-      .recap-tab {
-        border-radius: 999px;
-        border-color: rgba(148, 163, 184, 0.35);
-        background: transparent;
-        transition: all 0.16s ease;
-      }
-      .recap-tab.active {
-        background-color: #ffbf00;
-        color: #020617;
-        border-color: rgba(250, 204, 21, 0.7);
-        box-shadow:
-          0 0 0 1px rgba(250, 204, 21, 0.4),
-          0 12px 40px rgba(250, 204, 21, 0.5);
-      }
-      .category-select {
-        width: 100%;
-        border-radius: 0.65rem;
-        border: 1px solid rgba(148, 163, 184, 0.35);
-        background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 1));
-        color: #e5e7eb;
-        padding: 0.35rem 0.6rem;
-        font-size: 0.7rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-      }
-      .category-select:focus {
-        outline: none;
-        border-color: rgba(59, 130, 246, 0.75);
-        box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
-      }
-      .latest-recap-btn,
-      .catalyst-recap-btn,
-      .x-feed-recap-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.4rem;
-        border-radius: 999px;
-        border: 1px solid rgba(250, 204, 21, 0.8);
-        background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.1), rgba(15, 23, 42, 0.98));
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.16em;
-        padding: 0.3rem 0.8rem;
-        color: #facc15;
-      }
-      .latest-recap-btn:hover,
-      .catalyst-recap-btn:hover,
-      .x-feed-recap-btn:hover {
-        background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.18), rgba(15, 23, 42, 1));
-      }
-      .latest-status,
-      .catalyst-status {
-        font-size: 0.7rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: rgba(148, 163, 184, 0.9);
-      }
-      .kuantara-chat {
-        max-height: var(--chat-h, 360px);
-        overflow-y: auto;
-        margin-bottom: 0.75rem;
-        padding-right: 0.25rem;
-      }
-      .kuantara-input {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 0.75rem;
-        align-items: center;
-        margin-top: 0.75rem;
-      }
-      .kuantara-input textarea {
-        resize: vertical;
-        min-height: 72px;
-        max-height: 200px;
-        font-size: 0.78rem;
-        border-radius: 0.6rem;
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        background: rgba(15, 23, 42, 0.95);
-        color: #e5e7eb;
-        padding: 0.55rem 0.7rem;
-      }
-      .kuantara-input textarea:focus {
-        outline: none;
-        border-color: rgba(59, 130, 246, 0.7);
-        box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
-      }
-      .kuantara-send-btn {
-        width: 42px;
-        height: 42px;
-        border-radius: 999px;
-        border: 1px solid rgba(59, 130, 246, 0.85);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.22), rgba(15, 23, 42, 0.98));
-        color: #bfdbfe;
-        cursor: pointer;
-        transition: all 0.15s ease;
-      }
-      .kuantara-send-btn svg {
-        width: 18px;
-        height: 18px;
-      }
-      .kuantara-send-btn:hover {
-        box-shadow:
-          0 0 0 1px rgba(59, 130, 246, 0.5),
-          0 18px 50px rgba(59, 130, 246, 0.55);
-        transform: translateY(-1px);
-      }
-      .kuantara-chat .placeholder {
-        font-size: 0.8rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.35);
-      }
-      .kuantara-message {
-        margin-bottom: 1.1rem;
-      }
-      .kuantara-label {
-        font-size: 0.65rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: rgba(148, 163, 184, 0.9);
-        margin-bottom: 0.25rem;
-      }
-      .kuantara-label.user {
-        color: rgba(248, 250, 252, 0.7);
-      }
-      .kuantara-bubble {
-        font-size: 0.8rem;
-        line-height: 1.6;
-        border-radius: 0.85rem;
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        padding: 0.6rem 0.8rem;
-        background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 1));
-      }
-      .kuantara-message.user .kuantara-bubble {
-        border-color: rgba(250, 204, 21, 0.55);
-        background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.15), rgba(15, 23, 42, 1));
-      }
-      .latest-widget .dropdown-wrapper,
-      .catalyst-widget .dropdown-wrapper,
-      .x-feed-widget .dropdown-wrapper {
-        margin-top: 0.6rem;
-        display: grid;
-        grid-template-columns: minmax(0, 1.2fr) auto;
-        gap: 0.6rem;
-        align-items: center;
-      }
-      @media (max-width: 768px) {
-        .overview-layout {
-          width: 100%;
-          min-height: 100vh;
-          border-radius: 0;
-          padding: 1.25rem;
-        }
-      }
-      .x-feed-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
-      .x-feed-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        object-fit: cover;
-      }
-      .x-feed-author {
-        font-size: 0.78rem;
-        font-weight: 500;
-      }
-      .x-feed-author span {
-        font-size: 0.7rem;
-        color: rgba(148, 163, 184, 0.9);
-      }
-      .x-feed-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        font-size: 0.65rem;
-        padding: 0.1rem 0.45rem;
-        border: 1px solid rgba(56, 189, 248, 0.6);
-        border-radius: 999px;
-        color: #e0f2fe;
-        background: radial-gradient(circle at top left, rgba(8, 47, 73, 0.8), rgba(8, 47, 73, 0.3));
-      }
-      .x-feed-tweet {
-        margin-top: 0.4rem;
-        margin-bottom: 0.35rem;
-        font-size: 0.8rem;
-        line-height: 1.6;
-        color: rgba(226, 232, 240, 0.98);
-      }
-      .x-feed-meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.7rem;
-        color: rgba(148, 163, 184, 0.95);
-      }
-      .x-feed-meta a {
-        color: #bfdbfe;
-        text-decoration: none;
-        font-size: 0.72rem;
-      }
-      .x-feed-meta a:hover {
-        text-decoration: underline;
-      }
-      .x-feed-ticker-container {
-        margin-top: 0.75rem;
-        border-radius: 0.9rem;
-        border: 1px dashed rgba(148, 163, 184, 0.35);
-        padding: 0.75rem;
-        background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 1));
-      }
-      .x-feed-ticker {
-        max-height: 260px;
-      }
-      .x-feed-controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.72rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-      .impact-badge {
-        padding: 0.2rem 0.6rem;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      .impact-medium {
-        background: rgba(59, 130, 246, 0.15);
-        border-color: rgba(59, 130, 246, 0.4);
-        color: #bfdbfe;
-      }
-      .impact-high {
-        background: linear-gradient(120deg, rgba(37, 99, 235, 0.3), rgba(15, 23, 42, 0.05));
-        border-color: rgba(59, 130, 246, 0.5);
-        color: #dbeafe;
-        box-shadow: 0 0 25px rgba(59, 130, 246, 0.25);
-      }
-      .copy-btn {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        padding: 0.25rem;
-        border-radius: 0.35rem;
-      }
-      .copy-btn svg {
-        width: 18px;
-        height: 18px;
-      }
-      .copy-btn:hover {
-        background: rgba(30, 64, 175, 0.2);
-      }
-      .copy-btn.copied {
-        background: rgba(34, 197, 94, 0.15);
-        border-radius: 999px;
-      }
-      .copy-btn.copied svg {
-        color: #22c55e;
-      }
-      .latest-widget .widget-header span:last-child,
-      .catalyst-widget .widget-header span:last-child {
-        font-size: 0.7rem;
-        letter-spacing: 0.16em;
-      }
-      .kuantara-chat .placeholder {
-        text-align: center;
-      }
-      .catalyst-widget .impact-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.72rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-      .impact-badge {
-        padding: 0.2rem 0.6rem;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      .impact-low {
-        background: rgba(15, 23, 42, 0.95);
-        border-color: rgba(148, 163, 184, 0.35);
-        color: rgba(148, 163, 184, 0.9);
-      }
-      .impact-medium {
-        background: rgba(59, 130, 246, 0.15);
-        border-color: rgba(59, 130, 246, 0.4);
-        color: #bfdbfe;
-      }
-      .impact-high {
-        background: linear-gradient(120deg, rgba(37, 99, 235, 0.3), rgba(15, 23, 42, 0.05));
-        border-color: rgba(59, 130, 246, 0.5);
-        color: #dbeafe;
-        box-shadow: 0 0 25px rgba(59, 130, 246, 0.25);
-      }
-      .catalyst-widget .headline {
-        cursor: pointer;
-      }
-      .catalyst-widget .headline:hover {
-        text-decoration: underline;
-        text-decoration-color: rgba(129, 140, 248, 0.6);
-      }
-      .latest-ticker-container,
-      .catalyst-ticker-container,
-      .x-feed-ticker-container {
-        position: relative;
-      }
-      .latest-ticker-container::before,
-      .catalyst-ticker-container::before,
-      .x-feed-ticker-container::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        border: 1px solid rgba(56, 189, 248, 0.08);
-        pointer-events: none;
-      }
-      .latest-widget .widget-header span:last-child,
-      .catalyst-widget .widget-header span:last-child {
-        font-size: 0.7rem;
-        letter-spacing: 0.16em;
-      }
-      .latest-status-dot {
-        width: 0.5rem;
-        height: 0.5rem;
-        border-radius: 999px;
-        background: rgba(34, 197, 94, 0.2);
-        box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.8);
-      }
-      .latest-status,
-      .catalyst-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-      }
-      :root {
-        --chat-h: 360px;
-      }
-      .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.75);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1.5rem;
-        z-index: 999;
-      }
-      .modal-card {
-        width: min(960px, 100%);
-        background: rgba(8, 8, 10, 0.98);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 40px 160px rgba(0, 0, 0, 0.65);
-        padding: 1.5rem;
-        position: relative;
-        overflow-y: auto;
-      }
-      .modal-close {
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        background: transparent;
-        color: #ffbf00;
-        width: 36px;
-        height: 36px;
-        border-radius: 999px;
-        font-size: 1rem;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .modal-close:hover {
-        background: rgba(15, 23, 42, 0.85);
-      }
-      .kuantara-label {
-        font-size: 0.7rem;
-        font-weight: 500;
-        letter-spacing: 0.12em;
-      }
-      .reader-body {
-        max-height: calc(80vh - 120px);
-        overflow-y: auto;
-      }
-      .reader-loading {
-        font-size: 0.78rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: #e5e7eb;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-      }
-      .reader-loading::after {
-        content: "";
-        width: 0.65rem;
-        height: 0.65rem;
-        border-radius: 999px;
-        border: 2px solid rgba(148, 163, 184, 0.4);
-        border-top-color: rgba(251, 191, 36, 0.95);
-        animation: spin 0.8s linear infinite;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      .modal-overlay.hidden {
-        display: none;
-      }
-      .catalyst-pulse {
-        animation: catalystPulse 1.2s ease-in-out infinite;
-      }
-      @keyframes catalystPulse {
-        0%,
-        100% {
-          transform: scale(0.95);
-          box-shadow: 0 0 12px rgba(59, 130, 246, 0.35);
-        }
-        50% {
-          transform: scale(1.08);
-          box-shadow: 0 0 22px rgba(59, 130, 246, 0.6);
-        }
-      }
-      .ai-summary-feed {
-        border-radius: 0.85rem;
-        border: 1px dashed rgba(148, 163, 184, 0.4);
-        background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), rgba(15, 23, 42, 0.96));
-        padding: 0.85rem 0.9rem;
-        font-size: 0.78rem;
-        line-height: 1.7;
-      }
-      .ai-summary-feed .meta {
-        font-size: 0.7rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: rgba(148, 163, 184, 0.9);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .ai-summary-feed .meta span:last-child {
-        font-size: 0.7rem;
-        letter-spacing: 0.16em;
-      }
-      .ai-summary-feed .body {
-        margin-top: 0.4rem;
-      }
-      .ai-summary-toggle {
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.14), rgba(15, 23, 42, 0.96));
-        font-size: 0.7rem;
-        padding: 0.25rem 0.6rem;
-        color: #e5e7eb;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-      }
-      .ai-summary-toggle input {
-        width: 0.8rem;
-        height: 0.8rem;
-      }
-      .ai-summary-toggle span:last-child {
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-      }
-      .cc-counter {
-        font-size: 0.7rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: rgba(148, 163, 184, 0.9);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .cc-badge {
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        padding: 0.2rem 0.65rem;
-        font-size: 0.7rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-      }
-      .cc-badge span:last-child {
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-      }
-      .cc-badge strong {
-        color: #e5e7eb;
-      }
-      .live-toggle {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        font-size: 0.7rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: rgba(148, 163, 184, 0.95);
-      }
-      .live-toggle input {
-        width: 0.85rem;
-        height: 0.85rem;
-      }
-      .cc-toggle-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 0.75rem;
-      }
-      .live-indicator.muted {
-        background: rgba(148, 163, 184, 0.4);
-        box-shadow: 0 0 12px rgba(148, 163, 184, 0.5);
-      }
-      .cc-label {
-        font-size: 0.7rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: rgba(148, 163, 184, 0.9);
-      }
-      .tv-container {
-        border-radius: 1rem;
-        border: 1px solid rgba(148, 163, 184, 0.35);
-        overflow: hidden;
-        background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 1));
-        box-shadow: 0 34px 100px rgba(15, 23, 42, 0.95);
-      }
-      .front-summary-text {
-        max-height: 210px;
-        overflow-y: auto;
-      }
-      .front-summary-text::-webkit-scrollbar {
-        width: 3px;
-      }
-      .front-summary-text::-webkit-scrollbar-thumb {
-        background: rgba(148, 163, 184, 0.6);
-      }
-      @media (max-width: 1023px) {
-        .overview-layout {
-          grid-template-columns: 1fr;
-        }
-        .overview-layout .main-column,
-        .overview-layout .overview-sidebar {
-          display: contents;
-        }
-        #frontSignalCard {
-          order: 1;
-        }
-        #analysisInsightCard {
-          order: 2;
-        }
-        #headlineCatalystCard {
-          order: 3;
-        }
-        #xFeedCard {
-          order: 4;
-        }
-        #assetFlowCard {
-          order: 5;
-        }
-        #macroDashboardCard {
-          order: 6;
-        }
-        #liveVideoCard {
-          order: 7;
-        }
-      }
-    </style>
-  </head>
-  <body class="text-neutral-100 antialiased">
-    <main class="overview-layout mt-6 grid gap-6 lg:grid-cols-[2.4fr,1fr]">
-      <section class="space-y-5 main-column">
-<article id="headlineCatalystCard" class="border border-frame bg-slate/90 p-4 shadow-[0_25px_90px_rgba(0,0,0,0.55)]">
-            <div class="flex items-center gap-4 text-xs uppercase text-neutral-500">
-              <button class="recap-tab border border-frame px-3 py-1 bg-[#FFBF00] text-black" data-panel="latest">Latest 24/7</button>
-              <button class="recap-tab px-3 py-1 text-neutral-400" data-panel="catalyst">Catalyst</button>
+        overflow:auto;
+      }
+      .kt-row {
+        flex-direction:column;
+        height:auto;
+      }
+    }
+
+    .card-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .card-header-left {
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .card-label {
+      font-size:var(--fs-subtitle);
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      color:var(--accent);
+    }
+
+    .card-meta {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .card-header-right {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      display:flex;
+      align-items:center;
+      gap:6px;
+      white-space:nowrap;
+    }
+
+    .dot-live {
+      width:7px;
+      height:7px;
+      border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 12px var(--accent);
+      animation:pulse 1.4s ease-out infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform:scale(1); opacity:1; }
+      60% { transform:scale(1.8); opacity:0; }
+      100% { transform:scale(1.8); opacity:0; }
+    }
+
+    .tab-bar {
+      display:flex;
+      align-items:center;
+      gap:6px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .tab-btn {
+      border-radius:999px;
+      padding:4px 10px;
+      font-size:var(--fs-small);
+      text-transform:uppercase;
+      letter-spacing:0.14em;
+      border:1px solid var(--border-soft);
+      background:#000;
+      color:var(--text-muted);
+      cursor:pointer;
+      transition:background .15s ease, color .15s ease, border-color .15s ease;
+    }
+
+    .tab-btn.active {
+      background:var(--accent);
+      color:#000;
+      border-color:var(--accent);
+    }
+
+    .panel {
+      display:none;
+      flex:1;
+      min-height:0;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .panel.active {
+      display:flex;
+    }
+
+    .filter-row {
+      display:flex;
+      flex-direction:row;
+      gap:8px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+
+    .filter-group {
+      flex:1 1 220px;
+      min-width:0;
+    }
+
+    .filter-label {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-bottom:3px;
+    }
+
+    select.category-select {
+      width:100%;
+      background:#000;
+      color:var(--text-main);
+      border:1px solid var(--border-soft);
+      padding:5px 8px;
+      font-size:var(--fs-small);
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+    }
+
+    .btn-recap {
+      flex:0 0 auto;
+      white-space:nowrap;
+      border-radius:3px;
+      border:1px solid var(--accent);
+      background:#000;
+      color:var(--accent);
+      padding:6px 10px;
+      font-size:var(--fs-small);
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .btn-recap span.icon {
+      font-size:11px;
+    }
+
+    .status-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    .status-left {
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .status-dot {
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#555;
+    }
+
+    .feed-container {
+      margin-top:8px;
+      border-radius:4px;
+      border:1px solid var(--border-soft);
+      background:#080808;
+      padding:8px;
+      flex:1;
+      min-height:0;
+      overflow:auto;
+    }
+
+    .feed-list {
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .feed-card {
+      border:1px solid var(--border-soft);
+      border-radius:3px;
+      padding:8px 9px;
+      background:#111111;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      font-size:var(--fs-body);
+    }
+
+    .feed-card.important {
+      border-color:var(--accent);
+      box-shadow:0 0 18px rgba(255,191,0,0.18);
+    }
+
+    .feed-header-row {
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .feed-headline-wrap {
+      display:flex;
+      align-items:flex-start;
+      gap:6px;
+      flex:1;
+      min-width:0;
+    }
+
+    .head-dot {
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 10px rgba(255,191,0,0.6);
+      margin-top:3px;
+      flex-shrink:0;
+    }
+
+    .headline {
+      font-size:var(--fs-body);
+      color:var(--text-main);
+    }
+
+    .headline span.source {
+      color:var(--text-muted);
+      font-size:var(--fs-small);
+    }
+
+    .copy-btn {
+      border:none;
+      outline:none;
+      cursor:pointer;
+      padding:4px 6px;
+      border-radius:3px;
+      font-size:var(--fs-small);
+      background:#000000;
+      color:var(--text-muted);
+      border:1px solid var(--border-soft);
+      flex-shrink:0;
+    }
+
+    .copy-btn.copied {
+      background:var(--accent);
+      color:#000;
+      border-color:var(--accent);
+    }
+
+    .feed-meta {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .feed-time {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .feed-tags {
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+      margin-top:2px;
+    }
+
+    .chip {
+      border-radius:999px;
+      padding:2px 6px;
+      border:1px solid var(--border-soft);
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      background:#000000;
+    }
+
+    .impact-badge {
+      font-size:var(--fs-small);
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#000;
+      color:var(--text-muted);
+    }
+
+    .impact-high {
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+
+    .impact-medium {
+      border-color:#f97316;
+      color:#f97316;
+    }
+
+    .impact-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:6px;
+    }
+
+    .feed-body {
+      font-size:var(--fs-body);
+      color:var(--text-main);
+      margin-top:2px;
+    }
+
+    .shimmer-line {
+      position:relative;
+      overflow:hidden;
+      background:#1b1b1b;
+      border-radius:3px;
+    }
+
+    .shimmer-line::after {
+      content:"";
+      position:absolute;
+      inset:0;
+      transform:translateX(-100%);
+      background-image:linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.10),
+        transparent
+      );
+      animation:shimmer 1.3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform:translateX(-100%); }
+      100% { transform:translateX(100%); }
+    }
+
+    .skeleton-title {
+      height:11px;
+      width:72%;
+      margin-bottom:4px;
+    }
+
+    .skeleton-sub {
+      height:9px;
+      width:40%;
+    }
+
+    .skeleton-body {
+      height:9px;
+      width:100%;
+      margin-top:2px;
+    }
+
+    .skeleton-tags {
+      margin-top:4px;
+      display:flex;
+      gap:4px;
+    }
+
+    .skeleton-tag {
+      height:9px;
+      width:50px;
+    }
+
+    .modal-overlay {
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.78);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:40;
+    }
+
+    .modal-overlay.active {
+      display:flex;
+    }
+
+    .modal-card {
+      background:#111;
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:14px 16px;
+      width:min(640px,100% - 32px);
+      max-height:80vh;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .modal-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:4px;
+    }
+
+    .modal-title {
+      font-size:var(--fs-subtitle);
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+      color:var(--accent);
+    }
+
+    .modal-close {
+      border:none;
+      background:#000;
+      color:var(--text-muted);
+      border-radius:3px;
+      padding:3px 7px;
+      font-size:var(--fs-small);
+      cursor:pointer;
+    }
+
+    .modal-body {
+      font-size:var(--fs-body);
+      color:var(--text-main);
+      overflow:auto;
+      padding-top:4px;
+    }
+
+    .modal-body p + p {
+      margin-top:4px;
+    }
+
+    .modal-status {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-shell">
+    <header>
+      <div class="kt-title">Latest 24/7 & Catalyst</div>
+      <div class="kt-sub">Realtime headline feed & catalyst monitor · siap dihubungkan WebSocket/API Kuantara</div>
+    </header>
+
+    <main class="kt-row">
+      <section class="kt-col">
+        <article class="kt-card" id="latestCatalystCard">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-label">Global Macro Newswire</div>
+              <div class="card-meta">FastBull · Catalyst Google Script · Kuantara AI Recap</div>
             </div>
-            <div class="mt-3 text-sm text-neutral-200" id="latestPanel">
-              <div class="latest-widget">
-                <div class="widget-header">
-                  <div class="flex items-center gap-2 tracking-[0.2em] text-neutral-400">
-                    <div class="live-indicator"></div>
-                    <span class="text-xs">HEADLINE 24/7</span>
-                  </div>
-                  <span id="latestStatus" class="latest-status">
-                    <span class="latest-status-dot"></span>
-                    <span>Waiting feed…</span>
-                  </span>
-                </div>
-                <div class="dropdown-wrapper">
-                  <select id="latestCategoryDropdown" class="category-select">
-                    <option value="-1">Semua</option>
-                    <option value="100,126,124,123,121,120,118,116,115,114">Central Banks</option>
-                    <option value="166,164,162,160,159,157,155,137,134">Cryptocurrencies</option>
-                    <option value="174,173,171,170,169,168,167,165,163,161,158,156,154,152,150,149,145">Stocks</option>
-                    <option value="94,95,96,97,98,105,178,144,148,146,141,140,139,138,136,135,133,132,129,127,125,122,119,117,112,111,110,109">Macroeconomics</option>
-                    <option value="108,177,176">Topics</option>
-                  </select>
-                  <button id="latestRecapBtn" type="button" class="latest-recap-btn mt-2">
-                    Recap Semua Catalyst By Kuantara AI
-                  </button>
-                </div>
-                <div class="latest-ticker-container">
-                  <ul id="latestTicker" class="latest-ticker">
-                    <li class="latest-card">
-                      <div class="space-y-2">
-                        <p class="text-xs text-neutral-500">Menyiapkan feed…</p>
-                        <p class="headline shimmer-line h-4 w-full"></p>
-                        <div class="latest-tags">
-                          <span class="label-tag shimmer-line h-4 w-16"></span>
-                          <span class="label-tag shimmer-line h-4 w-12"></span>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
+            <div class="card-header-right">
+              <div class="dot-live"></div>
+              <span id="globalStatusText">Live 24/7 feed</span>
+            </div>
+          </div>
+
+          <div class="tab-bar" id="tabBar">
+            <button class="tab-btn active" data-target="latestPanel">Latest 24/7</button>
+            <button class="tab-btn" data-target="catalystPanel">Catalyst</button>
+          </div>
+
+          <!-- LATEST 24/7 -->
+          <div class="panel active" id="latestPanel">
+            <div class="filter-row">
+              <div class="filter-group">
+                <div class="filter-label">Filter kategori</div>
+                <select id="latestCategoryDropdown" class="category-select">
+                  <option value="-1">Semua</option>
+                  <option value="central_banks">Central Banks</option>
+                  <option value="crypto">Cryptocurrencies</option>
+                  <option value="equities">Equities</option>
+                  <option value="macro">Macro & Data</option>
+                  <option value="topics">Themes & Geopolitik</option>
+                </select>
               </div>
+              <button id="latestRecapBtn" class="btn-recap">
+                <span class="icon">⚡</span>
+                <span>Recap Semua Catalyst by Kuantara AI</span>
+              </button>
             </div>
-            <div class="mt-3 hidden text-sm text-neutral-200" id="catalystPanel">
-              <div class="catalyst-widget">
-                <div class="widget-header">
-                  <div class="flex items-center gap-2 tracking-[0.2em] text-neutral-400">
-                    <div class="live-indicator catalyst-pulse"></div>
-                    <span class="text-xs">Catalyst Feed</span>
-                  </div>
-                  <span id="catalystStatus" class="catalyst-status">
-                    <span class="latest-status-dot"></span>
-                    <span>Waiting feed…</span>
-                  </span>
-                </div>
-                <div class="dropdown-wrapper">
-                  <select id="catalystCategoryDropdown" class="category-select">
-                    <option value="all">Semua</option>
-                  </select>
-                  <button id="catalystRecapBtn" type="button" class="catalyst-recap-btn mt-2">
-                    Recap Semua Catalyst By Kuantara AI
-                  </button>
-                </div>
-                <div class="catalyst-ticker-container">
-                  <ul id="catalystList" class="catalyst-ticker">
-                    <li class="catalyst-card">
-                      <div class="space-y-2">
-                        <p class="text-xs text-neutral-500">Menyiapkan catalyst…</p>
-                        <p class="headline shimmer-line h-4 w-full"></p>
-                        <p class="shimmer-line h-3 w-3/4"></p>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
+
+            <div class="status-row">
+              <div class="status-left">
+                <div class="status-dot"></div>
+                <span>HEADLINE 24/7</span>
               </div>
+              <div id="latestStatus">Waiting feed…</div>
             </div>
-          </article>
+
+            <div class="feed-container">
+              <ul id="latestTicker" class="feed-list"></ul>
+            </div>
+          </div>
+
+          <!-- CATALYST -->
+          <div class="panel" id="catalystPanel">
+            <div class="filter-row">
+              <div class="filter-group">
+                <div class="filter-label">Filter kategori catalyst</div>
+                <select id="catalystCategoryDropdown" class="category-select">
+                  <option value="all">Semua</option>
+                </select>
+              </div>
+              <button id="catalystRecapBtn" class="btn-recap">
+                <span class="icon">🧠</span>
+                <span>Recap Catalyst Terpilih</span>
+              </button>
+            </div>
+
+            <div class="status-row">
+              <div class="status-left">
+                <div class="status-dot"></div>
+                <span>Catalyst Feed</span>
+              </div>
+              <div id="catalystStatus">Waiting feed…</div>
+            </div>
+
+            <div class="feed-container">
+              <ul id="catalystList" class="feed-list"></ul>
+            </div>
+          </div>
+        </article>
       </section>
     </main>
+  </div>
 
-<div id="kuantaraModal" class="modal-overlay hidden">
-      <div id="card" class="modal-card">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-[10px] uppercase tracking-[0.3em] text-neutral-500">Kuantara AI</p>
-            <h2 id="kuantaraTitle" class="text-2xl font-semibold text-white">Catalyst Recap</h2>
-          </div>
-          <button id="kuantaraClose" type="button" class="modal-close">&times;</button>
-        </div>
-        <div class="kuantara-chat mt-4" id="chatList"></div>
-        <div class="kuantara-input">
-          <textarea id="input" placeholder="Tulis instruksi untuk Kuantara…"></textarea>
-          <button id="send" type="button" class="kuantara-send-btn" aria-label="Kirim">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 19V5"></path>
-              <path d="m5 12 7-7 7 7"></path>
-            </svg>
-          </button>
-        </div>
+  <!-- Modal Kuantara AI -->
+  <div id="kuantaraModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title" id="kuantaraTitle">Kuantara AI Recap</div>
+        <button class="modal-close" id="kuantaraClose">CLOSE</button>
+      </div>
+      <div class="modal-status" id="kuantaraStatus">Menyiapkan ringkasan…</div>
+      <div class="modal-body" id="kuantaraBody">
+        <p>Stub recap untuk demo. Hubungkan ke backend AI (OpenAI / HF / internal) untuk menghasilkan insight otomatis.</p>
       </div>
     </div>
+  </div>
 
-    <div id="readerModal" class="modal-overlay hidden">
-      <div class="modal-card max-w-3xl">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-[10px] uppercase tracking-[0.3em] text-neutral-500">Reader</p>
-            <h2 id="readerTitle" class="text-2xl font-semibold text-white">X Feed Reader</h2>
-          </div>
-          <button id="readerClose" type="button" class="modal-close">&times;</button>
-        </div>
-        <div id="readerLoading" class="reader-loading hidden">Loading…</div>
-        <div id="readerBody" class="reader-body text-sm text-neutral-200 space-y-4"></div>
-      </div>
-    </div>
+  <script>
+    // ====== KONFIG REALTIME (ISI DENGAN ENDPOINT ASLI KAMU) ======
+    var AUTO_REFRESH_INTERVAL = 15000; // 15 detik
 
-    <script>
-      const FASTBULL_NEWS_ENDPOINT =
-        "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
-      const FASTBULL_HEADERS = {
-        Accept: "application/json",
-        "client-type": "4",
-        clientversion: "latest",
-        langid: "13",
-      };
-      const HF_API_TOKEN =
-        "eyJhbGciOiJFZERTQSJ9.eyJyZWFkIjp0cnVlLCJwZXJtaXNzaW9ucyI6eyJQcm9qZWN0cyI6eyJ1c2VySWRzIjpbIjc0MTg3MDMiXX19LCJpYXQiOjE3MzE4ODQzNTksImV4cCI6MTczNDE5Njc1OSwiaXNzIjoiZ2VuaW8uaW8vZ2VuLWxpYmxhY3kvazlhZjR6eHY1aCIsInN1YiI6Ijc0MTg3MDMifQ.AoSBd8tTCb3Jq667nhuAa4IzhLqvAy4yryGSV9BKYyVtR1zaz9ZgjpzsYd6-s2s02-X7HUiSA0ri-tFWIfxBjMVKsGg2JGm99P3ES-7JKKF9xP2nLj1x5x1g2rXBVz1ztI_4jBg";
-      let hfApiToken = HF_API_TOKEN;
-      const withAuthHeaders = (headers = {}) => {
-        if (!hfApiToken) return { ...headers };
-        return { ...headers, Authorization: `Bearer ${hfApiToken}` };
-      };
-      const fetchWithAuth = (url, options = {}) => {
-        const merged = {
-          ...options,
-          headers: withAuthHeaders(options.headers || {}),
-        };
-        return fetch(url, merged);
-      };
-      const KUANTARA_AI_RECAP_API =
-        "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct";
-      const KUANTARA_AI_TEMPERATURE = 0.35;
-      const KUANTARA_AI_TOP_P = 0.9;
-      const KUANTARA_AI_MAX_TOKENS = 700;
-      const TWITTER_PROXY_API = "https://edge.turing.buzz/api/twitter-feed";
-      const TWITTER_HANDLE = "realDonaldTrump";
-      const X_FEED_LIMIT = 10;
-      const CATALYST_FEED_API =
-        "https://script.google.com/macros/s/AKfycbzap7c9ubtL3DuzZHaFU7IgYqjuOp3JD8xePkl4N2lWWnhXc25MWDYZE9nGDiVnCi3E/exec";
-      const FASTBULL_TAG_LABELS = {
-        100: "FED",
-        126: "ECB",
-        124: "BOE",
-        123: "BOJ",
-        121: "PBOC",
-        120: "RBA",
-        118: "RBNZ",
-        116: "BOC",
-        115: "SNB",
-        114: "Emerging CBs",
-        166: "BTC",
-        164: "ETH",
-        162: "Altcoins",
-        160: "DeFi",
-        159: "NFT",
-        157: "Stablecoins",
-        155: "Crypto Regulation",
-        137: "Crypto Macro",
-        134: "Crypto Sentiment",
-        174: "US Stocks",
-        173: "EU Stocks",
-        171: "Asia Stocks",
-        170: "Mega Caps",
-        169: "Tech",
-        168: "Financials",
-        167: "Energy",
-        165: "Defensives",
-        163: "Small Caps",
-        161: "Value",
-        158: "Growth",
-        156: "Dividends",
-        154: "Buybacks",
-        152: "Earnings",
-        150: "IPO",
-        149: "M&amp;A",
-        145: "Volatility",
-        94: "US CPI",
-        95: "US PCE",
-        96: "US Jobs",
-        97: "US GDP",
-        98: "US ISM",
-        105: "Global PMI",
-        178: "Global Inflation",
-        144: "Commodities Macro",
-        148: "Housing",
-        146: "Credit",
-        141: "FX Flows",
-        140: "EM FX",
-        139: "Rate Expectations",
-        138: "Yield Curve",
-        136: "Liquidity",
-        135: "Fiscal",
-        133: "GDP Nowcast",
-        132: "Sentiment",
-        129: "Positioning",
-        127: "Retail Flows",
-        125: "Institutional Flows",
-        122: "COT",
-        119: "Recession Risk",
-        117: "Financial Conditions",
-        112: "China Macro",
-        111: "Europe Macro",
-        110: "Japan Macro",
-        109: "EM Macro",
-        108: "Russia-Ukraine Conflict",
-        177: "Middle East Flashpoint",
-        176: "Trump Trade",
-      };
-      const COPY_ICON =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
-      const CHECK_ICON =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+    // endpoint FastBull (sesuai html source original)
+    var FASTBULL_NEWS_ENDPOINT =
+      "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
 
-      const fastbullTagMap = new Map(
-        Object.entries(FASTBULL_TAG_LABELS).map(([key, value]) => [String(key), value])
-      );
+    var FASTBULL_HEADERS = {
+      Accept: "application/json",
+      "client-type": "4",
+      clientversion: "latest",
+      langid: "13"
+    };
 
-      const analysisEls = {
-        title: document.getElementById("analysisTitle"),
-        summary: document.getElementById("analysisSummary"),
-        status: document.getElementById("analysisStatus"),
-        sourceLabel: document.getElementById("analysisSourceLabel"),
+    // endpoint Google Script catalyst (GANTI dengan URL penuh punyamu)
+    var CATALYST_FEED_API =
+      "https://script.google.com/macros/s/YOUR_GOOGLE_SCRIPT_ID/exec";
+
+    // mapping kategori -> tagIds (disederhanakan)
+    var LATEST_CATEGORY_TAGS = {
+      "-1": "-1",
+      "central_banks": "100,132,125,115,118,116,120,121,114,124,126",
+      "crypto": "137,134,166,164,162,160,159,157,155",
+      "equities": "142,133,143",
+      "macro": "109,110,111,112,119,117,127,129,122",
+      "topics": "108,177,176,140,135,136"
+    };
+
+    // ====== DOM ======
+    var tabBar = document.getElementById("tabBar");
+    var latestPanel = document.getElementById("latestPanel");
+    var catalystPanel = document.getElementById("catalystPanel");
+
+    var latestListEl = document.getElementById("latestTicker");
+    var latestStatusEl = document.getElementById("latestStatus");
+    var latestDropdownEl = document.getElementById("latestCategoryDropdown");
+    var latestRecapBtn = document.getElementById("latestRecapBtn");
+
+    var catalystListEl = document.getElementById("catalystList");
+    var catalystStatusEl = document.getElementById("catalystStatus");
+    var catalystDropdownEl = document.getElementById("catalystCategoryDropdown");
+    var catalystRecapBtn = document.getElementById("catalystRecapBtn");
+
+    var kuantaraModal = document.getElementById("kuantaraModal");
+    var kuantaraClose = document.getElementById("kuantaraClose");
+    var kuantaraTitle = document.getElementById("kuantaraTitle");
+    var kuantaraStatus = document.getElementById("kuantaraStatus");
+    var kuantaraBody = document.getElementById("kuantaraBody");
+
+    // ====== STATE ======
+    var latestCache = {};
+    var latestFetchToken = 0;
+    var latestCurrentTagIds = "-1";
+
+    var catalystItems = [];
+    var catalystFetched = false;
+    var catalystLoading = false;
+    var catalystSelected = "all";
+
+    var autoRefreshTimer = null;
+    var autoRefreshInProgress = false;
+
+    var COPY_TEXT = "Copy";
+    var COPIED_TEXT = "Copied";
+
+    // ====== UTIL ======
+    function clearList(el) {
+      if (!el) return;
+      while (el.firstChild) el.removeChild(el.firstChild);
+    }
+
+    function formatUTC(value) {
+      if (!value) return "Unknown time";
+      var timestamp = Number(value);
+      if (isNaN(timestamp)) {
+        var parsed = new Date(value);
+        timestamp = parsed.getTime();
+      }
+      if (!timestamp) return "Unknown time";
+      var date = new Date(timestamp);
+      if (isNaN(date.getTime())) return "Unknown time";
+      var iso = date.toISOString();
+      return iso.slice(0, 16).replace("T", " ") + " UTC";
+    }
+
+    function copyTextToClipboard(text, button) {
+      if (!text || !button) return;
+      var original = button.textContent;
+
+      function markCopied() {
+        button.classList.add("copied");
+        button.textContent = COPIED_TEXT;
+        setTimeout(function() {
+          button.classList.remove("copied");
+          button.textContent = original;
+        }, 1400);
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(markCopied).catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
+
+      function fallbackCopy() {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta);
+        markCopied();
+      }
+    }
+
+    // ====== LATEST 24/7 ======
+    function setLatestStatus(text) {
+      if (latestStatusEl) latestStatusEl.textContent = text;
+    }
+
+    function createLatestSkeletonCard() {
+      var li = document.createElement("li");
+      li.className = "feed-card";
+      li.innerHTML =
+        '<div class="skeleton-title shimmer-line"></div>' +
+        '<div class="skeleton-sub shimmer-line"></div>' +
+        '<div class="skeleton-body shimmer-line"></div>' +
+        '<div class="skeleton-tags">' +
+          '<div class="skeleton-tag shimmer-line"></div>' +
+          '<div class="skeleton-tag shimmer-line"></div>' +
+        '</div>';
+      return li;
+    }
+
+    function renderLatestSkeleton() {
+      if (!latestListEl) return;
+      clearList(latestListEl);
+      for (var i = 0; i < 3; i++) {
+        latestListEl.appendChild(createLatestSkeletonCard());
+      }
+    }
+
+    function normalizeFastbullItem(item) {
+      if (!item) return null;
+      var title = (item.newsTitle || "").trim();
+      var tagsStr = typeof item.tags === "string" ? item.tags : "";
+      var tagNames = [];
+      if (tagsStr) {
+        var parts = tagsStr.split(",");
+        for (var i = 0; i < parts.length; i++) {
+          var t = parts[i].trim();
+          if (t) tagNames.push(t);
+        }
+      }
+      return {
+        id: item.newsId || item.path || title || String(item.releasedDate || Math.random()),
+        title: title || "Untitled headline",
+        tagNames: tagNames,
+        timestamp: item.releasedDate || Date.now(),
+        important: Number(item.important) === 1,
+        source: item.simWebsiteName || item.simWebsite || "FastBull"
       };
-      const latestTickerEl = document.getElementById("latestTicker");
-      const latestDropdownEl = document.getElementById("latestCategoryDropdown");
-      const latestStatusEl = document.getElementById("latestStatus");
-      const latestRecapBtn = document.getElementById("latestRecapBtn");
-      const xFeedListEl = document.getElementById("xFeedList");
-      const xFeedStatusEl = document.getElementById("xFeedStatus");
-      const xFeedRecapBtn = document.getElementById("xFeedRecapBtn");
-      const kuantaraModal = document.getElementById("kuantaraModal");
-      const kuantaraCloseBtn = document.getElementById("kuantaraClose");
-      const kuantaraTitleEl = document.getElementById("kuantaraTitle");
-      const catalystDropdownEl = document.getElementById("catalystCategoryDropdown");
-      const catalystStatusEl = document.getElementById("catalystStatus");
-      const catalystListEl = document.getElementById("catalystList");
-      const catalystRecapBtn = document.getElementById("catalystRecapBtn");
-      const readerModal = document.getElementById("readerModal");
-      const readerCloseBtn = document.getElementById("readerClose");
-      const readerTitleEl = document.getElementById("readerTitle");
-      const readerBodyEl = document.getElementById("readerBody");
-      const readerLoadingEl = document.getElementById("readerLoading");
-      const liveVideoEl = document.getElementById("livePlayer");
-      const aiSummaryToggleBtn = document.getElementById("aiSummaryToggle");
-      const captionsToggleBtn = document.getElementById("captionsToggle");
-      const ccWordCountEl = document.getElementById("ccWordCount");
-      const aiSummaryFeedEl = document.getElementById("aiSummaryFeed");
-      const mainColumnEl = document.querySelector(".main-column");
-      const sidebarEl = document.querySelector("main aside");
+    }
 
-      const toTagObjects = (tags) => {
-        if (!Array.isArray(tags)) return [];
-        return tags
-          .map((tag) => {
-            if (!tag) return null;
-            if (typeof tag === "string") {
-              const trimmed = tag.trim();
-              if (!trimmed) return null;
-              return { text: trimmed, sentiment: 0, type: "" };
+    function createLatestCardElement(item) {
+      var li = document.createElement("li");
+      li.className = "feed-card";
+      if (item.important) li.classList.add("important");
+
+      var headerRow = document.createElement("div");
+      headerRow.className = "feed-header-row";
+
+      var wrap = document.createElement("div");
+      wrap.className = "feed-headline-wrap";
+
+      if (item.important) {
+        var dot = document.createElement("div");
+        dot.className = "head-dot";
+        wrap.appendChild(dot);
+      }
+
+      var box = document.createElement("div");
+      var headline = document.createElement("div");
+      headline.className = "headline";
+      headline.textContent = item.title;
+
+      var src = document.createElement("span");
+      src.className = "source";
+      src.textContent = " · " + (item.source || "FastBull");
+
+      headline.appendChild(src);
+      box.appendChild(headline);
+      wrap.appendChild(box);
+
+      var btn = document.createElement("button");
+      btn.className = "copy-btn";
+      btn.type = "button";
+      btn.textContent = COPY_TEXT;
+      btn.setAttribute("aria-label", "Salin headline");
+      btn.addEventListener("click", function() {
+        copyTextToClipboard(item.title, btn);
+      });
+
+      headerRow.appendChild(wrap);
+      headerRow.appendChild(btn);
+
+      var metaRow = document.createElement("div");
+      metaRow.className = "feed-meta";
+
+      var timeEl = document.createElement("span");
+      timeEl.className = "feed-time";
+      timeEl.textContent = formatUTC(item.timestamp);
+      metaRow.appendChild(timeEl);
+
+      var tagsRow = document.createElement("div");
+      tagsRow.className = "feed-tags";
+      var tags = item.tagNames && item.tagNames.length ? item.tagNames : ["News"];
+      for (var i = 0; i < tags.length && i < 4; i++) {
+        var chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = tags[i];
+        tagsRow.appendChild(chip);
+      }
+
+      li.appendChild(headerRow);
+      li.appendChild(metaRow);
+      li.appendChild(tagsRow);
+      return li;
+    }
+
+    function renderLatestFeed(items) {
+      if (!latestListEl) return;
+      clearList(latestListEl);
+
+      if (!items || !items.length) {
+        var li = document.createElement("li");
+        li.className = "feed-card";
+        li.innerHTML =
+          '<div class="feed-body" style="color:var(--text-muted)">Belum ada headline untuk kategori ini.</div>';
+        latestListEl.appendChild(li);
+        return;
+      }
+
+      for (var i = 0; i < items.length; i++) {
+        latestListEl.appendChild(createLatestCardElement(items[i]));
+      }
+    }
+
+    function mapCategoryToTagIds(value) {
+      if (!value) return "-1";
+      if (LATEST_CATEGORY_TAGS.hasOwnProperty(value)) return LATEST_CATEGORY_TAGS[value];
+      return "-1";
+    }
+
+    function buildFastbullUrl(tagIds) {
+      var url = FASTBULL_NEWS_ENDPOINT;
+      var u = url + "?checkImportant=0&pageSize=20&timestamp=&includeCalendar=0&tagIds=" +
+        encodeURIComponent(tagIds || "-1");
+      return u;
+    }
+
+    function fetchFastbullNews(tagIds, options) {
+      options = options || {};
+      var silent = options.silent === true;
+      if (!latestListEl) return;
+
+      var cache = latestCache[tagIds];
+      if (!silent || !cache || !cache.items || !cache.items.length) {
+        if (cache && cache.items && cache.items.length) {
+          renderLatestFeed(cache.items);
+          setLatestStatus("Cached feed");
+        } else {
+          renderLatestSkeleton();
+          setLatestStatus("Loading feed…");
+        }
+      }
+
+      var token = ++latestFetchToken;
+      fetch(buildFastbullUrl(tagIds), { headers: FASTBULL_HEADERS })
+        .then(function(response) {
+          if (!response.ok) throw new Error("HTTP " + response.status);
+          return response.json();
+        })
+        .then(function(payload) {
+          var body;
+          if (typeof payload.bodyMessage === "string") {
+            try {
+              body = JSON.parse(payload.bodyMessage);
+            } catch (e) {
+              body = {};
             }
-            if (typeof tag === "object" && tag !== null) {
-              const text = (tag.text || tag.name || "").trim();
-              if (!text) return null;
-              return {
-                text,
-                sentiment: Number(tag.sentiment ?? 0),
-                type: tag.type || "",
-              };
-            }
-            return null;
-          })
-          .filter(Boolean);
-      };
-
-      const normalizeCityFalconStory = (item) => {
-        const analytics = Array.isArray(item.analytics) ? item.analytics : [];
-        const tags = toTagObjects(
-          Array.isArray(item.tags)
-            ? item.tags
-            : Array.isArray(item.entities)
-            ? item.entities
-            : Array.isArray(item.topics)
-            ? item.topics
-            : []
-        );
-        return {
-          title: (item.title || item.headline || "").trim() || "Untitled story",
-          source: item.domain_name || item.source || "CityFalcon",
-          publish_dt: item.publish_time || item.publish_dt || item.published_at || "",
-          publish_time: item.publishTime || item.publish_time || item.publish_dt || item.published_at || "",
-          url: item.story_url || item.url || item.short_url || "#",
-          summary: item.summary || item.description || item.snippet || "",
-          tags,
-          sentiment: Number(item.sentiment ?? analytics[0]?.sentiment ?? 0),
-          score: Number(item.score ?? item.sentiment ?? analytics[0]?.sentiment ?? 0),
-          cf_score: Number(
-            item.cf_score ?? item.story_score ?? item.score ?? item.total_score ?? item.priority_score ?? 0
-          ),
-          image_url:
-            item.image_url ||
-            item.image ||
-            (Array.isArray(item.imageUrls) && item.imageUrls.length ? item.imageUrls[0] : null) ||
-            (Array.isArray(item.images) && item.images.length ? item.images[0] : null) ||
-            null,
-        };
-      };
-
-      const renderLatestSkeleton = () => {
-        if (!latestTickerEl) return;
-        latestTickerEl.innerHTML = `
-          <li class="latest-card">
-            <div class="space-y-2">
-              <p class="text-xs text-neutral-500">Menyiapkan feed…</p>
-              <p class="headline shimmer-line h-4 w-full"></p>
-              <div class="latest-tags">
-                <span class="label-tag shimmer-line h-4 w-16"></span>
-                <span class="label-tag shimmer-line h-4 w-12"></span>
-              </div>
-            </div>
-          </li>
-        `;
-      };
-
-      const formatFastbullUTC = (value) => {
-        if (!value) return "Unknown time";
-        let timestamp = Number(value);
-        if (Number.isNaN(timestamp)) {
-          const parsed = new Date(value);
-          timestamp = parsed.getTime();
-        }
-        if (!timestamp) return "Unknown time";
-        const date = new Date(timestamp);
-        if (Number.isNaN(date.getTime())) return "Unknown time";
-        const iso = date.toISOString();
-        return `${iso.slice(0, 16).replace("T", " ")} UTC`;
-      };
-
-      const setLatestStatus = (text) => {
-        if (latestStatusEl) latestStatusEl.textContent = text;
-      };
-
-      const resolveLatestCategoryLabel = (value) => {
-        if (!latestDropdownEl) return "Semua";
-        const options = Array.from(latestDropdownEl.options || []);
-        const found = options.find((opt) => opt.value === value);
-        return (found ? found.textContent : "Semua") || "Semua";
-      };
-
-      const updateLatestRecapButton = (value) => {
-        if (!latestRecapBtn) return;
-        const label = resolveLatestCategoryLabel(value);
-        latestRecapBtn.textContent = `Recap ${label} Catalyst By Kuantara AI`;
-      };
-
-      const ensureLatestCategoryData = async (tagIds) => {
-        let cache = latestCache.get(tagIds);
-        if (cache && cache.items.length) return cache;
-        await fetchFastbullNews(tagIds);
-        cache = latestCache.get(tagIds);
-        return cache || { items: [] };
-      };
-
-      const buildRecapPrompt = (label, items) => {
-        const headlines = Array.isArray(items) ? items : [];
-        if (!headlines.length) {
-          return `Tidak ada headline untuk kategori ${label}. Jelaskan secara singkat bagaimana trader makro sebaiknya bersikap dalam kondisi tersebut namun tetap berikan wawasan makro singkat.`;
-        }
-        const lines = headlines.slice(0, 20).map((item, idx) => {
-          const time = formatFastbullUTC(item.timestamp);
-          const tags = (item.tagNames || []).slice(0, 3).join(" · ");
-          return `${idx + 1}. [${time}] ${item.title}${
-            tags ? ` (Tags: ${tags})` : ""
-          }`;
-        });
-        return [
-          `Anda adalah asisten riset Kuantara Analytics untuk trader makro global. Rangkum headline kategori "${label}" menjadi narasi singkat untuk trader.`,
-          "",
-          "Data headline terakhir:",
-          ...lines,
-          "",
-          "Tugas Anda:",
-          "1. Jelaskan tema besar yang muncul dari headline di atas.",
-          "2. Berikan implikasi ke: USD, saham global, US yields, komoditas, dan crypto.",
-          "3. Tutup dengan 2–3 poin 'What To Watch' yang bisa dipakai untuk membuat trading plan.",
-          "",
-          "Gunakan bahasa Indonesia, singkat, jelas, dan tetap bernuansa profesional seperti laporan riset."
-        ].join("\n");
-      };
-
-      const readerState = {
-        story: null,
-        source: null,
-      };
-
-      const openReader = (story) => {
-        if (!readerModal || !readerTitleEl || !readerBodyEl || !readerLoadingEl) return;
-        readerState.story = story || null;
-        readerState.source = story?.source || null;
-        readerTitleEl.textContent = story?.title || "Story Detail";
-        readerBodyEl.innerHTML = "";
-        readerLoadingEl.classList.remove("hidden");
-        readerModal.classList.remove("hidden");
-
-        if (story?.url) {
-          readerBodyEl.innerHTML = `
-            <p class="text-xs text-neutral-400 uppercase tracking-[0.2em] mb-2">Source: ${
-              story.source || "Unknown"
-            }</p>
-            <p class="mb-3 text-sm text-neutral-200">${story.summary || ""}</p>
-            <a href="${story.url}" target="_blank" rel="noopener noreferrer" class="text-xs text-sky-300 underline">Buka sumber asli</a>
-          `;
-          readerLoadingEl.classList.add("hidden");
-          return;
-        }
-
-        readerBodyEl.innerHTML =
-          '<p class="text-xs text-rose-300">Tidak ada URL untuk story ini.</p>';
-        readerLoadingEl.classList.add("hidden");
-      };
-
-      const closeReader = () => {
-        if (!readerModal) return;
-        readerModal.classList.add("hidden");
-      };
-
-      const LATEST_CATEGORY_TAGS = {
-        "-1": "-1",
-        "100,126,124,123,121,120,118,116,115,114": "100,126,124,123,121,120,118,116,115,114",
-        "166,164,162,160,159,157,155,137,134": "166,164,162,160,159,157,155,137,134",
-        "174,173,171,170,169,168,167,165,163,161,158,156,154,152,150,149,145":
-          "174,173,171,170,169,168,167,165,163,161,158,156,154,152,150,149,145",
-        "94,95,96,97,98,105,178,144,148,146,141,140,139,138,136,135,133,132,129,127,125,122,119,117,112,111,110,109":
-          "94,95,96,97,98,105,178,144,148,146,141,140,139,138,136,135,133,132,129,127,125,122,119,117,112,111,110,109",
-        "108,177,176": "108,177,176",
-      };
-
-      const buildFastbullUrl = (tagIds) => {
-        const url = new URL(FASTBULL_NEWS_ENDPOINT);
-        url.searchParams.set("checkImportant", "0");
-        url.searchParams.set("pageSize", "20");
-        url.searchParams.set("timestamp", "");
-        url.searchParams.set("includeCalendar", "0");
-        url.searchParams.set("tagIds", tagIds);
-        return url.toString();
-      };
-
-      const latestCache = new Map();
-      let latestFetchToken = 0;
-
-      const normalizeFastbullItem = (item) => {
-        if (!item) return null;
-        const title = (item.newsTitle || "").trim();
-        const splitTags =
-          typeof item.tags === "string" && item.tags
-            ? item.tags.split(",").map((s) => s.trim()).filter(Boolean)
-            : [];
-        const tagNames = splitTags.map((tag) => {
-          const label = fastbullTagMap.get(String(tag)) || tag;
-          return label;
-        });
-        return {
-          id: item.newsId || item.path || title || String(item.releasedDate || Math.random()),
-          title: title || "Untitled headline",
-          tagNames,
-          timestamp: item.releasedDate || Date.now(),
-          important: Number(item.important) === 1,
-          source: item.simWebsiteName || item.simWebsite || "FastBull",
-        };
-      };
-
-      const renderLatestFeed = (items) => {
-        if (!latestTickerEl) return;
-        if (!items || !items.length) {
-          latestTickerEl.innerHTML =
-            '<li class="latest-card"><p class="text-xs text-neutral-500">Belum ada headline untuk kategori ini.</p></li>';
-          return;
-        }
-        latestTickerEl.innerHTML = items
-          .map((item) => {
-            const tags = (item.tagNames || []).slice(0, 4);
-            const tagHtml = tags
-              .map((tag) => `<span class="label-tag">${tag}</span>`)
-              .join("");
-            const icon = COPY_ICON;
-            return `
-            <li class="latest-card ${item.important ? "important" : ""}">
-              <div class="latest-meta">
-                <span>${formatFastbullUTC(item.timestamp)}</span>
-                <span class="text-[0.65rem] text-neutral-400">${item.source || "FastBull"}</span>
-              </div>
-              <div class="flex items-start justify-between gap-2">
-                <p class="headline text-[0.8rem] text-neutral-50 flex-1">${item.title}</p>
-                <button class="copy-btn latest-copy-btn" data-id="${item.id}" aria-label="Copy headline">
-                  ${icon}
-                </button>
-              </div>
-              <div class="latest-tags mt-1">
-                ${tagHtml}
-              </div>
-            </li>
-          `;
-          })
-          .join("");
-      };
-
-      const fetchFastbullNews = async (tagIds = "-1", { silent = false } = {}) => {
-        if (!latestTickerEl) return;
-        updateLatestRecapButton(tagIds);
-        const existing = latestCache.get(tagIds);
-        const shouldRenderCached = !silent || !existing || !existing.items.length;
-        if (shouldRenderCached) {
-          if (existing && existing.items.length) {
-            renderLatestFeed(existing.items);
-            const cachedLabel = formatRelativeTimestamp(existing.updatedIso) || "Cached feed";
-            setLatestStatus(cachedLabel);
           } else {
-            renderLatestSkeleton();
-            setLatestStatus("Loading feed…");
+            body = payload.bodyMessage || {};
           }
-        }
-        const token = ++latestFetchToken;
-        try {
-          const response = await fetch(buildFastbullUrl(tagIds), { headers: FASTBULL_HEADERS });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const payload = await response.json();
-          const body =
-            typeof payload.bodyMessage === "string"
-              ? JSON.parse(payload.bodyMessage)
-              : payload.bodyMessage || {};
-          const list = Array.isArray(body.pageDatas) ? body.pageDatas : [];
-          const normalized = list.map(normalizeFastbullItem).filter(Boolean);
-          latestCache.set(tagIds, {
+
+          var list = body && body.pageDatas && body.pageDatas.length ? body.pageDatas : [];
+          var normalized = [];
+          for (var i = 0; i < list.length; i++) {
+            var norm = normalizeFastbullItem(list[i]);
+            if (norm) normalized.push(norm);
+          }
+
+          latestCache[tagIds] = {
             items: normalized,
-            updatedIso: new Date().toISOString(),
-          });
+            updatedIso: new Date().toISOString()
+          };
+
           if (token !== latestFetchToken) return;
           renderLatestFeed(normalized);
           setLatestStatus("Updated just now");
-        } catch (error) {
-          console.error("FastBull feed error:", error);
+        })
+        .catch(function(err) {
+          console.error("FastBull feed error:", err);
           if (token !== latestFetchToken) return;
-          setLatestStatus(
-            `Feed error · ${error.message || "Network error"}`
-          );
+          setLatestStatus("Feed error · " + (err && err.message ? err.message : "Network error"));
+        });
+    }
+
+    // ====== CATALYST ======
+    function normalizeCatalystItem(item) {
+      if (!item) return null;
+      var rawContent = item.content != null ? item.content : item.summary;
+      var contentValue;
+      if (rawContent == null) {
+        contentValue = "";
+      } else if (typeof rawContent === "string") {
+        contentValue = rawContent.trim();
+      } else {
+        contentValue = String(rawContent);
+      }
+
+      return {
+        timestamp: item.timestamp || item.time || "",
+        headline: item.headline || item.title || "Untitled catalyst",
+        content: contentValue,
+        impact: item.impact || "Low Impact",
+        category1: item.category1 || "",
+        category2: item.category2 || ""
+      };
+    }
+
+    function impactClass(impact) {
+      impact = impact || "";
+      if (/high/i.test(impact)) return "impact-high";
+      if (/medium/i.test(impact)) return "impact-medium";
+      return "";
+    }
+
+    function catalystCategories() {
+      var map = {};
+      for (var i = 0; i < catalystItems.length; i++) {
+        var key = catalystItems[i].category1 || "Lainnya";
+        map[key] = true;
+      }
+      var out = [];
+      for (var k in map) if (map.hasOwnProperty(k)) out.push(k);
+      out.sort();
+      return out;
+    }
+
+    function renderCatalystSkeleton() {
+      if (!catalystListEl) return;
+      clearList(catalystListEl);
+      for (var i = 0; i < 3; i++) {
+        var li = document.createElement("li");
+        li.className = "feed-card";
+        li.innerHTML =
+          '<div class="skeleton-title shimmer-line"></div>' +
+          '<div class="skeleton-body shimmer-line"></div>' +
+          '<div class="skeleton-body shimmer-line"></div>';
+        catalystListEl.appendChild(li);
+      }
+    }
+
+    function filterCatalystItems() {
+      if (catalystSelected === "all") return catalystItems;
+      var out = [];
+      for (var i = 0; i < catalystItems.length; i++) {
+        if ((catalystItems[i].category1 || "") === catalystSelected) {
+          out.push(catalystItems[i]);
         }
-      };
+      }
+      return out;
+    }
 
-      const formatRelativeTimestamp = (isoString) => {
-        if (!isoString) return "";
-        try {
-          const then = new Date(isoString).getTime();
-          const now = Date.now();
-          if (Number.isNaN(then) || !then) return "";
-          const diffMs = now - then;
-          const diffMins = Math.floor(diffMs / 60000);
-          if (diffMins < 1) return "Updated just now";
-          if (diffMins < 60) return `Updated ${diffMins}m ago`;
-          const diffHours = Math.floor(diffMins / 60);
-          if (diffHours < 24) return `Updated ${diffHours}h ago`;
-          const diffDays = Math.floor(diffHours / 24);
-          return `Updated ${diffDays}d ago`;
-        } catch {
-          return "";
+    function buildCatalystCard(item) {
+      var li = document.createElement("li");
+      li.className = "feed-card";
+
+      var headerRow = document.createElement("div");
+      headerRow.className = "feed-header-row";
+
+      var wrap = document.createElement("div");
+      wrap.className = "feed-headline-wrap";
+
+      var dot = document.createElement("div");
+      dot.className = "head-dot";
+      wrap.appendChild(dot);
+
+      var box = document.createElement("div");
+      var titleEl = document.createElement("div");
+      titleEl.className = "headline";
+      titleEl.textContent = item.headline;
+      box.appendChild(titleEl);
+      wrap.appendChild(box);
+
+      var btn = document.createElement("button");
+      btn.className = "copy-btn";
+      btn.type = "button";
+      btn.textContent = COPY_TEXT;
+      btn.setAttribute("aria-label", "Salin catalyst");
+      btn.addEventListener("click", function() {
+        copyTextToClipboard(item.headline, btn);
+      });
+
+      headerRow.appendChild(wrap);
+      headerRow.appendChild(btn);
+
+      var metaRow = document.createElement("div");
+      metaRow.className = "feed-meta";
+      var timeEl = document.createElement("span");
+      timeEl.className = "feed-time";
+      timeEl.textContent = formatUTC(item.timestamp);
+      metaRow.appendChild(timeEl);
+
+      var bodyEl = document.createElement("div");
+      bodyEl.className = "feed-body";
+      bodyEl.textContent = item.content || "";
+
+      var tagsRow = document.createElement("div");
+      tagsRow.className = "feed-tags";
+      var cats = [];
+      if (item.category1) cats.push(item.category1);
+      if (item.category2) cats.push(item.category2);
+      for (var i = 0; i < cats.length; i++) {
+        var chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = cats[i];
+        tagsRow.appendChild(chip);
+      }
+
+      var impactRow = document.createElement("div");
+      impactRow.className = "impact-row";
+      var impactBadge = document.createElement("span");
+      impactBadge.className = "impact-badge " + impactClass(item.impact);
+      impactBadge.textContent = item.impact || "Impact";
+      impactRow.appendChild(impactBadge);
+
+      li.appendChild(headerRow);
+      li.appendChild(metaRow);
+      li.appendChild(bodyEl);
+      if (cats.length) li.appendChild(tagsRow);
+      li.appendChild(impactRow);
+
+      return li;
+    }
+
+    function renderCatalystFeed() {
+      if (!catalystListEl) return;
+      var items = filterCatalystItems();
+      clearList(catalystListEl);
+
+      if (!items.length) {
+        var li = document.createElement("li");
+        li.className = "feed-card";
+        li.innerHTML =
+          '<div class="feed-body" style="color:var(--text-muted)">Tidak ada catalyst untuk kategori ini.</div>';
+        catalystListEl.appendChild(li);
+        return;
+      }
+
+      for (var i = 0; i < items.length; i++) {
+        catalystListEl.appendChild(buildCatalystCard(items[i]));
+      }
+    }
+
+    function populateCatalystDropdown() {
+      if (!catalystDropdownEl) return;
+      var selected = catalystDropdownEl.value || "all";
+      var cats = catalystCategories();
+
+      catalystDropdownEl.innerHTML = "";
+      var allOpt = document.createElement("option");
+      allOpt.value = "all";
+      allOpt.textContent = "Semua";
+      catalystDropdownEl.appendChild(allOpt);
+
+      for (var i = 0; i < cats.length; i++) {
+        var opt = document.createElement("option");
+        opt.value = cats[i];
+        opt.textContent = cats[i];
+        catalystDropdownEl.appendChild(opt);
+      }
+
+      var found = false;
+      for (var j = 0; j < catalystDropdownEl.options.length; j++) {
+        if (catalystDropdownEl.options[j].value === selected) {
+          found = true;
+          break;
         }
-      };
+      }
+      if (found) {
+        catalystDropdownEl.value = selected;
+        catalystSelected = selected;
+      } else {
+        catalystDropdownEl.value = "all";
+        catalystSelected = "all";
+      }
 
-      const KuantaraRecapRolePrompt =
-        "Anda adalah asisten riset Kuantara Analytics. Gaya bahasa: profesional, to the point, dengan sedikit narasi seperti market strategist. Jawaban dalam bahasa Indonesia.";
+      updateCatalystRecapButton();
+    }
 
-      let kuantaraRecapActive = false;
-      let kuantaraAbortController = null;
-      const chatListEl = document.getElementById("chatList");
-      const inputEl = document.getElementById("input");
-      const sendBtn = document.getElementById("send");
+    function updateCatalystRecapButton() {
+      if (!catalystRecapBtn || !catalystDropdownEl) return;
+      var value = catalystDropdownEl.value;
+      var label;
+      if (value === "all") {
+        label = "Semua";
+      } else {
+        var idx = catalystDropdownEl.selectedIndex;
+        label = idx >= 0 ? catalystDropdownEl.options[idx].textContent : "Semua";
+      }
+      catalystRecapBtn.textContent = "Recap " + label + " Catalyst By Kuantara AI";
+    }
 
-      const recapConversations = new Map();
-      let messages = [];
-      const markdownToHtml = (md) =>
-        window.marked ? window.marked.parse(md || "") : (md || "").replace(/\n/g, "<br>");
+    function fetchCatalystFeed(options) {
+      options = options || {};
+      var force = options.force === true;
+      var silent = options.silent === true;
 
-      const renderChat = () => {
-        if (!chatListEl) return;
-        if (!messages.length) {
-          chatListEl.innerHTML = '<p class="placeholder text-center">Belum ada percakapan.</p>';
-          return;
-        }
-        chatListEl.innerHTML = messages
-          .map(
-            (msg) => `
-          <div class="kuantara-message ${msg.sender === "Anda" ? "user" : "ai"}">
-            <p class="kuantara-label ${msg.sender === "Anda" ? "user" : ""}">${
-              msg.sender === "Anda" ? "YOU" : "AI"
-            }</p>
-            <div class="kuantara-bubble prose prose-invert max-w-none">
-              ${markdownToHtml(msg.text || "")}
-            </div>
-          </div>
-        `
-          )
-          .join("");
-        chatListEl.scrollTop = chatListEl.scrollHeight;
-      };
+      if (catalystLoading) return;
+      if (!force && catalystFetched) return;
+      catalystLoading = true;
 
-      const resetChat = () => {
-        messages = [];
-        renderChat();
-      };
+      var needsInitialUi = !catalystFetched || !catalystItems.length;
+      if (needsInitialUi) {
+        if (catalystStatusEl) catalystStatusEl.textContent = "Loading feed…";
+        renderCatalystSkeleton();
+      } else if (!silent && catalystStatusEl) {
+        catalystStatusEl.textContent = "Refreshing…";
+      }
 
-      const appendMessage = (sender, text) => {
-        messages.push({ sender, text });
-        renderChat();
-      };
-
-      const openKuantaraModal = ({ title, systemPrompt, recapKey }) => {
-        if (!kuantaraModal || !kuantaraTitleEl) return;
-        kuantaraTitleEl.textContent = title || "Kuantara AI Recap";
-        kuantaraModal.classList.remove("hidden");
-        messages = recapConversations.get(recapKey) || [];
-        if (!messages.length) {
-          messages.push({
-            sender: "AI",
-            text: "Silakan klik recap lagi atau tulis instruksi tambahan untuk mengolah catalyst/headline.",
-          });
-        }
-        renderChat();
-        if (inputEl) {
-          inputEl.value = "";
-          inputEl.focus();
-        }
-      };
-
-      const closeKuantaraModal = () => {
-        if (!kuantaraModal) return;
-        kuantaraModal.classList.add("hidden");
-        if (kuantaraAbortController) {
-          kuantaraAbortController.abort();
-          kuantaraAbortController = null;
-        }
-        kuantaraRecapActive = false;
-      };
-
-      const streamKuantaraResponse = async (prompt, { recapKey } = {}) => {
-        if (!prompt || !chatListEl || !inputEl) return;
-        if (kuantaraRecapActive) return;
-        kuantaraRecapActive = true;
-        kuantaraAbortController = new AbortController();
-        const signal = kuantaraAbortController.signal;
-
-        appendMessage("Anda", prompt);
-        appendMessage("AI", "_Menulis ringkasan…_");
-
-        const payload = {
-          inputs: "",
-          parameters: {
-            temperature: KUANTARA_AI_TEMPERATURE,
-            top_p: KUANTARA_AI_TOP_P,
-            max_new_tokens: KUANTARA_AI_MAX_TOKENS,
-            return_full_text: false,
-          },
-          model: KUANTARA_AI_RECAP_API,
-          stream: true,
-          messages: [
-            {
-              role: "system",
-              content: KuantaraRecapRolePrompt,
-            },
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-        };
-
-        try {
-          const response = await fetchWithAuth(KUANTARA_AI_RECAP_API, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-            signal,
-          });
-          if (!response.ok || !response.body) {
-            throw new Error(`HTTP ${response.status}`);
+      fetch(CATALYST_FEED_API, { headers: { Accept: "application/json" } })
+        .then(function(response) {
+          if (!response.ok) throw new Error("HTTP " + response.status);
+          return response.json();
+        })
+        .then(function(data) {
+          var list;
+          if (Object.prototype.toString.call(data) === "[object Array]") {
+            list = data;
+          } else if (data && data.items && data.items.length) {
+            list = data.items;
+          } else {
+            list = [];
           }
 
-          const reader = response.body.getReader();
-          const decoder = new TextDecoder("utf-8");
-          let aiMessageIndex = messages.length - 1;
-          const updateLastMessage = (text) => {
-            if (aiMessageIndex < 0 || aiMessageIndex >= messages.length) {
-              messages.push({ sender: "AI", text });
-              aiMessageIndex = messages.length - 1;
-            } else {
-              messages[aiMessageIndex].text = text;
-            }
-            renderChat();
-          };
-
-          let streamBuffer = "";
-          updateLastMessage("");
-
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split("\n");
-            for (const line of lines) {
-              if (!line.trim()) continue;
-              if (line.startsWith("data:")) {
-                const dataStr = line.slice(5).trim();
-                if (dataStr === "[DONE]") continue;
-                try {
-                  const payload = JSON.parse(dataStr);
-                  const key = payload?.choices?.[0]?.delta?.content
-                    ? "content"
-                    : payload?.choices?.[0]?.delta?.text
-                    ? "text"
-                    : null;
-                  if (key && payload.choices?.[0]?.delta?.[key]) {
-                    streamBuffer += payload.choices[0].delta[key];
-                    updateLastMessage(streamBuffer);
-                  } else {
-                    const raw = payload?.generated_text || payload?.text || "";
-                    if (raw) {
-                      streamBuffer += raw;
-                      updateLastMessage(streamBuffer);
-                    }
-                  }
-                } catch {
-                  streamBuffer += dataStr;
-                  updateLastMessage(streamBuffer);
-                }
-              }
-            }
+          var out = [];
+          for (var i = 0; i < list.length; i++) {
+            var norm = normalizeCatalystItem(list[i]);
+            if (norm) out.push(norm);
           }
-
-          recapConversations.set(recapKey, [...messages]);
-        } catch (error) {
-          console.error("Kuantara AI recap error:", error);
-          appendMessage(
-            "AI",
-            "Maaf, terjadi masalah saat memproses recap. Silakan coba lagi beberapa saat lagi."
-          );
-        } finally {
-          kuantaraRecapActive = false;
-          kuantaraAbortController = null;
-        }
-      };
-
-      const triggerLatestRecap = async () => {
-        if (!latestDropdownEl) return;
-        const tagIds = latestDropdownEl.value || "-1";
-        const label = resolveLatestCategoryLabel(tagIds);
-        const cache = await ensureLatestCategoryData(tagIds);
-        const prompt = buildRecapPrompt(label, cache.items);
-        openKuantaraModal({
-          title: `Kuantara AI – Recap ${label}`,
-        });
-        streamKuantaraResponse(prompt, { recapKey: `latest:${tagIds}` });
-      };
-
-      const CATALYST_FEED_DEFAULT_CATEGORY = "all";
-      let catalystItems = [];
-      let catalystFetched = false;
-      let catalystLoading = false;
-      let catalystSelected = CATALYST_FEED_DEFAULT_CATEGORY;
-
-      const normalizeCatalystItem = (item) => {
-        if (!item) return null;
-        const rawContent = item.content != null ? item.content : item.summary;
-        let contentValue;
-        if (rawContent == null) {
-          contentValue = "";
-        } else if (typeof rawContent === "string") {
-          contentValue = rawContent.trim();
-        } else {
-          contentValue = String(rawContent);
-        }
-        return {
-          timestamp: item.timestamp || item.time || "",
-          headline: item.headline || item.title || "Untitled catalyst",
-          content: contentValue,
-          impact: item.impact || "Low Impact",
-          category1: item.category1 || "",
-          category2: item.category2 || "",
-        };
-      };
-
-      const impactClass = (impact) => {
-        if (!impact) return "impact-low";
-        const lower = impact.toLowerCase();
-        if (lower.includes("high")) return "impact-high";
-        if (lower.includes("medium")) return "impact-medium";
-        return "impact-low";
-      };
-
-      const catalystCategories = () => {
-        const map = new Map();
-        for (const item of catalystItems) {
-          const key = item.category1 || "Lainnya";
-          map.set(key, true);
-        }
-        return Array.from(map.keys()).sort();
-      };
-
-      const renderCatalystSkeleton = () => {
-        if (!catalystListEl) return;
-        catalystListEl.innerHTML = `
-          <li class="catalyst-card">
-            <div class="space-y-2">
-              <p class="text-xs text-neutral-500">Menyiapkan catalyst…</p>
-              <p class="headline shimmer-line h-4 w-full"></p>
-              <p class="shimmer-line h-3 w-3/4"></p>
-            </div>
-          </li>
-        `;
-      };
-
-      const filterCatalystItems = () => {
-        if (catalystSelected === "all") return catalystItems;
-        return catalystItems.filter((item) => (item.category1 || "") === catalystSelected);
-      };
-
-      const buildCatalystCard = (item, index) => {
-        const impactClassName = impactClass(item.impact);
-        const cats = [];
-        if (item.category1) cats.push(item.category1);
-        if (item.category2) cats.push(item.category2);
-        const tagsHtml = cats
-          .map((cat) => `<span class="label-tag">${cat}</span>`)
-          .join("");
-        return `
-          <li class="catalyst-card" data-index="${index}">
-            <div class="catalyst-meta">
-              <span>${formatFastbullUTC(item.timestamp)}</span>
-              <span class="text-[0.65rem] text-neutral-400">${item.category1 || "Catalyst"}</span>
-            </div>
-            <p class="headline text-[0.8rem] text-neutral-50">${item.headline}</p>
-            <p class="mt-1 text-xs text-neutral-300">${item.content || ""}</p>
-            <div class="mt-2 flex items-center justify-between gap-2">
-              <div class="catalyst-tags">${tagsHtml}</div>
-              <span class="impact-badge ${impactClassName} text-[0.65rem] uppercase tracking-[0.12em]">${
-          item.impact || "Impact"
-        }</span>
-            </div>
-          </li>
-        `;
-      };
-
-      const renderCatalystFeed = () => {
-        if (!catalystListEl) return;
-        const items = filterCatalystItems();
-        if (!items.length) {
-          catalystListEl.innerHTML =
-            '<li class="text-xs text-neutral-500">Tidak ada catalyst untuk kategori ini.</li>';
-          return;
-        }
-        catalystListEl.innerHTML = items.map(buildCatalystCard).join("");
-        const liNodes = catalystListEl.querySelectorAll(".catalyst-card");
-        liNodes.forEach((li) => {
-          const idx = Number(li.dataset.index);
-          if (Number.isNaN(idx) || !items[idx]) return;
-          li.querySelector(".headline")?.addEventListener("click", () => {
-            openReader({
-              title: items[idx].headline,
-              summary: items[idx].content,
-              source: items[idx].category1 || "Catalyst",
-              url: "",
-            });
-          });
-        });
-      };
-
-      const populateCatalystDropdown = () => {
-        if (!catalystDropdownEl) return;
-        const selected = catalystDropdownEl.value || "all";
-        const cats = catalystCategories();
-        catalystDropdownEl.innerHTML = "";
-        const allOpt = document.createElement("option");
-        allOpt.value = "all";
-        allOpt.textContent = "Semua";
-        catalystDropdownEl.appendChild(allOpt);
-
-        for (const cat of cats) {
-          const opt = document.createElement("option");
-          opt.value = cat;
-          opt.textContent = cat;
-          catalystDropdownEl.appendChild(opt);
-        }
-
-        const hasSelected = Array.from(catalystDropdownEl.options).some(
-          (opt) => opt.value === selected
-        );
-        if (hasSelected) {
-          catalystDropdownEl.value = selected;
-          catalystSelected = selected;
-        } else {
-          catalystDropdownEl.value = "all";
-          catalystSelected = "all";
-        }
-
-        updateCatalystRecapButton();
-      };
-
-      const updateCatalystRecapButton = () => {
-        if (!catalystRecapBtn || !catalystDropdownEl) return;
-        const value = catalystDropdownEl.value;
-        let label;
-        if (value === "all") {
-          label = "Semua";
-        } else {
-          const idx = catalystDropdownEl.selectedIndex;
-          label = idx >= 0 ? catalystDropdownEl.options[idx].textContent : "Semua";
-        }
-        catalystRecapBtn.textContent = `Recap ${label} Catalyst By Kuantara AI`;
-      };
-
-      const fetchCatalystFeed = async () => {
-        if (!catalystListEl || catalystLoading) return;
-        catalystLoading = true;
-        const needsInitialUi = !catalystFetched || !catalystItems.length;
-        if (needsInitialUi) {
-          if (catalystStatusEl) catalystStatusEl.textContent = "Loading feed…";
-          renderCatalystSkeleton();
-        } else if (catalystStatusEl) {
-          catalystStatusEl.textContent = "Refreshing…";
-        }
-        try {
-          const response = await fetch(CATALYST_FEED_API, { headers: { Accept: "application/json" } });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const data = await response.json();
-          const list = Array.isArray(data) ? data : data?.items || [];
-          catalystItems = list.map(normalizeCatalystItem).filter(Boolean);
+          catalystItems = out;
           catalystFetched = true;
+
           populateCatalystDropdown();
           renderCatalystFeed();
           if (catalystStatusEl) catalystStatusEl.textContent = "Updated";
-        } catch (error) {
-          console.error("Catalyst feed error:", error);
-          if (catalystStatusEl) catalystStatusEl.textContent = `Feed error • ${error.message || "Network error"}`;
-          if (catalystListEl)
-            catalystListEl.innerHTML =
-              '<li class="text-xs text-rose-300">Gagal memuat catalyst feed.</li>';
-        } finally {
-          catalystLoading = false;
-        }
-      };
-
-      const triggerCatalystRecap = () => {
-        const items = filterCatalystItems();
-        const label =
-          catalystSelected === "all"
-            ? "Semua Catalyst"
-            : `Catalyst kategori ${catalystSelected}`;
-        const headlines = items.slice(0, 20).map((item, idx) => {
-          const time = formatFastbullUTC(item.timestamp);
-          return `${idx + 1}. [${time}] ${item.headline} (Impact: ${item.impact || "N/A"})`;
-        });
-        const prompt = [
-          `Rangkum catalyst kategori: ${label}.`,
-          "",
-          "Daftar catalyst terakhir:",
-          ...headlines,
-          "",
-          "Tugas Anda:",
-          "1. Jelaskan tema besar yang muncul dari catalyst ini.",
-          "2. Berikan implikasi ke USD, suku bunga US, saham global, dan komoditas.",
-          "3. Beri 2–3 poin 'What To Watch' untuk minggu depan.",
-        ].join("\n");
-
-        openKuantaraModal({
-          title: `Kuantara AI – ${label}`,
-        });
-        streamKuantaraResponse(prompt, { recapKey: `catalyst:${catalystSelected}` });
-      };
-
-      const fetchXFeed = async () => {
-        if (!xFeedListEl || !xFeedStatusEl) return;
-        xFeedStatusEl.textContent = "Loading…";
-        xFeedListEl.innerHTML =
-          '<li class="text-xs text-neutral-500">Menyiapkan X feed…</li>';
-        try {
-          const response = await fetch(
-            `${TWITTER_PROXY_API}?handle=${encodeURIComponent(TWITTER_HANDLE)}&limit=${X_FEED_LIMIT}`
-          );
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const data = await response.json();
-          const tweets = Array.isArray(data) ? data : data?.tweets || [];
-          if (!tweets.length) {
-            xFeedListEl.innerHTML =
-              '<li class="text-xs text-neutral-500">Tidak ada tweet tersedia.</li>';
-            xFeedStatusEl.textContent = "No data";
-            return;
+        })
+        .catch(function(err) {
+          console.error("Catalyst feed error:", err);
+          if (catalystStatusEl) {
+            catalystStatusEl.textContent =
+              "Feed error • " + (err && err.message ? err.message : "Network error");
           }
-          xFeedStatusEl.textContent = "Updated";
-          xFeedListEl.innerHTML = tweets
-            .map((tweet) => {
-              const createdAt = tweet.created_at || tweet.createdAt || "";
-              const text = tweet.full_text || tweet.text || "";
-              const url =
-                tweet.url ||
-                (tweet.id_str
-                  ? `https://x.com/${TWITTER_HANDLE}/status/${tweet.id_str}`
-                  : "");
-              return `
-              <li class="latest-card">
-                <div class="x-feed-header">
-                  <img src="${tweet.profile_image_url_https || ""}" alt="Avatar" class="x-feed-avatar">
-                  <div>
-                    <p class="x-feed-author">${tweet.user_name || "Donald Trump"} <span>@${
-                tweet.screen_name || TWITTER_HANDLE
-              }</span></p>
-                    <span class="x-feed-badge">Trump Trade</span>
-                  </div>
-                </div>
-                <p class="x-feed-tweet">${text}</p>
-                <div class="x-feed-meta">
-                  <span>${createdAt}</span>
-                  ${
-                    url
-                      ? `<a href="${url}" target="_blank" rel="noopener noreferrer">Open in X</a>`
-                      : ""
-                  }
-                </div>
-              </li>
-            `;
-            })
-            .join("");
-        } catch (error) {
-          console.error("X feed error:", error);
-          xFeedStatusEl.textContent = `Error • ${error.message || "Network error"}`;
-          xFeedListEl.innerHTML =
-            '<li class="text-xs text-rose-300">Gagal memuat X feed.</li>';
-        }
-      };
+        })
+        .finally(function() {
+          catalystLoading = false;
+        });
+    }
+
+    // ====== MODAL / AI ======
+    function openRecapModal(context) {
+      if (!kuantaraModal) return;
+      var title = context && context.title ? context.title : "Kuantara AI Recap";
+      var desc = context && context.description
+        ? context.description
+        : "Contoh prompt: 'Ringkas semua catalyst penting, jelaskan implikasi ke USD, saham, dan komoditas.'";
+
+      kuantaraModal.classList.add("active");
+      document.body.style.overflow = "hidden";
+
+      if (kuantaraTitle) kuantaraTitle.textContent = title;
+      if (kuantaraStatus) {
+        kuantaraStatus.textContent =
+          "Ini masih demo. Hubungkan ke backend AI untuk ringkasan otomatis berbasis feed real-time.";
+      }
+      if (kuantaraBody) {
+        kuantaraBody.innerHTML = "";
+        var p1 = document.createElement("p");
+        p1.textContent = desc;
+        var p2 = document.createElement("p");
+        p2.textContent =
+          "Di production, tombol ini bisa memanggil endpoint AI (misalnya /api/ai/recap) dengan payload headline/catalyst terbaru.";
+        kuantaraBody.appendChild(p1);
+        kuantaraBody.appendChild(p2);
+      }
+    }
+
+    function closeRecapModal() {
+      if (!kuantaraModal) return;
+      kuantaraModal.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+
+    // ====== AUTO REFRESH ======
+    function stopAutoRefreshLoop() {
+      if (autoRefreshTimer) {
+        clearInterval(autoRefreshTimer);
+        autoRefreshTimer = null;
+      }
+    }
+
+    function runAutoRefreshCycle() {
+      if (autoRefreshInProgress || document.hidden) return;
+      autoRefreshInProgress = true;
+      var tagIds = latestCurrentTagIds || "-1";
+      Promise.allSettled([
+        new Promise(function(resolve) {
+          fetchFastbullNews(tagIds, { silent: true });
+          resolve(true);
+        }),
+        new Promise(function(resolve) {
+          fetchCatalystFeed({ silent: true, force: true });
+          resolve(true);
+        })
+      ]).finally = function() {}; // no-op for older browsers
+
+      autoRefreshInProgress = false;
+    }
+
+    function startAutoRefreshLoop() {
+      stopAutoRefreshLoop();
+      if (AUTO_REFRESH_INTERVAL > 0) {
+        autoRefreshTimer = setInterval(runAutoRefreshCycle, AUTO_REFRESH_INTERVAL);
+      }
+    }
+
+    // ====== INIT ======
+    function initTabs() {
+      if (!tabBar) return;
+      var buttons = tabBar.querySelectorAll(".tab-btn");
+      for (var i = 0; i < buttons.length; i++) {
+        (function(btn) {
+          btn.addEventListener("click", function() {
+            var target = btn.getAttribute("data-target");
+            for (var j = 0; j < buttons.length; j++) {
+              buttons[j].classList.remove("active");
+            }
+            btn.classList.add("active");
+
+            if (latestPanel && catalystPanel) {
+              if (latestPanel.id === target) {
+                latestPanel.classList.add("active");
+                catalystPanel.classList.remove("active");
+              } else {
+                catalystPanel.classList.add("active");
+                latestPanel.classList.remove("active");
+              }
+            }
+          });
+        })(buttons[i]);
+      }
+    }
+
+    function initLatestPanel() {
+      if (!latestListEl) return;
+      renderLatestSkeleton();
+      var initialValue = latestDropdownEl ? (latestDropdownEl.value || "-1") : "-1";
+      latestCurrentTagIds = mapCategoryToTagIds(initialValue);
+      fetchFastbullNews(latestCurrentTagIds, { silent: false });
 
       if (latestDropdownEl) {
-        latestDropdownEl.addEventListener("change", (e) => {
-          const value = e.target.value || "-1";
-          fetchFastbullNews(value);
+        latestDropdownEl.addEventListener("change", function(e) {
+          var value = e.target.value || "-1";
+          latestCurrentTagIds = mapCategoryToTagIds(value);
+          fetchFastbullNews(latestCurrentTagIds, { silent: false });
         });
       }
 
       if (latestRecapBtn) {
-        latestRecapBtn.addEventListener("click", triggerLatestRecap);
+        latestRecapBtn.addEventListener("click", function() {
+          openRecapModal({
+            title: "Kuantara AI – Latest 24/7 Recap",
+            description:
+              "Gunakan headline 24/7 di panel ini untuk membuat narasi makro harian dan bias cross-asset."
+          });
+        });
       }
+    }
+
+    function initCatalystPanel() {
+      if (!catalystListEl) return;
+      renderCatalystSkeleton();
+      fetchCatalystFeed({ force: true });
 
       if (catalystDropdownEl) {
-        catalystDropdownEl.addEventListener("change", (e) => {
+        catalystDropdownEl.addEventListener("change", function(e) {
           catalystSelected = e.target.value || "all";
           renderCatalystFeed();
           updateCatalystRecapButton();
         });
       }
 
-      if (kuantaraCloseBtn) {
-        kuantaraCloseBtn.addEventListener("click", closeKuantaraModal);
-      }
-
-      if (readerCloseBtn) {
-        readerCloseBtn.addEventListener("click", closeReader);
-      }
-
-      if (catalystListEl) {
-        catalystListEl.addEventListener("click", (e) => {
-          const card = e.target.closest(".catalyst-card");
-          if (!card) return;
-          const index = Number(card.dataset.index);
-          const items = filterCatalystItems();
-          if (Number.isNaN(index) || !items[index]) return;
-          openReader({
-            title: items[index].headline,
-            summary: items[index].content,
-            source: items[index].category1 || "Catalyst",
-            url: "",
+      if (catalystRecapBtn) {
+        catalystRecapBtn.addEventListener("click", function() {
+          openRecapModal({
+            title: "Kuantara AI – Catalyst Recap",
+            description:
+              "Gabungkan catalyst terfilter untuk menyusun skenario base, bull, dan bear market."
           });
         });
       }
+    }
 
-      if (catalystRecapBtn) {
-        catalystRecapBtn.addEventListener("click", triggerCatalystRecap);
+    function initModal() {
+      if (kuantaraClose) {
+        kuantaraClose.addEventListener("click", closeRecapModal);
       }
+      if (kuantaraModal) {
+        kuantaraModal.addEventListener("click", function(e) {
+          if (e.target === kuantaraModal) closeRecapModal();
+        });
+      }
+    }
 
-      updateLatestRecapButton(latestDropdownEl ? latestDropdownEl.value || "-1" : "-1");
-      fetchFastbullNews(latestDropdownEl ? latestDropdownEl.value || "-1" : "-1");
-      fetchCatalystFeed();
-      fetchXFeed();
+    function initAutoRefresh() {
+      if (AUTO_REFRESH_INTERVAL <= 0) return;
+      startAutoRefreshLoop();
+      document.addEventListener("visibilitychange", function() {
+        if (document.hidden) {
+          stopAutoRefreshLoop();
+        } else {
+          runAutoRefreshCycle();
+          startAutoRefreshLoop();
+        }
+      });
+      window.addEventListener("beforeunload", stopAutoRefreshLoop);
+    }
 
-    </script>
-  </body>
+    function initPage() {
+      initTabs();
+      initLatestPanel();
+      initCatalystPanel();
+      initModal();
+      initAutoRefresh();
+    }
+
+    window.addEventListener("load", initPage);
+  </script>
+</body>
 </html>
