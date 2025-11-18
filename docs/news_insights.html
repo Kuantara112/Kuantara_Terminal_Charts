@@ -59,24 +59,33 @@
     .kt-shell{
       max-width:1440px;
       margin:0 auto;
-      height:100%;
+      min-height:100%;
       display:flex;
       flex-direction:column;
       gap:12px;
     }
 
+    /* GRID DEFAULT (MOBILE): stack vertikal, scroll atas-bawah */
     .kt-grid{
       flex:1;
       display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
+      grid-template-columns:1fr;
+      grid-auto-rows:minmax(280px,auto);
       gap:12px;
-      min-height:0;
     }
 
-    @media (max-width:1024px){
+    /* DESKTOP: 2 panel di atas (kiri-kanan), 1 full-width di bawah */
+    @media (min-width:1024px){
       .kt-grid{
-        grid-template-columns:1fr;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        grid-template-rows:minmax(0,1fr) minmax(0,1fr);
+        grid-template-areas:
+          "research tv"
+          "xfeeds  xfeeds";
       }
+      #panel-research{grid-area:research;}
+      #panel-tv{grid-area:tv;}
+      #panel-xfeeds{grid-area:xfeeds;}
     }
 
     .panel{
@@ -86,8 +95,8 @@
       padding:12px 12px 10px;
       display:flex;
       flex-direction:column;
-      min-height:320px;
       gap:8px;
+      min-height:280px;
     }
 
     .panel-header{
@@ -111,6 +120,8 @@
       display:flex;
       align-items:center;
       gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
 
     .badge{
@@ -220,6 +231,13 @@
 
     .btn-ghost{
       border-style:dashed;
+      color:var(--text-muted);
+    }
+
+    .tab-btn.active{
+      border-color:var(--accent);
+      color:var(--accent);
+      background:#000000;
     }
 
     .list-shell{
@@ -250,14 +268,6 @@
       display:flex;
       flex-wrap:wrap;
       gap:6px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .tag{
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      padding:1px 6px;
       font-size:var(--fs-small);
       color:var(--text-muted);
     }
@@ -314,6 +324,8 @@
       color:var(--text-muted);
       font-size:var(--fs-body);
       background:radial-gradient(circle at top,rgba(255,191,0,0.14),#000);
+      text-align:center;
+      padding:8px;
     }
 
     .video-overlay-top{
@@ -423,11 +435,9 @@
         padding:10px;
       }
       .controls-row{
-        flex-direction:column;
-        align-items:stretch;
+        flex-wrap:wrap;
       }
       .btn{
-        width:100%;
         justify-content:center;
       }
     }
@@ -436,7 +446,7 @@
 <body>
   <div class="kt-shell">
     <div class="kt-grid">
-      <!-- PANEL KIRI: Market Insights / FX & CMD Analysis -->
+      <!-- PANEL KIRI (ATAS): Market Insights / FX & CMD Analysis -->
       <section class="panel" id="panel-research">
         <header class="panel-header">
           <div>
@@ -481,12 +491,12 @@
           </div>
 
           <div class="hint">
-            Hint: hubungkan ke WebSocket / REST API lalu timpa isi <code>#researchList</code> secara real-time.
+            Hook: update <code>#researchList</code> dari WebSocket/REST secara real-time.
           </div>
         </div>
       </section>
 
-      <!-- PANEL TENGAH: Bloomberg TV+ + AI Summary -->
+      <!-- PANEL TENGAH (ATAS): Bloomberg TV+ + AI Summary -->
       <section class="panel" id="panel-tv">
         <header class="panel-header">
           <div>
@@ -511,7 +521,7 @@
                 <div>
                   <div style="font-size:var(--fs-body);margin-bottom:4px;">Bloomberg TV+ Placeholder</div>
                   <div style="font-size:var(--fs-small);color:var(--text-muted);">
-                    Embed iframe streaming di sini via backend
+                    Tempat embed iframe streaming. Backend cukup inject iframe ke container ini.
                   </div>
                 </div>
               </div>
@@ -550,12 +560,12 @@
           </div>
 
           <div class="hint">
-            Backend flow ide: <code>caption stream → aggregator → AI summarizer → update #tvAiSummary</code>.
+            Flow: <code>caption stream → aggregator → AI summarizer → update #tvAiSummary</code>.
           </div>
         </div>
       </section>
 
-      <!-- PANEL KANAN: X Feeds -->
+      <!-- PANEL BAWAH: X Feeds (full-width di desktop) -->
       <section class="panel" id="panel-xfeeds">
         <header class="panel-header">
           <div>
@@ -587,7 +597,7 @@
           </div>
 
           <div class="hint">
-            Integrasi: gunakan streaming API / polling dari backend → render ke <code>#xFeedList</code>.
+            Integrasi: streaming API / polling dari backend → render ke <code>#xFeedList</code>.
           </div>
         </div>
       </section>
@@ -745,12 +755,11 @@
         });
       });
 
-      // tombol recap
       const recapBtn = document.getElementById("btnResearchRecap");
       recapBtn.addEventListener("click", () => {
         const topic = document.getElementById("researchTopic").value;
         console.log("[Research Recap] mode:", currentMode, "topic:", topic);
-        // Di backend: kirim request ke AI summarizer dengan payload feed + topic
+        // Backend: kirim ke AI summarizer
         recapBtn.disabled = true;
         recapBtn.innerHTML = "<span>Summarizing...</span>";
         setTimeout(() => {
@@ -759,7 +768,6 @@
         }, 900);
       });
 
-      // initial render
       renderResearchList(currentMode);
     })();
 
@@ -801,9 +809,9 @@
     })();
 
     // CATATAN BACKEND:
-    // - Gunakan atribut data-role pada container untuk hook WebSocket/API.
-    // - Ganti dummyInsights & dummyXFeeds dengan data nyata dari backend.
-    // - Update isi list & summary dengan innerHTML/innerText atau framework sesuai stack kamu.
+    // - Pakai data-role dan id untuk hook WebSocket/API.
+    // - Ganti dummyInsights & dummyXFeeds dengan data real-time.
+    // - Inject iframe Bloomberg TV+ ke [data-role="bloomberg-video-container"].
   </script>
 </body>
 </html>
