@@ -1,3 +1,1556 @@
+<html lang="id"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseWire Overview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton-screen-css/1.1.0/skeleton-screen.min.css" referrerpolicy="no-referrer">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+            },
+            colors: {
+              ink: "#050505",
+              slate: "#111215",
+              frame: "#1c1c1c",
+              ember: "#FFBF00",
+              flare: "#FFBF00",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        background: radial-gradient(circle at 18% 20%, rgba(255, 145, 0, 0.16), transparent 40%),
+          radial-gradient(circle at 82% 0%, rgba(255, 195, 0, 0.12), transparent 35%), linear-gradient(115deg, #040404, #0b0b0b 45%, #050505);
+      }
+      .insight-scroll {
+        max-height: 320px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #0d0d0d transparent;
+      }
+      .insight-scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      .insight-scroll::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .insight-scroll::-webkit-scrollbar-thumb {
+        background: #0d0d0d;
+        border-radius: 999px;
+      }
+      .shimmer-line {
+        position: relative;
+        overflow: hidden;
+        background: #1c1c1c;
+        border-radius: 4px;
+      }
+      .shimmer-line::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+        animation: shimmer-slide 1.5s infinite;
+      }
+      .skeleton-card {
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .asset-card img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+      }
+      .front-nav {
+        width: 26px;
+        height: 26px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        color: #ffbf00;
+        background: transparent;
+      }
+      .front-nav:hover {
+        background: rgba(255, 191, 0, 0.12);
+      }
+      .front-nav:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      #frontSignalControls.disabled {
+        opacity: 0.25;
+        pointer-events: none;
+      }
+      #frontSignalDots {
+        justify-content: flex-end;
+      }
+      .front-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        border: none;
+        background: rgba(255, 255, 255, 0.25);
+      }
+      .front-dot.active {
+        background: #ffbf00;
+      }
+      .latest-widget,
+      .catalyst-widget {
+        border: 1px solid #1f1f1f;
+        background: rgba(15, 15, 17, 0.95);
+        padding: 1.5rem;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+      }
+      .latest-widget .widget-header,
+      .catalyst-widget .widget-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+      }
+      .latest-widget .live-indicator,
+      .catalyst-widget .live-indicator,
+      .x-feed-widget .live-indicator {
+        width: 28px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(255, 191, 0, 0.2), #ffbf00, rgba(255, 191, 0, 0.2));
+        background-size: 200% 100%;
+        box-shadow: 0 0 12px rgba(255, 191, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+        animation: chartWave 1.6s linear infinite;
+      }
+      .latest-widget .live-indicator::after {
+        content: "";
+        position: absolute;
+        inset: 2px;
+        border-radius: 999px;
+        background: rgba(255, 191, 0, 0.35);
+        animation: chartPulse 2s ease-in-out infinite;
+      }
+      .catalyst-widget .live-indicator {
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.7));
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+        display: grid;
+        place-items: center;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #e0f2ff;
+        animation: catalystPulse 1.3s ease-in-out infinite;
+      }
+      .catalyst-widget .live-indicator::after {
+        content: "!";
+        position: static;
+        inset: auto;
+        border-radius: 0;
+        background: transparent;
+        animation: none;
+      }
+      .latest-widget .dropdown-wrapper,
+      .catalyst-widget .dropdown-wrapper,
+      .x-feed-widget .dropdown-wrapper {
+        margin-top: 1rem;
+      }
+      .latest-widget .category-select,
+      .catalyst-widget .category-select {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        background: rgba(5, 5, 5, 0.9);
+        padding: 0.45rem 0.75rem;
+        font-size: 0.8rem;
+        border-radius: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .latest-ticker-container,
+      .catalyst-ticker-container,
+      .x-feed-ticker-container {
+        margin-top: 1rem;
+        max-height: 420px;
+        overflow-y: auto;
+        scrollbar-width: none;
+      }
+      .latest-ticker-container::-webkit-scrollbar,
+      .catalyst-ticker-container::-webkit-scrollbar,
+      .x-feed-ticker-container::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+      .latest-card,
+      .catalyst-card {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(4, 4, 5, 0.7);
+        padding: 1rem;
+      }
+      .latest-card.important {
+        border-color: rgba(14, 165, 233, 0.8);
+        background: linear-gradient(140deg, rgba(5, 10, 20, 0.95), rgba(8, 47, 73, 0.85));
+        box-shadow: 0 0 30px rgba(14, 165, 233, 0.25), inset 0 0 20px rgba(14, 165, 233, 0.2);
+      }
+      .catalyst-card.high-impact-card {
+        border-color: rgba(59, 130, 246, 0.65);
+        background: linear-gradient(135deg, rgba(30, 64, 175, 0.85), rgba(15, 23, 42, 0.6));
+        box-shadow: 0 0 32px rgba(59, 130, 246, 0.35);
+      }
+      .catalyst-card.impact-medium-card {
+        border-color: rgba(59, 130, 246, 0.25);
+        background: linear-gradient(140deg, rgba(37, 99, 235, 0.2), rgba(4, 4, 5, 0.85));
+      }
+      .latest-ticker,
+      .catalyst-ticker {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+      }
+      .x-feed-widget {
+        border: 1px solid #1f1f1f;
+        background: rgba(15, 15, 17, 0.95);
+        padding: 1.5rem;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+      }
+      .x-feed-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .x-feed-card {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(4, 4, 5, 0.85);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .x-feed-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .x-feed-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        object-fit: cover;
+      }
+      .x-feed-author {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+      }
+      .x-feed-name {
+        font-weight: 600;
+        color: #fff;
+      }
+      .x-feed-handle {
+        font-size: 0.75rem;
+        color: #9ca3af;
+      }
+      .x-feed-time {
+        margin-left: auto;
+        font-size: 0.75rem;
+        color: #9ca3af;
+        text-transform: uppercase;
+      }
+      .x-feed-text {
+        font-size: 0.95rem;
+        color: #e5e7eb;
+        white-space: pre-line;
+      }
+      .x-feed-media {
+        border-radius: 0.75rem;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #090909;
+      }
+      .x-feed-media img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .x-feed-preview {
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 0.75rem;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        background: rgba(15, 15, 17, 0.9);
+      }
+      .x-feed-preview img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+      }
+      .x-feed-preview-body {
+        padding: 0.75rem;
+      }
+      .x-feed-preview-source {
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #9ca3af;
+      }
+      .x-feed-preview-title {
+        font-weight: 600;
+        color: #fff;
+      }
+      .x-feed-preview-desc {
+        font-size: 0.8rem;
+        color: #cbd5f5;
+        margin-top: 0.25rem;
+      }
+      .x-feed-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+      }
+      .x-feed-action {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(15, 15, 15, 0.7);
+        padding: 0.4rem 0.9rem;
+        color: #f3f4f6;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .x-feed-action svg {
+        width: 14px;
+        height: 14px;
+      }
+      .x-feed-action:not(.disabled):hover {
+        border-color: rgba(255, 191, 0, 0.5);
+        color: #ffbf00;
+      }
+      .x-feed-action.disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .reader-body {
+        margin-top: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 1rem;
+        max-height: 70vh;
+        overflow-y: auto;
+        background: rgba(0, 0, 0, 0.35);
+      }
+      .reader-loading {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        color: #9ca3af;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+      .latest-card .headline,
+      .catalyst-card .headline {
+        font-size: 0.95rem;
+        color: #fff;
+        margin: 0;
+        font-weight: 400;
+        transition: color 0.2s ease;
+        cursor: pointer;
+      }
+      .latest-card .headline:hover,
+      .catalyst-card .headline:hover {
+        color: #ffbf00;
+      }
+      .latest-card .headline-container,
+      .catalyst-card .headline-container {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.35rem;
+      }
+      .latest-card .latest-meta,
+      .catalyst-card .latest-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .latest-card .important-dot,
+      .catalyst-card .important-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: #38bdf8;
+        flex-shrink: 0;
+        margin-top: 0.35rem;
+      }
+      .latest-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-top: 0.75rem;
+      }
+      .latest-tags .label-tag {
+        font-size: 0.65rem;
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+        color: #ffea9a;
+        border: 1px solid rgba(255, 191, 0, 0.5);
+        background: rgba(255, 191, 0, 0.18);
+      }
+      .latest-tags .label-tag.important {
+        background: #ffc107;
+        color: #050505;
+      }
+      .catalyst-recap-btn {
+        width: 100%;
+        border: 1px solid rgba(255, 94, 0, 0.6);
+        background: linear-gradient(120deg, rgba(255, 94, 0, 0.9), rgba(255, 174, 0, 0.8));
+        color: #1a0f00;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        padding: 0.6rem 0.75rem;
+        margin-top: 0.75rem;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .catalyst-recap-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 15px 40px rgba(255, 94, 0, 0.35);
+      }
+      .catalyst-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-top: 0.65rem;
+      }
+      .catalyst-tags .chip {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+        color: #d1fae5;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        background: rgba(6, 95, 70, 0.4);
+      }
+      .impact-row {
+        margin-top: 0.6rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .impact-badge {
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .impact-medium {
+        background: rgba(59, 130, 246, 0.15);
+        border-color: rgba(59, 130, 246, 0.35);
+        color: #bfdbfe;
+      }
+      .impact-high {
+        background: linear-gradient(120deg, rgba(37, 99, 235, 0.3), rgba(15, 23, 42, 0.05));
+        border-color: rgba(59, 130, 246, 0.5);
+        color: #dbeafe;
+        box-shadow: 0 0 25px rgba(59, 130, 246, 0.25);
+      }
+      .copy-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 0.35rem;
+      }
+      .copy-btn svg {
+        width: 16px;
+        height: 16px;
+        stroke: #8a8a8a;
+      }
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .copy-btn.copied svg {
+        stroke: #ffc107;
+      }
+      .latest-recap-btn,
+      .catalyst-recap-btn {
+        width: 100%;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        padding: 0.65rem 0.75rem;
+        margin-top: 0.75rem;
+        border-radius: 0;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: linear-gradient(120deg, rgba(255, 191, 0, 0.12), rgba(255, 191, 0, 0.02));
+        color: #ffbf00;
+        box-shadow: 0 0 25px rgba(255, 191, 0, 0.15);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .latest-recap-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 35px rgba(255, 191, 0, 0.25);
+      }
+      .catalyst-recap-btn {
+        border-color: rgba(59, 130, 246, 0.25);
+        background: linear-gradient(120deg, rgba(59, 130, 246, 0.12), rgba(14, 165, 233, 0.05));
+        color: #c7e4ff;
+        box-shadow: 0 0 25px rgba(59, 130, 246, 0.18);
+      }
+      .catalyst-recap-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 35px rgba(59, 130, 246, 0.28);
+      }
+      .live-tv-card {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: linear-gradient(135deg, rgba(7, 7, 10, 0.95), rgba(4, 4, 6, 0.85));
+        padding: 1.25rem;
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+      }
+      .live-tv-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .live-video-shell {
+        position: relative;
+        width: 100%;
+        padding-top: 56.25%;
+        margin-top: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #000;
+      }
+      .live-video-shell video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        background: #000;
+      }
+      .live-cc-controls {
+        margin-top: 0.85rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.72rem;
+        color: rgba(255, 255, 255, 0.65);
+        letter-spacing: 0.08em;
+      }
+      .live-control-group {
+        display: flex;
+        gap: 0.6rem;
+      }
+      .live-control-btn {
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: linear-gradient(120deg, rgba(255, 255, 255, 0.08), rgba(15, 15, 17, 0.6));
+        padding: 0.4rem 0.9rem;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+        transition: box-shadow 0.15s ease, color 0.15s ease;
+      }
+      .live-control-btn[data-active="true"] {
+        border-color: rgba(255, 191, 0, 0.6);
+        color: #ffbf00;
+        box-shadow: 0 0 20px rgba(255, 191, 0, 0.25);
+      }
+      .live-control-btn[data-variant="blue"][data-active="true"] {
+        border-color: rgba(59, 130, 246, 0.6);
+        color: #93c5fd;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
+      }
+      .ai-summary-feed {
+        margin-top: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(6, 6, 8, 0.8);
+        padding: 1rem;
+        max-height: 320px;
+        overflow-y: auto;
+        scrollbar-width: none;
+      }
+      .ai-summary-feed::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+      .summary-card {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.65);
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .summary-card:last-child {
+        margin-bottom: 0;
+      }
+      .summary-card h4 {
+        font-size: 0.75rem;
+        letter-spacing: 0.14em;
+        color: #60a5fa;
+        text-transform: uppercase;
+      }
+      .summary-card .md p {
+        margin: 0.35rem 0;
+      }
+      :root {
+        --chat-h: 360px;
+      }
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        z-index: 999;
+      }
+      .modal-card {
+        width: min(960px, 100%);
+        background: rgba(8, 8, 10, 0.98);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 40px 160px rgba(0, 0, 0, 0.65);
+        padding: 1.5rem;
+        position: relative;
+        overflow-y: auto;
+      }
+      .modal-close {
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: transparent;
+        color: #ffbf00;
+        width: 36px;
+        height: 36px;
+        border-radius: 999px;
+        font-size: 1rem;
+      }
+      .modal-close:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .kuantara-chat {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(0, 0, 0, 0.45);
+        padding: 1.25rem;
+        min-height: 240px;
+        max-height: calc(var(--chat-h) - 40px);
+        overflow-y: auto;
+        font-size: 0.92rem;
+        line-height: 1.6;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .kuantara-chat::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+      .kuantara-chat .placeholder {
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.35);
+      }
+      .kuantara-message {
+        margin-bottom: 1.1rem;
+      }
+      .kuantara-label {
+        font-size: 0.65rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.45);
+      }
+      .kuantara-message.user .kuantara-label {
+        color: #7dd3fc;
+      }
+      .kuantara-message.ai .kuantara-label {
+        color: #ffbf00;
+      }
+      .kuantara-block {
+        margin-top: 0.4rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1rem;
+        padding: 0.85rem 1rem;
+        background: rgba(15, 23, 42, 0.85);
+      }
+      .kuantara-message.ai .kuantara-block {
+        border: none;
+        border-radius: 0;
+        padding: 0.6rem 0;
+        background: transparent;
+      }
+      .kuantara-block .md p {
+        margin: 0.45rem 0;
+      }
+      .kuantara-block .md ul,
+      .kuantara-block .md ol {
+        padding-left: 1.25rem;
+        margin: 0.4rem 0;
+      }
+      .kuantara-block .md code {
+        background: rgba(255, 255, 255, 0.08);
+        padding: 0.15rem 0.35rem;
+        border-radius: 0.35rem;
+        font-size: 0.85em;
+      }
+      .kuantara-input {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.75rem;
+      }
+      .kuantara-input textarea {
+        flex: 1;
+        min-height: 48px;
+        max-height: 220px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(0, 0, 0, 0.35);
+        color: #fff;
+        padding: 0.6rem 0.75rem;
+        resize: none;
+      }
+      .kuantara-send-btn {
+        width: 56px;
+        border: none;
+        border-radius: 0.75rem;
+        background: #ffffff;
+        display: grid;
+        place-items: center;
+        color: #050505;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .kuantara-send-btn svg {
+        width: 20px;
+        height: 20px;
+      }
+      .kuantara-send-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 25px rgba(255, 255, 255, 0.12);
+      }
+      .kuantara-send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+      @keyframes shimmer-slide {
+        100% {
+          transform: translateX(100%);
+        }
+      }
+      @keyframes chartWave {
+        0% {
+          background-position: 0% 50%;
+        }
+        100% {
+          background-position: 200% 50%;
+        }
+      }
+      @keyframes chartPulse {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 0.8;
+        }
+      }
+      @keyframes catalystPulse {
+        0%,
+        100% {
+          transform: scale(0.95);
+          box-shadow: 0 0 12px rgba(59, 130, 246, 0.35);
+        }
+        50% {
+          transform: scale(1.08);
+          box-shadow: 0 0 24px rgba(59, 130, 246, 0.65);
+        }
+      }
+      @media (max-width: 1023px) {
+        .overview-layout {
+          grid-template-columns: 1fr;
+        }
+        .overview-layout .main-column,
+        .overview-layout .overview-sidebar {
+          display: contents;
+        }
+        #frontSignalCard {
+          order: 1;
+        }
+        #analysisInsightCard {
+          order: 2;
+        }
+        #headlineCatalystCard {
+          order: 3;
+        }
+        #xFeedCard {
+          order: 4;
+        }
+        #assetInsightCard {
+          order: 5;
+        }
+        .modal-overlay {
+          padding: 0;
+          align-items: stretch;
+          justify-content: center;
+        }
+        .modal-card {
+          width: 100%;
+          min-height: 100vh;
+          border-radius: 0;
+          padding: 1.25rem;
+        }
+      }
+    </style>
+  </head>
+  <body class="text-neutral-100 antialiased">
+      <main class="overview-layout mt-6 grid gap-6 lg:grid-cols-[2.4fr,1fr]">
+        <section class="space-y-5 main-column">
+          <article id="frontSignalCard" class="border border-frame bg-slate/90 px-6 py-5 shadow-[0_35px_120px_rgba(0,0,0,0.55)]">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-[10px] uppercase text-neutral-500">
+              <div class="flex items-center gap-2">
+                <p>Catalyst Global Macro</p>
+                <div id="frontSignalControls" class="flex items-center gap-2">
+                  <button class="front-nav" data-dir="prev" aria-label="Previous catalyst">&#8249;</button>
+                  <button class="front-nav" data-dir="next" aria-label="Next catalyst">&#8250;</button>
+                </div>
+              </div>
+              <span id="analysisStatus" class="text-neutral-400">Memuat front signal…</span>
+            </div>
+            <div id="frontSignalSkeleton" class="mt-4 grid gap-6 lg:grid-cols-[1.7fr,1fr]">
+              <div class="space-y-4">
+                <div class="h-3 w-24 skeleton-line shimmer-line"></div>
+                <div class="h-10 w-full skeleton-line shimmer-line"></div>
+                <div class="h-3 w-48 skeleton-line shimmer-line"></div>
+                <div class="space-y-2">
+                  <div class="h-3 w-full skeleton-line shimmer-line"></div>
+                  <div class="h-3 w-4/5 skeleton-line shimmer-line"></div>
+                  <div class="h-3 w-3/5 skeleton-line shimmer-line"></div>
+                </div>
+                <div class="space-y-2 border-l-2 border-[#FFBF00]/50 pl-5">
+                  <div class="h-3 w-2/3 skeleton-line shimmer-line"></div>
+                  <div class="h-3 w-1/2 skeleton-line shimmer-line"></div>
+                  <div class="h-3 w-3/4 skeleton-line shimmer-line"></div>
+                </div>
+                <div class="h-3 w-1/2 skeleton-line shimmer-line"></div>
+              </div>
+              <div class="space-y-3">
+                <div class="h-48 skeleton-line shimmer-line"></div>
+                <div class="h-12 skeleton-line shimmer-line"></div>
+              </div>
+            </div>
+            <div id="frontSignalContent" class="mt-4 hidden grid gap-6 lg:grid-cols-[1.7fr,1fr]">
+              <div class="front-content-body">
+                <div class="flex flex-wrap items-center gap-3 text-xs uppercase tracking-wider text-neutral-400">
+                  <span id="analysisSourceLabel" class="text-[#FFBF00]">Feed</span>
+                  <span id="analysisMeta" class="text-neutral-500">Menunggu data…</span>
+                </div>
+                <a id="analysisLink" href="#" target="_blank" rel="noopener">
+                  <h1 id="analysisTitle" class="mt-2 text-3xl font-semibold text-white">
+                    Memuat insight terbaru…
+                  </h1>
+                </a>
+                <p id="analysisSummary" class="mt-4 text-sm text-neutral-200 front-summary-text">
+                  Hubungkan server PIQ Insights untuk menampilkan headline terkini secara otomatis.
+                </p>
+                <div id="analysisChips" class="mt-4 flex flex-wrap gap-2 text-[11px] front-chips-area"></div>
+                <p id="analysisStats" class="mt-5 text-xs text-neutral-400">Sentiment —</p>
+              </div>
+              <div class="space-y-3">
+                <div class="relative h-48 border border-frame">
+                  <img id="analysisImage" src="https://images.unsplash.com/photo-1505843513577-22bb7d21e455?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" class="h-full w-full object-cover" alt="headline visual">
+                  <span id="analysisBadge" class="absolute left-3 top-3 bg-[#FFBF00] px-3 py-1 text-[10px] font-semibold uppercase text-black">LIVE</span>
+                </div>
+                <div id="analysisIndicators" class="bg-gradient-to-b from-[#1f1f1f] to-[#0a0a0a] px-4 py-3 text-xs text-neutral-300">
+                  Menunggu data feed…
+                </div>
+                <div id="frontSignalDots" class="flex gap-1"></div>
+              </div>
+            </div>
+          </article>
+
+          
+
+          <article id="assetInsightCard" class="border border-frame bg-slate/90 px-6 py-5 shadow-[0_30px_110px_rgba(0,0,0,0.55)]">
+            <div class="flex flex-wrap items-center justify-between gap-3 text-xs uppercase text-neutral-400">
+              <div class="flex items-center gap-2">
+                <p class="tracking-wider">Asset Class Insight</p>
+                <span class="rounded-full bg-[#FFBF00]/10 px-2 py-0.5 text-[10px] text-[#FFBF00]">News</span>
+              </div>
+              <span id="assetStatus" class="text-[10px] tracking-wide text-neutral-500">Loading feed…</span>
+            </div>
+            <div id="assetTabs" class="mt-4 flex flex-wrap gap-2 text-[11px] font-semibold uppercase text-neutral-500"></div>
+            <div id="assetStories" class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3" style="align-items:start;">
+              <div class="border border-frame bg-ink/40 p-4">
+                <div class="mb-2 h-3 w-32 shimmer-line"></div>
+                <div class="mb-2 h-4 w-full shimmer-line"></div>
+                <div class="mb-2 h-3 w-2/3 shimmer-line"></div>
+                <div class="h-3 w-1/2 shimmer-line"></div>
+              </div>
+              <div class="border border-frame bg-ink/40 p-4">
+                <div class="mb-2 h-3 w-40 shimmer-line"></div>
+                <div class="mb-2 h-4 w-full shimmer-line"></div>
+                <div class="mb-2 h-3 w-3/4 shimmer-line"></div>
+                <div class="h-3 w-2/5 shimmer-line"></div>
+              </div>
+            </div>
+            <div id="assetSentinel" class="h-6 w-full"></div>
+          </article>
+
+        </section>
+
+        <aside class="space-y-5 overview-sidebar">
+          <article id="analysisInsightCard" class="border border-frame bg-slate/90 p-4 shadow-[0_30px_110px_rgba(0,0,0,0.55)]">
+            <div class="flex items-center justify-between text-xs text-neutral-400">
+              <div class="flex items-center gap-3">
+                <button class="insight-tab px-3 py-1 bg-[#FFBF00] text-black" data-pane="insight">Analysis &amp; Insight</button>
+                <button class="insight-tab border border-frame px-3 py-1 text-neutral-400" data-pane="tv">TV Bloomberg News</button>
+              </div>
+            </div>
+            <div id="insightPane" class="mt-4 space-y-4 text-sm text-neutral-200">
+              <div class="flex flex-wrap items-center gap-3 text-xs text-neutral-400">
+                <label class="flex items-center gap-2">
+                  Source
+                  <select id="insightSource" class="border border-frame bg-ink px-2 py-1 text-xs text-neutral-200">
+                    <option value="all">All Sources</option>
+                  </select>
+                </label>
+                <span id="insightStatus" class="text-[10px] uppercase tracking-wide text-neutral-500">Awaiting feed…</span>
+              </div>
+              <ul id="insightList" class="insight-scroll space-y-3 text-sm text-neutral-200"></ul>
+            </div>
+            <div id="tvPane" class="mt-4 hidden">
+              <div class="live-tv-card">
+                <div class="live-tv-header">
+                  <span>Live Newswire</span>
+                </div>
+                <div class="live-video-shell">
+                  <video id="livePlayer" controls muted playsinline crossorigin="anonymous"></video>
+                </div>
+                <div class="live-cc-controls">
+                  <div class="live-control-group">
+                    <button id="aiSummaryToggle" class="live-control-btn" data-active="false">
+                      AI Summary
+                    </button>
+                  </div>
+                  <span id="ccWordCount">0 / 500 kata</span>
+                </div>
+              </div>
+              <div class="ai-summary-feed mt-4 hidden" id="aiSummaryFeed" data-empty="true">
+                <p class="text-xs text-neutral-500 uppercase tracking-[0.25em]">AI SUMMARY FEED</p>
+                <p class="mt-2 text-sm text-neutral-400">Belum ada ringkasan. Aktifkan AI auto-summary untuk mulai mengumpulkan insight.</p>
+              </div>
+            </div>
+          </article>
+
+          <article id="headlineCatalystCard" class="border border-frame bg-slate/90 p-4 shadow-[0_25px_90px_rgba(0,0,0,0.55)]">
+            <div class="flex items-center gap-4 text-xs uppercase text-neutral-500">
+              <button class="recap-tab border border-frame px-3 py-1 bg-[#FFBF00] text-black" data-panel="latest">Latest 24/7</button>
+              <button class="recap-tab px-3 py-1 text-neutral-400" data-panel="catalyst">Catalyst</button>
+            </div>
+            <div class="mt-3 text-sm text-neutral-200" id="latestPanel">
+              <div class="latest-widget">
+                <div class="widget-header">
+                  <div class="flex items-center gap-2 tracking-[0.2em] text-neutral-400">
+                    <div class="live-indicator"></div>
+                    <span class="text-xs">HEADLINE 24/7</span>
+                  </div>
+                </div>
+                <div class="dropdown-wrapper">
+                  <select id="latestCategoryDropdown" class="category-select">
+                    <option value="-1">Semua</option>
+                    <option value="100,126,124,123,121,120,118,116,115,114">Central Banks</option>
+                    <option value="166,164,162,160,159,157,155,137,134">Cryptocurrencies</option>
+                    <option value="174,173,171,170,169,168,167,165,163,161,158,156,154,152,150,149,145">Stocks</option>
+                    <option value="94,95,96,97,98,105,178,144,143,142,140,136,135,133,132,129,127,125,122,119,117,112,111,110,109">Macroeconomics</option>
+                    <option value="108,177,176">Topics</option>
+                  </select>
+                  <button id="latestRecapBtn" type="button" class="latest-recap-btn mt-2">
+                    Recap Semua Catalyst By Kuantara AI
+                  </button>
+                </div>
+                <div class="latest-ticker-container">
+                  <ul id="latestTicker" class="latest-ticker">
+                    <li class="latest-card">
+                      <div class="space-y-2">
+                        <p class="text-xs text-neutral-500">Menyiapkan feed…</p>
+                        <p class="headline shimmer-line h-4 w-full"></p>
+                        <div class="latest-tags">
+                          <span class="label-tag shimmer-line h-4 w-16"></span>
+                          <span class="label-tag shimmer-line h-4 w-12"></span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 hidden text-sm text-neutral-200" id="catalystPanel">
+              <div class="catalyst-widget">
+                <div class="widget-header">
+                  <div class="flex items-center gap-2 tracking-[0.2em] text-neutral-400">
+                    <div class="live-indicator"></div>
+                    <span class="text-xs">Catalyst Feed</span>
+                  </div>
+                  <span id="catalystStatus" class="text-[10px] uppercase text-neutral-500">Loading…</span>
+                </div>
+                <div class="dropdown-wrapper">
+                  <select id="catalystCategoryDropdown" class="category-select">
+                    <option value="all">Semua</option>
+                  </select>
+                  <button id="catalystRecapBtn" type="button" class="catalyst-recap-btn mt-2">
+                    Recap Semua Catalyst By Kuantara AI
+                  </button>
+                </div>
+                <div class="catalyst-ticker-container">
+                  <ul id="catalystList" class="catalyst-ticker">
+                    <li class="catalyst-card">
+                      <div class="space-y-2">
+                        <p class="text-xs text-neutral-500">Menyiapkan feed…</p>
+                        <p class="headline shimmer-line h-4 w-full"></p>
+                        <p class="shimmer-line h-3 w-3/4"></p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article id="xFeedCard" class="border border-frame bg-slate/90 p-4 shadow-[0_25px_90px_rgba(0,0,0,0.55)]">
+            <div class="x-feed-widget">
+              <div class="widget-header">
+                <div class="flex items-center gap-2 tracking-[0.2em] text-neutral-400">
+                  <div class="live-indicator"></div>
+                  <span class="text-xs">X FEED</span>
+                </div>
+                <span id="xFeedStatus" class="text-[10px] uppercase text-neutral-500">Loading…</span>
+              </div>
+              <div class="dropdown-wrapper">
+                <button id="xFeedRecapBtn" type="button" class="latest-recap-btn mt-2">
+                  Recap X Feed By Kuantara AI
+                </button>
+              </div>
+              <div class="x-feed-ticker-container">
+                <ul id="xFeedList" class="x-feed-list">
+                  <li class="x-feed-card">
+                    <div class="space-y-3">
+                      <div class="shimmer-line h-4 w-1/3"></div>
+                      <div class="shimmer-line h-5 w-3/4"></div>
+                      <div class="shimmer-line h-48 w-full"></div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </article>
+        </aside>
+      </main>
+    </div>
+
+    <div id="kuantaraModal" class="modal-overlay hidden">
+      <div id="card" class="modal-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.3em] text-neutral-500">Kuantara AI</p>
+            <h2 id="kuantaraTitle" class="text-2xl font-semibold text-white">Catalyst Recap</h2>
+          </div>
+          <button id="kuantaraClose" type="button" class="modal-close">&times;</button>
+        </div>
+        <div class="kuantara-chat mt-4" id="chatList"></div>
+        <div class="kuantara-input">
+          <textarea id="input" placeholder="Tulis instruksi untuk Kuantara…"></textarea>
+          <button id="send" type="button" class="kuantara-send-btn" aria-label="Kirim">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19V5"></path>
+              <path d="m5 12 7-7 7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="readerModal" class="modal-overlay hidden">
+      <div class="modal-card max-w-3xl">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.3em] text-neutral-500">Reader</p>
+            <h2 id="readerTitle" class="text-2xl font-semibold text-white">X Feed Reader</h2>
+          </div>
+          <button id="readerClose" type="button" class="modal-close">&times;</button>
+        </div>
+        <div id="readerLoading" class="reader-loading hidden">Loading…</div>
+        <div id="readerBody" class="reader-body text-sm text-neutral-200 space-y-4"></div>
+      </div>
+    </div>
+
+    <script>
+      const FRONT_SIGNAL_ASSET_CLASS = "163"; // Macro Topics
+      const FRONT_SIGNAL_ROTATE_MS = 12000;
+      const AUTO_REFRESH_INTERVAL = 15000;
+
+      const ASSET_CLASSES = [
+        { id: "all", label: "All Assets" },
+        { id: "1", label: "Stocks" },
+        { id: "61", label: "Commodities" },
+        { id: "73", label: "Foreign Exchange and Currencies" },
+        { id: "72", label: "Indices" },
+        { id: "68", label: "Private Companies and Brands" },
+        { id: "163", label: "Macro Topics" },
+        { id: "26", label: "Exchange Traded Funds (ETFs)" },
+        { id: "152", label: "Cryptocurrencies" },
+        { id: "156", label: "Organisations" },
+        { id: "158", label: "People" },
+        { id: "165", label: "State-Owned Companies" },
+        { id: "172", label: "Technical Analysis" },
+        { id: "155", label: "Closed-End Funds" },
+        { id: "162", label: "Other Topics" },
+        { id: "157", label: "Events" },
+        { id: "151", label: "Property" },
+        { id: "173", label: "Fundamental Analysis" },
+        { id: "167", label: "Financial Regulation and Related Topics" },
+        { id: "182", label: "Other Events" },
+        { id: "181", label: "Preferred Stocks" },
+        { id: "183", label: "Alternative Data" },
+        { id: "159", label: "Mutual Funds" },
+        { id: "153", label: "Financial Topics" },
+        { id: "166", label: "Corporate Bonds" },
+        { id: "169", label: "Products" },
+        { id: "168", label: "Ratings and Research Firms" },
+        { id: "65", label: "Sovereign and Government Bonds" },
+      ];
+      const ASSET_LABEL_MAP = ASSET_CLASSES.reduce((acc, entry) => {
+        acc[entry.id] = entry.label;
+        return acc;
+      }, {});
+
+      const INSIGHTS_API = "https://kuantara-newsapi.hf.space/api/insights";
+      const CITYFALCON_API = "https://kuantara-newsapi.hf.space/api/cityfalcon";
+      const CATALYST_FEED_API =
+        "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjMfNinXgjitGptTt1Uj6nE6WK7rYjGTPSt5bUFepyHsCV7ZBDGq6iUYbWvAjM_GhWNcK3REbD8jDIDwMCKO2bUgT_H_aHRBj09Gwkd2uraHiWcmpd3uD3lWgzxnxEu9UOACjLZnVbgZ9fYMy0qtS-DvoKx9KjMK-AuT30tktXjEUxt-JhCWomT15gnuyLeRstzneutXUmRPLHr_lfJyz9_SOovs6xBP-DDH4tUkDSY2SdlvYhf5nZmmY36BH4ncn8t63S2Ua7iCwCMVRs8Ey8R2aWWd6C0Sv39n4V0anX6oX-zfP8&lib=MakTJ382BM__YWV6a2eDZUSqaUOX12Qs5";
+      const X_FEED_API = "https://api.dataflash.news/api/headlines";
+      const buildXFeedReaderUrl = (id) => `https://api.dataflash.news/api/headlines/${id}`;
+      const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1505843513577-22bb7d21e455?auto=format&fit=crop&w=1200&q=80";
+      const MAX_RECAP_ITEMS = 30;
+      const LIVE_STREAM_SRC =
+        "https://liveprodusphoenixeast.global.ssl.fastly.net/USPhx-HD/Channel-TX-USPhx-AWS-virginia-1/Source-USPhx-16k-1-s6lk2-BP-07-02-81ykIWnsMsg_live.m3u8";
+      const LIVE_CC_THRESHOLD = 500;
+      const FASTBULL_NEWS_ENDPOINT =
+        "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
+      const FASTBULL_HEADERS = {
+        Accept: "application/json",
+        "client-type": "4",
+        clientversion: "latest",
+        langid: "13",
+      };
+      const HF_API_TOKEN =
+        "eyJhbGciOiJFZERTQSJ9.eyJyZWFkIjp0cnVlLCJwZXJtaXNzaW9ucyI6eyJyZXBvLmNvbnRlbnQucmVhZCI6dHJ1ZX0sIm9uQmVoYWxmT2YiOnsia2luZCI6InVzZXIiLCJfaWQiOiI2OGZlMzllMDcwNWJmOGFhNzYxNTI4YjciLCJ1c2VyIjoiS3VhbnRhcmEiLCJzZXNzaW9uSWQiOiI2OGZlMzllMDcwNWJmOGFhNzYxNTI4YmMifSwiaWF0IjoxNzYyNjc5NzE5LCJzdWIiOiIvc3BhY2VzL0t1YW50YXJhL25ld3NhcGkiLCJleHAiOjE3NjI3NjYxMTksImlzcyI6Imh0dHBzOi8vaHVnZ2luZ2ZhY2UuY28ifQ.TumyY_6mybtslQX6rlpqTnty0ri-tFWIfxBjMVKsGg2JGm99P3ES-7JKKF9xP2nLj1x5x1g2rXBVz1ztI_4jBg";
+      let hfApiToken = HF_API_TOKEN;
+      const withAuthHeaders = (headers = {}) => {
+        if (!hfApiToken) return { ...headers };
+        return { ...headers, Authorization: `Bearer ${hfApiToken}` };
+      };
+      const fetchWithAuth = (url, options = {}) => {
+        const headers = withAuthHeaders(options.headers || {});
+        return fetch(url, { ...options, headers });
+      };
+      const FASTBULL_TAG_LABELS = {
+        100: "Central Banks",
+        126: "RBNZ",
+        124: "RBA",
+        123: "BOJ",
+        121: "SNB",
+        120: "BOE",
+        118: "ECB",
+        116: "BOC",
+        115: "FED",
+        114: "PBOC",
+        166: "Other Crypto News",
+        164: "Blockchain/Public Blockchain",
+        162: "Web3",
+        160: "NFT",
+        159: "Metaverse",
+        157: "Airdrops/Tokens",
+        155: "Mining/Miners",
+        137: "Major Crypto",
+        134: "Top Crypto",
+        174: "Corporate Announcements",
+        173: "Financial Statements",
+        171: "تقلبات سوق الأوراق المالية",
+        170: "Executive/Institutional Moves",
+        169: "Stock Ratings/Forecasts",
+        168: "Insider Trading",
+        167: "Other Stock News",
+        165: "Stock Splits",
+        163: "Dividends",
+        161: "Suspended/Delisted",
+        158: "New Issues/IPO",
+        156: "Most Popular Stocks",
+        154: "Large-Cap Stocks",
+        152: "Major Indices",
+        150: "China A-Shares",
+        149: "Vietnam Stocks",
+        145: "U.S. Stocks",
+        94: "Forex",
+        95: "Stocks",
+        96: "Bonds",
+        97: "Commodities",
+        98: "Cryptocurrencies",
+        105: "Disasters/Accidents",
+        178: "FB Top Picks",
+        144: "Other Macro News",
+        143: "Top/Focus/Breaking News",
+        142: "Other Financial Markets",
+        140: "Tech/Innovation",
+        136: "National Security/Geopolitics",
+        135: "Government/Political/Diplomatic Updates",
+        133: "Banking/Financial Institution Updates",
+        132: "Central Banks Updates",
+        129: "Other Policies",
+        127: "Fiscal Policy",
+        125: "Monetary Policy",
+        122: "Ratings",
+        119: "Economic Forecasts/Analysis/Surveys",
+        117: "International Economics and Trade",
+        112: "Population/Employment/Income",
+        111: "Interest Rates",
+        110: "Inflation",
+        109: "Macroeconomic Indicators",
+        108: "Russia-Ukraine Conflict",
+        177: "Middle East Flashpoint",
+        176: "Trump Trade",
+      };
+      const COPY_ICON =
+        '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+      const CHECK_ICON =
+        '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+      const fastbullTagMap = new Map(
+        Object.entries(FASTBULL_TAG_LABELS).map(([key, value]) => [String(key), value])
+      );
+
+      const analysisEls = {
+        title: document.getElementById("analysisTitle"),
+        summary: document.getElementById("analysisSummary"),
+        meta: document.getElementById("analysisMeta"),
+        chips: document.getElementById("analysisChips"),
+        stats: document.getElementById("analysisStats"),
+        badge: document.getElementById("analysisBadge"),
+        image: document.getElementById("analysisImage"),
+        indicators: document.getElementById("analysisIndicators"),
+        link: document.getElementById("analysisLink"),
+        status: document.getElementById("analysisStatus"),
+        sourceLabel: document.getElementById("analysisSourceLabel"),
+      };
+      const latestTickerEl = document.getElementById("latestTicker");
+      const latestDropdownEl = document.getElementById("latestCategoryDropdown");
+      const latestStatusEl = document.getElementById("latestStatus");
+      const latestRecapBtn = document.getElementById("latestRecapBtn");
+      const xFeedListEl = document.getElementById("xFeedList");
+      const xFeedStatusEl = document.getElementById("xFeedStatus");
+      const xFeedRecapBtn = document.getElementById("xFeedRecapBtn");
+      const kuantaraModal = document.getElementById("kuantaraModal");
+      const kuantaraCloseBtn = document.getElementById("kuantaraClose");
+      const kuantaraTitleEl = document.getElementById("kuantaraTitle");
+      const catalystDropdownEl = document.getElementById("catalystCategoryDropdown");
+      const catalystStatusEl = document.getElementById("catalystStatus");
+      const catalystListEl = document.getElementById("catalystList");
+      const catalystRecapBtn = document.getElementById("catalystRecapBtn");
+      const readerModal = document.getElementById("readerModal");
+      const readerCloseBtn = document.getElementById("readerClose");
+      const readerTitleEl = document.getElementById("readerTitle");
+      const readerBodyEl = document.getElementById("readerBody");
+      const readerLoadingEl = document.getElementById("readerLoading");
+      const liveVideoEl = document.getElementById("livePlayer");
+      const aiSummaryToggleBtn = document.getElementById("aiSummaryToggle");
+      const captionsToggleBtn = document.getElementById("captionsToggle");
+      const ccWordCountEl = document.getElementById("ccWordCount");
+      const aiSummaryFeedEl = document.getElementById("aiSummaryFeed");
+      const mainColumnEl = document.querySelector(".main-column");
+      const sidebarEl = document.querySelector("main aside");
+
+      const toTagObjects = (tags) => {
+        if (!Array.isArray(tags)) return [];
+        return tags
+          .map((tag) => {
+            if (!tag) return null;
+            if (typeof tag === "string") return { text: tag, sentiment: 0, type: "" };
+            if (typeof tag === "object") {
+              const text = tag.text || tag.entity_name || "";
+              if (!text) return null;
+              return {
+                text,
+                sentiment: Number(tag.sentiment ?? 0),
+                type: tag.type || tag.entity_type || "",
+              };
+            }
+            return null;
+          })
+          .filter((tag) => tag && tag.text);
+      };
+
+      const tagTexts = (tags) => toTagObjects(tags).map((tag) => tag.text);
+
+      const sentimentChipClass = (value = 0) => {
+        if (value >= 40) return "border border-emerald-500/40 bg-emerald-500/10 text-emerald-200";
+        if (value <= -40) return "border border-rose-500/40 bg-rose-500/10 text-rose-200";
+        return "border border-amber-500/40 bg-amber-500/10 text-amber-100";
+      };
+
+
+      const formatSentimentValue = (value = 0) => {
+        const num = Math.round(value);
+        const sign = num > 0 ? "+" : "";
+        return `${sign}${num}%`;
+      };
+
+      const buildChipMarkup = (tags, limit = 4) => {
+        const chips = toTagObjects(tags).slice(0, limit);
+        if (!chips.length) return "";
+        return chips
+          .map(
+            (chip) =>
+              `<span class="px-2 py-1 text-[10px] uppercase tracking-wide ${sentimentChipClass(
+                chip.sentiment
+              )}">${chip.text} • ${formatSentimentValue(chip.sentiment)}</span>`
+          )
+          .join("");
+      };
+
+      const insightSourceSelect = document.getElementById("insightSource");
+      const insightListEl = document.getElementById("insightList");
+      const insightStatusEl = document.getElementById("insightStatus");
+      const frontSignalSkeletonEl = document.getElementById("frontSignalSkeleton");
+      const frontSignalContentEl = document.getElementById("frontSignalContent");
+      const frontSignalControlsEl = document.getElementById("frontSignalControls");
+      const frontSignalDotsEl = document.getElementById("frontSignalDots");
+      const assetTabsEl = document.getElementById("assetTabs");
+      const assetStoriesEl = document.getElementById("assetStories");
+      const assetStatusEl = document.getElementById("assetStatus");
+      const assetSentinelEl = document.getElementById("assetSentinel");
+      const latestTickerContainerEl = document.querySelector(".latest-ticker-container");
+      const catalystTickerContainerEl = document.querySelector(".catalyst-ticker-container");
+      const xFeedTickerContainerEl = document.querySelector(".x-feed-ticker-container");
+
+      let insightCache = [];
+      let availableSources = [];
+      let selectedSource = insightSourceSelect ? insightSourceSelect.value : "all";
+      let lastUpdatedIso = null;
+      let assetActiveId = ASSET_CLASSES[0]?.id || "all";
+      const assetState = new Map();
+      let frontSignalStories = [];
+      let frontSignalIndex = 0;
+      let frontSignalTimer = null;
+      const latestCache = new Map();
+      let latestFetchToken = 0;
+      let kuantaraRecapActive = false;
+      let catalystItems = [];
+      let catalystLoading = false;
+      let catalystFetched = false;
+      let catalystSelected = "all";
+      let xFeedItems = [];
+      let xFeedFetched = false;
+      let xFeedLoading = false;
+      let autoRefreshTimer = null;
+      let autoRefreshInProgress = false;
+      let liveCcWords = [];
+      let liveSummaryInFlight = false;
+      let aiSummaryEnabled = false;
+      let captionsEnabled = false;
+      let liveHlsInstance = null;
+      const getAssetState = (id) => {
+        if (!assetState.has(id)) {
+          assetState.set(id, { items: [], page: 0, loading: false, exhausted: false });
+        }
+        return assetState.get(id);
+      };
+      const buildItemKey = (item) => {
+        if (!item || typeof item !== "object") return "";
+        return (
+          item.uid ||
+          `${item.title || ""}__${item.publish_dt || item.publishTime || item.timeago || ""}`
+        );
+      };
+
+      const buildFeedLookup = (sourcesPayload) => {
+        const lookup = new Map();
+        (sourcesPayload || []).forEach((entry) => {
+          const label = (entry && entry.source) || "";
+          if (!label) return;
+          (entry.items || []).forEach((row) => {
+            const key = buildItemKey(row);
+            if (key) lookup.set(key, label);
+          });
+        });
+        return lookup;
+      };
+
+      const hydrateFeedLabels = (items, lookup) =>
+        (items || []).map((item) => {
+          const key = buildItemKey(item);
+          const feed = (key && lookup.get(key)) || "";
+          return { ...item, _feed: feed || item.source || "" };
+        });
+
+      const buildCityFalconUrl = (assetClassId, page = 1) => {
+        const url = new URL(CITYFALCON_API);
+        if (assetClassId && assetClassId !== "all") {
+          url.searchParams.set("asset_class", assetClassId);
+        }
+        url.searchParams.set("page", String(page));
+        return url.toString();
+      };
+
+      const resolveCityFalconList = (payload) => {
+        if (!payload) return [];
+        if (Array.isArray(payload.stories)) return payload.stories;
+        if (Array.isArray(payload.items)) return payload.items;
+        if (Array.isArray(payload.data)) return payload.data;
+        if (Array.isArray(payload.results)) return payload.results;
+        return [];
+      };
+
+      const normalizeCityFalconStory = (item) => {
+        if (!item || typeof item !== "object") return null;
+        const analytics = Array.isArray(item.analytics) ? item.analytics : [];
+        const tags = analytics
+          .map((row) => {
+            if (!row?.entity_name) return null;
+            return {
+              text: row.entity_name,
+              sentiment: Number(row.sentiment ?? 0),
+              type: row.entity_type || "",
+            };
+          })
+          .filter(Boolean);
+        return {
+          title: (item.title || item.headline || "").trim() || "Untitled story",
+          source: item.domain_name || item.source || "CityFalcon",
+          publish_dt: item.publish_time || item.publish_dt || item.published_at || "",
+          publish_time: item.publishTime || item.publish_time || item.publish_dt || item.published_at || "",
+          url: item.story_url || item.url || item.short_url || "#",
+          summary: item.summary || item.description || item.snippet || "",
+          tags,
+          sentiment: Number(item.sentiment ?? analytics[0]?.sentiment ?? 0),
+          score: Number(item.score ?? item.sentiment ?? analytics[0]?.sentiment ?? 0),
+          cf_score: Number(
+            item.cf_score ?? item.story_score ?? item.score ?? item.total_score ?? item.priority_score ?? 0
+          ),
+          image_url:
+            item.image_url ||
+            item.image ||
+            (Array.isArray(item.imageUrls) && item.imageUrls.length ? item.imageUrls[0] : null) ||
+            (Array.isArray(item.images) && item.images.length ? item.images[0] : null) ||
+            null,
+        };
+      };
+
+      const toggleFrontSignalSkeleton = (isLoading) => {
+        if (!frontSignalSkeletonEl || !frontSignalContentEl) return;
+        if (isLoading) {
+          frontSignalSkeletonEl.classList.remove("hidden");
+          frontSignalContentEl.classList.add("hidden");
+        } else {
+          frontSignalSkeletonEl.classList.add("hidden");
+          frontSignalContentEl.classList.remove("hidden");
+        }
+      };
+
+      const updateFrontStatusForStory = (story) => {
+        if (!story) {
+          setFrontStatus("Catalyst Global Macro • unavailable");
+          return;
+        }
+        const ts =
+          story.timeago || formatInsightTime(story.publish_time || story.publish_dt || story.publishTime);
+        const details = ["Catalyst Global Macro"];
+        if (typeof story.cf_score === "number") details.push(`CF ${story.cf_score}`);
+        if (typeof story.score === "number") details.push(`Score ${story.score}`);
+        if (ts) details.push(ts);
+        setFrontStatus(details.join(" • "));
+      };
+
+      const clearFrontSignalTimer = () => {
+        if (frontSignalTimer) {
+          clearInterval(frontSignalTimer);
+          frontSignalTimer = null;
+        }
+      };
+
+      const scheduleFrontSignalRotation = () => {
+        clearFrontSignalTimer();
+        if (frontSignalStories.length <= 1) return;
+        frontSignalTimer = setInterval(() => {
+          showFrontSignalAt(frontSignalIndex + 1);
+        }, FRONT_SIGNAL_ROTATE_MS);
+      };
+
+      const updateFrontSignalDots = () => {
+        if (!frontSignalDotsEl) return;
+        if (frontSignalStories.length <= 1) {
+          frontSignalDotsEl.innerHTML = "";
+          return;
+        }
+        frontSignalDotsEl.innerHTML = frontSignalStories
+          .map(
+            (_, idx) =>
+              `<button class="front-dot ${idx === frontSignalIndex ? "active" : ""}" data-index="${idx}"></button>`
+          )
+          .join("");
+        frontSignalDotsEl.querySelectorAll("button").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const idx = Number(btn.dataset.index);
+            showFrontSignalAt(idx);
+          });
+        });
+      };
+
+      const setFrontControlsState = () => {
+        if (!frontSignalControlsEl) return;
+        const disabled = frontSignalStories.length <= 1;
+        frontSignalControlsEl.classList.toggle("disabled", disabled);
+        frontSignalControlsEl.querySelectorAll("button").forEach((btn) => {
+          btn.disabled = disabled;
+        });
+      };
+
+      const showFrontSignalAt = (index) => {
+        if (!frontSignalStories.length) return;
+        const total = frontSignalStories.length;
+        frontSignalIndex = ((index % total) + total) % total;
+        const story = frontSignalStories[frontSignalIndex];
+        renderFrontSignal(story);
+        updateFrontStatusForStory(story);
+        updateFrontSignalDots();
+        setFrontControlsState();
+        scheduleFrontSignalRotation();
+      };
+
       const initFrontSignalControls = () => {
         if (!frontSignalControlsEl) return;
         frontSignalControlsEl.querySelectorAll(".front-nav").forEach((btn) => {
@@ -2007,3 +3560,4 @@
     </script>
   </body>
 </html>
+  
