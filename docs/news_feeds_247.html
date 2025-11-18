@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara – 24/7 News & Market Catalyst</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <style>
+    :root {
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+      /* Firefox scrollbar */
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.4) transparent;
+    }
+
+    html,body{
+      height:100%;
+    }
+
+    body{
+      background-color:var(--bg-root);
+      color:var(--text-main);
+      padding:16px;
+      overflow:hidden;
+    }
+
+    /* WebKit scrollbar (hitam-transparan) */
+    ::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    ::-webkit-scrollbar-track{
+      background:transparent;
+    }
+    ::-webkit-scrollbar-thumb{
+      background:rgba(0,0,0,0.6);
+      border-radius:4px;
+    }
+
+    .kt-root{
+      height:100%;
+      max-width:1200px;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .kt-title{
+      font-size:var(--fs-title);
+      font-weight:600;
+      letter-spacing:0.04em;
+      color:var(--text-main);
+    }
+
+    .kt-subtitle{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-grid{
+      flex:1;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      min-height:0;
+    }
+
+    .panel{
+      background-color:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .panel-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .panel-header-left{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:0;
+    }
+
+    .panel-header-main{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+    }
+
+    .panel-title{
+      font-size:var(--fs-title);
+      font-weight:500;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+      overflow:hidden;
+    }
+
+    .panel-meta{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .live-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 8px rgba(255,191,0,0.9);
+      flex-shrink:0;
+      animation:livePulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes livePulse{
+      0%,100%{
+        opacity:0.3;
+        transform:scale(0.9);
+      }
+      50%{
+        opacity:1;
+        transform:scale(1.4);
+      }
+    }
+
+    .panel-controls{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      flex-shrink:0;
+    }
+
+    .topic-select{
+      background:#000000;
+      border:1px solid var(--border-soft);
+      border-radius:3px;
+      padding:4px 8px;
+      font-size:var(--fs-body);
+      color:var(--text-main);
+      outline:none;
+      max-width:150px;
+    }
+
+    .topic-select:focus{
+      border-color:var(--accent);
+    }
+
+    .btn-ai{
+      border:none;
+      border-radius:3px;
+      background:var(--accent);
+      color:#000000;
+      padding:4px 10px;
+      font-size:var(--fs-body);
+      font-weight:500;
+      cursor:pointer;
+      white-space:nowrap;
+      transition:background 0.15s ease, transform 0.1s ease;
+    }
+
+    .btn-ai:hover{
+      background:#ffd84d;
+      transform:translateY(-0.5px);
+    }
+
+    .btn-ai:active{
+      transform:translateY(0.5px) scale(0.99);
+    }
+
+    .panel-footer{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .news-list-wrapper{
+      border:1px solid var(--border-soft);
+      border-radius:3px;
+      padding:6px;
+      margin-top:2px;
+      flex:1;
+      min-height:0;
+      background:#000000;
+    }
+
+    .news-list{
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      max-height:100%;
+      overflow-y:auto;
+      padding-right:2px;
+    }
+
+    .news-item{
+      border:1px solid #1a1a1a;
+      border-radius:3px;
+      padding:6px 8px;
+      background:linear-gradient(135deg, #0c0c0c 0%, #101010 60%, #0b0b0b 100%);
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      font-size:var(--fs-body);
+    }
+
+    .news-top-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      gap:6px;
+    }
+
+    .news-top-left{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+
+    .news-time{
+      opacity:0.85;
+    }
+
+    .news-source{
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      font-weight:500;
+      color:var(--accent);
+    }
+
+    .badge{
+      border-radius:999px;
+      padding:2px 6px;
+      font-size:var(--fs-small);
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      border:1px solid rgba(255,255,255,0.12);
+    }
+
+    .badge-high{
+      border-color:rgba(239,68,68,0.7);
+      color:#fca5a5;
+    }
+
+    .badge-medium{
+      border-color:rgba(250,204,21,0.7);
+      color:#facc15;
+    }
+
+    .badge-low{
+      border-color:rgba(52,211,153,0.7);
+      color:#6ee7b7;
+    }
+
+    .news-title{
+      font-size:var(--fs-body);
+      color:var(--text-main);
+      line-height:1.3;
+    }
+
+    .news-tags{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+    }
+
+    .tag-chip{
+      padding:1px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#111111;
+    }
+
+    .empty-state{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      text-align:center;
+      padding:16px 8px;
+    }
+
+    .kt-top-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+    }
+
+    @media (max-width:900px){
+      body{
+        padding:10px;
+        overflow:auto;
+      }
+      .kt-root{
+        height:auto;
+      }
+      .kt-grid{
+        grid-template-columns:1fr;
+      }
+      .news-list-wrapper{
+        max-height:280px;
+      }
+    }
+
+    @media (min-width:901px){
+      .news-list-wrapper{
+        max-height:calc(100vh - 16px - 32px - 56px - 32px); /* kira-kira supaya tidak overflow */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-root">
+    <div class="kt-top-row">
+      <div>
+        <div class="kt-title">Kuantara – News Streams</div>
+        <div class="kt-subtitle">24/7 News &amp; Market Catalyst – siap integrasi Fastbull &amp; TradingEconomics API</div>
+      </div>
+    </div>
+
+    <div class="kt-grid">
+      <!-- PANEL 1: 24/7 News (Fastbull) -->
+      <section class="panel" id="panel-24x7">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="live-dot"></div>
+            <div class="panel-header-main">
+              <div class="panel-title">24/7 News</div>
+              <div class="panel-meta">Source backend: Fastbull API (real-time streaming)</div>
+            </div>
+          </div>
+          <div class="panel-controls">
+            <select class="topic-select" id="topic-24x7">
+              <!-- diisi via JS -->
+            </select>
+            <button class="btn-ai" data-panel="24x7" id="ai-24x7">Recap with AI</button>
+          </div>
+        </div>
+
+        <div class="news-list-wrapper">
+          <ul class="news-list" id="news-list-24x7">
+            <!-- dummy news via JS -->
+          </ul>
+          <div class="empty-state" id="empty-24x7" style="display:none;">
+            Tidak ada headline untuk topik ini. Backend Fastbull bisa mengisi stream di sini.
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          • Dummy mode: data akan diganti oleh response Fastbull (REST/WebSocket) berdasarkan topik &amp; filter waktu.<br/>
+          • Pastikan backend mengirim array berita ke fungsi <code>updateFastbullNews()</code>.
+        </div>
+      </section>
+
+      <!-- PANEL 2: Market Catalyst (TradingEconomics) -->
+      <section class="panel" id="panel-catalyst">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-header-main">
+              <div class="panel-title">Market Catalyst</div>
+              <div class="panel-meta">Source backend: TradingEconomics (events &amp; macro catalysts)</div>
+            </div>
+          </div>
+          <div class="panel-controls">
+            <select class="topic-select" id="topic-catalyst">
+              <!-- diisi via JS -->
+            </select>
+            <button class="btn-ai" data-panel="catalyst" id="ai-catalyst">Recap with AI</button>
+          </div>
+        </div>
+
+        <div class="news-list-wrapper">
+          <ul class="news-list" id="news-list-catalyst">
+            <!-- dummy news via JS -->
+          </ul>
+          <div class="empty-state" id="empty-catalyst" style="display:none;">
+            Belum ada katalis untuk topik ini. TradingEconomics backend bisa mengisi event di sini.
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          • Dummy mode: data akan diganti oleh response TradingEconomics (REST/WebSocket).<br/>
+          • Backend cukup panggil <code>updateTradingEconomicsNews()</code> dengan payload JSON terbaru.
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ===== Dummy Topics =====
+    const FASTBULL_TOPICS = [
+      { value:"all", label:"All Streams" },
+      { value:"fx", label:"FX & Rates" },
+      { value:"equities", label:"Equities" },
+      { value:"crypto", label:"Crypto" },
+      { value:"commodities", label:"Commodities" }
+    ];
+
+    const TE_TOPICS = [
+      { value:"all", label:"All Catalysts" },
+      { value:"cpi", label:"Inflation (CPI/PPI)" },
+      { value:"gdp", label:"Growth & GDP" },
+      { value:"labor", label:"Labor Market" },
+      { value:"centralbank", label:"Central Bank & Rates" },
+      { value:"fiscal", label:"Fiscal & Debt" }
+    ];
+
+    // ===== Dummy Data (Bisa diganti backend) =====
+    const dummyFastbullNews = [
+      {
+        id:"fb-1",
+        time:"13:47",
+        source:"Fastbull",
+        label:"Breaking",
+        impact:"high",
+        topic:"fx",
+        title:"USD Menguat Setelah Data CPI AS Di Atas Ekspektasi; Treasuries Jatuh",
+        tags:["FX","Macro","US CPI","USD Index"]
+      },
+      {
+        id:"fb-2",
+        time:"13:32",
+        source:"Fastbull",
+        label:"Market Wrap",
+        impact:"medium",
+        topic:"equities",
+        title:"Saham Teknologi Memimpin Reli Sesi Asia, Fokus Bergeser ke Earnings Big Tech",
+        tags:["Equities","Tech","Earnings","Asia Session"]
+      },
+      {
+        id:"fb-3",
+        time:"13:05",
+        source:"Fastbull",
+        label:"Flow Watch",
+        impact:"low",
+        topic:"crypto",
+        title:"Aliran Dana Masuk ke Bitcoin ETF Melambat, Altcoin Rotation Mulai Terlihat",
+        tags:["Crypto","ETF Flows","BTC","Altcoins"]
+      },
+      {
+        id:"fb-4",
+        time:"12:50",
+        source:"Fastbull",
+        label:"Commodities",
+        impact:"medium",
+        topic:"commodities",
+        title:"Harga Minyak Turun Tipis Setelah Data Persediaan AS, Fokus ke OPEC Meeting",
+        tags:["Oil","OPEC","Inventory","Energy"]
+      }
+    ];
+
+    const dummyTENews = [
+      {
+        id:"te-1",
+        time:"13:30",
+        source:"TradingEconomics",
+        label:"High Impact",
+        impact:"high",
+        topic:"cpi",
+        title:"AS Merilis CPI Inti YoY Di Atas Konsensus – Tekanan Inflasi Masih Melekat",
+        tags:["US","Inflation","CPI Core","Macro Catalyst"]
+      },
+      {
+        id:"te-2",
+        time:"12:00",
+        source:"TradingEconomics",
+        label:"Growth",
+        impact:"medium",
+        topic:"gdp",
+        title:"Proyeksi IMF: Pertumbuhan Global 2026 Direvisi Turun, Risiko Resesi Masih Ada",
+        tags:["IMF","Global GDP","Growth Outlook"]
+      },
+      {
+        id:"te-3",
+        time:"11:15",
+        source:"TradingEconomics",
+        label:"Labor",
+        impact:"medium",
+        topic:"labor",
+        title:" Klaim Pengangguran AS Sedikit Naik, Namun Pasar Tenaga Kerja Masih Ketat",
+        tags:["US Labor","Initial Claims","Employment"]
+      },
+      {
+        id:"te-4",
+        time:"10:30",
+        source:"TradingEconomics",
+        label:"Fiscal",
+        impact:"high",
+        topic:"fiscal",
+        title:"Defisit Anggaran AS Melebar, Rasio Debt/GDP Mendekati Rekor Baru",
+        tags:["US Fiscal","Debt","Budget Deficit"]
+      },
+      {
+        id:"te-5",
+        time:"09:45",
+        source:"TradingEconomics",
+        label:"Central Bank",
+        impact:"high",
+        topic:"centralbank",
+        title:"Komentar The Fed: 'Higher for Longer' Masih Jadi Base Case Pasar",
+        tags:["Fed","Rates","Monetary Policy"]
+      }
+    ];
+
+    // ===== Utility: Render Topic Select =====
+    function populateTopics(selectEl, topics){
+      selectEl.innerHTML = "";
+      topics.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t.value;
+        opt.textContent = t.label;
+        selectEl.appendChild(opt);
+      });
+    }
+
+    // ===== Utility: Render News List =====
+    function renderNewsList(containerEl, emptyEl, items){
+      if (!containerEl || !emptyEl) return;
+
+      containerEl.innerHTML = "";
+
+      if (!items || items.length === 0){
+        emptyEl.style.display = "block";
+        return;
+      }
+
+      emptyEl.style.display = "none";
+
+      items.forEach(item => {
+        const li = document.createElement("li");
+        li.className = "news-item";
+        li.dataset.id = item.id || "";
+        li.dataset.topic = item.topic || "all";
+
+        const impactClass =
+          item.impact === "high" ? "badge-high" :
+          item.impact === "medium" ? "badge-medium" :
+          "badge-low";
+
+        li.innerHTML = `
+          <div class="news-top-row">
+            <div class="news-top-left">
+              <span class="news-time">${item.time || "--:--"}</span>
+              <span class="news-source">${item.source || ""}</span>
+              <span class="badge ${impactClass}">
+                ${item.label || "Update"}
+              </span>
+            </div>
+          </div>
+          <div class="news-title">
+            ${item.title || "Untitled headline"}
+          </div>
+          <div class="news-tags">
+            ${(item.tags || []).map(t => `<span class="tag-chip">${t}</span>`).join("")}
+          </div>
+        `;
+        containerEl.appendChild(li);
+      });
+    }
+
+    // ===== Filter by Topic =====
+    function filterByTopic(allItems, topicValue){
+      if (!topicValue || topicValue === "all") return allItems;
+      return allItems.filter(n => (n.topic || "all") === topicValue);
+    }
+
+    // ===== AI Recap Stub =====
+    function handleAiRecap(panel){
+      // Di sini nanti bisa dipasang call ke AI backend (misal: Kuantara AI / OpenAI / dll)
+      // Untuk sekarang, hanya console.log agar aman dan tidak "macet".
+      console.log(`[AI Recap] Panel: ${panel} – siap kirim payload headline ke backend AI.`);
+      alert(`Recap with AI – panel ${panel.toUpperCase()}.\n\nIntegrasikan ke backend AI kamu di fungsi handleAiRecap().`);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const topic24 = document.getElementById("topic-24x7");
+      const topicCat = document.getElementById("topic-catalyst");
+      const list24  = document.getElementById("news-list-24x7");
+      const listCat = document.getElementById("news-list-catalyst");
+      const empty24 = document.getElementById("empty-24x7");
+      const emptyCat= document.getElementById("empty-catalyst");
+
+      // Isi dropdown topik
+      populateTopics(topic24, FASTBULL_TOPICS);
+      populateTopics(topicCat, TE_TOPICS);
+
+      // Render awal (All)
+      renderNewsList(list24, empty24, dummyFastbullNews);
+      renderNewsList(listCat, emptyCat, dummyTENews);
+
+      // Perubahan topik 24/7
+      topic24.addEventListener("change", () => {
+        const selected = topic24.value;
+        const filtered = filterByTopic(dummyFastbullNews, selected);
+        renderNewsList(list24, empty24, filtered);
+      });
+
+      // Perubahan topik Market Catalyst
+      topicCat.addEventListener("change", () => {
+        const selected = topicCat.value;
+        const filtered = filterByTopic(dummyTENews, selected);
+        renderNewsList(listCat, emptyCat, filtered);
+      });
+
+      // Tombol AI
+      document.getElementById("ai-24x7").addEventListener("click", () => handleAiRecap("24/7 News"));
+      document.getElementById("ai-catalyst").addEventListener("click", () => handleAiRecap("Market Catalyst"));
+    });
+
+    // ====== PUBLIC HOOKS UNTUK BACKEND (bisa dipanggil dari script lain) ======
+    // Fastbull (24/7 News)
+    function updateFastbullNews(newsArray){
+      // newsArray: [{id,time,source,label,impact,topic,title,tags:[...]}]
+      const list = document.getElementById("news-list-24x7");
+      const empty = document.getElementById("empty-24x7");
+      renderNewsList(list, empty, newsArray || []);
+    }
+
+    // TradingEconomics (Market Catalyst)
+    function updateTradingEconomicsNews(newsArray){
+      const list = document.getElementById("news-list-catalyst");
+      const empty = document.getElementById("empty-catalyst");
+      renderNewsList(list, empty, newsArray || []);
+    }
+  </script>
+</body>
+</html>
