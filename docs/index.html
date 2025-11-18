@@ -324,10 +324,12 @@
       overflow:hidden;
       z-index:3000;
     }
+
+    /* HEADER & FOOTER DIHILANGKAN AGAR IFRAME FULL SPACE */
     .kt-ai-panel-header{
       padding:8px 10px;
       border-bottom:1px solid var(--border-soft);
-      display:flex;
+      display:none;              /* <== HIDDEN */
       align-items:center;
       justify-content:space-between;
       font-size:11px;
@@ -339,19 +341,20 @@
     .kt-ai-panel-close{cursor:pointer;font-size:12px;color:var(--text-muted);padding:2px 6px;border-radius:3px}
 
     .kt-ai-panel-body{
-      padding:8px 10px;
+      padding:0;                 /* 0 padding supaya iframe benar-benar full */
       font-size:11px;
       color:var(--text-muted);
       display:flex;
       flex-direction:column;
-      gap:6px;
-      flex:1;                 /* BODY MENGISI PANEL */
-      overflow:auto;          /* JIKA KONTEN PANJANG, SCROLL DI DALAM BODY */
+      gap:0;
+      flex:1;                    /* BODY MENGISI SELURUH PANEL */
+      overflow:auto;             /* SCROLLING DI DALAM PANEL */
     }
+
     .kt-ai-footer{
       padding:6px 10px 8px;
       border-top:1px solid var(--border-soft);
-      display:flex;
+      display:none;              /* <== HIDDEN */
       justify-content:flex-end;
       gap:6px;
       flex:0 0 auto;
@@ -1020,51 +1023,36 @@
           aiTitle.textContent = "Kuantara AI Assistant";
           aiSubtitle.textContent = "Kuantara AI terintegrasi langsung di dalam panel ini.";
           aiBody.innerHTML =
-            '<div style="display:flex;flex-direction:column;height:100%;">' +
-              '<div style="flex:1;border:1px solid var(--border-soft);border-radius:6px;overflow:hidden;min-height:260px;">' +
-                '<iframe src="'+KUANTARA_AI_URL+'" ' +
-                'title="Kuantara AI" loading="lazy" style="width:100%;height:100%;border:0;"></iframe>' +
-              '</div>' +
+            '<div style="flex:1;min-height:100%;border:none;overflow:hidden;">' +
+              '<iframe src="'+KUANTARA_AI_URL+'" ' +
+              'title="Kuantara AI" loading="lazy" style="width:100%;height:100%;border:0;display:block;"></iframe>' +
             '</div>';
-          aiFooter.innerHTML =
-            '<button class="kt-ai-btn" disabled>History</button>' +
-            '<button class="kt-ai-btn primary" disabled>Ask AI</button>';
+          aiFooter.innerHTML = '';
           aiPanel.style.display="flex";
           if(activeBottom==="home") showAllBars();
         }else if(mode==="mini"){
           aiTitle.textContent = "Mini Chart";
           aiSubtitle.textContent = "Chart kecil untuk quick view XAUUSD.";
           aiBody.innerHTML =
-            '<div style="display:flex;flex-direction:column;height:100%;">' +
-              '<div style="flex:1;border:1px solid var(--border-soft);border-radius:6px;overflow:hidden;min-height:260px;">' +
-                '<iframe src="'+MINI_CHART_URL+'" ' +
-                'title="Mini Chart" loading="lazy" style="width:100%;height:100%;border:0;"></iframe>' +
-              '</div>' +
+            '<div style="flex:1;min-height:100%;border:none;overflow:hidden;">' +
+              '<iframe src="'+MINI_CHART_URL+'" ' +
+              'title="Mini Chart" loading="lazy" style="width:100%;height:100%;border:0;display:block;"></iframe>' +
             '</div>';
-          aiFooter.innerHTML = '<button class="kt-ai-btn" disabled>Detach</button>';
+          aiFooter.innerHTML = '';
           aiPanel.style.display="flex";
           if(activeBottom==="home") showAllBars();
         }else if(mode==="notes"){
           aiTitle.textContent = "Notes";
           aiSubtitle.textContent = "Catatan cepat untuk ide trade dan macro view.";
           aiBody.innerHTML =
-            '<textarea id="kt-notes-area" style="width:100%;flex:1;min-height:180px;background:#111;border:1px solid var(--border-soft);border-radius:6px;color:var(--text-main);padding:6px;font-size:11px;resize:vertical;" placeholder="Tulis catatan di sini..."></textarea>';
-          aiFooter.innerHTML = '<button class="kt-ai-btn" id="kt-notes-clear">Clear</button>';
+            '<textarea id="kt-notes-area" style="width:100%;flex:1;min-height:100%;background:#111;border:none;border-radius:0;color:var(--text-main);padding:6px;font-size:11px;resize:none;box-sizing:border-box;" placeholder="Tulis catatan di sini..."></textarea>';
+          aiFooter.innerHTML = '';
 
-          const clearBtn = document.getElementById("kt-notes-clear");
           const notesArea = document.getElementById("kt-notes-area");
           if(window.localStorage){
             const saved = localStorage.getItem("kuantara_notes");
             if(saved) notesArea.value = saved;
             notesArea.addEventListener("input", ()=>localStorage.setItem("kuantara_notes", notesArea.value));
-            clearBtn.addEventListener("click", ()=>{
-              notesArea.value="";
-              localStorage.removeItem("kuantara_notes");
-            });
-          }else{
-            clearBtn.addEventListener("click", ()=>{
-              if(notesArea) notesArea.value="";
-            });
           }
           aiPanel.style.display="flex";
           if(activeBottom==="home") showAllBars();
@@ -1072,29 +1060,25 @@
           aiTitle.textContent = "Signals";
           aiSubtitle.textContent = "Ringkasan sinyal trading & alert utama.";
           aiBody.innerHTML =
-            '<div style="font-size:10px;line-height:1.5;color:var(--text-muted);">' +
+            '<div style="flex:1;min-height:100%;padding:8px 10px;box-sizing:border-box;font-size:10px;line-height:1.5;color:var(--text-muted);overflow:auto;">' +
             'Panel ini akan menampilkan sinyal dari sistem Kuantara (algo, screener, atau alert eksternal). ' +
             'Integrasi backend bisa diarahkan untuk push sinyal terbaru ke area ini secara realtime.' +
             '</div>';
-          aiFooter.innerHTML =
-            '<button class="kt-ai-btn" disabled>Refresh</button>' +
-            '<button class="kt-ai-btn primary" disabled>Details</button>';
+          aiFooter.innerHTML = '';
           aiPanel.style.display="flex";
           if(activeBottom==="home") showAllBars();
         }else if(mode==="group"){
           aiTitle.textContent = "Group Chat";
           aiSubtitle.textContent = "Chat antar user Kuantara Terminal (prototype).";
           aiBody.innerHTML =
-            '<div style="font-size:10px;line-height:1.5;color:var(--text-muted);">' +
+            '<div style="flex:1;min-height:100%;padding:8px 10px;box-sizing:border-box;font-size:10px;line-height:1.5;color:var(--text-muted);overflow:auto;">' +
               'Fitur ini didesain sebagai ruang obrolan realtime antar pengguna Kuantara Terminal. ' +
               'Integrasi backend (Telegram/Discord/WebSocket) bisa dihubungkan ke panel ini di tahap berikutnya.' +
-            '</div>' +
-            '<div style="margin-top:8px;padding:6px 8px;border-radius:6px;border:1px dashed var(--border-soft);font-size:10px;color:var(--text-muted);">' +
+              '<div style="margin-top:8px;padding:6px 8px;border-radius:6px;border:1px dashed var(--border-soft);font-size:10px;color:var(--text-muted);">' +
               'Prototype: belum terhubung ke server chat. Di versi production, area ini akan menampilkan pesan, daftar user online, dan input box untuk mengirim chat.' +
+              '</div>' +
             '</div>';
-          aiFooter.innerHTML =
-            '<button class="kt-ai-btn" disabled>Connect</button>' +
-            '<button class="kt-ai-btn primary" disabled>Send</button>';
+          aiFooter.innerHTML = '';
           aiPanel.style.display="flex";
           if(activeBottom==="home") showAllBars();
         }
