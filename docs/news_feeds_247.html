@@ -1,15 +1,13 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
+<html lang="id"><head>
   <meta charset="UTF-8">
-  <title>Kuantara – 24/7 News & Market Catalyst</title>
+  <title>Kuantara – 24/7 Headlines &amp; Articles</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
 
   <style>
-    :root {
+    :root{
       --bg-root:#000000;
       --bg-main:#111111;
       --border-soft:#2b2b2b;
@@ -27,581 +25,1129 @@
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family:"Fira Code",monospace !important;
-      /* Firefox scrollbar */
+      font-family:"Fira Code",monospace!important;
+      /* Scrollbar Firefox */
       scrollbar-width:thin;
-      scrollbar-color:rgba(0,0,0,0.4) transparent;
+      scrollbar-color:rgba(0,0,0,0.6) transparent;
+    }
+
+    /* Scrollbar WebKit */
+    *::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track{
+      background:transparent;
+    }
+    *::-webkit-scrollbar-thumb{
+      background:rgba(0,0,0,0.7);
+      border-radius:3px;
     }
 
     html,body{
       height:100%;
-      width:100%;
-      overflow-x:hidden; /* anti melebar samping */
+      background:#000000;
+      color:var(--text-main);
     }
 
     body{
-      background-color:var(--bg-root);
-      color:var(--text-main);
-      padding:12px;
-      overflow-y:auto;
-    }
-
-    /* WebKit scrollbar (hitam-transparan) */
-    ::-webkit-scrollbar{
-      width:6px;
-      height:6px;
-    }
-    ::-webkit-scrollbar-track{
-      background:transparent;
-    }
-    ::-webkit-scrollbar-thumb{
-      background:rgba(0,0,0,0.6);
-      border-radius:4px;
+      width:100%;
+      max-width:100%;
+      overflow-x:hidden;
     }
 
     .kt-root{
       width:100%;
-      max-width:100%;          /* cegah > lebar layar */
+      max-width:1200px;
       margin:0 auto;
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
+      padding:16px;
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    .kt-title{
+      font-size:var(--fs-title);
+      font-weight:600;
+      margin-bottom:12px;
+      color:var(--text-main);
+      letter-spacing:0.02em;
     }
 
     .kt-grid{
-      width:100%;
       display:grid;
-      /* responsive grid, kolom fleksibel */
-      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      grid-template-columns:repeat(2,minmax(0,1fr));
       gap:12px;
-      min-height:0;
+      width:100%;
     }
 
-    .panel{
-      background-color:var(--bg-main);
+    @media (max-width:840px){
+      .kt-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .kt-panel{
+      background:var(--bg-main);
       border:1px solid var(--border-soft);
       border-radius:4px;
-      padding:12px;
+      padding:12px 14px;
       display:flex;
       flex-direction:column;
-      gap:8px;
+      min-width:0;
       min-height:0;
-      max-width:100%; /* panel tidak boleh lebih lebar dari kolom */
     }
 
-    .panel-header{
+    .kt-panel-header{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:8px;
-      min-width:0;
+      margin-bottom:8px;
     }
 
-    .panel-header-left{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      min-width:0;
-    }
-
-    .panel-header-main{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      min-width:0;
-    }
-
-    .panel-title{
-      font-size:var(--fs-title);
-      font-weight:500;
+    .kt-panel-title{
+      font-size:var(--fs-subtitle);
+      font-weight:600;
+      color:var(--text-main);
       white-space:nowrap;
-      text-overflow:ellipsis;
       overflow:hidden;
+      text-overflow:ellipsis;
     }
 
-    .panel-meta{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .live-dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 8px rgba(255,191,0,0.9);
-      flex-shrink:0;
-      animation:livePulse 1.2s ease-in-out infinite;
-    }
-
-    @keyframes livePulse{
-      0%,100%{
-        opacity:0.3;
-        transform:scale(0.9);
-      }
-      50%{
-        opacity:1;
-        transform:scale(1.4);
-      }
-    }
-
-    .panel-controls{
+    .kt-panel-controls{
       display:flex;
       align-items:center;
       gap:6px;
-      flex-shrink:0;
+      min-width:0;
     }
 
-    .topic-select{
+    .kt-select{
       background:#000000;
       border:1px solid var(--border-soft);
-      border-radius:3px;
-      padding:4px 8px;
-      font-size:var(--fs-body);
       color:var(--text-main);
+      font-size:var(--fs-small);
+      padding:4px 6px;
+      border-radius:3px;
       outline:none;
       max-width:150px;
+      width:100%;
+      appearance:none;
+      -moz-appearance:none;
+      -webkit-appearance:none;
     }
 
-    .topic-select:focus{
+    .kt-select:focus{
       border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(255,191,0,0.25);
     }
 
-    .btn-ai{
+    .kt-btn{
       border:none;
+      outline:none;
+      cursor:pointer;
+      font-size:var(--fs-small);
+      padding:5px 10px;
       border-radius:3px;
       background:var(--accent);
       color:#000000;
-      padding:4px 10px;
-      font-size:var(--fs-body);
-      font-weight:500;
-      cursor:pointer;
       white-space:nowrap;
-      transition:background 0.15s ease, transform 0.1s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      flex-shrink:0;
     }
 
-    .btn-ai:hover{
-      background:#ffd84d;
-      transform:translateY(-0.5px);
+    .kt-btn span{
+      font-size:10px;
     }
 
-    .btn-ai:active{
-      transform:translateY(0.5px) scale(0.99);
+    .kt-btn:hover{
+      filter:brightness(1.05);
     }
 
-    .panel-footer{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      word-wrap:break-word;
+    .kt-btn:active{
+      filter:brightness(0.95);
     }
 
-    .news-list-wrapper{
-      border:1px solid var(--border-soft);
-      border-radius:3px;
-      padding:6px;
-      margin-top:2px;
+    .kt-panel-body{
+      border-top:1px solid var(--border-soft);
+      margin-top:8px;
+      padding-top:8px;
+      display:flex;
+      flex-direction:column;
       flex:1;
       min-height:0;
-      background:#000000;
-      display:flex;
-      flex-direction:column;
-      max-width:100%;
     }
 
-    .news-list{
-      list-style:none;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      max-height:100%;
-      overflow-y:auto;
-      padding-right:2px;
-    }
-
-    .news-item{
-      border:1px solid #1a1a1a;
-      border-radius:3px;
-      padding:6px 8px;
-      background:linear-gradient(135deg, #0c0c0c 0%, #101010 60%, #0b0b0b 100%);
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      font-size:var(--fs-body);
-    }
-
-    .news-top-row{
+    .kt-meta-row{
       display:flex;
       justify-content:space-between;
-      align-items:center;
+      gap:8px;
+      margin-bottom:6px;
       font-size:var(--fs-small);
       color:var(--text-muted);
-      gap:6px;
     }
 
-    .news-top-left{
+    .kt-meta-left,
+    .kt-meta-right{
       display:flex;
-      align-items:center;
-      gap:6px;
       flex-wrap:wrap;
+      gap:4px 6px;
+      align-items:center;
     }
 
-    .news-time{
-      opacity:0.85;
-    }
-
-    .news-source{
-      text-transform:uppercase;
-      letter-spacing:0.06em;
-      font-weight:500;
-      color:var(--accent);
-    }
-
-    .badge{
+    .kt-pill{
       border-radius:999px;
       padding:2px 6px;
-      font-size:var(--fs-small);
-      text-transform:uppercase;
-      letter-spacing:0.06em;
-      border:1px solid rgba(255,255,255,0.12);
-    }
-
-    .badge-high{
-      border-color:rgba(239,68,68,0.7);
-      color:#fca5a5;
-    }
-
-    .badge-medium{
-      border-color:rgba(250,204,21,0.7);
-      color:#facc15;
-    }
-
-    .badge-low{
-      border-color:rgba(52,211,153,0.7);
-      color:#6ee7b7;
-    }
-
-    .news-title{
-      font-size:var(--fs-body);
-      color:var(--text-main);
-      line-height:1.3;
-    }
-
-    .news-tags{
+      border:1px solid var(--border-soft);
       font-size:var(--fs-small);
       color:var(--text-muted);
-      display:flex;
-      flex-wrap:wrap;
-      gap:4px;
     }
 
-    .tag-chip{
-      padding:1px 6px;
-      border-radius:999px;
+    .kt-counter{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-feed{
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      overflow-y:auto;
+      /* tinggi adaptif: kira-kira penuh tapi tidak bikin scroll horizontal */
+      max-height:calc(100vh - 150px);
+    }
+
+    .kt-item{
       border:1px solid var(--border-soft);
+      border-radius:3px;
+      padding:8px 8px;
       background:#111111;
     }
 
-    .empty-state{
+    .kt-item-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
+      margin-bottom:4px;
+    }
+
+    .kt-item-source{
       font-size:var(--fs-small);
       color:var(--text-muted);
-      text-align:center;
-      padding:16px 8px;
     }
 
-    /* Mobile tweaks */
-    @media (max-width:900px){
-      body{
-        padding:10px;
-      }
-      .kt-grid{
-        grid-template-columns:1fr; /* paksa 1 kolom di mobile */
-      }
+    .kt-item-tag{
+      font-size:var(--fs-small);
+      color:var(--accent);
+    }
+
+    .kt-item-title{
+      font-size:var(--fs-body);
+      margin-bottom:4px;
+      color:var(--text-main);
+    }
+
+    .kt-item-meta{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-item-time{
+      white-space:nowrap;
+    }
+
+    .kt-item-impact{
+      text-align:right;
+      white-space:nowrap;
+    }
+
+    .kt-empty{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      padding:6px 2px;
+      text-align:center;
     }
   </style>
-</head>
+<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.immersive-translate-attach-loading::after {
+  content: " ";
+
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-2000%, -50%);
+  z-index: 100;
+}
+
+.immersive-translate-loading-spinner {
+  vertical-align: middle !important;
+  width: 10px !important;
+  height: 10px !important;
+  display: inline-block !important;
+  margin: 0 4px !important;
+  border: 2px rgba(221, 244, 255, 0.6) solid !important;
+  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+}
+
+@-webkit-keyframes immersive-translate-loading-animation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@keyframes immersive-translate-loading-animation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.immersive-translate-input-loading {
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+}
+
+@keyframes immersiveTranslateShadowRolling {
+  0% {
+    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  12% {
+    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  25% {
+    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  36% {
+    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
+      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  50% {
+    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
+      110px 0 var(--loading-color), 100px 0 var(--loading-color);
+  }
+
+  62% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
+      120px 0 var(--loading-color), 110px 0 var(--loading-color);
+  }
+
+  75% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      130px 0 var(--loading-color), 120px 0 var(--loading-color);
+  }
+
+  87% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
+  }
+
+  100% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.immersive-translate-toast {
+  display: flex;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  right: 0;
+  top: 1%;
+  width: fit-content;
+  padding: 12px 20px;
+  margin: auto;
+  overflow: auto;
+  background: #fef6f9;
+  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
+  font-size: 15px;
+  border-radius: 8px;
+  color: #333;
+}
+
+.immersive-translate-toast-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.immersive-translate-toast-hidden {
+  margin: 0 20px 0 72px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.immersive-translate-toast-close {
+  color: #666666;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-toast {
+    top: 0;
+    padding: 12px 0px 0 10px;
+  }
+  .immersive-translate-toast-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .immersive-translate-toast-hidden {
+    margin: 10px auto;
+  }
+}
+
+.immersive-translate-dialog {
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  display: flex;
+  width: 300px;
+  flex-direction: column;
+  align-items: center;
+  font-size: 15px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: fit-content;
+  border-radius: 20px;
+  background-color: #fff;
+}
+
+.immersive-translate-modal {
+  display: none;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  font-size: 15px;
+}
+
+.immersive-translate-modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 40px 24px 24px;
+  border-radius: 12px;
+  width: 350px;
+  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
+    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  position: relative;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-content {
+    margin: 25% auto !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .immersive-translate-modal-content {
+    width: 80vw !important;
+    margin: 20vh auto !important;
+    padding: 20px 12px 12px !important;
+  }
+
+  .immersive-translate-modal-title {
+    font-size: 14px !important;
+  }
+
+  .immersive-translate-modal-body {
+    font-size: 13px !important;
+    max-height: 60vh !important;
+  }
+
+  .immersive-translate-btn {
+    font-size: 13px !important;
+    padding: 8px 16px !important;
+    margin: 0 4px !important;
+  }
+
+  .immersive-translate-modal-footer {
+    gap: 6px !important;
+    margin-top: 16px !important;
+  }
+}
+
+.immersive-translate-modal .immersive-translate-modal-content-in-input {
+  max-width: 500px;
+}
+.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
+  text-align: left;
+  max-height: unset;
+}
+
+.immersive-translate-modal-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.immersive-translate-modal-body {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+  margin-top: 24px;
+  word-break: break-all;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-body {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+}
+
+.immersive-translate-close {
+  color: #666666;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.immersive-translate-close:hover,
+.immersive-translate-close:focus {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.immersive-translate-modal-footer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.immersive-translate-btn {
+  width: fit-content;
+  color: #fff;
+  background-color: #ea4c89;
+  border: none;
+  font-size: 14px;
+  margin: 0 8px;
+  padding: 9px 30px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.immersive-translate-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.immersive-translate-btn:hover {
+  background-color: #f082ac;
+}
+.immersive-translate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.immersive-translate-btn:disabled:hover {
+  background-color: #ea4c89;
+}
+
+.immersive-translate-link-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: none;
+  cursor: pointer;
+  height: 30px;
+  line-height: 30px;
+}
+
+.immersive-translate-cancel-btn {
+  /* gray color */
+  background-color: rgb(89, 107, 120);
+}
+
+.immersive-translate-cancel-btn:hover {
+  background-color: hsl(205, 20%, 32%);
+}
+
+.immersive-translate-action-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: 1px solid #ea4c89;
+}
+
+.immersive-translate-btn svg {
+  margin-right: 5px;
+}
+
+.immersive-translate-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-primary-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-modal input[type="radio"] {
+  margin: 0 6px;
+  cursor: pointer;
+}
+
+.immersive-translate-modal label {
+  cursor: pointer;
+}
+
+.immersive-translate-close-action {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  cursor: pointer;
+}
+
+.imt-image-status {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 16px !important;
+}
+.imt-image-status img,
+.imt-image-status svg,
+.imt-img-loading {
+  width: 28px !important;
+  height: 28px !important;
+  margin: 0 0 8px 0 !important;
+  min-height: 28px !important;
+  min-width: 28px !important;
+  position: relative !important;
+}
+.imt-img-loading {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
+  background-size: 28px 28px;
+  animation: image-loading-rotate 1s linear infinite !important;
+}
+
+.imt-image-status span {
+  color: var(--bg-2, #fff) !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+  font-weight: 500 !important;
+  font-family: "PingFang SC", Arial, sans-serif !important;
+}
+
+.imt-primary-button {
+  display: flex;
+  padding: 12px 80px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: #ea4c89;
+  color: #fff;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  border: none;
+  cursor: pointer;
+}
+
+.imt-retry-text {
+  color: #999;
+  text-align: center;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  cursor: pointer;
+}
+
+.imt-action-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.imt-modal-content-text {
+  text-align: left;
+  color: #333;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+@keyframes image-loading-rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.imt-linear-gradient-text {
+  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.imt-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imt-linear-black-btn {
+  border-radius: 50px;
+  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
+  height: 48px;
+  width: 100%;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: center;
+}
+</style></head>
 <body>
-  <div class="kt-root">
-    <div class="kt-grid">
-      <!-- PANEL 1: 24/7 News (Fastbull) -->
-      <section class="panel" id="panel-24x7">
-        <div class="panel-header">
-          <div class="panel-header-left">
-            <div class="live-dot"></div>
-            <div class="panel-header-main">
-              <div class="panel-title">24/7 News</div>
-            </div>
+<div class="kt-root">
+  
+
+  <div class="kt-grid">
+    <!-- PANEL KIRI: 24/7 HEADLINES (FastBull) -->
+    <section class="kt-panel" id="panel-fastbull">
+      <div class="kt-panel-header">
+        <div class="kt-panel-title">24/7 Headlines</div>
+        <div class="kt-panel-controls">
+          <select class="kt-select" id="fastbull-topic">
+            <option value="all">All topics</option>
+            <option value="macro">Macro &amp; Central Bank</option>
+            <option value="fx">FX &amp; Rates</option>
+            <option value="equities">Equities</option>
+            <option value="commodities">Commodities</option>
+            <option value="crypto">Crypto</option>
+            <option value="geopolitics">Geopolitics</option>
+          </select>
+          <button class="kt-btn" id="fastbull-recap-btn">
+             Recap with AI
+          </button>
+        </div>
+      </div>
+
+      <div class="kt-panel-body">
+        <div class="kt-meta-row">
+          <div class="kt-meta-left">
+            <span class="kt-pill">Source: FastBull</span>
+            <span class="kt-pill">Mode: Headlines</span>
           </div>
-          <div class="panel-controls">
-            <select class="topic-select" id="topic-24x7"></select>
-            <button class="btn-ai" data-panel="24x7" id="ai-24x7">Recap with AI</button>
+          <div class="kt-meta-right">
+            <span class="kt-counter" id="fastbull-count">3 items</span>
           </div>
         </div>
 
-        <div class="news-list-wrapper">
-          <ul class="news-list" id="news-list-24x7"></ul>
-          <div class="empty-state" id="empty-24x7" style="display:none;">
-            Tidak ada headline untuk topik ini. Backend Fastbull bisa mengisi stream di sini.
+        <ul class="kt-feed" id="fastbull-feed"><li class="kt-item" data-id="fb1">
+        <div class="kt-item-header">
+          <div class="kt-item-source">FastBull · Breaking</div>
+          <div class="kt-item-tag">Fed &amp; Rates</div>
+        </div>
+        <div class="kt-item-title">Fed officials flag 'higher for longer' even as inflation cools slightly</div>
+        <div class="kt-item-meta">
+          <span class="kt-item-time">14:05 GMT</span>
+          <span class="kt-item-impact">High impact</span>
+        </div>
+      </li><li class="kt-item" data-id="fb2">
+        <div class="kt-item-header">
+          <div class="kt-item-source">FastBull · FX</div>
+          <div class="kt-item-tag">USD · FX</div>
+        </div>
+        <div class="kt-item-title">Dollar eases as traders rotate into high-beta FX after risk-on overnight</div>
+        <div class="kt-item-meta">
+          <span class="kt-item-time">13:42 GMT</span>
+          <span class="kt-item-impact">Medium impact</span>
+        </div>
+      </li><li class="kt-item" data-id="fb3">
+        <div class="kt-item-header">
+          <div class="kt-item-source">FastBull · Commodities</div>
+          <div class="kt-item-tag">Gold · Commodities</div>
+        </div>
+        <div class="kt-item-title">Gold holds near session highs as real yields pull back from recent peak</div>
+        <div class="kt-item-meta">
+          <span class="kt-item-time">13:10 GMT</span>
+          <span class="kt-item-impact">Medium impact</span>
+        </div>
+      </li></ul>
+      </div>
+    </section>
+
+    <!-- PANEL KANAN: ARTICLES (TradingEconomics) -->
+    <section class="kt-panel" id="panel-te">
+      <div class="kt-panel-header">
+        <div class="kt-panel-title">Articles</div>
+        <div class="kt-panel-controls">
+          <select class="kt-select" id="te-topic">
+            <option value="all">All categories</option>
+            <option value="macro">Macro &amp; Outlook</option>
+            <option value="country">Country Reports</option>
+            <option value="markets">Markets &amp; Assets</option>
+            <option value="policy">Policy &amp; Central Banks</option>
+            <option value="research">Deep Research</option>
+          </select>
+          <button class="kt-btn" id="te-recap-btn">
+             Recap with AI
+          </button>
+        </div>
+      </div>
+
+      <div class="kt-panel-body">
+        <div class="kt-meta-row">
+          <div class="kt-meta-left">
+            <span class="kt-pill">Source: TradingEconomics</span>
+            <span class="kt-pill">Mode: Articles</span>
+          </div>
+          <div class="kt-meta-right">
+            <span class="kt-counter" id="te-count">3 items</span>
           </div>
         </div>
 
-        <div class="panel-footer">
-          • Dummy mode: data akan diganti oleh response Fastbull (REST/WebSocket) berdasarkan topik &amp; filter waktu.<br>
-          • Pastikan backend mengirim array berita ke fungsi <code>updateFastbullNews()</code>.
+        <ul class="kt-feed" id="te-feed"><li class="kt-item" data-id="te1">
+        <div class="kt-item-header">
+          <div class="kt-item-source">TradingEconomics · Global</div>
+          <div class="kt-item-tag">US Outlook</div>
         </div>
-      </section>
-
-      <!-- PANEL 2: Market Catalyst (TradingEconomics) -->
-      <section class="panel" id="panel-catalyst">
-        <div class="panel-header">
-          <div class="panel-header-left">
-            <div class="panel-header-main">
-              <div class="panel-title">Market Catalyst</div>
-            </div>
-          </div>
-          <div class="panel-controls">
-            <select class="topic-select" id="topic-catalyst"></select>
-            <button class="btn-ai" data-panel="catalyst" id="ai-catalyst">Recap with AI</button>
-          </div>
+        <div class="kt-item-title">US Macro Snapshot: Slowing but still resilient growth into next quarter</div>
+        <div class="kt-item-meta">
+          <span class="kt-item-time">Daily Brief</span>
+          <span class="kt-item-impact">Strategy note</span>
         </div>
-
-        <div class="news-list-wrapper">
-          <ul class="news-list" id="news-list-catalyst"></ul>
-          <div class="empty-state" id="empty-catalyst" style="display:none;">
-            Belum ada katalis untuk topik ini. TradingEconomics backend bisa mengisi event di sini.
-          </div>
+      </li><li class="kt-item" data-id="te2">
+        <div class="kt-item-header">
+          <div class="kt-item-source">TradingEconomics · Asia</div>
+          <div class="kt-item-tag">Japan</div>
         </div>
-
-        <div class="panel-footer">
-          • Dummy mode: data akan diganti oleh response TradingEconomics (REST/WebSocket).<br>
-          • Backend cukup panggil <code>updateTradingEconomicsNews()</code> dengan payload JSON terbaru.
+        <div class="kt-item-title">BoJ policy normalization path and implications for global yield curve</div>
+        <div class="kt-item-meta">
+          <span class="kt-item-time">Research</span>
+          <span class="kt-item-impact">In-depth</span>
         </div>
-      </section>
-    </div>
+      </li><li class="kt-item" data-id="te3">
+        <div class="kt-item-header">
+          <div class="kt-item-source">TradingEconomics · Markets</div>
+          <div class="kt-item-tag">Equities</div>
+        </div>
+        <div class="kt-item-title">Global equity indices diverge as tech rotation accelerates</div>
+        <div class="kt-item-meta">
+          <span class="kt-item-time">Market Wrap</span>
+          <span class="kt-item-impact">Review</span>
+        </div>
+      </li></ul>
+      </div>
+    </section>
   </div>
+</div>
 
-  <script>
-    // ===== Dummy Topics =====
-    const FASTBULL_TOPICS = [
-      { value:"all", label:"All Streams" },
-      { value:"fx", label:"FX & Rates" },
-      { value:"equities", label:"Equities" },
-      { value:"crypto", label:"Crypto" },
-      { value:"commodities", label:"Commodities" }
-    ];
+<script>
+  // ========== DUMMY DATA (bisa diganti data real-time dari API) ==========
+  const dummyFastbull = [
+    {
+      id:"fb1",
+      source:"FastBull · Breaking",
+      tag:"Fed & Rates",
+      title:"Fed officials flag 'higher for longer' even as inflation cools slightly",
+      time:"14:05 GMT",
+      topic:"macro",
+      impact:"High impact"
+    },
+    {
+      id:"fb2",
+      source:"FastBull · FX",
+      tag:"USD · FX",
+      title:"Dollar eases as traders rotate into high-beta FX after risk-on overnight",
+      time:"13:42 GMT",
+      topic:"fx",
+      impact:"Medium impact"
+    },
+    {
+      id:"fb3",
+      source:"FastBull · Commodities",
+      tag:"Gold · Commodities",
+      title:"Gold holds near session highs as real yields pull back from recent peak",
+      time:"13:10 GMT",
+      topic:"commodities",
+      impact:"Medium impact"
+    }
+  ];
 
-    const TE_TOPICS = [
-      { value:"all", label:"All Catalysts" },
-      { value:"cpi", label:"Inflation (CPI/PPI)" },
-      { value:"gdp", label:"Growth & GDP" },
-      { value:"labor", label:"Labor Market" },
-      { value:"centralbank", label:"Central Bank & Rates" },
-      { value:"fiscal", label:"Fiscal & Debt" }
-    ];
+  const dummyTE = [
+    {
+      id:"te1",
+      source:"TradingEconomics · Global",
+      tag:"US Outlook",
+      title:"US Macro Snapshot: Slowing but still resilient growth into next quarter",
+      time:"Daily Brief",
+      topic:"macro",
+      impact:"Strategy note"
+    },
+    {
+      id:"te2",
+      source:"TradingEconomics · Asia",
+      tag:"Japan",
+      title:"BoJ policy normalization path and implications for global yield curve",
+      time:"Research",
+      topic:"policy",
+      impact:"In-depth"
+    },
+    {
+      id:"te3",
+      source:"TradingEconomics · Markets",
+      tag:"Equities",
+      title:"Global equity indices diverge as tech rotation accelerates",
+      time:"Market Wrap",
+      topic:"markets",
+      impact:"Review"
+    }
+  ];
 
-    // ===== Dummy Data =====
-    const dummyFastbullNews = [
-      {
-        id:"fb-1",
-        time:"13:47",
-        source:"Fastbull",
-        label:"Breaking",
-        impact:"high",
-        topic:"fx",
-        title:"USD Menguat Setelah Data CPI AS Di Atas Ekspektasi; Treasuries Jatuh",
-        tags:["FX","Macro","US CPI","USD Index"]
-      },
-      {
-        id:"fb-2",
-        time:"13:32",
-        source:"Fastbull",
-        label:"Market Wrap",
-        impact:"medium",
-        topic:"equities",
-        title:"Saham Teknologi Memimpin Reli Sesi Asia, Fokus Bergeser ke Earnings Big Tech",
-        tags:["Equities","Tech","Earnings","Asia Session"]
-      },
-      {
-        id:"fb-3",
-        time:"13:05",
-        source:"Fastbull",
-        label:"Flow Watch",
-        impact:"low",
-        topic:"crypto",
-        title:"Aliran Dana Masuk ke Bitcoin ETF Melambat, Altcoin Rotation Mulai Terlihat",
-        tags:["Crypto","ETF Flows","BTC","Altcoins"]
-      },
-      {
-        id:"fb-4",
-        time:"12:50",
-        source:"Fastbull",
-        label:"Commodities",
-        impact:"medium",
-        topic:"commodities",
-        title:"Harga Minyak Turun Tipis Setelah Data Persediaan AS, Fokus ke OPEC Meeting",
-        tags:["Oil","OPEC","Inventory","Energy"]
-      }
-    ];
+  // ========== RENDER UTIL ==========
 
-    const dummyTENews = [
-      {
-        id:"te-1",
-        time:"13:30",
-        source:"TradingEconomics",
-        label:"High Impact",
-        impact:"high",
-        topic:"cpi",
-        title:"AS Merilis CPI Inti YoY Di Atas Konsensus – Tekanan Inflasi Masih Melekat",
-        tags:["US","Inflation","CPI Core","Macro Catalyst"]
-      },
-      {
-        id:"te-2",
-        time:"12:00",
-        source:"TradingEconomics",
-        label:"Growth",
-        impact:"medium",
-        topic:"gdp",
-        title:"Proyeksi IMF: Pertumbuhan Global 2026 Direvisi Turun, Risiko Resesi Masih Ada",
-        tags:["IMF","Global GDP","Growth Outlook"]
-      },
-      {
-        id:"te-3",
-        time:"11:15",
-        source:"TradingEconomics",
-        label:"Labor",
-        impact:"medium",
-        topic:"labor",
-        title:" Klaim Pengangguran AS Sedikit Naik, Namun Pasar Tenaga Kerja Masih Ketat",
-        tags:["US Labor","Initial Claims","Employment"]
-      },
-      {
-        id:"te-4",
-        time:"10:30",
-        source:"TradingEconomics",
-        label:"Fiscal",
-        impact:"high",
-        topic:"fiscal",
-        title:"Defisit Anggaran AS Melebar, Rasio Debt/GDP Mendekati Rekor Baru",
-        tags:["US Fiscal","Debt","Budget Deficit"]
-      },
-      {
-        id:"te-5",
-        time:"09:45",
-        source:"TradingEconomics",
-        label:"Central Bank",
-        impact:"high",
-        topic:"centralbank",
-        title:"Komentar The Fed: 'Higher for Longer' Masih Jadi Base Case Pasar",
-        tags:["Fed","Rates","Monetary Policy"]
-      }
-    ];
+  function renderFeed(listEl, items){
+    if(!listEl) return;
 
-    function populateTopics(selectEl, topics){
-      selectEl.innerHTML = "";
-      topics.forEach(t => {
-        const opt = document.createElement("option");
-        opt.value = t.value;
-        opt.textContent = t.label;
-        selectEl.appendChild(opt);
-      });
+    listEl.innerHTML = "";
+    if(!items || items.length === 0){
+      listEl.innerHTML = '<li class="kt-empty">Tidak ada data untuk filter ini.</li>';
+      return;
     }
 
-    function renderNewsList(containerEl, emptyEl, items){
-      if (!containerEl || !emptyEl) return;
+    items.forEach(row=>{
+      const li = document.createElement("li");
+      li.className = "kt-item";
+      li.dataset.id = row.id || "";
 
-      containerEl.innerHTML = "";
-
-      if (!items || items.length === 0){
-        emptyEl.style.display = "block";
-        return;
-      }
-
-      emptyEl.style.display = "none";
-
-      items.forEach(item => {
-        const li = document.createElement("li");
-        li.className = "news-item";
-        li.dataset.id = item.id || "";
-        li.dataset.topic = item.topic || "all";
-
-        const impactClass =
-          item.impact === "high" ? "badge-high" :
-          item.impact === "medium" ? "badge-medium" :
-          "badge-low";
-
-        li.innerHTML = `
-          <div class="news-top-row">
-            <div class="news-top-left">
-              <span class="news-time">${item.time || "--:--"}</span>
-              <span class="news-source">${item.source || ""}</span>
-              <span class="badge ${impactClass}">
-                ${item.label || "Update"}
-              </span>
-            </div>
-          </div>
-          <div class="news-title">
-            ${item.title || "Untitled headline"}
-          </div>
-          <div class="news-tags">
-            ${(item.tags || []).map(t => `<span class="tag-chip">${t}</span>`).join("")}
-          </div>
-        `;
-        containerEl.appendChild(li);
-      });
-    }
-
-    function filterByTopic(allItems, topicValue){
-      if (!topicValue || topicValue === "all") return allItems;
-      return allItems.filter(n => (n.topic || "all") === topicValue);
-    }
-
-    function handleAiRecap(panel){
-      console.log(`[AI Recap] Panel: ${panel} – siap kirim payload headline ke backend AI.`);
-      alert(`Recap with AI – panel ${panel.toUpperCase()}.\n\nIntegrasikan ke backend AI kamu di fungsi handleAiRecap().`);
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const topic24 = document.getElementById("topic-24x7");
-      const topicCat = document.getElementById("topic-catalyst");
-      const list24  = document.getElementById("news-list-24x7");
-      const listCat = document.getElementById("news-list-catalyst");
-      const empty24 = document.getElementById("empty-24x7");
-      const emptyCat= document.getElementById("empty-catalyst");
-
-      populateTopics(topic24, FASTBULL_TOPICS);
-      populateTopics(topicCat, TE_TOPICS);
-
-      renderNewsList(list24, empty24, dummyFastbullNews);
-      renderNewsList(listCat, emptyCat, dummyTENews);
-
-      topic24.addEventListener("change", () => {
-        const selected = topic24.value;
-        const filtered = filterByTopic(dummyFastbullNews, selected);
-        renderNewsList(list24, empty24, filtered);
-      });
-
-      topicCat.addEventListener("change", () => {
-        const selected = topicCat.value;
-        const filtered = filterByTopic(dummyTENews, selected);
-        renderNewsList(listCat, emptyCat, filtered);
-      });
-
-      document.getElementById("ai-24x7").addEventListener("click", () => handleAiRecap("24/7 News"));
-      document.getElementById("ai-catalyst").addEventListener("click", () => handleAiRecap("Market Catalyst"));
+      li.innerHTML = `
+        <div class="kt-item-header">
+          <div class="kt-item-source">${row.source || ""}</div>
+          <div class="kt-item-tag">${row.tag || ""}</div>
+        </div>
+        <div class="kt-item-title">${row.title || ""}</div>
+        <div class="kt-item-meta">
+          <span class="kt-item-time">${row.time || ""}</span>
+          <span class="kt-item-impact">${row.impact || ""}</span>
+        </div>
+      `;
+      listEl.appendChild(li);
     });
+  }
 
-    // PUBLIC HOOKS BACKEND
-    function updateFastbullNews(newsArray){
-      const list = document.getElementById("news-list-24x7");
-      const empty = document.getElementById("empty-24x7");
-      renderNewsList(list, empty, newsArray || []);
+  function applyFilterByTopic(data, topic){
+    if(topic === "all") return data;
+    return data.filter(d => (d.topic || "all") === topic);
+  }
+
+  // ========== INTEGRASI & HOOK UNTUK API REAL-TIME ==========
+  // FastBull: panggil ini setelah berhasil fetch data dari backend
+  // dataApi harus sudah di-map ke struktur seperti dummyFastbull di atas
+  function updateFastbullFromApi(dataApi){
+    const listEl = document.getElementById("fastbull-feed");
+    const countEl = document.getElementById("fastbull-count");
+    renderFeed(listEl, dataApi);
+    if(countEl) countEl.textContent = `${dataApi.length} items`;
+  }
+
+  // TradingEconomics: panggil ini setelah fetch artikel dari backend
+  function updateTradingEconomicsFromApi(dataApi){
+    const listEl = document.getElementById("te-feed");
+    const countEl = document.getElementById("te-count");
+    renderFeed(listEl, dataApi);
+    if(countEl) countEl.textContent = `${dataApi.length} items`;
+  }
+
+  // ========== INIT ==========
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const fastbullList = document.getElementById("fastbull-feed");
+    const fastbullCount = document.getElementById("fastbull-count");
+    const fastbullTopic = document.getElementById("fastbull-topic");
+
+    const teList = document.getElementById("te-feed");
+    const teCount = document.getElementById("te-count");
+    const teTopic = document.getElementById("te-topic");
+
+    // Render awal dummy (bisa diganti panggilan ke API)
+    renderFeed(fastbullList, dummyFastbull);
+    if(fastbullCount) fastbullCount.textContent = `${dummyFastbull.length} items`;
+
+    renderFeed(teList, dummyTE);
+    if(teCount) teCount.textContent = `${dummyTE.length} items`;
+
+    // Filter topik FastBull
+    if(fastbullTopic){
+      fastbullTopic.addEventListener("change", () => {
+        const filtered = applyFilterByTopic(dummyFastbull, fastbullTopic.value);
+        renderFeed(fastbullList, filtered);
+        if(fastbullCount) fastbullCount.textContent = `${filtered.length} items`;
+        // nanti bisa trigger refetch ke backend berdasarkan fastbullTopic.value
+      });
     }
 
-    function updateTradingEconomicsNews(newsArray){
-      const list = document.getElementById("news-list-catalyst");
-      const empty = document.getElementById("empty-catalyst");
-      renderNewsList(list, empty, newsArray || []);
+    // Filter topik TradingEconomics
+    if(teTopic){
+      teTopic.addEventListener("change", () => {
+        const filtered = applyFilterByTopic(dummyTE, teTopic.value);
+        renderFeed(teList, filtered);
+        if(teCount) teCount.textContent = `${filtered.length} items`;
+        // nanti bisa trigger refetch ke backend berdasarkan teTopic.value
+      });
     }
-  </script>
-</body>
-</html>
+
+    // Tombol Recap with AI – tinggal hubungkan ke backend AI-mu
+    const fastbullRecapBtn = document.getElementById("fastbull-recap-btn");
+    const teRecapBtn = document.getElementById("te-recap-btn");
+
+    if(fastbullRecapBtn){
+      fastbullRecapBtn.addEventListener("click", () => {
+        // Ambil data yang sedang tampil untuk dijadikan konteks AI
+        const topic = fastbullTopic ? fastbullTopic.value : "all";
+        console.log("[Recap FastBull] topic:", topic);
+        // TODO: kirim ke endpoint AI recap (misal via fetch)
+        // fetch('/api/ai/recap-fastbull', { method:'POST', body:JSON.stringify({ topic }) })
+      });
+    }
+
+    if(teRecapBtn){
+      teRecapBtn.addEventListener("click", () => {
+        const topic = teTopic ? teTopic.value : "all";
+        console.log("[Recap TradingEconomics] topic:", topic);
+        // TODO: kirim ke endpoint AI recap
+        // fetch('/api/ai/recap-te', { method:'POST', body:JSON.stringify({ topic }) })
+      });
+    }
+  });
+</script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+
+</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
