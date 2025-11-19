@@ -1,10 +1,12 @@
-<html lang="id"><head>
+<!DOCTYPE html>
+<html lang="id">
+<head>
   <meta charset="UTF-8">
-  <title>Kuantara – 24/7 News &amp; Market Catalyst</title>
+  <title>Kuantara – 24/7 News & Market Catalyst</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
     :root {
@@ -38,8 +40,8 @@
     body{
       background-color:var(--bg-root);
       color:var(--text-main);
-      padding:16px;
-      overflow:hidden;
+      padding:12px;
+      overflow:auto; /* biar page bisa scroll di semua device */
     }
 
     /* WebKit scrollbar (hitam-transparan) */
@@ -56,7 +58,7 @@
     }
 
     .kt-root{
-      height:100%;
+      min-height:100vh;
       max-width:1200px;
       margin:0 auto;
       display:flex;
@@ -64,22 +66,11 @@
       gap:12px;
     }
 
-    .kt-title{
-      font-size:var(--fs-title);
-      font-weight:600;
-      letter-spacing:0.04em;
-      color:var(--text-main);
-    }
-
-    .kt-subtitle{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
     .kt-grid{
       flex:1;
       display:grid;
-      grid-template-columns:1fr 1fr;
+      /* responsive: auto-fit panel sesuai lebar layar */
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
       gap:12px;
       min-height:0;
     }
@@ -207,6 +198,8 @@
       flex:1;
       min-height:0;
       background:#000000;
+      display:flex;
+      flex-direction:column;
     }
 
     .news-list{
@@ -309,558 +302,25 @@
       padding:16px 8px;
     }
 
-    .kt-top-row{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-end;
-    }
-
+    /* Mobile tweaks */
     @media (max-width:900px){
       body{
         padding:10px;
-        overflow:auto;
       }
       .kt-root{
-        height:auto;
+        min-height:auto;
       }
       .kt-grid{
         grid-template-columns:1fr;
       }
       .news-list-wrapper{
-        max-height:280px;
-      }
-    }
-
-    @media (min-width:901px){
-      .news-list-wrapper{
-        max-height:calc(100vh - 16px - 32px - 56px - 32px); /* kira-kira supaya tidak overflow */
+        max-height:none; /* biar ngikut tinggi konten, scroll via body atau list */
       }
     }
   </style>
-<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 2147483647;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.immersive-translate-attach-loading::after {
-  content: " ";
-
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-2000%, -50%);
-  z-index: 100;
-}
-
-.immersive-translate-loading-spinner {
-  vertical-align: middle !important;
-  width: 10px !important;
-  height: 10px !important;
-  display: inline-block !important;
-  margin: 0 4px !important;
-  border: 2px rgba(221, 244, 255, 0.6) solid !important;
-  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-}
-
-@-webkit-keyframes immersive-translate-loading-animation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-
-@keyframes immersive-translate-loading-animation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.immersive-translate-input-loading {
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-}
-
-@keyframes immersiveTranslateShadowRolling {
-  0% {
-    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  12% {
-    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  25% {
-    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  36% {
-    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
-      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  50% {
-    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
-      110px 0 var(--loading-color), 100px 0 var(--loading-color);
-  }
-
-  62% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
-      120px 0 var(--loading-color), 110px 0 var(--loading-color);
-  }
-
-  75% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      130px 0 var(--loading-color), 120px 0 var(--loading-color);
-  }
-
-  87% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
-  }
-
-  100% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.immersive-translate-toast {
-  display: flex;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  right: 0;
-  top: 1%;
-  width: fit-content;
-  padding: 12px 20px;
-  margin: auto;
-  overflow: auto;
-  background: #fef6f9;
-  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
-  font-size: 15px;
-  border-radius: 8px;
-  color: #333;
-}
-
-.immersive-translate-toast-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.immersive-translate-toast-hidden {
-  margin: 0 20px 0 72px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.immersive-translate-toast-close {
-  color: #666666;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-toast {
-    top: 0;
-    padding: 12px 0px 0 10px;
-  }
-  .immersive-translate-toast-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .immersive-translate-toast-hidden {
-    margin: 10px auto;
-  }
-}
-
-.immersive-translate-dialog {
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  display: flex;
-  width: 300px;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: fit-content;
-  border-radius: 20px;
-  background-color: #fff;
-}
-
-.immersive-translate-modal {
-  display: none;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-}
-
-.immersive-translate-modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 40px 24px 24px;
-  border-radius: 12px;
-  width: 350px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
-    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-content {
-    margin: 25% auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .immersive-translate-modal-content {
-    width: 80vw !important;
-    margin: 20vh auto !important;
-    padding: 20px 12px 12px !important;
-  }
-
-  .immersive-translate-modal-title {
-    font-size: 14px !important;
-  }
-
-  .immersive-translate-modal-body {
-    font-size: 13px !important;
-    max-height: 60vh !important;
-  }
-
-  .immersive-translate-btn {
-    font-size: 13px !important;
-    padding: 8px 16px !important;
-    margin: 0 4px !important;
-  }
-
-  .immersive-translate-modal-footer {
-    gap: 6px !important;
-    margin-top: 16px !important;
-  }
-}
-
-.immersive-translate-modal .immersive-translate-modal-content-in-input {
-  max-width: 500px;
-}
-.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
-  text-align: left;
-  max-height: unset;
-}
-
-.immersive-translate-modal-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333333;
-}
-
-.immersive-translate-modal-body {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #333333;
-  margin-top: 24px;
-  word-break: break-all;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-body {
-    max-height: 250px;
-    overflow-y: auto;
-  }
-}
-
-.immersive-translate-close {
-  color: #666666;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.immersive-translate-close:hover,
-.immersive-translate-close:focus {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.immersive-translate-modal-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.immersive-translate-btn {
-  width: fit-content;
-  color: #fff;
-  background-color: #ea4c89;
-  border: none;
-  font-size: 14px;
-  margin: 0 8px;
-  padding: 9px 30px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.immersive-translate-btn-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.immersive-translate-btn:hover {
-  background-color: #f082ac;
-}
-.immersive-translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.immersive-translate-btn:disabled:hover {
-  background-color: #ea4c89;
-}
-
-.immersive-translate-link-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: none;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-}
-
-.immersive-translate-cancel-btn {
-  /* gray color */
-  background-color: rgb(89, 107, 120);
-}
-
-.immersive-translate-cancel-btn:hover {
-  background-color: hsl(205, 20%, 32%);
-}
-
-.immersive-translate-action-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: 1px solid #ea4c89;
-}
-
-.immersive-translate-btn svg {
-  margin-right: 5px;
-}
-
-.immersive-translate-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-primary-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-modal input[type="radio"] {
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.immersive-translate-modal label {
-  cursor: pointer;
-}
-
-.immersive-translate-close-action {
-  position: absolute;
-  top: 2px;
-  right: 0px;
-  cursor: pointer;
-}
-
-.imt-image-status {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 16px !important;
-}
-.imt-image-status img,
-.imt-image-status svg,
-.imt-img-loading {
-  width: 28px !important;
-  height: 28px !important;
-  margin: 0 0 8px 0 !important;
-  min-height: 28px !important;
-  min-width: 28px !important;
-  position: relative !important;
-}
-.imt-img-loading {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
-  background-size: 28px 28px;
-  animation: image-loading-rotate 1s linear infinite !important;
-}
-
-.imt-image-status span {
-  color: var(--bg-2, #fff) !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
-  font-weight: 500 !important;
-  font-family: "PingFang SC", Arial, sans-serif !important;
-}
-
-.imt-primary-button {
-  display: flex;
-  padding: 12px 80px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #ea4c89;
-  color: #fff;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.imt-retry-text {
-  color: #999;
-  text-align: center;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  cursor: pointer;
-}
-
-.imt-action-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.imt-modal-content-text {
-  text-align: left;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-@keyframes image-loading-rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.imt-linear-gradient-text {
-  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.imt-flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.imt-linear-black-btn {
-  border-radius: 50px;
-  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
-  height: 48px;
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
-</style></head>
+</head>
 <body>
   <div class="kt-root">
-    
-
     <div class="kt-grid">
       <!-- PANEL 1: 24/7 News (Fastbull) -->
       <section class="panel" id="panel-24x7">
@@ -869,81 +329,16 @@
             <div class="live-dot"></div>
             <div class="panel-header-main">
               <div class="panel-title">24/7 News</div>
-              
             </div>
           </div>
           <div class="panel-controls">
-            <select class="topic-select" id="topic-24x7"><option value="all">All Streams</option><option value="fx">FX &amp; Rates</option><option value="equities">Equities</option><option value="crypto">Crypto</option><option value="commodities">Commodities</option></select>
+            <select class="topic-select" id="topic-24x7"></select>
             <button class="btn-ai" data-panel="24x7" id="ai-24x7">Recap with AI</button>
           </div>
         </div>
 
         <div class="news-list-wrapper">
-          <ul class="news-list" id="news-list-24x7"><li class="news-item" data-id="fb-1" data-topic="fx">
-          <div class="news-top-row">
-            <div class="news-top-left">
-              <span class="news-time">13:47</span>
-              <span class="news-source">Fastbull</span>
-              <span class="badge badge-high">
-                Breaking
-              </span>
-            </div>
-          </div>
-          <div class="news-title">
-            USD Menguat Setelah Data CPI AS Di Atas Ekspektasi; Treasuries Jatuh
-          </div>
-          <div class="news-tags">
-            <span class="tag-chip">FX</span><span class="tag-chip">Macro</span><span class="tag-chip">US CPI</span><span class="tag-chip">USD Index</span>
-          </div>
-        </li><li class="news-item" data-id="fb-2" data-topic="equities">
-          <div class="news-top-row">
-            <div class="news-top-left">
-              <span class="news-time">13:32</span>
-              <span class="news-source">Fastbull</span>
-              <span class="badge badge-medium">
-                Market Wrap
-              </span>
-            </div>
-          </div>
-          <div class="news-title">
-            Saham Teknologi Memimpin Reli Sesi Asia, Fokus Bergeser ke Earnings Big Tech
-          </div>
-          <div class="news-tags">
-            <span class="tag-chip">Equities</span><span class="tag-chip">Tech</span><span class="tag-chip">Earnings</span><span class="tag-chip">Asia Session</span>
-          </div>
-        </li><li class="news-item" data-id="fb-3" data-topic="crypto">
-          <div class="news-top-row">
-            <div class="news-top-left">
-              <span class="news-time">13:05</span>
-              <span class="news-source">Fastbull</span>
-              <span class="badge badge-low">
-                Flow Watch
-              </span>
-            </div>
-          </div>
-          <div class="news-title">
-            Aliran Dana Masuk ke Bitcoin ETF Melambat, Altcoin Rotation Mulai Terlihat
-          </div>
-          <div class="news-tags">
-            <span class="tag-chip">Crypto</span><span class="tag-chip">ETF Flows</span><span class="tag-chip">BTC</span><span class="tag-chip">Altcoins</span>
-          </div>
-        </li><li class="news-item" data-id="fb-4" data-topic="commodities">
-          <div class="news-top-row">
-            <div class="news-top-left">
-              <span class="news-time">12:50</span>
-              <span class="news-source">Fastbull</span>
-              <span class="badge badge-medium">
-                Commodities
-              </span>
-            </div>
-          </div>
-          <div class="news-title">
-            Harga Minyak Turun Tipis Setelah Data Persediaan AS, Fokus ke OPEC Meeting
-          </div>
-          <div class="news-tags">
-            <span class="tag-chip">Oil</span><span class="tag-chip">OPEC</span><span class="tag-chip">Inventory</span><span class="tag-chip">Energy</span>
-          </div>
-        </li></ul>
+          <ul class="news-list" id="news-list-24x7"></ul>
           <div class="empty-state" id="empty-24x7" style="display:none;">
             Tidak ada headline untuk topik ini. Backend Fastbull bisa mengisi stream di sini.
           </div>
@@ -961,97 +356,16 @@
           <div class="panel-header-left">
             <div class="panel-header-main">
               <div class="panel-title">Market Catalyst</div>
-              
             </div>
           </div>
           <div class="panel-controls">
-            <select class="topic-select" id="topic-catalyst"><option value="all">All Catalysts</option><option value="cpi">Inflation (CPI/PPI)</option><option value="gdp">Growth &amp; GDP</option><option value="labor">Labor Market</option><option value="centralbank">Central Bank &amp; Rates</option><option value="fiscal">Fiscal &amp; Debt</option></select>
+            <select class="topic-select" id="topic-catalyst"></select>
             <button class="btn-ai" data-panel="catalyst" id="ai-catalyst">Recap with AI</button>
           </div>
         </div>
 
         <div class="news-list-wrapper">
-          <ul class="news-list" id="news-list-catalyst"><li class="news-item" data-id="te-1" data-topic="cpi">
-          <div class="news-top-row">
-            <div class="news-top-left">
-              <span class="news-time">13:30</span>
-              <span class="news-source">TradingEconomics</span>
-              <span class="badge badge-high">
-                High Impact
-              </span>
-            </div>
-          </div>
-          <div class="news-title">
-            AS Merilis CPI Inti YoY Di Atas Konsensus – Tekanan Inflasi Masih Melekat
-          </div>
-          <div class="news-tags">
-            <span class="tag-chip">US</span><span class="tag-chip">Inflation</span><span class="tag-chip">CPI Core</span><span class="tag-chip">Macro Catalyst</span>
-          </div>
-        </li><li class="news-item" data-id="te-2" data-topic="gdp">
-          <div class="news-top-row">
-            <div class="news-top-left">
-              <span class="news-time">12:00</span>
-              <span class="news-source">TradingEconomics</span>
-              <span class="badge badge-medium">
-                Growth
-              </span>
-            </div>
-          </div>
-          <div class="news-title">
-            Proyeksi IMF: Pertumbuhan Global 2026 Direvisi Turun, Risiko Resesi Masih Ada
-          </div>
-          <div class="news-tags">
-            <span class="tag-chip">IMF</span><span class="tag-chip">Global GDP</span><span class="tag-chip">Growth Outlook</span>
-          </div>
-        </li><li class="news-item" data-id="te-3" data-topic="labor">
-          <div class="news-top-row">
-            <div class="news-top-left">
-              <span class="news-time">11:15</span>
-              <span class="news-source">TradingEconomics</span>
-              <span class="badge badge-medium">
-                Labor
-              </span>
-            </div>
-          </div>
-          <div class="news-title">
-             Klaim Pengangguran AS Sedikit Naik, Namun Pasar Tenaga Kerja Masih Ketat
-          </div>
-          <div class="news-tags">
-            <span class="tag-chip">US Labor</span><span class="tag-chip">Initial Claims</span><span class="tag-chip">Employment</span>
-          </div>
-        </li><li class="news-item" data-id="te-4" data-topic="fiscal">
-          <div class="news-top-row">
-            <div class="news-top-left">
-              <span class="news-time">10:30</span>
-              <span class="news-source">TradingEconomics</span>
-              <span class="badge badge-high">
-                Fiscal
-              </span>
-            </div>
-          </div>
-          <div class="news-title">
-            Defisit Anggaran AS Melebar, Rasio Debt/GDP Mendekati Rekor Baru
-          </div>
-          <div class="news-tags">
-            <span class="tag-chip">US Fiscal</span><span class="tag-chip">Debt</span><span class="tag-chip">Budget Deficit</span>
-          </div>
-        </li><li class="news-item" data-id="te-5" data-topic="centralbank">
-          <div class="news-top-row">
-            <div class="news-top-left">
-              <span class="news-time">09:45</span>
-              <span class="news-source">TradingEconomics</span>
-              <span class="badge badge-high">
-                Central Bank
-              </span>
-            </div>
-          </div>
-          <div class="news-title">
-            Komentar The Fed: 'Higher for Longer' Masih Jadi Base Case Pasar
-          </div>
-          <div class="news-tags">
-            <span class="tag-chip">Fed</span><span class="tag-chip">Rates</span><span class="tag-chip">Monetary Policy</span>
-          </div>
-        </li></ul>
+          <ul class="news-list" id="news-list-catalyst"></ul>
           <div class="empty-state" id="empty-catalyst" style="display:none;">
             Belum ada katalis untuk topik ini. TradingEconomics backend bisa mengisi event di sini.
           </div>
@@ -1245,8 +559,6 @@
 
     // ===== AI Recap Stub =====
     function handleAiRecap(panel){
-      // Di sini nanti bisa dipasang call ke AI backend (misal: Kuantara AI / OpenAI / dll)
-      // Untuk sekarang, hanya console.log agar aman dan tidak "macet".
       console.log(`[AI Recap] Panel: ${panel} – siap kirim payload headline ke backend AI.`);
       alert(`Recap with AI – panel ${panel.toUpperCase()}.\n\nIntegrasikan ke backend AI kamu di fungsi handleAiRecap().`);
     }
@@ -1286,59 +598,18 @@
       document.getElementById("ai-catalyst").addEventListener("click", () => handleAiRecap("Market Catalyst"));
     });
 
-    // ====== PUBLIC HOOKS UNTUK BACKEND (bisa dipanggil dari script lain) ======
-    // Fastbull (24/7 News)
+    // ====== PUBLIC HOOKS UNTUK BACKEND ======
     function updateFastbullNews(newsArray){
-      // newsArray: [{id,time,source,label,impact,topic,title,tags:[...]}]
       const list = document.getElementById("news-list-24x7");
       const empty = document.getElementById("empty-24x7");
       renderNewsList(list, empty, newsArray || []);
     }
 
-    // TradingEconomics (Market Catalyst)
     function updateTradingEconomicsNews(newsArray){
       const list = document.getElementById("news-list-catalyst");
       const empty = document.getElementById("empty-catalyst");
       renderNewsList(list, empty, newsArray || []);
     }
   </script>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
-
-</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
+</body>
+</html>
