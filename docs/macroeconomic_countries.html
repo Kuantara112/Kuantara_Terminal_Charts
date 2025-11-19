@@ -1,0 +1,1976 @@
+<html lang="id"><head>
+  <meta charset="UTF-8">
+  <title>Kuantara – Global Macro 98×75 Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+
+  <style>
+    :root {
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace!important;
+      /* Firefox scrollbar */
+      scrollbar-width:thin;
+      scrollbar-color:#000000 transparent;
+    }
+
+    /* WebKit scrollbar */
+    *::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track{
+      background:transparent;
+    }
+    *::-webkit-scrollbar-thumb{
+      background:#000000;
+      border-radius:3px;
+    }
+
+    html,body{
+      height:100%;
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    body{
+      padding:16px;
+    }
+
+    .kt-root{
+      height:100%;
+      width:100%;
+    }
+
+    .kt-panel{
+      height:100%;
+      width:100%;
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .kt-panel-header{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      row-gap:8px;
+      column-gap:12px;
+    }
+
+    .kt-title-block{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .kt-title{
+      font-size:var(--fs-title);
+      font-weight:600;
+      letter-spacing:0.03em;
+      color:var(--text-main);
+    }
+
+    .kt-subtitle{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      opacity:0.9;
+    }
+
+    .kt-controls{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .kt-label{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-select{
+      background:#000000;
+      color:var(--text-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:6px 8px;
+      font-size:var(--fs-body);
+      min-width:180px;
+      outline:none;
+    }
+
+    .kt-select:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(255,191,0,0.3);
+    }
+
+    .kt-pill{
+      font-size:var(--fs-small);
+      color:var(--accent);
+      padding:3px 6px;
+      border-radius:999px;
+      border:1px solid rgba(255,191,0,0.3);
+      background:#000000;
+      opacity:0.8;
+    }
+
+    .kt-panel-body{
+      flex:1;
+      min-height:0;
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .kt-table-wrapper{
+      flex:1;
+      min-height:0;
+      overflow:auto;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:var(--fs-body);
+    }
+
+    thead{
+      position:sticky;
+      top:0;
+      z-index:2;
+      background:#000000;
+    }
+
+    th,td{
+      padding:8px 10px;
+      border-bottom:1px solid var(--border-soft);
+      text-align:left;
+      vertical-align:middle;
+      white-space:nowrap;
+    }
+
+    th{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      font-weight:500;
+    }
+
+    tbody tr:nth-child(even){
+      background:rgba(255,255,255,0.01);
+    }
+
+    .col-indicator{
+      width:32%;
+      white-space:normal;
+      line-height:1.35;
+    }
+
+    .col-latest,
+    .col-mom,
+    .col-yoy{
+      width:15%;
+    }
+
+    .col-note{
+      width:23%;
+      color:var(--text-muted);
+      font-size:var(--fs-small);
+    }
+
+    .kt-badge-topic{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      font-size:var(--fs-small);
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.05);
+      background:#000000;
+      color:var(--text-muted);
+    }
+
+    .kt-badge-dot{
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--accent);
+    }
+
+    .kt-indicator-name{
+      display:block;
+      font-size:var(--fs-body);
+      color:var(--text-main);
+    }
+
+    .kt-indicator-topic{
+      display:block;
+      margin-top:2px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-badge-country{
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.07);
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-status{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-status span{
+      color:var(--accent);
+    }
+
+    @media (max-width:768px){
+      body{
+        padding:10px;
+      }
+      .kt-panel{
+        padding:12px;
+      }
+      th,td{
+        padding:7px 8px;
+      }
+      .col-note{
+        display:none;
+      }
+      .kt-select{
+        min-width:140px;
+      }
+    }
+  </style>
+<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.immersive-translate-attach-loading::after {
+  content: " ";
+
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-2000%, -50%);
+  z-index: 100;
+}
+
+.immersive-translate-loading-spinner {
+  vertical-align: middle !important;
+  width: 10px !important;
+  height: 10px !important;
+  display: inline-block !important;
+  margin: 0 4px !important;
+  border: 2px rgba(221, 244, 255, 0.6) solid !important;
+  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+}
+
+@-webkit-keyframes immersive-translate-loading-animation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@keyframes immersive-translate-loading-animation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.immersive-translate-input-loading {
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+}
+
+@keyframes immersiveTranslateShadowRolling {
+  0% {
+    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  12% {
+    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  25% {
+    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  36% {
+    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
+      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  50% {
+    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
+      110px 0 var(--loading-color), 100px 0 var(--loading-color);
+  }
+
+  62% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
+      120px 0 var(--loading-color), 110px 0 var(--loading-color);
+  }
+
+  75% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      130px 0 var(--loading-color), 120px 0 var(--loading-color);
+  }
+
+  87% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
+  }
+
+  100% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.immersive-translate-toast {
+  display: flex;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  right: 0;
+  top: 1%;
+  width: fit-content;
+  padding: 12px 20px;
+  margin: auto;
+  overflow: auto;
+  background: #fef6f9;
+  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
+  font-size: 15px;
+  border-radius: 8px;
+  color: #333;
+}
+
+.immersive-translate-toast-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.immersive-translate-toast-hidden {
+  margin: 0 20px 0 72px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.immersive-translate-toast-close {
+  color: #666666;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-toast {
+    top: 0;
+    padding: 12px 0px 0 10px;
+  }
+  .immersive-translate-toast-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .immersive-translate-toast-hidden {
+    margin: 10px auto;
+  }
+}
+
+.immersive-translate-dialog {
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  display: flex;
+  width: 300px;
+  flex-direction: column;
+  align-items: center;
+  font-size: 15px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: fit-content;
+  border-radius: 20px;
+  background-color: #fff;
+}
+
+.immersive-translate-modal {
+  display: none;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  font-size: 15px;
+}
+
+.immersive-translate-modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 40px 24px 24px;
+  border-radius: 12px;
+  width: 350px;
+  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
+    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  position: relative;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-content {
+    margin: 25% auto !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .immersive-translate-modal-content {
+    width: 80vw !important;
+    margin: 20vh auto !important;
+    padding: 20px 12px 12px !important;
+  }
+
+  .immersive-translate-modal-title {
+    font-size: 14px !important;
+  }
+
+  .immersive-translate-modal-body {
+    font-size: 13px !important;
+    max-height: 60vh !important;
+  }
+
+  .immersive-translate-btn {
+    font-size: 13px !important;
+    padding: 8px 16px !important;
+    margin: 0 4px !important;
+  }
+
+  .immersive-translate-modal-footer {
+    gap: 6px !important;
+    margin-top: 16px !important;
+  }
+}
+
+.immersive-translate-modal .immersive-translate-modal-content-in-input {
+  max-width: 500px;
+}
+.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
+  text-align: left;
+  max-height: unset;
+}
+
+.immersive-translate-modal-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.immersive-translate-modal-body {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+  margin-top: 24px;
+  word-break: break-all;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-body {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+}
+
+.immersive-translate-close {
+  color: #666666;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.immersive-translate-close:hover,
+.immersive-translate-close:focus {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.immersive-translate-modal-footer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.immersive-translate-btn {
+  width: fit-content;
+  color: #fff;
+  background-color: #ea4c89;
+  border: none;
+  font-size: 14px;
+  margin: 0 8px;
+  padding: 9px 30px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.immersive-translate-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.immersive-translate-btn:hover {
+  background-color: #f082ac;
+}
+.immersive-translate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.immersive-translate-btn:disabled:hover {
+  background-color: #ea4c89;
+}
+
+.immersive-translate-link-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: none;
+  cursor: pointer;
+  height: 30px;
+  line-height: 30px;
+}
+
+.immersive-translate-cancel-btn {
+  /* gray color */
+  background-color: rgb(89, 107, 120);
+}
+
+.immersive-translate-cancel-btn:hover {
+  background-color: hsl(205, 20%, 32%);
+}
+
+.immersive-translate-action-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: 1px solid #ea4c89;
+}
+
+.immersive-translate-btn svg {
+  margin-right: 5px;
+}
+
+.immersive-translate-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-primary-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-modal input[type="radio"] {
+  margin: 0 6px;
+  cursor: pointer;
+}
+
+.immersive-translate-modal label {
+  cursor: pointer;
+}
+
+.immersive-translate-close-action {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  cursor: pointer;
+}
+
+.imt-image-status {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 16px !important;
+}
+.imt-image-status img,
+.imt-image-status svg,
+.imt-img-loading {
+  width: 28px !important;
+  height: 28px !important;
+  margin: 0 0 8px 0 !important;
+  min-height: 28px !important;
+  min-width: 28px !important;
+  position: relative !important;
+}
+.imt-img-loading {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
+  background-size: 28px 28px;
+  animation: image-loading-rotate 1s linear infinite !important;
+}
+
+.imt-image-status span {
+  color: var(--bg-2, #fff) !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+  font-weight: 500 !important;
+  font-family: "PingFang SC", Arial, sans-serif !important;
+}
+
+.imt-primary-button {
+  display: flex;
+  padding: 12px 80px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: #ea4c89;
+  color: #fff;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  border: none;
+  cursor: pointer;
+}
+
+.imt-retry-text {
+  color: #999;
+  text-align: center;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  cursor: pointer;
+}
+
+.imt-action-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.imt-modal-content-text {
+  text-align: left;
+  color: #333;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+@keyframes image-loading-rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.imt-linear-gradient-text {
+  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.imt-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imt-linear-black-btn {
+  border-radius: 50px;
+  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
+  height: 48px;
+  width: 100%;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: center;
+}
+</style></head>
+<body>
+  <div class="kt-root">
+    <div class="kt-panel">
+      <div class="kt-panel-header">
+        <div class="kt-title-block">
+          <div class="kt-title">Macroeconomic Indicators · 98 metrics · 75 countries</div>
+          
+        </div>
+
+        <div class="kt-controls">
+          <span class="kt-label">Country:</span>
+          <select class="kt-select" id="countrySelect">
+            <!-- extend ke 75 negara di backend -->
+            <option value="US">United States</option>
+            <option value="ID">Indonesia</option>
+            <option value="JP">Japan</option>
+            <option value="GB">United Kingdom</option>
+            <option value="DE">Germany</option>
+          </select>
+          <span class="kt-badge-country" id="countryMeta">ISO: US · Region: DM</span>
+          <span class="kt-pill">98 indicators · 5 columns</span>
+        </div>
+      </div>
+
+      <div class="kt-panel-body">
+        <div class="kt-table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-indicator">Indicator</th>
+                <th class="col-latest">Latest</th>
+                <th class="col-mom">MoM / Short-Term</th>
+                <th class="col-yoy">YoY / Trend</th>
+                <th class="col-note">Topic / Notes</th>
+              </tr>
+            </thead>
+            <tbody id="macroTbody">
+              <!-- 1–10: Monetary policy & money market -->
+              <tr data-ind="interest_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Interest Rate (Policy Rate)</span>
+                  <span class="kt-indicator-topic">Monetary Policy</span>
+                </td>
+                <td class="col-latest" data-field="latest">5.50%</td>
+                <td class="col-mom" data-field="mom">+25 bps</td>
+                <td class="col-yoy" data-field="yoy">+100 bps</td>
+                <td class="col-note">
+                  <span class="kt-badge-topic"><span class="kt-badge-dot"></span>Central bank benchmark</span>
+                </td>
+              </tr>
+              <tr data-ind="interbank_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Interbank Rate</span>
+                  <span class="kt-indicator-topic">Money Market</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Short-term unsecured bank funding rate</td>
+              </tr>
+              <tr data-ind="deposit_interest_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Deposit Interest Rate</span>
+                  <span class="kt-indicator-topic">Banking</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Average deposit rate for households / corporates</td>
+              </tr>
+              <tr data-ind="bank_lending_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Bank Lending Rate</span>
+                  <span class="kt-indicator-topic">Credit Conditions</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Average bank lending rate</td>
+              </tr>
+              <tr data-ind="mortgage_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Mortgage Rate</span>
+                  <span class="kt-indicator-topic">Housing Finance</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Benchmark mortgage lending rate</td>
+              </tr>
+              <tr data-ind="money_supply_m0">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Money Supply M0</span>
+                  <span class="kt-indicator-topic">Liquidity</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Physical currency in circulation</td>
+              </tr>
+              <tr data-ind="money_supply_m1">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Money Supply M1</span>
+                  <span class="kt-indicator-topic">Liquidity</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">M0 + demand deposits</td>
+              </tr>
+              <tr data-ind="money_supply_m2">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Money Supply M2</span>
+                  <span class="kt-indicator-topic">Liquidity</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">M1 + savings / time deposits</td>
+              </tr>
+              <tr data-ind="money_supply_m3">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Money Supply M3</span>
+                  <span class="kt-indicator-topic">Liquidity</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Broad money (where available)</td>
+              </tr>
+              <tr data-ind="banks_balance_sheet">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Banks Balance Sheet</span>
+                  <span class="kt-indicator-topic">Banking System</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Total assets of banking system</td>
+              </tr>
+
+              <!-- 11–20: Credit, FX reserves, GDP level -->
+              <tr data-ind="private_sector_credit">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Private Sector Credit</span>
+                  <span class="kt-indicator-topic">Credit Growth</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Total credit to private sector</td>
+              </tr>
+              <tr data-ind="loans_to_private_sector">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Loans to Private Sector</span>
+                  <span class="kt-indicator-topic">Credit Growth</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Bank loans outstanding</td>
+              </tr>
+              <tr data-ind="fx_reserves">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Foreign Exchange Reserves</span>
+                  <span class="kt-indicator-topic">External Buffer</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Official reserves incl. gold (where reported)</td>
+              </tr>
+              <tr data-ind="gdp_level">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Gross Domestic Product (GDP)</span>
+                  <span class="kt-indicator-topic">Growth · Level</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Nominal GDP</td>
+              </tr>
+              <tr data-ind="gdp_qoq">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">GDP Growth Rate QoQ</span>
+                  <span class="kt-indicator-topic">Growth Momentum</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Seasonally adjusted q/q</td>
+              </tr>
+              <tr data-ind="gdp_yoy">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">GDP Growth Rate YoY</span>
+                  <span class="kt-indicator-topic">Growth Momentum</span>
+                </td>
+                <td class="col-latest" data-field="latest">2.0%</td>
+                <td class="col-mom" data-field="mom">n/a</td>
+                <td class="col-yoy" data-field="yoy">-0.5 pp</td>
+                <td class="col-note">Real GDP YoY</td>
+              </tr>
+              <tr data-ind="real_gdp">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Real GDP</span>
+                  <span class="kt-indicator-topic">Real Activity</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Inflation-adjusted GDP</td>
+              </tr>
+              <tr data-ind="gdp_per_capita">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">GDP Per Capita</span>
+                  <span class="kt-indicator-topic">Income Level</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">GDP / population</td>
+              </tr>
+              <tr data-ind="gdp_deflator">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">GDP Deflator</span>
+                  <span class="kt-indicator-topic">Price Level</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Implicit price deflator</td>
+              </tr>
+              <tr data-ind="gdp_from_mining">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">GDP From Mining</span>
+                  <span class="kt-indicator-topic">Sector: Mining</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Value added from mining</td>
+              </tr>
+              <tr data-ind="gdp_from_manufacturing">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">GDP From Manufacturing</span>
+                  <span class="kt-indicator-topic">Sector: Manufacturing</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Value added from manufacturing</td>
+              </tr>
+
+              <!-- 21–30: Sectoral GDP & investment -->
+              <tr data-ind="gdp_from_agriculture">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">GDP From Agriculture</span>
+                  <span class="kt-indicator-topic">Sector: Agriculture</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Value added from agriculture</td>
+              </tr>
+              <tr data-ind="gdp_from_construction">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">GDP From Construction</span>
+                  <span class="kt-indicator-topic">Sector: Construction</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Value added from construction</td>
+              </tr>
+              <tr data-ind="gdp_from_utilities">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">GDP From Utilities</span>
+                  <span class="kt-indicator-topic">Sector: Utilities</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Electricity, water &amp; utilities</td>
+              </tr>
+              <tr data-ind="gdp_from_public_admin">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">GDP From Public Administration</span>
+                  <span class="kt-indicator-topic">Sector: Government</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Public sector value added</td>
+              </tr>
+              <tr data-ind="gross_fixed_capital_formation">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Gross Fixed Capital Formation</span>
+                  <span class="kt-indicator-topic">Investment</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Capex, construction &amp; equipment</td>
+              </tr>
+              <tr data-ind="cpi">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Consumer Price Index</span>
+                  <span class="kt-indicator-topic">Prices · CPI</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Headline CPI index</td>
+              </tr>
+              <tr data-ind="core_inflation_yoy">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Core Inflation Rate YoY</span>
+                  <span class="kt-indicator-topic">Prices · Core CPI</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Ex food / energy (definisi lokal)</td>
+              </tr>
+              <tr data-ind="inflation_yoy">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Inflation Rate YoY</span>
+                  <span class="kt-indicator-topic">Prices · Headline</span>
+                </td>
+                <td class="col-latest" data-field="latest">3.2%</td>
+                <td class="col-mom" data-field="mom">+0.1 pp</td>
+                <td class="col-yoy" data-field="yoy">-0.8 pp</td>
+                <td class="col-note">Headline CPI YoY</td>
+              </tr>
+              <tr data-ind="food_inflation_yoy">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Food Inflation YoY</span>
+                  <span class="kt-indicator-topic">Prices · Food</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Food CPI YoY</td>
+              </tr>
+              <tr data-ind="ppi">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Producer Price Index</span>
+                  <span class="kt-indicator-topic">Prices · PPI</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Headline PPI level</td>
+              </tr>
+
+              <!-- 31–40: PPI detail & housing prices -->
+              <tr data-ind="ppi_mom">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Producer Price Index MoM</span>
+                  <span class="kt-indicator-topic">Prices · PPI MoM</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">PPI monthly change</td>
+              </tr>
+              <tr data-ind="ppi_yoy">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Producer Price Index YoY</span>
+                  <span class="kt-indicator-topic">Prices · PPI YoY</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">PPI yearly change</td>
+              </tr>
+              <tr data-ind="gasoline_prices">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Gasoline Prices</span>
+                  <span class="kt-indicator-topic">Energy</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Retail gasoline price per liter / gallon</td>
+              </tr>
+              <tr data-ind="house_price_index">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">House Price Index</span>
+                  <span class="kt-indicator-topic">Housing · Price Level</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">National house price index</td>
+              </tr>
+              <tr data-ind="house_price_index_mom">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">House Price Index MoM</span>
+                  <span class="kt-indicator-topic">Housing · MoM</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Monthly change in HPI</td>
+              </tr>
+              <tr data-ind="house_price_index_yoy">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">House Price Index YoY</span>
+                  <span class="kt-indicator-topic">Housing · YoY</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Yearly change in HPI</td>
+              </tr>
+              <tr data-ind="home_loans_starts">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Home Loans / Housing Starts</span>
+                  <span class="kt-indicator-topic">Housing · Activity</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Mortgage approvals / housing starts</td>
+              </tr>
+              <tr data-ind="housing_credit">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Housing Credit</span>
+                  <span class="kt-indicator-topic">Housing · Credit</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Credit outstanding to housing sector</td>
+              </tr>
+              <tr data-ind="house_approvals">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">House Approvals</span>
+                  <span class="kt-indicator-topic">Housing · Permits</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Dwelling approvals / starts</td>
+              </tr>
+              <tr data-ind="home_ownership_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Home Ownership Rate</span>
+                  <span class="kt-indicator-topic">Housing · Ownership</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Share of households owning their home</td>
+              </tr>
+              <tr data-ind="construction_output_yoy">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Construction Output YoY</span>
+                  <span class="kt-indicator-topic">Construction · Output</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">YoY change in construction output</td>
+              </tr>
+
+              <!-- 41–50: Permits & labour headline -->
+              <tr data-ind="building_permits">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Building Permits</span>
+                  <span class="kt-indicator-topic">Construction · Permits</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Number / value of permits</td>
+              </tr>
+              <tr data-ind="building_permits_mom">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Building Permits MoM</span>
+                  <span class="kt-indicator-topic">Construction · MoM</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Monthly change in permits</td>
+              </tr>
+              <tr data-ind="building_permits_yoy">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Building Permits YoY</span>
+                  <span class="kt-indicator-topic">Construction · YoY</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Yearly change in permits</td>
+              </tr>
+              <tr data-ind="unemployment_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Unemployment Rate</span>
+                  <span class="kt-indicator-topic">Labour Market · Headline</span>
+                </td>
+                <td class="col-latest" data-field="latest">4.1%</td>
+                <td class="col-mom" data-field="mom">+0.1 pp</td>
+                <td class="col-yoy" data-field="yoy">+0.4 pp</td>
+                <td class="col-note">Unemployment % of labour force</td>
+              </tr>
+              <tr data-ind="youth_unemployment_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Youth Unemployment Rate</span>
+                  <span class="kt-indicator-topic">Labour Market · Youth</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Unemployment in youth cohort</td>
+              </tr>
+              <tr data-ind="unemployed_persons">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Unemployed Persons</span>
+                  <span class="kt-indicator-topic">Labour Market · Level</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Number of unemployed persons</td>
+              </tr>
+              <tr data-ind="employed_persons">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Employed Persons</span>
+                  <span class="kt-indicator-topic">Labour Market · Level</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Number of employed persons</td>
+              </tr>
+              <tr data-ind="employment_change">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Employment Change</span>
+                  <span class="kt-indicator-topic">Labour Market · Flow</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Change in employment level</td>
+              </tr>
+              <tr data-ind="employment_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Employment Rate</span>
+                  <span class="kt-indicator-topic">Labour Market · Rate</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Share of employed in population</td>
+              </tr>
+
+              <!-- 51–60: Labour detail & wages -->
+              <tr data-ind="full_time_employment">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Full Time Employment</span>
+                  <span class="kt-indicator-topic">Labour · Full-time</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Full-time employees</td>
+              </tr>
+              <tr data-ind="part_time_employment">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Part Time Employment</span>
+                  <span class="kt-indicator-topic">Labour · Part-time</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Part-time employees</td>
+              </tr>
+              <tr data-ind="labour_force_participation">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Labor Force Participation Rate</span>
+                  <span class="kt-indicator-topic">Labour · Participation</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">% labour force to working age population</td>
+              </tr>
+              <tr data-ind="wages">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Wages</span>
+                  <span class="kt-indicator-topic">Income · Level</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Average nominal wage</td>
+              </tr>
+              <tr data-ind="wage_growth_yoy">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Wage Growth YoY</span>
+                  <span class="kt-indicator-topic">Income · Growth</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">YoY wage growth</td>
+              </tr>
+              <tr data-ind="balance_of_trade">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Balance of Trade</span>
+                  <span class="kt-indicator-topic">External · Trade</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Exports – imports</td>
+              </tr>
+              <tr data-ind="exports">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Exports</span>
+                  <span class="kt-indicator-topic">External · Exports</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Total goods &amp; services exports</td>
+              </tr>
+              <tr data-ind="imports">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Imports</span>
+                  <span class="kt-indicator-topic">External · Imports</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Total goods &amp; services imports</td>
+              </tr>
+              <tr data-ind="export_prices">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Export Prices</span>
+                  <span class="kt-indicator-topic">Terms of Trade · Export</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Export price index</td>
+              </tr>
+              <tr data-ind="export_prices_mom">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Export Prices MoM</span>
+                  <span class="kt-indicator-topic">Terms of Trade · Export MoM</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Monthly change in export prices</td>
+              </tr>
+
+              <!-- 61–70: Import prices & current account & fiscal -->
+              <tr data-ind="import_prices">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Import Prices</span>
+                  <span class="kt-indicator-topic">Terms of Trade · Import</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Import price index</td>
+              </tr>
+              <tr data-ind="import_prices_mom">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Import Prices MoM</span>
+                  <span class="kt-indicator-topic">Terms of Trade · Import MoM</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Monthly change in import prices</td>
+              </tr>
+              <tr data-ind="current_account_to_gdp">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Current Account to GDP</span>
+                  <span class="kt-indicator-topic">External · Balance</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Current account balance % of GDP</td>
+              </tr>
+              <tr data-ind="current_account">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Current Account</span>
+                  <span class="kt-indicator-topic">External · Balance</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Level of current account balance</td>
+              </tr>
+              <tr data-ind="government_budget">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Government Budget</span>
+                  <span class="kt-indicator-topic">Fiscal · Balance</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">% of GDP (where available)</td>
+              </tr>
+              <tr data-ind="government_budget_value">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Government Budget Value</span>
+                  <span class="kt-indicator-topic">Fiscal · Balance Level</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Nominal deficit / surplus</td>
+              </tr>
+              <tr data-ind="government_revenues">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Government Revenues</span>
+                  <span class="kt-indicator-topic">Fiscal · Revenues</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Tax &amp; non-tax revenue</td>
+              </tr>
+              <tr data-ind="fiscal_expenditure">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Fiscal Expenditure</span>
+                  <span class="kt-indicator-topic">Fiscal · Spending</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Total government spending</td>
+              </tr>
+              <tr data-ind="government_spending_to_gdp">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Government Spending to GDP</span>
+                  <span class="kt-indicator-topic">Fiscal · Size</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Government expenditure % of GDP</td>
+              </tr>
+              <tr data-ind="government_spending">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Government Spending</span>
+                  <span class="kt-indicator-topic">Fiscal · Expenditure</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Nominal government spending</td>
+              </tr>
+
+              <!-- 71–80: Debt, tax rates, confidence, PMI -->
+              <tr data-ind="government_debt">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Government Debt</span>
+                  <span class="kt-indicator-topic">Debt · Level</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Outstanding public debt</td>
+              </tr>
+              <tr data-ind="government_debt_to_gdp">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Government Debt to GDP</span>
+                  <span class="kt-indicator-topic">Debt · Ratio</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Public debt % of GDP</td>
+              </tr>
+              <tr data-ind="personal_income_tax_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Personal Income Tax Rate</span>
+                  <span class="kt-indicator-topic">Tax · Personal</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Top marginal rate</td>
+              </tr>
+              <tr data-ind="corporate_tax_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Corporate Tax Rate</span>
+                  <span class="kt-indicator-topic">Tax · Corporate</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Headline corporate tax rate</td>
+              </tr>
+              <tr data-ind="withholding_tax_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Withholding Tax Rate</span>
+                  <span class="kt-indicator-topic">Tax · Withholding</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Dividend / interest withholding tax</td>
+              </tr>
+              <tr data-ind="sales_tax_vat_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Sales Tax / VAT Rate</span>
+                  <span class="kt-indicator-topic">Tax · Consumption</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Standard VAT / GST rate</td>
+              </tr>
+              <tr data-ind="consumer_confidence_index">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Consumer Confidence Index</span>
+                  <span class="kt-indicator-topic">Sentiment · Consumer</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Consumer sentiment gauge</td>
+              </tr>
+              <tr data-ind="leading_economic_index">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Leading Economic Index</span>
+                  <span class="kt-indicator-topic">Composite · Leading</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Leading composite indicator</td>
+              </tr>
+              <tr data-ind="business_sentiment">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Business / Small Business Sentiment Index</span>
+                  <span class="kt-indicator-topic">Sentiment · Business</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">NFIB-like / business confidence</td>
+              </tr>
+              <tr data-ind="industrial_sentiment">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Industrial Sentiment</span>
+                  <span class="kt-indicator-topic">Sentiment · Industry</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Industry confidence index</td>
+              </tr>
+              <tr data-ind="pmi">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Purchasing Managers' Index</span>
+                  <span class="kt-indicator-topic">PMI · Composite / Manufacturing</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">&gt;50 expansion, &lt;50 contraction</td>
+              </tr>
+
+              <!-- 81–90: Industrial production & investment -->
+              <tr data-ind="industrial_production_mom">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Industrial Production MoM</span>
+                  <span class="kt-indicator-topic">Production · MoM</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Monthly change in industrial output</td>
+              </tr>
+              <tr data-ind="industrial_production_yoy">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Industrial Production YoY</span>
+                  <span class="kt-indicator-topic">Production · YoY</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Yearly change in industrial output</td>
+              </tr>
+              <tr data-ind="manufacturing_production_yoy">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Manufacturing Production YoY</span>
+                  <span class="kt-indicator-topic">Manufacturing · YoY</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Yearly change in manufacturing output</td>
+              </tr>
+              <tr data-ind="mining_production_yoy">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Mining Production YoY</span>
+                  <span class="kt-indicator-topic">Mining · YoY</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Yearly change in mining output</td>
+              </tr>
+              <tr data-ind="corporate_profits">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Corporate Profits</span>
+                  <span class="kt-indicator-topic">Profits · Level</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Aggregate corporate profits</td>
+              </tr>
+              <tr data-ind="fixed_investment">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Fixed Investment</span>
+                  <span class="kt-indicator-topic">Investment · Fixed</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Investment in fixed assets</td>
+              </tr>
+              <tr data-ind="fdi">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Foreign Direct Investment</span>
+                  <span class="kt-indicator-topic">External · FDI</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">FDI inflows / outflows</td>
+              </tr>
+              <tr data-ind="capital_flows">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Capital Flows</span>
+                  <span class="kt-indicator-topic">External · Capital</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Portfolio &amp; other capital flows</td>
+              </tr>
+              <tr data-ind="population">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Population</span>
+                  <span class="kt-indicator-topic">Demographics · Size</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Total population</td>
+              </tr>
+              <tr data-ind="retirement_age_men">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Retirement Age Men</span>
+                  <span class="kt-indicator-topic">Demographics · Retirement</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Official retirement age for men</td>
+              </tr>
+              <tr data-ind="retirement_age_women">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Retirement Age Women</span>
+                  <span class="kt-indicator-topic">Demographics · Retirement</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Official retirement age for women</td>
+              </tr>
+
+              <!-- 91–98: Social security & risk indices -->
+              <tr data-ind="social_security_rate">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Social Security Rate</span>
+                  <span class="kt-indicator-topic">Social · Contributions</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Total social security contribution rate</td>
+              </tr>
+              <tr data-ind="social_security_rate_employees">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Social Security Rate (Employees)</span>
+                  <span class="kt-indicator-topic">Social · Employee Share</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Employee portion of contributions</td>
+              </tr>
+              <tr data-ind="corruption_rank">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Corruption Rank</span>
+                  <span class="kt-indicator-topic">Institutional · Rank</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Rank in global corruption index</td>
+              </tr>
+              <tr data-ind="corruption_index">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Corruption Index</span>
+                  <span class="kt-indicator-topic">Institutional · Score</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Corruption perception score</td>
+              </tr>
+              <tr data-ind="terrorism_index">
+                <td class="col-indicator">
+                  <span class="kt-indicator-name">Terrorism Index</span>
+                  <span class="kt-indicator-topic">Risk · Security</span>
+                </td>
+                <td class="col-latest" data-field="latest">–</td>
+                <td class="col-mom" data-field="mom">–</td>
+                <td class="col-yoy" data-field="yoy">–</td>
+                <td class="col-note">Global terrorism index score</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="padding:6px 10px;border-top:1px solid var(--border-soft);display:flex;justify-content:space-between;align-items:center;">
+          <div class="kt-status">
+            Source: <span>TradingView / Kuantara Macro Engine</span> · Channel: WebSocket/API
+          </div>
+          <div class="kt-status" id="lastUpdate">
+            Last refresh: <span>2025-11-19 11:33:10</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Skeleton data structure – ganti dengan integrasi API TradingView/WebSocket
+    // macroData[countryCode][indicatorKey] = { latest, mom, yoy }
+    const macroData = {
+      "US": {},
+      "ID": {},
+      "JP": {},
+      "GB": {},
+      "DE": {}
+    };
+
+    // contoh mapper region/ISO – bisa di-extend untuk 75 negara
+    const countryMeta = {
+      "US": { iso: "US", region: "DM" },
+      "ID": { iso: "ID", region: "EM" },
+      "JP": { iso: "JP", region: "DM" },
+      "GB": { iso: "GB", region: "DM" },
+      "DE": { iso: "DE", region: "DM" }
+    };
+
+    const tbody = document.getElementById("macroTbody");
+    const countrySelect = document.getElementById("countrySelect");
+    const countryMetaEl = document.getElementById("countryMeta");
+    const lastUpdateEl = document.querySelector("#lastUpdate span");
+
+    function updateCountryMeta(code){
+      const meta = countryMeta[code] || { iso: code, region: "N/A" };
+      countryMetaEl.textContent = `ISO: ${meta.iso} · Region: ${meta.region}`;
+    }
+
+    function renderForCountry(code){
+      const dataset = macroData[code] || {};
+      const rows = tbody.querySelectorAll("tr[data-ind]");
+      rows.forEach(row => {
+        const indKey = row.getAttribute("data-ind");
+        const data = dataset[indKey] || {};
+        row.querySelectorAll("[data-field]").forEach(cell => {
+          const field = cell.getAttribute("data-field");
+          cell.textContent = (data[field] !== undefined && data[field] !== null) ? data[field] : "–";
+        });
+      });
+      const now = new Date();
+      lastUpdateEl.textContent = now.toISOString().slice(0,19).replace("T"," ");
+      updateCountryMeta(code);
+    }
+
+    // Contoh fungsi hook untuk backend TradingView
+    // Panggil fungsi ini dari WebSocket listener / API fetch
+    // payload: { country: "US", indicator: "interest_rate", latest: "...", mom: "...", yoy: "..." }
+    function upsertMacroPoint(payload){
+      if(!macroData[payload.country]){
+        macroData[payload.country] = {};
+      }
+      macroData[payload.country][payload.indicator] = {
+        latest: payload.latest ?? "–",
+        mom: payload.mom ?? "–",
+        yoy: payload.yoy ?? "–"
+      };
+      const current = countrySelect.value;
+      if(current === payload.country){
+        renderForCountry(current);
+      }
+    }
+
+    // DEMO: isi dummy kecil supaya kelihatan hidup
+    function seedDemoData(){
+      const demo = [
+        { country:"US", indicator:"interest_rate", latest:"5.50%", mom:"+25 bps", yoy:"+100 bps" },
+        { country:"US", indicator:"inflation_yoy", latest:"3.2%", mom:"+0.1 pp", yoy:"-0.8 pp" },
+        { country:"US", indicator:"unemployment_rate", latest:"4.1%", mom:"+0.1 pp", yoy:"+0.4 pp" },
+        { country:"US", indicator:"gdp_yoy", latest:"2.0%", mom:"n/a", yoy:"-0.5 pp" },
+        { country:"ID", indicator:"interest_rate", latest:"6.25%", mom:"0 bps", yoy:"+50 bps" },
+        { country:"ID", indicator:"inflation_yoy", latest:"2.8%", mom:"-0.1 pp", yoy:"-0.4 pp" }
+      ];
+      demo.forEach(upsertMacroPoint);
+    }
+
+    countrySelect.addEventListener("change", () => {
+      renderForCountry(countrySelect.value);
+    });
+
+    seedDemoData();
+    renderForCountry(countrySelect.value);
+
+    // Expose ke window supaya backend bisa akses dari iframe (opsional)
+    window.KuantaraMacro = {
+      upsertMacroPoint,
+      renderForCountry
+    };
+  </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+
+</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
