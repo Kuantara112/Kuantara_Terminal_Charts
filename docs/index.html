@@ -326,13 +326,13 @@
     }
     .kt-workspace-board{
       position:absolute;
-      inset:0;             /* full page area dalam workspace (sudah bebas top/bottom bar) */
+      inset:0;
       border-radius:0;
       border:none;
       background:#000;
       overflow:auto;
       box-sizing:border-box;
-      padding-top:36px;    /* ruang kecil agar window tidak nabrak toolbar */
+      padding-top:36px;
     }
     .kt-workspace-placeholder{
       font-size:10px;
@@ -354,19 +354,11 @@
       box-shadow:0 10px 26px rgba(0,0,0,.8);
       overflow:hidden;
       max-width:100%;
+      /* optimasi drag di mobile */
+      touch-action:none;
     }
-
-    /* Locked state (visual + UX hint) */
-    .kt-workspace-window.locked{
-      border-color:var(--amber);
-      box-shadow:0 10px 26px rgba(255,191,0,0.25);
-    }
-    .kt-workspace-window.locked .kt-workspace-window-header{
-      cursor:default;
-    }
-
     .kt-workspace-window-header{
-      height:24px;
+      height:28px; /* lebih besar agar enak di-tap */
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -375,36 +367,30 @@
       background:rgba(10,10,10,0.9);
       color:var(--text-main);
       cursor:move;
+      touch-action:none;
+      user-select:none;
+      -webkit-user-select:none;
     }
     .kt-workspace-window-title{
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
-
-    .kt-workspace-window-actions{
-      display:flex;
-      align-items:center;
-      gap:4px;
-    }
-
-    .kt-workspace-window-lock,
     .kt-workspace-window-close{
       border:none;
       background:transparent;
       color:var(--text-muted);
       font-size:11px;
       cursor:pointer;
-      padding:0 3px;
+      padding:0 2px;
+      touch-action:manipulation;
     }
-    .kt-workspace-window-lock:hover,
     .kt-workspace-window-close:hover{
       color:var(--amber);
     }
-
     .kt-workspace-window-body{
       position:absolute;
-      top:24px;
+      top:28px;
       left:0;
       right:0;
       bottom:0;
@@ -420,15 +406,12 @@
       position:absolute;
       right:0;
       bottom:0;
-      width:14px;
-      height:14px;
+      width:18px;   /* diperbesar agar gampang di-swipe */
+      height:18px;
       cursor:nwse-resize;
       background:linear-gradient(135deg,transparent 0,transparent 40%,var(--border-soft) 40%,var(--border-soft) 60%,transparent 60%,transparent 100%);
-      opacity:0.8;
-    }
-    .kt-workspace-window.locked .kt-workspace-resizer{
-      cursor:default;
-      opacity:0.2;
+      opacity:0.9;
+      touch-action:none;
     }
 
     /* FLOATING FAB + MENU + PANEL */
@@ -1348,7 +1331,6 @@
 
         const win = document.createElement("div");
         win.className = "kt-workspace-window";
-        win.dataset.locked = "0"; // default unlocked
         const count = workspaceBoard.querySelectorAll(".kt-workspace-window").length;
         const offset = count * 24;
 
@@ -1362,10 +1344,7 @@
         win.innerHTML = `
           <div class="kt-workspace-window-header">
             <span class="kt-workspace-window-title">${title}</span>
-            <div class="kt-workspace-window-actions">
-              <button class="kt-workspace-window-lock" title="Lock panel">🔓</button>
-              <button class="kt-workspace-window-close" title="Close">✕</button>
-            </div>
+            <button class="kt-workspace-window-close" title="Close">✕</button>
           </div>
           <div class="kt-workspace-window-body">
             <iframe src="${url}" loading="lazy" title="Workspace view" frameborder="0"></iframe>
@@ -1376,32 +1355,10 @@
         workspaceBoard.appendChild(win);
 
         const closeBtn = win.querySelector(".kt-workspace-window-close");
-        const lockBtn  = win.querySelector(".kt-workspace-window-lock");
-
         if(closeBtn){
           closeBtn.addEventListener("click", ()=>{
             win.remove();
             ensureWorkspacePlaceholder();
-          });
-        }
-
-        if(lockBtn){
-          lockBtn.addEventListener("click",(e)=>{
-            e.stopPropagation();
-            const locked = win.dataset.locked === "1";
-            if(locked){
-              win.dataset.locked = "0";
-              win.classList.remove("locked");
-              lockBtn.textContent = "🔓";
-              lockBtn.title = "Lock panel";
-              statusMsg.textContent = "WORKSPACE: panel unlocked";
-            }else{
-              win.dataset.locked = "1";
-              win.classList.add("locked");
-              lockBtn.textContent = "🔒";
-              lockBtn.title = "Unlock panel";
-              statusMsg.textContent = "WORKSPACE: panel locked";
-            }
           });
         }
 
@@ -1431,9 +1388,6 @@
         let isDragging=false, startX=0,startY=0,startLeft=0,startTop=0;
 
         header.addEventListener("pointerdown",(e)=>{
-          // jika panel di-lock, biarkan scroll normal (jangan drag)
-          if(win.dataset.locked === "1") return;
-
           e.preventDefault();
           isDragging=true;
           const rect = win.getBoundingClientRect();
@@ -1467,13 +1421,13 @@
 
           const onUp = (ev)=>{
             isDragging=false;
-            win.releasePointerCapture(ev.pointerId);
-            win.removeEventListener("pointermove", onMove);
-            win.removeEventListener("pointerup", onUp);
+            try { win.releasePointerCapture(ev.pointerId); } catch(e){}
+            window.removeEventListener("pointermove", onMove);
+            window.removeEventListener("pointerup", onUp);
           };
 
-          win.addEventListener("pointermove", onMove);
-          win.addEventListener("pointerup", onUp);
+          window.addEventListener("pointermove", onMove);
+          window.addEventListener("pointerup", onUp);
         });
       }
 
@@ -1484,9 +1438,6 @@
         let isResizing=false, startX=0,startY=0,startW=0,startH=0;
 
         handle.addEventListener("pointerdown",(e)=>{
-          // kalau locked, jangan resize
-          if(win.dataset.locked === "1") return;
-
           e.preventDefault();
           e.stopPropagation();
           isResizing=true;
@@ -1521,13 +1472,13 @@
 
           const onUp = (ev)=>{
             isResizing=false;
-            win.releasePointerCapture(ev.pointerId);
-            win.removeEventListener("pointermove", onMove);
-            win.removeEventListener("pointerup", onUp);
+            try { win.releasePointerCapture(ev.pointerId); } catch(e){}
+            window.removeEventListener("pointermove", onMove);
+            window.removeEventListener("pointerup", onUp);
           };
 
-          win.addEventListener("pointermove", onMove);
-          win.addEventListener("pointerup", onUp);
+          window.addEventListener("pointermove", onMove);
+          window.addEventListener("pointerup", onUp);
         });
       }
 
