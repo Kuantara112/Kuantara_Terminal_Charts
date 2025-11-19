@@ -35,13 +35,15 @@
 
     html,body{
       height:100%;
+      width:100%;
+      overflow-x:hidden; /* anti melebar samping */
     }
 
     body{
       background-color:var(--bg-root);
       color:var(--text-main);
       padding:12px;
-      overflow:auto; /* biar page bisa scroll di semua device */
+      overflow-y:auto;
     }
 
     /* WebKit scrollbar (hitam-transparan) */
@@ -58,19 +60,20 @@
     }
 
     .kt-root{
-      min-height:100vh;
-      max-width:1200px;
+      width:100%;
+      max-width:100%;          /* cegah > lebar layar */
       margin:0 auto;
+      min-height:100vh;
       display:flex;
       flex-direction:column;
       gap:12px;
     }
 
     .kt-grid{
-      flex:1;
+      width:100%;
       display:grid;
-      /* responsive: auto-fit panel sesuai lebar layar */
-      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      /* responsive grid, kolom fleksibel */
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
       gap:12px;
       min-height:0;
     }
@@ -84,6 +87,7 @@
       flex-direction:column;
       gap:8px;
       min-height:0;
+      max-width:100%; /* panel tidak boleh lebih lebar dari kolom */
     }
 
     .panel-header{
@@ -91,6 +95,7 @@
       align-items:center;
       justify-content:space-between;
       gap:8px;
+      min-width:0;
     }
 
     .panel-header-left{
@@ -188,6 +193,7 @@
     .panel-footer{
       font-size:var(--fs-small);
       color:var(--text-muted);
+      word-wrap:break-word;
     }
 
     .news-list-wrapper{
@@ -200,6 +206,7 @@
       background:#000000;
       display:flex;
       flex-direction:column;
+      max-width:100%;
     }
 
     .news-list{
@@ -307,14 +314,8 @@
       body{
         padding:10px;
       }
-      .kt-root{
-        min-height:auto;
-      }
       .kt-grid{
-        grid-template-columns:1fr;
-      }
-      .news-list-wrapper{
-        max-height:none; /* biar ngikut tinggi konten, scroll via body atau list */
+        grid-template-columns:1fr; /* paksa 1 kolom di mobile */
       }
     }
   </style>
@@ -398,7 +399,7 @@
       { value:"fiscal", label:"Fiscal & Debt" }
     ];
 
-    // ===== Dummy Data (Bisa diganti backend) =====
+    // ===== Dummy Data =====
     const dummyFastbullNews = [
       {
         id:"fb-1",
@@ -495,7 +496,6 @@
       }
     ];
 
-    // ===== Utility: Render Topic Select =====
     function populateTopics(selectEl, topics){
       selectEl.innerHTML = "";
       topics.forEach(t => {
@@ -506,7 +506,6 @@
       });
     }
 
-    // ===== Utility: Render News List =====
     function renderNewsList(containerEl, emptyEl, items){
       if (!containerEl || !emptyEl) return;
 
@@ -551,13 +550,11 @@
       });
     }
 
-    // ===== Filter by Topic =====
     function filterByTopic(allItems, topicValue){
       if (!topicValue || topicValue === "all") return allItems;
       return allItems.filter(n => (n.topic || "all") === topicValue);
     }
 
-    // ===== AI Recap Stub =====
     function handleAiRecap(panel){
       console.log(`[AI Recap] Panel: ${panel} – siap kirim payload headline ke backend AI.`);
       alert(`Recap with AI – panel ${panel.toUpperCase()}.\n\nIntegrasikan ke backend AI kamu di fungsi handleAiRecap().`);
@@ -571,34 +568,29 @@
       const empty24 = document.getElementById("empty-24x7");
       const emptyCat= document.getElementById("empty-catalyst");
 
-      // Isi dropdown topik
       populateTopics(topic24, FASTBULL_TOPICS);
       populateTopics(topicCat, TE_TOPICS);
 
-      // Render awal (All)
       renderNewsList(list24, empty24, dummyFastbullNews);
       renderNewsList(listCat, emptyCat, dummyTENews);
 
-      // Perubahan topik 24/7
       topic24.addEventListener("change", () => {
         const selected = topic24.value;
         const filtered = filterByTopic(dummyFastbullNews, selected);
         renderNewsList(list24, empty24, filtered);
       });
 
-      // Perubahan topik Market Catalyst
       topicCat.addEventListener("change", () => {
         const selected = topicCat.value;
         const filtered = filterByTopic(dummyTENews, selected);
         renderNewsList(listCat, emptyCat, filtered);
       });
 
-      // Tombol AI
       document.getElementById("ai-24x7").addEventListener("click", () => handleAiRecap("24/7 News"));
       document.getElementById("ai-catalyst").addEventListener("click", () => handleAiRecap("Market Catalyst"));
     });
 
-    // ====== PUBLIC HOOKS UNTUK BACKEND ======
+    // PUBLIC HOOKS BACKEND
     function updateFastbullNews(newsArray){
       const list = document.getElementById("news-list-24x7");
       const empty = document.getElementById("empty-24x7");
