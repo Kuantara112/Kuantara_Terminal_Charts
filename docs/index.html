@@ -326,13 +326,13 @@
     }
     .kt-workspace-board{
       position:absolute;
-      inset:0;             /* full page area dalam workspace (sudah bebas top/bottom bar) */
+      inset:0;
       border-radius:0;
       border:none;
       background:#000;
       overflow:auto;
       box-sizing:border-box;
-      padding-top:36px;    /* ruang kecil agar window tidak nabrak toolbar */
+      padding-top:36px;
     }
     .kt-workspace-placeholder{
       font-size:10px;
@@ -354,9 +354,11 @@
       box-shadow:0 10px 26px rgba(0,0,0,.8);
       overflow:hidden;
       max-width:100%;
+      /* optimasi drag di mobile */
+      touch-action:none;
     }
     .kt-workspace-window-header{
-      height:24px;
+      height:28px; /* lebih besar agar enak di-tap */
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -365,6 +367,9 @@
       background:rgba(10,10,10,0.9);
       color:var(--text-main);
       cursor:move;
+      touch-action:none;
+      user-select:none;
+      -webkit-user-select:none;
     }
     .kt-workspace-window-title{
       white-space:nowrap;
@@ -378,13 +383,14 @@
       font-size:11px;
       cursor:pointer;
       padding:0 2px;
+      touch-action:manipulation;
     }
     .kt-workspace-window-close:hover{
       color:var(--amber);
     }
     .kt-workspace-window-body{
       position:absolute;
-      top:24px;
+      top:28px;
       left:0;
       right:0;
       bottom:0;
@@ -400,11 +406,12 @@
       position:absolute;
       right:0;
       bottom:0;
-      width:14px;
-      height:14px;
+      width:18px;   /* diperbesar agar gampang di-swipe */
+      height:18px;
       cursor:nwse-resize;
       background:linear-gradient(135deg,transparent 0,transparent 40%,var(--border-soft) 40%,var(--border-soft) 60%,transparent 60%,transparent 100%);
-      opacity:0.8;
+      opacity:0.9;
+      touch-action:none;
     }
 
     /* FLOATING FAB + MENU + PANEL */
@@ -1414,13 +1421,13 @@
 
           const onUp = (ev)=>{
             isDragging=false;
-            win.releasePointerCapture(ev.pointerId);
-            win.removeEventListener("pointermove", onMove);
-            win.removeEventListener("pointerup", onUp);
+            try { win.releasePointerCapture(ev.pointerId); } catch(e){}
+            window.removeEventListener("pointermove", onMove);
+            window.removeEventListener("pointerup", onUp);
           };
 
-          win.addEventListener("pointermove", onMove);
-          win.addEventListener("pointerup", onUp);
+          window.addEventListener("pointermove", onMove);
+          window.addEventListener("pointerup", onUp);
         });
       }
 
@@ -1465,13 +1472,13 @@
 
           const onUp = (ev)=>{
             isResizing=false;
-            win.releasePointerCapture(ev.pointerId);
-            win.removeEventListener("pointermove", onMove);
-            win.removeEventListener("pointerup", onUp);
+            try { win.releasePointerCapture(ev.pointerId); } catch(e){}
+            window.removeEventListener("pointermove", onMove);
+            window.removeEventListener("pointerup", onUp);
           };
 
-          win.addEventListener("pointermove", onMove);
-          win.addEventListener("pointerup", onUp);
+          window.addEventListener("pointermove", onMove);
+          window.addEventListener("pointerup", onUp);
         });
       }
 
