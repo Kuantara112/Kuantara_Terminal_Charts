@@ -1,0 +1,1104 @@
+<html lang="id"><head>
+  <meta charset="UTF-8">
+  <title>Kuantara – Fastbull Topic Recap</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+
+  <style>
+    :root{
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace!important;
+      /* Firefox scrollbar */
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.7) transparent;
+    }
+
+    /* WebKit scrollbar (Chrome, Edge, etc.) */
+    *::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track{
+      background:transparent;
+    }
+    *::-webkit-scrollbar-thumb{
+      background:rgba(0,0,0,0.7);
+      border-radius:999px;
+    }
+
+    html,body{
+      height:100%;
+    }
+
+    body{
+      background:#000000;
+      color:var(--text-main);
+      padding:16px;
+      overflow-x:hidden;
+    }
+
+    .kt-page{
+      width:100%;
+      height:100%;
+    }
+
+    .kt-card{
+      width:100%;
+      height:calc(100vh - 32px); /* full page minus body padding */
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .kt-header-row{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:8px 12px;
+    }
+
+    .kt-title{
+      font-size:var(--fs-title);
+      font-weight:600;
+      color:var(--text-main);
+    }
+
+    .kt-subtitle{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-header-spacer{
+      flex:1 1 auto;
+    }
+
+    .kt-topic-controls{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:8px;
+      font-size:var(--fs-body);
+    }
+
+    .kt-label{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-select{
+      min-width:160px;
+      max-width:220px;
+      padding:4px 8px;
+      font-size:var(--fs-body);
+      background:#000000;
+      color:var(--text-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      outline:none;
+    }
+    .kt-select:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(255,191,0,0.2);
+    }
+
+    .kt-btn{
+      padding:5px 10px;
+      font-size:var(--fs-small);
+      border-radius:4px;
+      border:1px solid var(--accent);
+      background:transparent;
+      color:var(--accent);
+      cursor:pointer;
+      transition:background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+      white-space:nowrap;
+    }
+    .kt-btn:hover{
+      background:var(--accent);
+      color:#000000;
+      transform:translateY(-0.5px);
+    }
+    .kt-btn:active{
+      transform:translateY(0.5px);
+    }
+
+    .kt-main-grid{
+      flex:1 1 auto;
+      min-height:0;
+      display:flex;
+      gap:12px;
+      margin-top:4px;
+    }
+
+    .kt-col{
+      flex:1 1 0;
+      min-width:0;
+      min-height:0;
+      background:#000000;
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .kt-col-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .kt-col-title{
+      font-size:var(--fs-subtitle);
+      font-weight:500;
+      color:var(--text-main);
+    }
+
+    .kt-col-tag{
+      font-size:var(--fs-small);
+      color:var(--accent);
+      border:1px solid rgba(255,191,0,0.4);
+      padding:2px 6px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+
+    .kt-col-body{
+      flex:1 1 auto;
+      min-height:0;
+      overflow-y:auto;
+      font-size:var(--fs-body);
+      line-height:1.45;
+      color:var(--text-main);
+    }
+
+    .kt-col-body-muted{
+      color:var(--text-muted);
+    }
+
+    .kt-ai-recap{
+      white-space:pre-wrap;
+    }
+
+    .kt-news-list{
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .kt-news-item{
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:8px;
+      background:#050505;
+    }
+
+    .kt-news-meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:6px;
+      margin-bottom:4px;
+    }
+
+    .kt-news-time{
+      font-size:var(--fs-small);
+      color:var(--accent);
+    }
+
+    .kt-news-tag{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-news-body{
+      font-size:var(--fs-body);
+      color:var(--text-main);
+      white-space:pre-wrap;
+    }
+
+    .kt-empty-state{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-loading{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      font-style:italic;
+    }
+
+    @media (max-width:768px){
+      .kt-card{
+        height:auto;
+        min-height:calc(100vh - 32px);
+      }
+      .kt-main-grid{
+        flex-direction:column;
+      }
+      .kt-col{
+        min-height:160px;
+        max-height:none;
+      }
+      .kt-topic-controls{
+        width:100%;
+      }
+      .kt-select{
+        flex:1 1 auto;
+      }
+    }
+  </style>
+<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.immersive-translate-attach-loading::after {
+  content: " ";
+
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-2000%, -50%);
+  z-index: 100;
+}
+
+.immersive-translate-loading-spinner {
+  vertical-align: middle !important;
+  width: 10px !important;
+  height: 10px !important;
+  display: inline-block !important;
+  margin: 0 4px !important;
+  border: 2px rgba(221, 244, 255, 0.6) solid !important;
+  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+}
+
+@-webkit-keyframes immersive-translate-loading-animation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@keyframes immersive-translate-loading-animation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.immersive-translate-input-loading {
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+}
+
+@keyframes immersiveTranslateShadowRolling {
+  0% {
+    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  12% {
+    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  25% {
+    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  36% {
+    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
+      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  50% {
+    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
+      110px 0 var(--loading-color), 100px 0 var(--loading-color);
+  }
+
+  62% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
+      120px 0 var(--loading-color), 110px 0 var(--loading-color);
+  }
+
+  75% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      130px 0 var(--loading-color), 120px 0 var(--loading-color);
+  }
+
+  87% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
+  }
+
+  100% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.immersive-translate-toast {
+  display: flex;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  right: 0;
+  top: 1%;
+  width: fit-content;
+  padding: 12px 20px;
+  margin: auto;
+  overflow: auto;
+  background: #fef6f9;
+  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
+  font-size: 15px;
+  border-radius: 8px;
+  color: #333;
+}
+
+.immersive-translate-toast-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.immersive-translate-toast-hidden {
+  margin: 0 20px 0 72px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.immersive-translate-toast-close {
+  color: #666666;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-toast {
+    top: 0;
+    padding: 12px 0px 0 10px;
+  }
+  .immersive-translate-toast-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .immersive-translate-toast-hidden {
+    margin: 10px auto;
+  }
+}
+
+.immersive-translate-dialog {
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  display: flex;
+  width: 300px;
+  flex-direction: column;
+  align-items: center;
+  font-size: 15px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: fit-content;
+  border-radius: 20px;
+  background-color: #fff;
+}
+
+.immersive-translate-modal {
+  display: none;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  font-size: 15px;
+}
+
+.immersive-translate-modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 40px 24px 24px;
+  border-radius: 12px;
+  width: 350px;
+  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
+    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  position: relative;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-content {
+    margin: 25% auto !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .immersive-translate-modal-content {
+    width: 80vw !important;
+    margin: 20vh auto !important;
+    padding: 20px 12px 12px !important;
+  }
+
+  .immersive-translate-modal-title {
+    font-size: 14px !important;
+  }
+
+  .immersive-translate-modal-body {
+    font-size: 13px !important;
+    max-height: 60vh !important;
+  }
+
+  .immersive-translate-btn {
+    font-size: 13px !important;
+    padding: 8px 16px !important;
+    margin: 0 4px !important;
+  }
+
+  .immersive-translate-modal-footer {
+    gap: 6px !important;
+    margin-top: 16px !important;
+  }
+}
+
+.immersive-translate-modal .immersive-translate-modal-content-in-input {
+  max-width: 500px;
+}
+.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
+  text-align: left;
+  max-height: unset;
+}
+
+.immersive-translate-modal-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.immersive-translate-modal-body {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+  margin-top: 24px;
+  word-break: break-all;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-body {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+}
+
+.immersive-translate-close {
+  color: #666666;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.immersive-translate-close:hover,
+.immersive-translate-close:focus {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.immersive-translate-modal-footer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.immersive-translate-btn {
+  width: fit-content;
+  color: #fff;
+  background-color: #ea4c89;
+  border: none;
+  font-size: 14px;
+  margin: 0 8px;
+  padding: 9px 30px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.immersive-translate-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.immersive-translate-btn:hover {
+  background-color: #f082ac;
+}
+.immersive-translate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.immersive-translate-btn:disabled:hover {
+  background-color: #ea4c89;
+}
+
+.immersive-translate-link-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: none;
+  cursor: pointer;
+  height: 30px;
+  line-height: 30px;
+}
+
+.immersive-translate-cancel-btn {
+  /* gray color */
+  background-color: rgb(89, 107, 120);
+}
+
+.immersive-translate-cancel-btn:hover {
+  background-color: hsl(205, 20%, 32%);
+}
+
+.immersive-translate-action-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: 1px solid #ea4c89;
+}
+
+.immersive-translate-btn svg {
+  margin-right: 5px;
+}
+
+.immersive-translate-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-primary-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-modal input[type="radio"] {
+  margin: 0 6px;
+  cursor: pointer;
+}
+
+.immersive-translate-modal label {
+  cursor: pointer;
+}
+
+.immersive-translate-close-action {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  cursor: pointer;
+}
+
+.imt-image-status {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 16px !important;
+}
+.imt-image-status img,
+.imt-image-status svg,
+.imt-img-loading {
+  width: 28px !important;
+  height: 28px !important;
+  margin: 0 0 8px 0 !important;
+  min-height: 28px !important;
+  min-width: 28px !important;
+  position: relative !important;
+}
+.imt-img-loading {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
+  background-size: 28px 28px;
+  animation: image-loading-rotate 1s linear infinite !important;
+}
+
+.imt-image-status span {
+  color: var(--bg-2, #fff) !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+  font-weight: 500 !important;
+  font-family: "PingFang SC", Arial, sans-serif !important;
+}
+
+.imt-primary-button {
+  display: flex;
+  padding: 12px 80px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: #ea4c89;
+  color: #fff;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  border: none;
+  cursor: pointer;
+}
+
+.imt-retry-text {
+  color: #999;
+  text-align: center;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  cursor: pointer;
+}
+
+.imt-action-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.imt-modal-content-text {
+  text-align: left;
+  color: #333;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+@keyframes image-loading-rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.imt-linear-gradient-text {
+  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.imt-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imt-linear-black-btn {
+  border-radius: 50px;
+  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
+  height: 48px;
+  width: 100%;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: center;
+}
+</style></head>
+<body>
+  <div class="kt-page">
+    <div class="kt-card">
+
+      <!-- HEADER + TOPIC SELECTOR -->
+      <div class="kt-header-row">
+        <div>
+          <div class="kt-title">Headlines Topic Recap</div>
+          <div class="kt-subtitle">
+            Pilih topik headlines. Kiri: ringkasan AI, kanan: list berita mentah.
+          </div>
+        </div>
+
+        <div class="kt-header-spacer"></div>
+
+        <div class="kt-topic-controls">
+          <span class="kt-label">Topic:</span>
+          <select id="kt-topic-select" class="kt-select">
+            <option value="top">Top News (All)</option>
+            <option value="fx">FX &amp; Rates</option>
+            <option value="equity">Equities / Indices</option>
+            <option value="commodities">Commodities</option>
+            <option value="crypto">Crypto</option>
+            <option value="macro">Macro &amp; Central Banks</option>
+          </select>
+          <button id="kt-refresh-btn" class="kt-btn">Reload / Recap</button>
+        </div>
+      </div>
+
+      <!-- TWO COLUMNS -->
+      <div class="kt-main-grid">
+
+        <!-- COLUMN 1 – AI SUMMARY -->
+        <div class="kt-col">
+          <div class="kt-col-header">
+            <div class="kt-col-title">AI Recap</div>
+            <span class="kt-col-tag">Generated by Kuantara AI</span>
+          </div>
+          <div id="kt-ai-recap" class="kt-col-body kt-ai-recap">Pasar global bergerak mixed setelah rilis serangkaian data makro yang saling bertolak belakang.
+- Data tenaga kerja AS masih solid, namun tanda-tanda pelemahan konsumsi mulai muncul.
+- Yield US Treasury cenderung stabil, sementara USD melemah tipis terhadap mayor currencies.
+
+Sentimen risk-on terbatas: indeks saham utama bergerak sempit, pelaku pasar menunggu katalis
+baru dari pernyataan bank sentral dan rilis data inflasi berikutnya.</div>
+        </div>
+
+        <!-- COLUMN 2 – RAW NEWS LIST -->
+        <div class="kt-col">
+          <div class="kt-col-header">
+            <div class="kt-col-title">Fastbull Raw News Feed</div>
+            <span class="kt-col-tag">Original feed · Waktu &amp; isi lengkap</span>
+          </div>
+          <div class="kt-col-body">
+            <ul id="kt-news-list" class="kt-news-list"><li class="kt-news-item">
+          <div class="kt-news-meta">
+            <span class="kt-news-time">12:05 GMT</span>
+            <span class="kt-news-tag">Equity · US</span>
+          </div>
+          <div class="kt-news-body">S&amp;P 500 dibuka mendatar dengan sektor teknologi memimpin kenaikan terbatas, sementara sektor defensif seperti utilities dan consumer staples tertinggal.</div>
+        </li><li class="kt-news-item">
+          <div class="kt-news-meta">
+            <span class="kt-news-time">11:32 GMT</span>
+            <span class="kt-news-tag">FX · USD</span>
+          </div>
+          <div class="kt-news-body">Dolar AS melemah tipis terhadap euro dan pound setelah data klaim pengangguran menunjukkan pasar tenaga kerja yang mulai sedikit mendingin.</div>
+        </li><li class="kt-news-item">
+          <div class="kt-news-meta">
+            <span class="kt-news-time">10:10 GMT</span>
+            <span class="kt-news-tag">Macro · Global</span>
+          </div>
+          <div class="kt-news-body">Pelaku pasar menyoroti perbedaan sikap kebijakan moneter antar bank sentral besar, dengan beberapa negara maju mulai mempertimbangkan pemangkasan suku bunga lebih cepat.</div>
+        </li></ul>
+          </div>
+        </div>
+
+      </div><!-- /kt-main-grid -->
+
+    </div><!-- /kt-card -->
+  </div><!-- /kt-page -->
+
+  <script>
+    // ============================================
+    // DUMMY DATA – ganti dengan respon backend Fastbull
+    // ============================================
+    const dummyFastbullData = {
+      top:{
+        recap: [
+          "Pasar global bergerak mixed setelah rilis serangkaian data makro yang saling bertolak belakang.",
+          "- Data tenaga kerja AS masih solid, namun tanda-tanda pelemahan konsumsi mulai muncul.",
+          "- Yield US Treasury cenderung stabil, sementara USD melemah tipis terhadap mayor currencies.",
+          "",
+          "Sentimen risk-on terbatas: indeks saham utama bergerak sempit, pelaku pasar menunggu katalis",
+          "baru dari pernyataan bank sentral dan rilis data inflasi berikutnya."
+        ].join("\n"),
+        news:[
+          {
+            time:"12:05 GMT",
+            tag:"Equity · US",
+            body:"S&P 500 dibuka mendatar dengan sektor teknologi memimpin kenaikan terbatas, "
+               + "sementara sektor defensif seperti utilities dan consumer staples tertinggal."
+          },
+          {
+            time:"11:32 GMT",
+            tag:"FX · USD",
+            body:"Dolar AS melemah tipis terhadap euro dan pound setelah data klaim pengangguran "
+               + "menunjukkan pasar tenaga kerja yang mulai sedikit mendingin."
+          },
+          {
+            time:"10:10 GMT",
+            tag:"Macro · Global",
+            body:"Pelaku pasar menyoroti perbedaan sikap kebijakan moneter antar bank sentral besar, "
+               + "dengan beberapa negara maju mulai mempertimbangkan pemangkasan suku bunga lebih cepat."
+          }
+        ]
+      },
+      fx:{
+        recap: "USD bergerak sideways terhadap mayor currencies dengan volatilitas menurun menjelang "
+             + "pidato beberapa pejabat The Fed. Mata uang komoditas relatif outperform di tengah rebound harga energi.",
+        news:[
+          {
+            time:"13:15 GMT",
+            tag:"FX · JPY",
+            body:"USD/JPY melemah setelah komentar otoritas Jepang yang mengisyaratkan kesiapan "
+               + "untuk melakukan intervensi jika volatilitas dianggap berlebihan."
+          },
+          {
+            time:"12:40 GMT",
+            tag:"FX · EM",
+            body:"Mata uang negara berkembang menguat tipis, didukung arus masuk ke aset berisiko dan "
+               + "penurunan yield US Treasury tenor panjang."
+          }
+        ]
+      },
+      equity:{
+        recap:"Indeks saham global diperdagangkan dalam range sempit, dengan sektor growth dan "
+             +"teknologi menjadi penopang utama, sementara sektor siklikal tertahan oleh kekhawatiran perlambatan ekonomi.",
+        news:[
+          {
+            time:"09:55 GMT",
+            tag:"Equity · EU",
+            body:"Indeks saham Eropa menguat dipimpin sektor perbankan setelah ekspektasi pasar terhadap "
+               + "pemangkasan suku bunga ECB meningkat."
+          }
+        ]
+      },
+      commodities:{
+        recap:"Harga komoditas energi menguat setelah laporan penurunan stok minyak, sementara emas bergerak "
+             +"stabil karena yield riil yang relatif datar.",
+        news:[
+          {
+            time:"08:30 GMT",
+            tag:"Oil",
+            body:"Harga minyak naik lebih dari 1% setelah data stok mingguan menunjukkan penurunan persediaan "
+               + "yang lebih besar dari ekspektasi konsensus."
+          }
+        ]
+      },
+      crypto:{
+        recap:"Pasar kripto menunjukkan konsolidasi setelah reli tajam sebelumnya, dengan BTC dan ETH bergerak "
+             +"dalam range sempit dan penurunan aktivitas derivatif.",
+        news:[
+          {
+            time:"07:20 GMT",
+            tag:"Crypto",
+            body:"Bitcoin bertahan di dekat area resistance kunci, sementara altcoin berkapitalisasi kecil mengalami "
+               + "profit taking yang lebih dalam."
+          }
+        ]
+      },
+      macro:{
+        recap:"Serangkaian rilis data makro terbaru memperkuat narasi soft-landing, namun inflasi jasa yang masih "
+             +"keras menjaga bank sentral berhati-hati dalam memberi sinyal pelonggaran.",
+        news:[
+          {
+            time:"06:45 GMT",
+            tag:"Macro · CPI",
+            body:"Data inflasi utama menunjukkan penurunan bertahap, namun komponen jasa inti masih berada di atas "
+               + "target bank sentral."
+          }
+        ]
+      }
+    };
+
+    const topicSelectEl = document.getElementById("kt-topic-select");
+    const refreshBtnEl  = document.getElementById("kt-refresh-btn");
+    const aiRecapEl     = document.getElementById("kt-ai-recap");
+    const newsListEl    = document.getElementById("kt-news-list");
+
+    function setLoadingState(){
+      aiRecapEl.innerHTML = '<div class="kt-loading">Memuat data topik &amp; menghasilkan ringkasan AI…</div>';
+      newsListEl.innerHTML = '<li class="kt-loading">Mengambil list berita asli dari Fastbull…</li>';
+    }
+
+    function renderFromPayload(payload){
+      // payload: { recap: string, news: [{time, tag, body}] }
+      if(!payload){
+        aiRecapEl.innerHTML = '<div class="kt-empty-state">Belum ada data untuk topik ini.</div>';
+        newsListEl.innerHTML = '<li class="kt-empty-state">Belum ada berita yang bisa ditampilkan.</li>';
+        return;
+      }
+
+      aiRecapEl.textContent = payload.recap || "Ringkasan AI belum tersedia.";
+
+      if(!payload.news || !payload.news.length){
+        newsListEl.innerHTML = '<li class="kt-empty-state">Belum ada berita untuk topik ini.</li>';
+        return;
+      }
+
+      newsListEl.innerHTML = "";
+      payload.news.forEach(item => {
+        const li = document.createElement("li");
+        li.className = "kt-news-item";
+        li.innerHTML = `
+          <div class="kt-news-meta">
+            <span class="kt-news-time">${item.time || "-"}</span>
+            <span class="kt-news-tag">${item.tag || ""}</span>
+          </div>
+          <div class="kt-news-body">${item.body || ""}</div>
+        `;
+        newsListEl.appendChild(li);
+      });
+    }
+
+    async function loadTopic(topicKey){
+      setLoadingState();
+
+      // ==========================================================
+      // INTEGRASI BACKEND:
+      //
+      // Ganti blok di bawah ini dengan fetch ke backend kamu.
+      // Misalnya:
+      //
+      // const res = await fetch(`/api/fastbull/recap?topic=${encodeURIComponent(topicKey)}`);
+      // const data = await res.json();
+      //
+      // Struktur data yang direkomendasikan dari backend:
+      // {
+      //   recap: "teks ringkasan AI...",
+      //   news: [
+      //     { time: "12:05 GMT", tag: "FX · USD", body: "isi berita lengkap..." },
+      //     ...
+      //   ]
+      // }
+      //
+      // Lalu panggil: renderFromPayload(data);
+      // ==========================================================
+
+      // Demo: pakai dummy lokal dulu
+      await new Promise(r => setTimeout(r, 300)); // efek delay ringan
+      const payload = dummyFastbullData[topicKey] || dummyFastbullData.top;
+      renderFromPayload(payload);
+    }
+
+    // Event listeners
+    topicSelectEl.addEventListener("change", () => {
+      const key = topicSelectEl.value;
+      loadTopic(key);
+    });
+
+    refreshBtnEl.addEventListener("click", () => {
+      const key = topicSelectEl.value;
+      loadTopic(key);
+    });
+
+    // Initial load default topic
+    document.addEventListener("DOMContentLoaded", () => {
+      loadTopic(topicSelectEl.value);
+    });
+  </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+
+</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
