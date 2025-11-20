@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Research Terminal – Kuantara</title>
+  <title>Market Research – Kuantara</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap"/>
 
   <style>
     :root {
-      /* KUANTARA TERMINAL CORE THEME */
+      /* KUANTARA TERMINAL THEME */
       --bg-root: #000000;
       --bg-main: #111111;
       --bg-element: #111111;
@@ -25,346 +25,323 @@
       --fs-body: 11px;
       --fs-small: 10px;
 
-      --toolbar-height: 48px;
+      --toolbar-height: 44px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Fira Code", monospace !important;
-      -webkit-tap-highlight-color: transparent;
-      scrollbar-width: thin;
-      scrollbar-color: #000000 #000000;
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+      -webkit-tap-highlight-color:transparent;
+      scrollbar-width:thin;
+      scrollbar-color:#000000 #000000;
     }
 
     /* WebKit scrollbar */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #000000; }
-    ::-webkit-scrollbar-thumb { background: #000000; border-radius: 4px; }
+    ::-webkit-scrollbar{width:8px;height:8px;}
+    ::-webkit-scrollbar-track{background:#000000;}
+    ::-webkit-scrollbar-thumb{background:#000000;border-radius:4px;}
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      background: var(--bg-root);
-      color: var(--text-main);
-      overflow: hidden;
+    html,body{
+      width:100%;
+      height:100%;
+      background:var(--bg-root);
+      color:var(--text-main);
+      overflow:hidden;
     }
 
-    /* LAYOUT UTAMA (NO EXTRA HEADER/FOOTER) */
-    .app-shell {
-      display: flex;
-      width: 100vw;
-      height: 100vh;
-      position: relative;
-      background: var(--bg-root);
-      padding: 16px;
+    /* LAYOUT */
+    .app-shell{
+      display:flex;
+      width:100vw;
+      height:100vh;
+      position:relative;
+      background:var(--bg-root);
+      padding:16px;
     }
 
-    /* SIDEBAR (25% Desktop / Drawer Mobile) */
-    .sidebar {
-      flex: 0 0 25%;
-      max-width: 360px;
-      min-width: 260px;
-      background: var(--bg-main);
-      border: 1px solid var(--border-main);
-      border-radius: 4px;
-      display: flex;
-      flex-direction: column;
-      z-index: 20;
-      transition: transform 0.3s ease;
+    /* SIDEBAR */
+    .sidebar{
+      flex:0 0 25%;
+      max-width:360px;
+      min-width:260px;
+      background:var(--bg-main);
+      border:1px solid var(--border-main);
+      border-radius:4px;
+      display:flex;
+      flex-direction:column;
+      z-index:20;
+      transition:transform .3s ease;
     }
 
-    .sidebar-content {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      height: 100%;
-      overflow-y: auto;
+    .sidebar-content{
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      height:100%;
+      overflow-y:auto;
     }
 
-    /* Form Elements */
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    .brand-label{
+      font-weight:600;
+      color:var(--accent);
+      font-size:var(--fs-title);
+      letter-spacing:.5px;
     }
 
-    .form-label {
-      font-size: var(--fs-small);
-      color: var(--text-muted);
-      letter-spacing: 0.5px;
-      font-weight: 500;
-      text-transform: uppercase;
+    .form-group{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
     }
 
-    .kt-input {
-      background: #000000;
-      border: 1px solid var(--border-main);
-      color: var(--text-main);
-      padding: 8px 10px;
-      border-radius: 4px;
-      font-size: var(--fs-body);
-      width: 100%;
-      outline: none;
+    .form-label{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      letter-spacing:.5px;
+      font-weight:500;
+      text-transform:uppercase;
     }
 
-    .kt-input:focus {
-      border-color: var(--accent);
+    .kt-input{
+      background:#000000;
+      border:1px solid var(--border-main);
+      color:var(--text-main);
+      padding:8px 10px;
+      border-radius:4px;
+      font-size:var(--fs-body);
+      width:100%;
+      outline:none;
     }
 
-    /* List Documents */
-    #docList {
-      margin-top: 6px;
+    .kt-input:focus{
+      border-color:var(--accent);
     }
 
-    .doc-item {
-      padding: 10px 10px;
-      margin-bottom: 6px;
-      background: var(--bg-element);
-      border: 1px solid transparent;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: 0.15s;
+    .list-header{
+      margin-top:6px;
+      display:flex;
+      justify-content:space-between;
+      color:var(--text-muted);
+      font-size:var(--fs-small);
     }
 
-    .doc-item:hover {
-      background: var(--bg-hover);
+    #docList{margin-top:6px;}
+
+    .doc-item{
+      padding:10px 10px;
+      margin-bottom:6px;
+      background:var(--bg-element);
+      border:1px solid transparent;
+      border-radius:4px;
+      cursor:pointer;
+      transition:.15s;
     }
 
-    .doc-item.active {
-      background: var(--accent-dim);
-      border-color: var(--accent);
+    .doc-item:hover{
+      background:var(--bg-hover);
     }
 
-    .doc-title {
-      font-size: var(--fs-body);
-      font-weight: 500;
-      margin-bottom: 2px;
-      color: var(--text-main);
+    .doc-item.active{
+      background:var(--accent-dim);
+      border-color:var(--accent);
     }
 
-    .doc-meta {
-      font-size: var(--fs-small);
-      color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
+    .doc-title{
+      font-size:var(--fs-body);
+      font-weight:500;
+      margin-bottom:2px;
+      color:var(--text-main);
     }
 
-    /* MAIN CONTENT (75% Desktop) */
-    .main-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      min-width: 0;
-      margin-left: 12px;
+    .doc-meta{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      display:flex;
+      justify-content:space-between;
     }
 
-    /* Toolbar */
-    .toolbar {
-      height: var(--toolbar-height);
-      background: var(--bg-main);
-      border: 1px solid var(--border-main);
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      padding: 0 10px;
-      gap: 8px;
-      overflow-x: auto;
-      margin-bottom: 12px;
+    /* MAIN CONTENT */
+    .main-content{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      min-width:0;
+      margin-left:12px;
     }
 
-    .toolbar-group {
-      display: flex;
-      gap: 4px;
-      padding-right: 10px;
-      border-right: 1px solid var(--border-main);
-      align-items: center;
+    .toolbar{
+      height:var(--toolbar-height);
+      background:var(--bg-main);
+      border:1px solid var(--border-main);
+      border-radius:4px;
+      display:flex;
+      align-items:center;
+      padding:0 10px;
+      gap:8px;
+      overflow-x:auto;
+      margin-bottom:12px;
     }
 
-    .toolbar-group:last-child {
-      border-right: none;
+    .toolbar-group{
+      display:flex;
+      gap:4px;
+      padding-right:10px;
+      border-right:1px solid var(--border-main);
+      align-items:center;
     }
 
-    .tool-btn {
-      width: 30px;
-      height: 30px;
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--text-muted);
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: var(--fs-body);
+    .toolbar-group:last-child{
+      border-right:none;
     }
 
-    .tool-btn:hover {
-      background: var(--bg-hover);
-      color: var(--text-main);
+    .tool-btn{
+      width:30px;
+      height:30px;
+      background:transparent;
+      border:1px solid transparent;
+      color:var(--text-muted);
+      border-radius:4px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+      font-size:var(--fs-body);
     }
 
-    .tool-btn.active {
-      background: var(--bg-hover);
-      color: var(--accent);
-      border-color: var(--border-soft);
+    .tool-btn:hover{
+      background:var(--bg-hover);
+      color:var(--text-main);
     }
 
-    svg {
-      width: 16px;
-      height: 16px;
-      stroke-width: 2;
+    .tool-btn.active{
+      background:var(--bg-hover);
+      color:var(--accent);
+      border-color:var(--border-soft);
     }
 
-    .zoom-label {
-      font-size: var(--fs-small);
-      min-width: 44px;
-      text-align: center;
-      color: var(--text-muted);
+    svg{
+      width:16px;
+      height:16px;
+      stroke-width:2;
     }
 
-    /* PDF VIEWER AREA */
-    .viewer-viewport {
-      flex: 1;
-      position: relative;
-      background: #000000;
-      border: 1px solid var(--border-main);
-      border-radius: 4px;
-      overflow-y: auto;
-      overflow-x: auto;
-      display: block;
-      text-align: center;
-      padding: 24px;
+    /* VIEWER */
+    .viewer-viewport{
+      flex:1;
+      position:relative;
+      background:#000000;
+      border:1px solid var(--border-main);
+      border-radius:4px;
+      overflow-y:auto;
+      overflow-x:auto;
+      display:block;
+      text-align:center;
+      padding:16px;
     }
 
-    .pdf-wrapper {
-      display: inline-block;
-      position: relative;
-      background: #111111;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.7);
-      transform-origin: top center;
-      width: 900px;
-      height: 1200px;
+    .pdf-wrapper{
+      display:inline-block;
+      position:relative;
+      background:#111111;
+      box-shadow:0 8px 30px rgba(0,0,0,0.7);
+      transform-origin:top center;
+      /* width/height di-set via JS untuk responsive */
     }
 
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-      background: #ffffff;
-      pointer-events: none;
+    iframe{
+      width:100%;
+      height:100%;
+      border:none;
+      display:block;
+      background:#ffffff;
+      /* penting: biarkan pointer events aktif agar scroll di dalam pdf berfungsi */
+      pointer-events:auto;
     }
 
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      touch-action: none;
+    canvas{
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      touch-action:none;
     }
 
     /* Mode PAN / DRAW */
-    .viewer-viewport.mode-pan canvas {
-      pointer-events: none;
+    .viewer-viewport.mode-pan canvas{
+      pointer-events:none;
+      cursor:grab;
+    }
+    .viewer-viewport.mode-draw canvas{
+      pointer-events:auto;
+      cursor:crosshair;
     }
 
-    .viewer-viewport.mode-pan {
-      cursor: grab;
-    }
-
-    .viewer-viewport.mode-draw canvas {
-      pointer-events: auto;
-      cursor: crosshair;
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-      .app-shell {
-        padding: 8px;
+    /* MOBILE */
+    @media (max-width:768px){
+      .app-shell{
+        padding:8px;
       }
 
-      .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 82%;
-        transform: translateX(-100%);
-        box-shadow: 4px 0 20px #000;
-        border-radius: 0 4px 4px 0;
+      .sidebar{
+        position:fixed;
+        left:0;
+        top:0;
+        height:100%;
+        width:82%;
+        transform:translateX(-100%);
+        box-shadow:4px 0 20px #000;
+        border-radius:0 4px 4px 0;
       }
 
-      .sidebar.open {
-        transform: translateX(0);
+      .sidebar.open{
+        transform:translateX(0);
       }
 
-      .sidebar-backdrop {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.8);
-        z-index: 15;
-        opacity: 0;
-        pointer-events: none;
-        transition: 0.25s;
+      .sidebar-backdrop{
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.8);
+        z-index:15;
+        opacity:0;
+        pointer-events:none;
+        transition:.25s;
       }
 
-      .sidebar-backdrop.open {
-        opacity: 1;
-        pointer-events: auto;
+      .sidebar-backdrop.open{
+        opacity:1;
+        pointer-events:auto;
       }
 
-      .main-content {
-        margin-left: 0;
-        margin-top: 0;
+      .main-content{
+        margin-left:0;
       }
 
-      .viewer-viewport {
-        padding: 8px;
+      .viewer-viewport{
+        padding:8px;
       }
 
-      .pdf-wrapper {
-        margin-bottom: 64px;
-        width: 760px;
-        height: 1020px;
-      }
-
-      .btn-menu {
-        display: flex !important;
+      .btn-menu{
+        display:flex !important;
       }
     }
 
-    .btn-menu {
-      display: none;
-      margin-right: 4px;
-      background: var(--accent);
-      border: none;
-      border-radius: 4px;
-      padding: 6px 10px;
-      font-weight: 600;
-      font-size: var(--fs-small);
-      color: #000;
-      cursor: pointer;
-    }
-
-    .brand-label {
-      font-weight: 600;
-      color: var(--accent);
-      font-size: var(--fs-title);
-      letter-spacing: 0.5px;
-    }
-
-    .list-header {
-      margin-top: 6px;
-      display: flex;
-      justify-content: space-between;
-      color: var(--text-muted);
-      font-size: var(--fs-small);
+    .btn-menu{
+      display:none;
+      margin-right:4px;
+      background:var(--accent);
+      border:none;
+      border-radius:4px;
+      padding:6px 10px;
+      font-weight:600;
+      font-size:var(--fs-small);
+      color:#000;
+      cursor:pointer;
     }
   </style>
 </head>
@@ -375,7 +352,7 @@
 
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-content">
-      <div class="brand-label">RESEARCH TERMINAL</div>
+      <div class="brand-label">MARKET RESEARCH</div>
 
       <div class="form-group" style="margin-top:8px;">
         <label class="form-label">Topic</label>
@@ -432,19 +409,6 @@
           </svg>
         </button>
       </div>
-
-      <div class="toolbar-group">
-        <button class="tool-btn" id="zoomOut">-</button>
-        <span class="zoom-label" id="zoomVal">100%</span>
-        <button class="tool-btn" id="zoomIn">+</button>
-        <button class="tool-btn" id="fitWidth" title="Fit Width">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12H3"/>
-            <path d="M21 3H3"/>
-            <path d="M21 21H3"/>
-          </svg>
-        </button>
-      </div>
     </div>
 
     <div class="viewer-viewport mode-pan" id="viewport">
@@ -457,42 +421,38 @@
 </div>
 
 <script>
-  // --- DATA ---
+  // --- DATA DEMO ---
   const BASE_PDF_URL = "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
   const docs = [
-    { id:1, title: "FX Strategy: USD Outlook",       date: "2025-11-21", topic: "fx",    url: BASE_PDF_URL },
-    { id:2, title: "Global Macro: Recession Risk",   date: "2025-11-20", topic: "macro", url: BASE_PDF_URL },
-    { id:3, title: "Commodities: Gold Rally",        date: "2025-11-19", topic: "macro", url: BASE_PDF_URL },
+    { id:1, title:"FX Strategy: USD Outlook",     date:"2025-11-21", topic:"fx",    url:BASE_PDF_URL },
+    { id:2, title:"Global Macro: Recession Risk", date:"2025-11-20", topic:"macro", url:BASE_PDF_URL },
+    { id:3, title:"Commodities: Gold Rally",      date:"2025-11-19", topic:"macro", url:BASE_PDF_URL },
   ];
 
-  // --- ELEMENTS ---
   const viewport = document.getElementById('viewport');
-  const wrapper = document.getElementById('wrapper');
-  const canvas = document.getElementById('pdfCanvas');
-  const ctx = canvas.getContext('2d');
+  const wrapper  = document.getElementById('wrapper');
+  const canvas   = document.getElementById('pdfCanvas');
+  const ctx      = canvas.getContext('2d');
   const pdfFrame = document.getElementById('pdfFrame');
 
-  // --- STATE ---
-  let zoom = 1.0;
   let currentTool = 'pan';
-  let isDrawing = false;
+  let isDrawing   = false;
   let lastX = 0, lastY = 0;
 
-  const BASE_W = 900;
-  const BASE_H = 1200;
+  // Rasio A4 kasar
+  const BASE_RATIO = 1200 / 900; // 4:3 kurang lebih
 
-  function init() {
+  function init(){
     renderList();
     resizeCanvas();
-    if (docs.length > 0) loadDoc(docs[0]);
-    updateZoom();
+    if(docs.length > 0) loadDoc(docs[0]);
+    window.addEventListener('resize', resizeCanvas);
   }
 
-  // --- LIST & PDF LOADER ---
-  function renderList() {
+  function renderList(){
     const container = document.getElementById('docList');
     container.innerHTML = '';
-    docs.forEach(d => {
+    docs.forEach(d=>{
       const el = document.createElement('div');
       el.className = 'doc-item';
       el.innerHTML = `
@@ -507,12 +467,12 @@
     document.getElementById('docCount').textContent = docs.length;
   }
 
-  function loadDoc(doc, elBtn) {
-    document.querySelectorAll('.doc-item').forEach(b => b.classList.remove('active'));
-    if (elBtn) elBtn.classList.add('active');
-    else if (document.querySelector('.doc-item')) document.querySelector('.doc-item').classList.add('active');
+  function loadDoc(doc, elBtn){
+    document.querySelectorAll('.doc-item').forEach(b=>b.classList.remove('active'));
+    if(elBtn) elBtn.classList.add('active');
+    else if(document.querySelector('.doc-item')) document.querySelector('.doc-item').classList.add('active');
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
 
     const googleProxy = `https://docs.google.com/viewer?url=${encodeURIComponent(doc.url)}&embedded=true`;
     pdfFrame.src = googleProxy;
@@ -520,100 +480,82 @@
     toggleSidebar(false);
   }
 
-  // --- CANVAS & ZOOM LOGIC ---
-  function resizeCanvas() {
-    canvas.width = BASE_W;
-    canvas.height = BASE_H;
-    wrapper.style.width = BASE_W + "px";
-    wrapper.style.height = BASE_H + "px";
+  // RESPONSIVE CANVAS & WRAPPER
+  function resizeCanvas(){
+    const padding = 32; // ruang kiri-kanan di viewport
+    const available = Math.max(320, viewport.clientWidth - padding);
+    const width  = available;
+    const height = Math.round(width * BASE_RATIO);
+
+    wrapper.style.width  = width + 'px';
+    wrapper.style.height = height + 'px';
+
+    canvas.width  = width;
+    canvas.height = height;
+
+    wrapper.style.margin = '0 auto';
 
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
   }
 
-  function updateZoom() {
-    wrapper.style.transform = `scale(${zoom})`;
-    document.getElementById('zoomVal').textContent = Math.round(zoom * 100) + "%";
+  // TOOLS
+  const tools = { btnPan:'pan', btnPen:'pen', btnHigh:'high', btnErase:'erase' };
 
-    const currentW = BASE_W * zoom;
-    if (currentW < viewport.clientWidth) {
-      wrapper.style.margin = "0 auto";
-    } else {
-      wrapper.style.margin = "0";
-    }
-  }
-
-  document.getElementById('zoomIn').onclick = () => {
-    zoom = Math.min(zoom + 0.1, 3.0);
-    updateZoom();
-  };
-
-  document.getElementById('zoomOut').onclick = () => {
-    zoom = Math.max(zoom - 0.1, 0.5);
-    updateZoom();
-  };
-
-  document.getElementById('fitWidth').onclick = () => {
-    const padding = 48;
-    const available = viewport.clientWidth - padding;
-    zoom = available / BASE_W;
-    updateZoom();
-  };
-
-  // --- TOOLS ---
-  const tools = { btnPan: 'pan', btnPen: 'pen', btnHigh: 'high', btnErase: 'erase' };
-
-  Object.keys(tools).forEach(id => {
+  Object.keys(tools).forEach(id=>{
     document.getElementById(id).onclick = () => setTool(tools[id]);
   });
 
   document.getElementById('btnClear').onclick = () => {
-    if (confirm('Clear annotations?')) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if(confirm('Clear annotations?')){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
     }
   };
 
-  function setTool(t) {
+  function setTool(t){
     currentTool = t;
-    document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-
+    document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
     const btnId = Object.keys(tools).find(key => tools[key] === t);
-    if (btnId) document.getElementById(btnId).classList.add('active');
+    if(btnId) document.getElementById(btnId).classList.add('active');
 
     viewport.className = 'viewer-viewport mode-' + (t === 'pan' ? 'pan' : 'draw');
   }
 
-  // --- DRAWING ---
-  function getPos(e) {
+  // DRAWING
+  function getPos(e){
     const rect = canvas.getBoundingClientRect();
     let clientX = e.clientX;
     let clientY = e.clientY;
 
-    if (e.touches && e.touches.length > 0) {
+    if(e.touches && e.touches.length > 0){
       clientX = e.touches[0].clientX;
       clientY = e.touches[0].clientY;
     }
 
+    // scaling CSS -> canvas resolusi
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+
     return {
-      x: (clientX - rect.left) / zoom,
-      y: (clientY - rect.top) / zoom
+      x:(clientX - rect.left) * scaleX,
+      y:(clientY - rect.top)  * scaleY
     };
   }
 
-  function startDraw(e) {
-    if (currentTool === 'pan') return;
-    if (e.type !== 'mousedown') isDrawing = true;
-    if (e.type === 'mousedown' && e.button === 0) isDrawing = true;
+  function startDraw(e){
+    if(currentTool === 'pan') return;
+    if(e.type !== 'mousedown') isDrawing = true;
+    if(e.type === 'mousedown' && e.button === 0) isDrawing = true;
 
     const pos = getPos(e);
     lastX = pos.x;
     lastY = pos.y;
   }
 
-  function draw(e) {
-    if (!isDrawing || currentTool === 'pan') return;
+  function draw(e){
+    if(!isDrawing || currentTool === 'pan') return;
 
-    if (e.cancelable) e.preventDefault();
+    if(e.cancelable) e.preventDefault();
 
     const pos = getPos(e);
 
@@ -621,17 +563,17 @@
     ctx.moveTo(lastX, lastY);
     ctx.lineTo(pos.x, pos.y);
 
-    if (currentTool === 'pen') {
+    if(currentTool === 'pen'){
       ctx.globalCompositeOperation = 'source-over';
       ctx.strokeStyle = '#ffbf00';
       ctx.lineWidth = 2;
       ctx.globalAlpha = 1.0;
-    } else if (currentTool === 'high') {
+    }else if(currentTool === 'high'){
       ctx.globalCompositeOperation = 'multiply';
       ctx.strokeStyle = '#ffeb3b';
       ctx.lineWidth = 14;
       ctx.globalAlpha = 0.4;
-    } else if (currentTool === 'erase') {
+    }else if(currentTool === 'erase'){
       ctx.globalCompositeOperation = 'destination-out';
       ctx.lineWidth = 24;
       ctx.globalAlpha = 1.0;
@@ -642,7 +584,7 @@
     lastY = pos.y;
   }
 
-  function endDraw() {
+  function endDraw(){
     isDrawing = false;
   }
 
@@ -651,19 +593,19 @@
   canvas.addEventListener('mouseup', endDraw);
   canvas.addEventListener('mouseout', endDraw);
 
-  canvas.addEventListener('touchstart', startDraw, { passive: false });
-  canvas.addEventListener('touchmove', draw, { passive: false });
+  canvas.addEventListener('touchstart', startDraw, { passive:false });
+  canvas.addEventListener('touchmove', draw,  { passive:false });
   canvas.addEventListener('touchend', endDraw);
 
-  // --- MOBILE SIDEBAR ---
-  const sidebar = document.getElementById('sidebar');
+  // MOBILE SIDEBAR
+  const sidebar  = document.getElementById('sidebar');
   const backdrop = document.getElementById('backdrop');
 
-  function toggleSidebar(show) {
-    if (show) {
+  function toggleSidebar(show){
+    if(show){
       sidebar.classList.add('open');
       backdrop.classList.add('open');
-    } else {
+    }else{
       sidebar.classList.remove('open');
       backdrop.classList.remove('open');
     }
@@ -672,7 +614,6 @@
   document.getElementById('menuToggle').onclick = () => toggleSidebar(true);
   backdrop.onclick = () => toggleSidebar(false);
 
-  // Init
   init();
 </script>
 </body>
