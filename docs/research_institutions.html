@@ -5,826 +5,631 @@
   <title>Kuantara – Market Research PDF Viewer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap"/>
 
   <style>
+    /* --- THEME VARIABLES --- */
     :root {
-      --bg-root:#000000;
-      --bg-main:#111111;
-      --border-soft:#2b2b2b;
-      --text-main:#f5f5f5;
-      --text-muted:#9b9b9b;
-      --accent:#ffbf00;
+      --bg-app: #050505;       /* Latar belakang aplikasi paling gelap */
+      --bg-panel: #111111;     /* Latar belakang panel */
+      --bg-element: #1a1a1a;   /* Input / Item list */
+      --bg-hover: #252525;     /* Hover state */
+      
+      --border-main: #333333;
+      --border-light: #444444;
 
-      --fs-title:14px;
-      --fs-subtitle:12px;
-      --fs-body:11px;
-      --fs-small:9.5px;
-    }
+      --text-main: #eeeeee;
+      --text-muted: #888888;
+      
+      --accent: #ffbf00;       /* Kuning Kuantara */
+      --accent-dim: rgba(255, 191, 0, 0.15);
 
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:"Fira Code",monospace !important;
-      /* Firefox scrollbar */
-      scrollbar-width:thin;
-      scrollbar-color:#000000 #000000;
+      --radius: 4px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
     }
 
-    /* WebKit scrollbar */
-    *::-webkit-scrollbar{
-      width:6px;
-      height:6px;
+    /* --- RESET & BASE --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Fira Code", monospace !important;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-light) var(--bg-app);
     }
-    *::-webkit-scrollbar-track{
-      background:#000000;
-    }
-    *::-webkit-scrollbar-thumb{
-      background:#000000;
-      border-radius:3px;
+    
+    *::-webkit-scrollbar { width: 6px; height: 6px; }
+    *::-webkit-scrollbar-track { background: var(--bg-app); }
+    *::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+    *::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg-app);
+      color: var(--text-main);
+      overflow: hidden; /* App shell handling */
     }
 
-    html,body{
-      width:100%;
-      height:100%;
-      background:#000000;
-      color:var(--text-main);
+    /* --- ICONS (SVG Helper) --- */
+    svg { width: 16px; height: 16px; stroke-width: 2; }
+
+    /* --- LAYOUT --- */
+    .app-shell {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      border-top: 2px solid var(--accent); /* Top accent line */
     }
 
-    body{
-      padding:8px;
+    /* --- LEFT SIDEBAR (Navigation) --- */
+    .sidebar {
+      width: 300px;
+      min-width: 260px;
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border-main);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
     }
 
-    .kt-shell{
-      width:100%;
-      height:100%;
+    .sidebar-header {
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--border-main);
     }
 
-    .kt-panel{
-      width:100%;
-      height:100%;
-      background:var(--bg-main);
-      border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:16px;
-      display:flex;
-      gap:12px;
-      overflow:hidden;
+    .app-brand {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    /* LEFT COLUMN (1/4) */
-    .kt-left{
-      flex:0 0 24%;
-      min-width:220px;
-      max-width:300px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      border-right:1px solid var(--border-soft);
-      padding-right:8px;
+    .sidebar-filters {
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--bg-panel);
     }
 
-    .kt-left-header{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      margin-bottom:4px;
+    /* Inputs & Selects */
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .kt-input, .kt-select {
+      background: var(--bg-app);
+      border: 1px solid var(--border-main);
+      color: var(--text-main);
+      padding: 8px;
+      border-radius: var(--radius);
+      font-size: 11px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .kt-input:focus, .kt-select:focus { border-color: var(--accent); }
+
+    .filter-row { display: flex; gap: 8px; }
+    .filter-row > * { flex: 1; }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid var(--border-main);
+      color: var(--text-muted);
+      padding: 6px;
+      font-size: 10px;
+      cursor: pointer;
+      border-radius: var(--radius);
+    }
+    .btn-reset:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* Document List */
+    .doc-list-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 var(--space-sm) var(--space-sm) var(--space-sm);
     }
 
-    .kt-section-title{
-      font-size:var(--fs-subtitle);
-      font-weight:600;
-      color:var(--text-main);
+    .list-header {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin: 8px 4px;
+      display: flex;
+      justify-content: space-between;
     }
 
-    .kt-section-sub{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
+    .doc-item {
+      padding: 10px;
+      margin-bottom: 6px;
+      background: var(--bg-element);
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    .kt-filter-row{
-      display:flex;
-      gap:6px;
-      align-items:center;
-      flex-wrap:wrap;
+    .doc-item:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-light);
     }
 
-    .kt-select,
-    .kt-input-date,
-    .kt-btn{
-      background:#000000;
-      border:1px solid var(--border-soft);
-      border-radius:3px;
-      color:var(--text-main);
-      font-size:var(--fs-small);
-      padding:4px 6px;
-      outline:none;
+    .doc-item.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
     }
 
-    .kt-select,
-    .kt-input-date{
-      flex:1;
-      min-width:0;
+    .doc-title {
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      line-height: 1.4;
     }
 
-    .kt-btn{
-      cursor:pointer;
-      white-space:nowrap;
-      background:linear-gradient(135deg,#1a1a1a,#050505);
+    .doc-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: var(--text-muted);
     }
 
-    .kt-btn-accent{
-      border-color:var(--accent);
-      color:var(--accent);
+    .tag {
+      background: #000;
+      border: 1px solid var(--border-main);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 2px;
+      font-size: 9px;
+      text-transform: uppercase;
     }
 
-    .kt-btn:hover{
-      filter:brightness(1.15);
+    /* --- RIGHT MAIN CONTENT (Viewer) --- */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #080808; /* Slightly distinct from sidebar */
+      position: relative;
     }
 
-    .kt-list-wrapper{
-      flex:1;
-      border:1px solid var(--border-soft);
-      border-radius:3px;
-      padding:8px;
-      background:#0b0b0b;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      overflow:hidden;
+    /* Toolbar */
+    .toolbar {
+      height: 50px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-md);
+      gap: 16px;
     }
 
-    .kt-list-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      margin-bottom:4px;
+    .toolbar-section {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-app);
+      padding: 4px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-main);
     }
 
-    .kt-list{
-      flex:1;
-      overflow:auto;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      padding-right:2px;
+    .tool-btn {
+      width: 32px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.2s;
     }
 
-    .kt-doc-item{
-      border:1px solid var(--border-soft);
-      border-radius:3px;
-      padding:6px;
-      background:#101010;
-      cursor:pointer;
-      transition:background 0.15s, border-color 0.15s;
+    .tool-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-main);
     }
 
-    .kt-doc-item:hover{
-      background:#171717;
-      border-color:var(--accent);
+    .tool-btn.active {
+      background: var(--accent);
+      color: #000; /* Contrast for active yellow */
     }
 
-    .kt-doc-item.active{
-      background:rgba(255,191,0,0.08);
-      border-color:var(--accent);
+    .divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border-main);
+      margin: 0 4px;
     }
 
-    .kt-doc-title{
-      font-size:var(--fs-body);
-      color:var(--text-main);
-      margin-bottom:2px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+    .zoom-display {
+      font-size: 11px;
+      width: 45px;
+      text-align: center;
+      color: var(--text-muted);
     }
 
-    .kt-doc-meta{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      gap:4px;
+    /* PDF Viewer Area */
+    .viewer-viewport {
+      flex: 1;
+      position: relative;
+      overflow: auto;
+      background: #0a0a0a;
+      display: flex;
+      justify-content: center; /* Centers the PDF horizontally */
+      padding: 40px;
+      cursor: grab; /* Default cursor for PAN */
     }
 
-    .kt-doc-tag{
-      padding:1px 4px;
-      border-radius:2px;
-      background:#181818;
-      color:var(--accent);
-      font-size:8.5px;
+    .viewer-viewport.mode-pen { cursor: crosshair; }
+    .viewer-viewport.mode-eraser { cursor: not-allowed; }
+    .viewer-viewport:active { cursor: grabbing; }
+
+    .pdf-wrapper {
+      position: relative;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+      background: #202020;
+      transition: transform 0.1s linear;
+      transform-origin: top center; /* Zoom from top center feels more natural */
     }
 
-    /* RIGHT COLUMN (3/4) */
-    .kt-right{
-      flex:1;
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
+    iframe {
+      display: block;
+      border: none;
+      width: 900px; /* Base width */
+      height: 1200px; /* Base height */
+      background: #fff;
     }
 
-    .kt-viewer-toolbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:6px;
-      font-size:var(--fs-small);
-      padding:6px 8px;
-      border-radius:3px;
-      border:1px solid var(--border-soft);
-      background:#0b0b0b;
+    canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; /* Let clicks pass through by default */
     }
 
-    .kt-toolbar-left,
-    .kt-toolbar-right{
-      display:flex;
-      align-items:center;
-      gap:4px;
-      flex-wrap:wrap;
+    /* Status Bar */
+    .status-bar {
+      height: 28px;
+      background: var(--bg-panel);
+      border-top: 1px solid var(--border-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-md);
+      font-size: 10px;
+      color: var(--text-muted);
     }
 
-    .kt-toolbar-group{
-      display:flex;
-      align-items:center;
-      gap:4px;
-      border-radius:3px;
-      padding:3px 4px;
-      background:#050505;
-      border:1px solid #1a1a1a;
-    }
-
-    .kt-toolbar-label{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      opacity:0.85;
-    }
-
-    .kt-btn-icon{
-      font-size:var(--fs-small);
-      padding:3px 6px;
-      border-radius:2px;
-      border:1px solid var(--border-soft);
-      background:#000000;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width:24px;
-    }
-
-    .kt-btn-icon.kt-active{
-      border-color:var(--accent);
-      color:var(--accent);
-      background:#151515;
-    }
-
-    .kt-zoom-label{
-      min-width:40px;
-      text-align:right;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .kt-viewer-wrapper{
-      flex:1;
-      border-radius:3px;
-      border:1px solid var(--border-soft);
-      background:#000000;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-    }
-
-    .kt-pdf-container{
-      position:relative;
-      flex:1;
-      overflow:auto;
-      background:#000000;
-    }
-
-    .kt-pdf-inner{
-      position:relative;
-      transform-origin:top left;
-      display:inline-block;
-      background:#202020;
-      margin:8px;
-      border-radius:3px;
-      overflow:hidden;
-    }
-
-    .kt-pdf-frame{
-      display:block;
-      border:none;
-      width:900px;
-      height:1200px;
-      background:#111111;
-    }
-
-    .kt-pdf-canvas{
-      position:absolute;
-      inset:0;
-      pointer-events:auto;
-    }
-
-    .kt-viewer-status{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      padding:4px 8px;
-      border-top:1px solid var(--border-soft);
-      background:#0b0b0b;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    .kt-status-left,
-    .kt-status-right{
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
-    .kt-dot{
-      width:6px;
-      height:6px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 4px var(--accent);
-    }
-
-    /* RESPONSIVE */
-    @media (max-width:900px){
-      .kt-panel{
-        flex-direction:column;
-      }
-      .kt-left{
-        flex:0 0 auto;
-        width:100%;
-        max-width:none;
-        border-right:none;
-        border-bottom:1px solid var(--border-soft);
-        padding-right:0;
-        padding-bottom:8px;
-      }
-      .kt-right{
-        flex:1;
-      }
-      .kt-pdf-frame{
-        width:100%;
-        height:70vh;
-      }
-      .kt-pdf-inner{
-        margin:4px;
-      }
-    }
-
-    @media (max-width:600px){
-      body{
-        padding:4px;
-      }
-      .kt-panel{
-        padding:10px;
-      }
-      .kt-viewer-toolbar{
-        flex-direction:column;
-        align-items:flex-start;
-      }
+    /* --- RESPONSIVE --- */
+    @media (max-width: 768px) {
+      .app-shell { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; max-height: 35vh; border-right: none; border-bottom: 1px solid var(--border-main); }
+      .toolbar { overflow-x: auto; }
+      .viewer-viewport { padding: 10px; }
+      .pdf-wrapper { margin-bottom: 50px; } /* Space for scroll */
     }
   </style>
 </head>
 <body>
-  <div class="kt-shell">
-    <div class="kt-panel">
-      <!-- LEFT: LIST & FILTERS -->
-      <div class="kt-left">
-        <div class="kt-left-header">
-          <div class="kt-section-title">Market Research PDFs</div>
-          <div class="kt-section-sub">Filter berdasarkan topik & tanggal rilis.</div>
 
-          <div class="kt-filter-row">
-            <select id="topicFilter" class="kt-select">
-              <option value="all">All Topics</option>
-              <option value="macro">Global Macro</option>
-              <option value="fx">FX Strategy</option>
-              <option value="rates">Rates & Credit</option>
-              <option value="equity">Equity Strategy</option>
-              <option value="commodities">Commodities</option>
-            </select>
-            <button id="resetFilterBtn" class="kt-btn kt-btn-accent">Reset</button>
-          </div>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="app-brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+        KUANTARA
+      </div>
+      <div style="font-size:10px; color:var(--text-muted);">Research Terminal v2.0</div>
+    </div>
 
-          <div class="kt-filter-row">
-            <input type="date" id="dateFrom" class="kt-input-date" />
-            <input type="date" id="dateTo" class="kt-input-date" />
-            <button id="applyDateFilterBtn" class="kt-btn">Filter</button>
-          </div>
-        </div>
-
-        <div class="kt-list-wrapper">
-          <div class="kt-list-header">
-            <span>Daftar Riset</span>
-            <span id="resultCount">0 item</span>
-          </div>
-          <div id="docList" class="kt-list">
-            <!-- Dummy items (ganti dengan feed backend) -->
-            <div class="kt-doc-item active"
-                 data-topic="fx"
-                 data-date="2025-11-20"
-                 data-pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf">
-              <div class="kt-doc-title">Forex Focus – AUD/USD Outlook</div>
-              <div class="kt-doc-meta">
-                <span>20 Nov 2025</span>
-                <span class="kt-doc-tag">FX Strategy</span>
-              </div>
-            </div>
-
-            <div class="kt-doc-item"
-                 data-topic="macro"
-                 data-date="2025-11-18"
-                 data-pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf">
-              <div class="kt-doc-title">Global Macro Weekly – US Recession Risk</div>
-              <div class="kt-doc-meta">
-                <span>18 Nov 2025</span>
-                <span class="kt-doc-tag">Global Macro</span>
-              </div>
-            </div>
-
-            <div class="kt-doc-item"
-                 data-topic="rates"
-                 data-date="2025-11-15"
-                 data-pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf">
-              <div class="kt-doc-title">Rates Strategy – Yield Curve Update</div>
-              <div class="kt-doc-meta">
-                <span>15 Nov 2025</span>
-                <span class="kt-doc-tag">Rates & Credit</span>
-              </div>
-            </div>
-
-            <div class="kt-doc-item"
-                 data-topic="equity"
-                 data-date="2025-11-10"
-                 data-pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf">
-              <div class="kt-doc-title">Equity Strategy – Earnings Season Wrap</div>
-              <div class="kt-doc-meta">
-                <span>10 Nov 2025</span>
-                <span class="kt-doc-tag">Equity Strategy</span>
-              </div>
-            </div>
-
-            <div class="kt-doc-item"
-                 data-topic="commodities"
-                 data-date="2025-11-05"
-                 data-pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf">
-              <div class="kt-doc-title">Commodities Review – Energy & Metals</div>
-              <div class="kt-doc-meta">
-                <span>05 Nov 2025</span>
-                <span class="kt-doc-tag">Commodities</span>
-              </div>
-            </div>
-          </div>
+    <div class="sidebar-filters">
+      <div class="form-group">
+        <label class="form-label">Topic</label>
+        <select id="topicFilter" class="kt-select">
+          <option value="all">All Sectors</option>
+          <option value="macro">Global Macro</option>
+          <option value="fx">FX Strategy</option>
+          <option value="rates">Rates & Credit</option>
+          <option value="equity">Equity Strategy</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date Range</label>
+        <div class="filter-row">
+          <input type="date" id="dateFrom" class="kt-input" />
+          <input type="date" id="dateTo" class="kt-input" />
         </div>
       </div>
+      <button id="resetFilterBtn" class="btn-reset">Reset Filters</button>
+    </div>
 
-      <!-- RIGHT: PDF VIEWER -->
-      <div class="kt-right">
-        <div class="kt-viewer-toolbar">
-          <div class="kt-toolbar-left">
-            <div class="kt-toolbar-group">
-              <span class="kt-toolbar-label">Annotate</span>
-              <button id="toolPan" class="kt-btn-icon kt-active" title="Pan / Non-Edit">PAN</button>
-              <button id="toolPen" class="kt-btn-icon" title="Pen">✏</button>
-              <button id="toolHighlight" class="kt-btn-icon" title="Highlight">HL</button>
-              <button id="toolEraser" class="kt-btn-icon" title="Eraser">ER</button>
-              <button id="toolClear" class="kt-btn-icon" title="Clear Annotations">CLR</button>
-            </div>
-
-            <div class="kt-toolbar-group">
-              <span class="kt-toolbar-label">Zoom</span>
-              <button id="zoomOutBtn" class="kt-btn-icon" title="Zoom Out">-</button>
-              <button id="zoomResetBtn" class="kt-btn-icon" title="Reset Zoom">100%</button>
-              <button id="zoomInBtn" class="kt-btn-icon" title="Zoom In">+</button>
-              <span id="zoomLabel" class="kt-zoom-label">100%</span>
-            </div>
-          </div>
-
-          <div class="kt-toolbar-right">
-            <div class="kt-toolbar-group">
-              <span class="kt-toolbar-label">Viewer</span>
-              <button id="openNewTabBtn" class="kt-btn-icon" title="Buka di Tab Baru">TAB</button>
-              <button id="fitWidthBtn" class="kt-btn-icon" title="Fit Width">FW</button>
-              <button id="fitPageBtn" class="kt-btn-icon" title="Fit Page">FP</button>
-            </div>
-          </div>
+    <div class="doc-list-container">
+      <div class="list-header">
+        <span>AVAILABLE REPORTS</span>
+        <span id="resultCount">0</span>
+      </div>
+      <div id="docList">
         </div>
+    </div>
+  </aside>
 
-        <div class="kt-viewer-wrapper">
-          <div class="kt-pdf-container" id="pdfContainer">
-            <div class="kt-pdf-inner" id="pdfInner">
-              <!-- PDF iframe -->
-              <iframe id="pdfFrame"
-                      class="kt-pdf-frame"
-                      src="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf#view=FitH"
-                      title="Market Research PDF">
-              </iframe>
-              <!-- Annotation canvas -->
-              <canvas id="pdfCanvas" class="kt-pdf-canvas"></canvas>
-            </div>
-          </div>
-          <div class="kt-viewer-status">
-            <div class="kt-status-left">
-              <span class="kt-dot"></span>
-              <span id="statusDocTitle">Forex Focus – AUD/USD Outlook</span>
-            </div>
-            <div class="kt-status-right">
-              <span id="statusTool">Mode: PAN</span>
-              <span id="statusHint" style="font-size:var(--fs-small);color:var(--text-muted);">
-                Klik dokumen di kiri untuk mengganti PDF.
-              </span>
-            </div>
-          </div>
-        </div>
+  <main class="main-content">
+    <div class="toolbar">
+      <div class="toolbar-section">
+        <button class="tool-btn active" id="toolPan" title="Pan / Scroll (H)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
+        </button>
+        <div class="divider"></div>
+        <button class="tool-btn" id="toolPen" title="Pen (P)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+        </button>
+        <button class="tool-btn" id="toolHighlight" title="Highlighter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+        </button>
+        <button class="tool-btn" id="toolEraser" title="Eraser">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
+        </button>
+        <button class="tool-btn" id="toolClear" title="Clear All">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+        </button>
+      </div>
+
+      <div class="toolbar-section">
+        <button class="tool-btn" id="zoomOutBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        </button>
+        <span class="zoom-display" id="zoomLabel">100%</span>
+        <button class="tool-btn" id="zoomInBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        </button>
+        <div class="divider"></div>
+        <button class="tool-btn" id="fitWidthBtn" title="Fit Width">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12H3"/><path d="M21 3H3"/><path d="M21 7.5H3"/><path d="M21 16.5H3"/><path d="M21 21H3"/><path d="M3 12l3-3"/><path d="M3 12l3 3"/><path d="M21 12l-3-3"/><path d="M21 12l-3 3"/></svg>
+        </button>
+      </div>
+
+      <div class="toolbar-section">
+        <button class="tool-btn" id="openNewTabBtn" title="Open in New Tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </button>
       </div>
     </div>
-  </div>
 
-  <script>
-    (function(){
-      const docListEl      = document.getElementById('docList');
-      const topicFilterEl  = document.getElementById('topicFilter');
-      const dateFromEl     = document.getElementById('dateFrom');
-      const dateToEl       = document.getElementById('dateTo');
-      const applyDateBtn   = document.getElementById('applyDateFilterBtn');
-      const resetFilterBtn = document.getElementById('resetFilterBtn');
-      const resultCountEl  = document.getElementById('resultCount');
+    <div class="viewer-viewport" id="viewport">
+      <div class="pdf-wrapper" id="pdfWrapper">
+        <iframe id="pdfFrame" src="about:blank"></iframe>
+        <canvas id="pdfCanvas"></canvas>
+      </div>
+    </div>
 
-      const pdfFrame       = document.getElementById('pdfFrame');
-      const pdfInner       = document.getElementById('pdfInner');
-      const pdfCanvas      = document.getElementById('pdfCanvas');
-      const pdfContainer   = document.getElementById('pdfContainer');
+    <div class="status-bar">
+      <span id="statusDocTitle">No Document Selected</span>
+      <span id="statusTool">Mode: PAN</span>
+    </div>
+  </main>
+</div>
 
-      const statusDocTitle = document.getElementById('statusDocTitle');
-      const statusTool     = document.getElementById('statusTool');
+<script>
+  // --- MOCK DATA ---
+  const documents = [
+    { id: 1, title: "Forex Focus – AUD/USD Technical Outlook", date: "2025-11-20", topic: "fx", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+    { id: 2, title: "Global Macro – Recession Probabilities", date: "2025-11-18", topic: "macro", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+    { id: 3, title: "Rates Strategy – Yield Curve Inversion", date: "2025-11-15", topic: "rates", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+    { id: 4, title: "Equity Strategy – Tech Sector Review", date: "2025-11-10", topic: "equity", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+    { id: 5, title: "Commodities – Gold & Silver Analysis", date: "2025-11-05", topic: "commodities", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+  ];
 
-      const zoomOutBtn     = document.getElementById('zoomOutBtn');
-      const zoomInBtn      = document.getElementById('zoomInBtn');
-      const zoomResetBtn   = document.getElementById('zoomResetBtn');
-      const zoomLabel      = document.getElementById('zoomLabel');
-      const openNewTabBtn  = document.getElementById('openNewTabBtn');
-      const fitWidthBtn    = document.getElementById('fitWidthBtn');
-      const fitPageBtn     = document.getElementById('fitPageBtn');
+  // --- DOM ELEMENTS ---
+  const docList = document.getElementById('docList');
+  const resultCount = document.getElementById('resultCount');
+  const topicFilter = document.getElementById('topicFilter');
+  const dateFrom = document.getElementById('dateFrom');
+  const dateTo = document.getElementById('dateTo');
+  const resetBtn = document.getElementById('resetFilterBtn');
 
-      const toolPanBtn        = document.getElementById('toolPan');
-      const toolPenBtn        = document.getElementById('toolPen');
-      const toolHighlightBtn  = document.getElementById('toolHighlight');
-      const toolEraserBtn     = document.getElementById('toolEraser');
-      const toolClearBtn      = document.getElementById('toolClear');
+  const pdfFrame = document.getElementById('pdfFrame');
+  const pdfWrapper = document.getElementById('pdfWrapper');
+  const pdfCanvas = document.getElementById('pdfCanvas');
+  const viewport = document.getElementById('viewport');
+  
+  const statusTitle = document.getElementById('statusDocTitle');
+  const statusTool = document.getElementById('statusTool');
+  const zoomLabel = document.getElementById('zoomLabel');
 
-      let zoomLevel = 1.0;
-      let currentTool = 'pan'; // 'pan' | 'pen' | 'highlight' | 'eraser'
-      let currentPdfUrl = pdfFrame.src;
+  // --- STATE ---
+  let currentZoom = 1.0;
+  let currentTool = 'pan';
+  let isDrawing = false;
+  let ctx = pdfCanvas.getContext('2d');
+  let lastX = 0; let lastY = 0;
 
-      // === FILTER LOGIC ===
-      function applyFilters(){
-        const topicVal = topicFilterEl.value;
-        const dateFrom = dateFromEl.value ? new Date(dateFromEl.value) : null;
-        const dateTo   = dateToEl.value ? new Date(dateToEl.value) : null;
+  // --- INIT UI ---
+  function renderList() {
+    docList.innerHTML = '';
+    let count = 0;
+    const tVal = topicFilter.value;
+    const dStart = dateFrom.value ? new Date(dateFrom.value) : null;
+    const dEnd = dateTo.value ? new Date(dateTo.value) : null;
 
-        const items = Array.from(docListEl.getElementsByClassName('kt-doc-item'));
-        let visibleCount = 0;
+    documents.forEach(doc => {
+      const docDate = new Date(doc.date);
+      let show = true;
 
-        items.forEach(item=>{
-          const topic = item.getAttribute('data-topic');
-          const dateStr = item.getAttribute('data-date');
-          const d = dateStr ? new Date(dateStr) : null;
+      if (tVal !== 'all' && doc.topic !== tVal) show = false;
+      if (dStart && docDate < dStart) show = false;
+      if (dEnd && docDate > dEnd) show = false;
 
-          let visible = true;
-
-          if(topicVal !== 'all' && topic !== topicVal){
-            visible = false;
-          }
-
-          if(visible && dateFrom && d && d < dateFrom){
-            visible = false;
-          }
-
-          if(visible && dateTo && d && d > dateTo){
-            visible = false;
-          }
-
-          item.style.display = visible ? 'block' : 'none';
-          if(visible) visibleCount++;
-        });
-
-        resultCountEl.textContent = visibleCount + ' item';
+      if (show) {
+        count++;
+        const el = document.createElement('div');
+        el.className = 'doc-item';
+        el.innerHTML = `
+          <div class="doc-title">${doc.title}</div>
+          <div class="doc-meta">
+            <span>${doc.date}</span>
+            <span class="tag">${doc.topic}</span>
+          </div>
+        `;
+        el.onclick = () => loadDoc(doc, el);
+        docList.appendChild(el);
       }
+    });
+    resultCount.textContent = count;
+  }
 
-      function resetFilters(){
-        topicFilterEl.value = 'all';
-        dateFromEl.value = '';
-        dateToEl.value = '';
-        applyFilters();
-      }
+  function loadDoc(doc, el) {
+    // Active Class Logic
+    document.querySelectorAll('.doc-item').forEach(d => d.classList.remove('active'));
+    if(el) el.classList.add('active');
 
-      topicFilterEl.addEventListener('change', applyFilters);
-      applyDateBtn.addEventListener('click', applyFilters);
-      resetFilterBtn.addEventListener('click', resetFilters);
+    pdfFrame.src = doc.pdf + "#view=FitH"; // Add view param for better default
+    statusTitle.textContent = doc.title;
+    
+    // Reset canvas on new doc
+    ctx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+  }
 
-      // Init count on load
-      applyFilters();
+  // --- FILTERS ---
+  topicFilter.addEventListener('change', renderList);
+  dateFrom.addEventListener('change', renderList);
+  dateTo.addEventListener('change', renderList);
+  resetBtn.addEventListener('click', () => {
+    topicFilter.value = 'all';
+    dateFrom.value = '';
+    dateTo.value = '';
+    renderList();
+  });
 
-      // === DOC CLICK HANDLER ===
-      docListEl.addEventListener('click', (e)=>{
-        const item = e.target.closest('.kt-doc-item');
-        if(!item) return;
+  // --- ZOOM & FIT ---
+  function setZoom(z) {
+    currentZoom = Math.max(0.5, Math.min(z, 3.0)); // Clamp
+    pdfWrapper.style.transform = `scale(${currentZoom})`;
+    zoomLabel.textContent = Math.round(currentZoom * 100) + '%';
+  }
 
-        const pdfUrl = item.getAttribute('data-pdf');
-        const title  = item.querySelector('.kt-doc-title')?.textContent || 'Selected PDF';
+  document.getElementById('zoomInBtn').addEventListener('click', () => setZoom(currentZoom + 0.1));
+  document.getElementById('zoomOutBtn').addEventListener('click', () => setZoom(currentZoom - 0.1));
+  document.getElementById('fitWidthBtn').addEventListener('click', () => {
+    // Simple Fit Width calc
+    const margin = 80;
+    const availableWidth = viewport.clientWidth - margin;
+    const baseWidth = 900; // matches CSS width
+    setZoom(availableWidth / baseWidth);
+  });
 
-        Array.from(docListEl.getElementsByClassName('kt-doc-item')).forEach(el=>{
-          el.classList.remove('active');
-        });
-        item.classList.add('active');
+  // --- TOOLBAR LOGIC ---
+  const tools = ['pan', 'pen', 'highlight', 'eraser'];
+  
+  function setTool(tool) {
+    currentTool = tool;
+    
+    // Update UI Buttons
+    document.querySelectorAll('.toolbar-section .tool-btn').forEach(b => b.classList.remove('active'));
+    
+    const btnMap = {
+      'pan': 'toolPan', 'pen': 'toolPen', 
+      'highlight': 'toolHighlight', 'eraser': 'toolEraser'
+    };
+    if(btnMap[tool]) document.getElementById(btnMap[tool]).classList.add('active');
 
-        if(pdfUrl){
-          currentPdfUrl = pdfUrl;
-          pdfFrame.src = pdfUrl + '#view=FitH';
-          statusDocTitle.textContent = title;
-        }
-      });
+    // Update Cursor & Interaction
+    viewport.classList.remove('mode-pen', 'mode-eraser');
+    if (tool === 'pan') {
+      pdfCanvas.style.pointerEvents = 'none'; // Pass click to iframe/scroll
+    } else {
+      pdfCanvas.style.pointerEvents = 'auto'; // Catch click for canvas
+      if(tool === 'pen' || tool === 'highlight') viewport.classList.add('mode-pen');
+      if(tool === 'eraser') viewport.classList.add('mode-eraser');
+    }
 
-      // === ZOOM HANDLING ===
-      function updateZoomLabel(){
-        zoomLabel.textContent = Math.round(zoomLevel * 100) + '%';
-        pdfInner.style.transform = 'scale(' + zoomLevel + ')';
-      }
+    statusTool.textContent = "Mode: " + tool.toUpperCase();
+  }
 
-      zoomOutBtn.addEventListener('click', ()=>{
-        zoomLevel = Math.max(0.4, zoomLevel - 0.1);
-        updateZoomLabel();
-      });
+  document.getElementById('toolPan').onclick = () => setTool('pan');
+  document.getElementById('toolPen').onclick = () => setTool('pen');
+  document.getElementById('toolHighlight').onclick = () => setTool('highlight');
+  document.getElementById('toolEraser').onclick = () => setTool('eraser');
+  document.getElementById('toolClear').onclick = () => {
+    if(confirm("Clear all annotations?")) {
+      ctx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+    }
+  };
 
-      zoomInBtn.addEventListener('click', ()=>{
-        zoomLevel = Math.min(3.0, zoomLevel + 0.1);
-        updateZoomLabel();
-      });
+  // --- DRAWING LOGIC ---
+  // Resize canvas to match iframe resolution
+  function resizeCanvas() {
+    const w = 900; // fixed base width from CSS
+    const h = 1200; // fixed base height from CSS
+    pdfCanvas.width = w;
+    pdfCanvas.height = h;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+  }
+  resizeCanvas();
 
-      zoomResetBtn.addEventListener('click', ()=>{
-        zoomLevel = 1.0;
-        updateZoomLabel();
-      });
+  function getPos(e) {
+    // Need to account for Zoom Scale calculation
+    const rect = pdfCanvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) / currentZoom,
+      y: (e.clientY - rect.top) / currentZoom
+    };
+  }
 
-      openNewTabBtn.addEventListener('click', ()=>{
-        if(currentPdfUrl){
-          window.open(currentPdfUrl, '_blank');
-        }
-      });
+  pdfCanvas.addEventListener('mousedown', (e) => {
+    if(currentTool === 'pan') return;
+    isDrawing = true;
+    const pos = getPos(e);
+    lastX = pos.x;
+    lastY = pos.y;
+  });
 
-      // Fit width & page are placeholders – backend bisa override logika ini kalau pakai pdf.js
-      fitWidthBtn.addEventListener('click', ()=>{
-        const containerWidth = pdfContainer.clientWidth || 900;
-        zoomLevel = containerWidth / pdfFrame.clientWidth;
-        zoomLevel = Math.max(0.3, Math.min(zoomLevel, 3.0));
-        updateZoomLabel();
-      });
+  pdfCanvas.addEventListener('mousemove', (e) => {
+    if (!isDrawing || currentTool === 'pan') return;
+    const pos = getPos(e);
+    
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    
+    if (currentTool === 'pen') {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = '#ffbf00';
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 1;
+    } else if (currentTool === 'highlight') {
+      ctx.globalCompositeOperation = 'multiply'; // Better highlight effect
+      ctx.strokeStyle = '#ffff00';
+      ctx.lineWidth = 15;
+      ctx.globalAlpha = 0.3;
+    } else if (currentTool === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth = 20;
+      ctx.globalAlpha = 1;
+    }
 
-      fitPageBtn.addEventListener('click', ()=>{
-        const containerHeight = pdfContainer.clientHeight || 1200;
-        zoomLevel = containerHeight / pdfFrame.clientHeight;
-        zoomLevel = Math.max(0.3, Math.min(zoomLevel, 3.0));
-        updateZoomLabel();
-      });
+    ctx.stroke();
+    lastX = pos.x;
+    lastY = pos.y;
+  });
 
-      // === ANNOTATION CANVAS ===
-      let ctx = pdfCanvas.getContext('2d');
-      let drawing = false;
-      let lastX = 0;
-      let lastY = 0;
+  ['mouseup', 'mouseout'].forEach(ev => {
+    pdfCanvas.addEventListener(ev, () => isDrawing = false);
+  });
 
-      function resizeCanvas(){
-        const rect = pdfFrame.getBoundingClientRect();
-        const innerRect = pdfInner.getBoundingClientRect();
+  // Load first doc on start
+  renderList();
+  loadDoc(documents[0], docList.firstChild);
 
-        const width = rect.width;
-        const height = rect.height;
-
-        pdfCanvas.width = width;
-        pdfCanvas.height = height;
-
-        pdfCanvas.style.width = width + 'px';
-        pdfCanvas.style.height = height + 'px';
-
-        // Posisi canvas mengikuti iframe (relative di dalam pdfInner)
-        pdfCanvas.style.left = '0';
-        pdfCanvas.style.top = '0';
-
-        ctx = pdfCanvas.getContext('2d');
-        ctx.lineCap = 'round';
-      }
-
-      window.addEventListener('resize', resizeCanvas);
-      setTimeout(resizeCanvas, 300);
-
-      function setTool(tool){
-        currentTool = tool;
-        [toolPanBtn, toolPenBtn, toolHighlightBtn, toolEraserBtn].forEach(btn=>btn.classList.remove('kt-active'));
-
-        if(tool === 'pan') toolPanBtn.classList.add('kt-active');
-        if(tool === 'pen') toolPenBtn.classList.add('kt-active');
-        if(tool === 'highlight') toolHighlightBtn.classList.add('kt-active');
-        if(tool === 'eraser') toolEraserBtn.classList.add('kt-active');
-
-        statusTool.textContent = 'Mode: ' + tool.toUpperCase();
-        pdfCanvas.style.pointerEvents = (tool === 'pan') ? 'none' : 'auto';
-      }
-
-      toolPanBtn.addEventListener('click', ()=>setTool('pan'));
-      toolPenBtn.addEventListener('click', ()=>setTool('pen'));
-      toolHighlightBtn.addEventListener('click', ()=>setTool('highlight'));
-      toolEraserBtn.addEventListener('click', ()=>setTool('eraser'));
-      toolClearBtn.addEventListener('click', ()=>{
-        ctx.clearRect(0,0,pdfCanvas.width,pdfCanvas.height);
-      });
-
-      function startDraw(x,y){
-        if(currentTool === 'pan') return;
-        drawing = true;
-        [lastX,lastY] = [x,y];
-
-        ctx.beginPath();
-        ctx.moveTo(lastX,lastY);
-
-        if(currentTool === 'pen'){
-          ctx.globalCompositeOperation = 'source-over';
-          ctx.strokeStyle = '#ffbf00';
-          ctx.lineWidth = 2;
-          ctx.globalAlpha = 1.0;
-        }else if(currentTool === 'highlight'){
-          ctx.globalCompositeOperation = 'source-over';
-          ctx.strokeStyle = 'rgba(255,255,0,0.6)';
-          ctx.lineWidth = 10;
-          ctx.globalAlpha = 0.4;
-        }else if(currentTool === 'eraser'){
-          ctx.globalCompositeOperation = 'destination-out';
-          ctx.lineWidth = 14;
-          ctx.globalAlpha = 1.0;
-        }
-      }
-
-      function draw(x,y){
-        if(!drawing) return;
-        ctx.lineTo(x,y);
-        ctx.stroke();
-        [lastX,lastY] = [x,y];
-      }
-
-      function endDraw(){
-        drawing = false;
-        ctx.globalAlpha = 1.0;
-      }
-
-      // Mouse events
-      pdfCanvas.addEventListener('mousedown', (e)=>{
-        const rect = pdfCanvas.getBoundingClientRect();
-        startDraw(e.clientX - rect.left, e.clientY - rect.top);
-      });
-      pdfCanvas.addEventListener('mousemove', (e)=>{
-        if(!drawing) return;
-        const rect = pdfCanvas.getBoundingClientRect();
-        draw(e.clientX - rect.left, e.clientY - rect.top);
-      });
-      pdfCanvas.addEventListener('mouseup', endDraw);
-      pdfCanvas.addEventListener('mouseleave', endDraw);
-
-      // Touch events (basic)
-      pdfCanvas.addEventListener('touchstart', (e)=>{
-        const touch = e.touches[0];
-        const rect = pdfCanvas.getBoundingClientRect();
-        startDraw(touch.clientX - rect.left, touch.clientY - rect.top);
-        e.preventDefault();
-      }, {passive:false});
-
-      pdfCanvas.addEventListener('touchmove', (e)=>{
-        if(!drawing) return;
-        const touch = e.touches[0];
-        const rect = pdfCanvas.getBoundingClientRect();
-        draw(touch.clientX - rect.left, touch.clientY - rect.top);
-        e.preventDefault();
-      }, {passive:false});
-
-      pdfCanvas.addEventListener('touchend', (e)=>{
-        endDraw();
-        e.preventDefault();
-      }, {passive:false});
-
-      // Initial zoom apply
-      updateZoomLabel();
-
-    })();
-  </script>
+</script>
 </body>
 </html>
