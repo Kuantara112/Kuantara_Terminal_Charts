@@ -652,7 +652,7 @@
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="2">Sentiment</button>
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="3">Seasonality</button>
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="4">COT</button>
-      <button class="kt-submenu-btn" data-menu="4" data-sub-index="5">FI</button>
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="5">Curve</button>
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="6">Breadth</button>
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="7">Flows</button>
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="8">Volatility</button>
@@ -894,21 +894,12 @@
         "1:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_insights.html",
         "1:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_calendar.html",
         "1:3":"https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html",
-        // 1:4 is Channel (No URL provided, will render empty/placeholder)
         "1:4":"", 
-        // 1:5 is Indonesia (Shifted? No, Recap removed, Channel added. If it was Recap, it's replaced. If Indonesia was 5, it stays 5)
-        // Previous Recap was 1:4. Indonesia was 1:5.
+        "1:5":"", // Indonesia placeholder
 
         // Macroeconomic
         "2:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/usmacro.html",
-        // 2:1 is Major Country (New)
         "2:1":"", 
-        // 2:2 is Central Bank (Shifted from 2:1) - No URL in original for Central Bank? 
-        // Original map had: "2:2": "macroeconomic_countries.html". 
-        // Original map didn't explicitly list "2:1" (Central Bank) in the JS snippet provided previously, 
-        // it only had 2:0 and 2:2. Assuming Central Bank (old 2:1) didn't have a URL mapped in previous code or was empty.
-        
-        // 2:3 is Details (Renamed from Countries, old 2:2)
         "2:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_countries.html",
 
         // Charts
@@ -921,7 +912,6 @@
         updateIframeInteractivity();
       }
 
-      /* pointerEvents SELALU auto supaya mobile bisa scroll */
       function updateIframeInteractivity(){
         iframeLayer.style.pointerEvents = "auto";
       }
@@ -930,11 +920,15 @@
         const key = menuIndex+":"+subIndex;
         const url = IFRAME_MAP[key] || "";
         injectIframe(url);
-        // update "current view" for workspace (selalu ambil dari breadcrumb)
+        // update "current view" for workspace
         currentViewUrl = url;
         currentViewTitleMain = breadcrumbMain.textContent || "";
         currentViewTitleSub  = breadcrumbSub.textContent || "";
-        statusMsg.textContent = url ? "EMBED: "+url : "READY (No content)";
+        
+        // Only update status text if NOT pinned
+        if(!isPinned){
+          statusMsg.textContent = url ? "EMBED: "+url : "READY (No content)";
+        }
       }
 
       function setActiveMenu(menuIndex){
@@ -961,8 +955,14 @@
           btn.classList.toggle("active", m===menuIndex && s===subIndex);
         });
         const sub = document.querySelector('.kt-submenu-btn[data-menu="'+menuIndex+'"][data-sub-index="'+subIndex+'"]');
-        if(sub){ breadcrumbSub.textContent=sub.textContent.trim(); statusMsg.textContent="ACTIVE: "+menuIndex+" · "+breadcrumbSub.textContent; }
-        else   { breadcrumbSub.textContent=""; statusMsg.textContent="ACTIVE MENU: "+menuIndex+" · (no sub)"; }
+        if(sub){ 
+          breadcrumbSub.textContent=sub.textContent.trim(); 
+          if(!isPinned) statusMsg.textContent="ACTIVE: "+menuIndex+" · "+breadcrumbSub.textContent; 
+        }
+        else { 
+          breadcrumbSub.textContent=""; 
+          if(!isPinned) statusMsg.textContent="ACTIVE MENU: "+menuIndex+" · (no sub)"; 
+        }
 
         renderContent(menuIndex, subIndex);
       }
@@ -1019,7 +1019,7 @@
           });
         });
 
-        /* Bottom bar behaviour (HOME / WORKSPACE / PROFILE) */
+        /* Bottom bar behaviour */
         bottomItems.forEach(item=>{
           item.addEventListener("click",(e)=>{
             e.stopPropagation();
@@ -1037,7 +1037,7 @@
               setBottomActive("workspace");
               hideProfilePage();
               hideAllBars();
-              injectIframe("");  // iframe main dikosongkan, tapi currentViewUrl tetap tersimpan
+              injectIframe("");
               showWorkspacePage();
             }
             else if(role==="profile"){
@@ -1066,17 +1066,15 @@
 
         /* Pin/Unpin Double Click on Topbar */
         topbar.addEventListener("dblclick", (e) => {
-          // Mencegah trigger jika double click di logo/jam yang mungkin punya action lain (opsional)
-          // Tapi instruksinya "header yang ada tulisan kuantara terminal dan jam dunia"
           isPinned = !isPinned;
           document.body.classList.toggle("kt-pinned", isPinned);
           
           if(isPinned){
             clearTimeout(hideTimer);
-            statusMsg.textContent = "INTERFACE: Pinned (Autohide disabled)";
-            showAllBars(); // Ensure bars are visible when pinned
+            statusMsg.textContent = "Autohide disabled"; // CHANGED per instruction
+            showAllBars();
           } else {
-            statusMsg.textContent = "INTERFACE: Unpinned (Autohide enabled)";
+            statusMsg.textContent = currentViewUrl ? "EMBED: "+currentViewUrl : "READY";
             if(activeBottom==="home") scheduleHide();
           }
         });
@@ -1114,12 +1112,16 @@
         searchIndex=buildSearchIndex();
         openOverlay(searchOvl);
         setTimeout(()=>searchInput.focus(),10);
-        statusMsg.textContent="SEARCH: active";
+        if(!isPinned) statusMsg.textContent="SEARCH: active";
         if(activeBottom==="home"){
           showAllBars();
         }
       }
-      function closeSearch(){ closeOverlay(searchOvl); statusMsg.textContent="SEARCH: closed"; if(activeBottom==="home" && !isPinned) scheduleHide(); }
+      function closeSearch(){ 
+        closeOverlay(searchOvl); 
+        if(!isPinned) statusMsg.textContent="SEARCH: closed"; 
+        if(activeBottom==="home" && !isPinned) scheduleHide(); 
+      }
 
       searchClose.addEventListener("click", closeSearch);
       searchOvl.addEventListener("click",(e)=>{ if(e.target===searchOvl) closeSearch(); });
@@ -1128,7 +1130,11 @@
         if(e.key==="Enter"){
           e.preventDefault();
           const q=(searchInput.value||"").trim();
-          if(!q){ statusMsg.textContent="SEARCH: empty"; closeSearch(); return; }
+          if(!q){ 
+            if(!isPinned) statusMsg.textContent="SEARCH: empty"; 
+            closeSearch(); 
+            return; 
+          }
           const match=findBestMatch(searchIndex,q);
           if(match){
             if(activeBottom!=="home"){
@@ -1138,10 +1144,10 @@
             }
             setActiveMenu(match.menu);
             if(match.sub!==null) setActiveSub(match.menu,match.sub);
-            statusMsg.textContent=`SEARCH goto: ${match.label} (${match.type})`;
+            if(!isPinned) statusMsg.textContent=`SEARCH goto: ${match.label} (${match.type})`;
           }
           else{
-            statusMsg.textContent=`SEARCH: "${q}" not found`;
+            if(!isPinned) statusMsg.textContent=`SEARCH: "${q}" not found`;
           }
           closeSearch();
         }
@@ -1158,7 +1164,7 @@
       }
 
       function hideTopBars(){
-        if(isPinned) return; // Jangan hide jika pinned
+        if(isPinned) return;
         mainmenuStrip.classList.add("kt-hide-top");
         contentHeader.classList.add("kt-hide-top");
         updateIframeInteractivity();
@@ -1174,7 +1180,7 @@
       }
 
       function hideBottomBars(){
-        if(isPinned) return; // Jangan hide jika pinned
+        if(isPinned) return;
         submenuStrip.classList.add("kt-hide-bottom");
         statusbar.classList.add("kt-hide-bottom");
         updateIframeInteractivity();
@@ -1192,13 +1198,13 @@
       }
 
       function scheduleHide(){
-        if(activeBottom!=="home" || isPinned) return; // Disable autohide logic if pinned
+        if(activeBottom!=="home" || isPinned) return;
         clearTimeout(hideTimer);
         hideTimer=setTimeout(()=>{ hideAllBars(); }, HIDE_DELAY);
       }
 
       function handleMouseMove(e){
-        if(activeBottom!=="home" || isPinned) return; // Disable trigger if pinned
+        if(activeBottom!=="home" || isPinned) return;
         const y = e.clientY;
         const h = window.innerHeight;
         const nearTop = y <= TOP_TRIGGER_ZONE;
@@ -1410,18 +1416,18 @@
 
       function addCurrentViewToWorkspace(){
         if(!currentViewUrl){
-          statusMsg.textContent = "WORKSPACE: no active view to add";
+          if(!isPinned) statusMsg.textContent = "WORKSPACE: no active view to add";
           return;
         }
         createWorkspaceWindow(currentViewUrl, currentViewTitleMain, currentViewTitleSub);
-        statusMsg.textContent = "WORKSPACE: view added";
+        if(!isPinned) statusMsg.textContent = "WORKSPACE: view added";
       }
 
       function clearWorkspace(){
         if(!workspaceBoard) return;
         workspaceBoard.innerHTML = "";
         ensureWorkspacePlaceholder();
-        statusMsg.textContent = "WORKSPACE: cleared";
+        if(!isPinned) statusMsg.textContent = "WORKSPACE: cleared";
       }
 
       function attachDragHandlers(win){
@@ -1548,7 +1554,6 @@
               hideProfilePage();
               hideWorkspacePage();
             }
-            // Logic relies on data-sub-index, so re-ordering HTML handles this automatically
             setActiveSub(activeMenu, Number(k)-1);
             if(!isPinned) { showAllBars(); scheduleHide(); }
             return;
