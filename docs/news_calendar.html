@@ -5,7 +5,6 @@
   <title>Kuantara – Economic Calendar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Fira Code supaya konsisten dengan style terminal -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
@@ -51,35 +50,18 @@
       height:100%;
     }
 
-    /* Kecilkan & kalemkan attribution */
+    /* CSS untuk copyright disembunyikan sepenuhnya sebagai pengaman tambahan */
     .tradingview-widget-copyright {
-      font-size:9px !important;
-      text-align:right !important;
-      color:var(--text-muted) !important;
-      padding:2px 6px 4px 6px !important;
-    }
-
-    .tradingview-widget-copyright a {
-      color:var(--text-muted) !important;
-      text-decoration:none !important;
-    }
-
-    .tradingview-widget-copyright a:hover {
-      text-decoration:underline !important;
+      display: none !important;
     }
   </style>
 </head>
 <body>
 
   <div id="economicCalendarWidget">
-    <!-- TradingView Economic Calendar -->
     <div class="tradingview-widget-container">
       <div class="tradingview-widget-container__widget"></div>
-      <div class="tradingview-widget-copyright">
-        <a href="https://id.tradingview.com/economic-calendar/" rel="noopener nofollow" target="_blank">
-          <span class="blue-text">Track all markets on TradingView</span>
-        </a>
-      </div>
+      
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
       {
         "colorTheme": "dark",
@@ -92,8 +74,7 @@
       }
       </script>
     </div>
-    <!-- End TradingView Economic Calendar -->
-  </div>
+    </div>
 
 </body>
 </html>
