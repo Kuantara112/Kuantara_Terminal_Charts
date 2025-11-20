@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara – Reports</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap"/>
+
+  <style>
+    :root {
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+      /* Firefox scrollbar */
+      scrollbar-width:thin;
+      scrollbar-color:#000000 #000000;
+    }
+
+    /* WebKit scrollbar (Chrome/Edge/Safari) */
+    *::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track{
+      background:#000000;
+    }
+    *::-webkit-scrollbar-thumb{
+      background:#000000;
+      border-radius:3px;
+    }
+
+    html, body {
+      width:100%;
+      height:100%;
+      background-color:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    body {
+      display:flex;
+    }
+
+    .page-root {
+      flex:1;
+      padding:16px;
+    }
+
+    .panel {
+      width:100%;
+      height:100%;
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px 12px 10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      padding:6px 8px;
+      background:#000000;
+      border-radius:4px;
+      border:1px solid var(--border-soft);
+    }
+
+    .toolbar-group {
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+      border-right:1px solid #222222;
+      padding-right:6px;
+      margin-right:4px;
+    }
+
+    .toolbar-group:last-child {
+      border-right:none;
+      margin-right:0;
+      padding-right:0;
+    }
+
+    .tb-btn {
+      cursor:pointer;
+      font-size:10px;
+      padding:4px 6px;
+      border-radius:3px;
+      border:1px solid #262626;
+      background:#111111;
+      color:var(--text-main);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:2px;
+      min-width:26px;
+      user-select:none;
+      transition:background 0.12s ease,border-color 0.12s ease,transform 0.05s ease;
+    }
+
+    .tb-btn span {
+      line-height:1;
+    }
+
+    .tb-btn:hover {
+      background:#181818;
+      border-color:var(--accent);
+    }
+
+    .tb-btn:active {
+      transform:scale(0.97);
+      background:#151515;
+    }
+
+    .tb-btn.toggled {
+      background:#222222;
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+
+    .tb-btn.primary {
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+
+    .tb-label {
+      font-size:9.5px;
+      color:var(--text-muted);
+      margin-right:2px;
+      align-self:center;
+    }
+
+    .tb-select {
+      background:#111111;
+      border:1px solid #262626;
+      color:var(--text-main);
+      font-size:10px;
+      padding:3px 18px 3px 6px;
+      border-radius:3px;
+      appearance:none;
+      -moz-appearance:none;
+      -webkit-appearance:none;
+      position:relative;
+      min-width:80px;
+    }
+
+    .tb-select-wrap {
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+    }
+
+    .tb-select-wrap::after{
+      content:"▾";
+      position:absolute;
+      right:6px;
+      font-size:9px;
+      color:var(--text-muted);
+      pointer-events:none;
+    }
+
+    .status-bar {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size:9.5px;
+      color:var(--text-muted);
+      padding:0 2px;
+      gap:6px;
+    }
+
+    .status-left,
+    .status-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .status-pill {
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid #262626;
+      background:#000000;
+      font-size:9.5px;
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
+
+    .accent-dot {
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 4px rgba(255,191,0,0.8);
+    }
+
+    /* Editor region */
+    .editor-wrap {
+      flex:1;
+      min-height:0;
+      border-radius:4px;
+      border:1px solid var(--border-soft);
+      background:#000000;
+      padding:10px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .editor-scroll {
+      flex:1;
+      min-height:0;
+      overflow:auto;
+      padding:4px 2px;
+    }
+
+    .editor-page {
+      margin:0 auto 16px;
+      max-width:860px;
+      min-height:80vh;
+      padding:18px 18px 32px;
+      border-radius:4px;
+      background:#111111;
+      border:1px solid #262626;
+      box-shadow:0 0 0 1px rgba(0,0,0,0.6);
+      position:relative;
+      font-size:11px;
+      line-height:1.5;
+      color:var(--text-main);
+      outline:none;
+      /* Watermark repeat via SVG background */
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='180' viewBox='0 0 260 180'%3E%3Ctext x='0' y='90' transform='rotate(-30 0 90)' fill='%232b2b2b' font-size='16' font-family='Fira Code, monospace' opacity='0.28'%3EGenerated by Kuantara Terminal%3C/text%3E%3C/svg%3E");
+      background-repeat:repeat;
+      background-size:260px 180px;
+    }
+
+    .editor-page:focus {
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(255,191,0,0.3);
+    }
+
+    .editor-page h1,
+    .editor-page h2,
+    .editor-page h3,
+    .editor-page h4,
+    .editor-page h5 {
+      margin:6px 0;
+      font-weight:600;
+    }
+
+    .editor-page h1 { font-size:14px; }
+    .editor-page h2 { font-size:13px; }
+    .editor-page h3 { font-size:12px; }
+
+    .editor-page p {
+      margin:4px 0 6px;
+      font-size:11px;
+    }
+
+    .editor-page ul,
+    .editor-page ol {
+      margin:4px 0 6px 16px;
+      padding-left:10px;
+      font-size:11px;
+    }
+
+    .editor-page li {
+      margin:2px 0;
+    }
+
+    .editor-page hr {
+      border:0;
+      height:1px;
+      background:#222222;
+      margin:8px 0;
+    }
+
+    .watermark-tag {
+      position:fixed;
+      right:10px;
+      bottom:8px;
+      font-size:9px;
+      color:#444444;
+      pointer-events:none;
+      user-select:none;
+      z-index:20;
+      text-align:right;
+    }
+
+    .watermark-tag span {
+      opacity:0.75;
+    }
+
+    /* Small helper text */
+    .hint {
+      font-size:9px;
+      color:var(--text-muted);
+    }
+
+    @media (max-width:768px) {
+      .page-root {
+        padding:10px;
+      }
+      .panel {
+        padding:10px 8px 8px;
+      }
+      .toolbar {
+        gap:4px;
+        padding:5px 6px;
+      }
+      .tb-btn {
+        padding:3px 5px;
+        font-size:9.5px;
+      }
+      .editor-page {
+        padding:12px 10px 30px;
+        min-height:70vh;
+        margin-bottom:12px;
+      }
+      .status-bar {
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .status-right {
+        justify-content:flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-root">
+    <div class="panel">
+      <!-- Toolbar -->
+      <div class="toolbar" id="toolbar">
+        <div class="toolbar-group">
+          <span class="tb-label">Font</span>
+          <div class="tb-select-wrap">
+            <select id="block-format" class="tb-select">
+              <option value="p">Body</option>
+              <option value="h1">Heading 1</option>
+              <option value="h2">Heading 2</option>
+              <option value="h3">Heading 3</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="toolbar-group">
+          <button class="tb-btn" data-cmd="bold"><span><b>B</b></span></button>
+          <button class="tb-btn" data-cmd="italic"><span><i>I</i></span></button>
+          <button class="tb-btn" data-cmd="underline"><span><u>U</u></span></button>
+          <button class="tb-btn" data-cmd="removeFormat"><span>CLR</span></button>
+        </div>
+
+        <div class="toolbar-group">
+          <button class="tb-btn" data-cmd="insertUnorderedList"><span>• List</span></button>
+          <button class="tb-btn" data-cmd="insertOrderedList"><span>1. List</span></button>
+          <button class="tb-btn" data-cmd="insertHorizontalRule"><span>HR</span></button>
+        </div>
+
+        <div class="toolbar-group">
+          <button class="tb-btn" data-cmd="justifyLeft"><span>⟸</span></button>
+          <button class="tb-btn" data-cmd="justifyCenter"><span>≡</span></button>
+          <button class="tb-btn" data-cmd="justifyRight"><span>⟹</span></button>
+        </div>
+
+        <div class="toolbar-group">
+          <button class="tb-btn" data-cmd="undo"><span>Undo</span></button>
+          <button class="tb-btn" data-cmd="redo"><span>Redo</span></button>
+        </div>
+
+        <div class="toolbar-group">
+          <button class="tb-btn primary" id="btn-save"><span>Save</span></button>
+          <button class="tb-btn" id="btn-new"><span>New</span></button>
+          <button class="tb-btn" id="btn-load"><span>Load</span></button>
+        </div>
+      </div>
+
+      <!-- Status bar -->
+      <div class="status-bar">
+        <div class="status-left">
+          <div class="status-pill">
+            <div class="accent-dot"></div>
+            <span id="status-text">Idle · local draft</span>
+          </div>
+          <span class="hint">CTRL+S untuk Save · CTRL+Z/CTRL+Y untuk Undo/Redo</span>
+        </div>
+        <div class="status-right">
+          <div class="status-pill">
+            <span id="char-count">0</span><span>chars</span>
+          </div>
+          <div class="status-pill">
+            <span id="word-count">0</span><span>words</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Editor -->
+      <div class="editor-wrap">
+        <div class="editor-scroll">
+          <div id="editor" class="editor-page" contenteditable="true">
+            <p>Mulai menulis laporan market kamu di sini...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global watermark overlay (visual cue per "page") -->
+  <div class="watermark-tag">
+    <span>Generated by Kuantara Terminal</span>
+  </div>
+
+  <script>
+    (function(){
+      const editor      = document.getElementById("editor");
+      const toolbar     = document.getElementById("toolbar");
+      const blockFormat = document.getElementById("block-format");
+      const statusText  = document.getElementById("status-text");
+      const charCountEl = document.getElementById("char-count");
+      const wordCountEl = document.getElementById("word-count");
+      const btnSave     = document.getElementById("btn-save");
+      const btnLoad     = document.getElementById("btn-load");
+      const btnNew      = document.getElementById("btn-new");
+
+      const STORAGE_KEY = "kuantara_reports_doc_v1";
+      let saveTimer = null;
+
+      function execCommand(cmd, value = null){
+        editor.focus();
+        document.execCommand(cmd, false, value);
+        refreshCounts();
+        scheduleAutosave();
+      }
+
+      // Toolbar button handling
+      toolbar.addEventListener("click", function(e){
+        const btn = e.target.closest(".tb-btn");
+        if(!btn) return;
+        const cmd = btn.getAttribute("data-cmd");
+        if(!cmd) return;
+        execCommand(cmd);
+      });
+
+      // Block format
+      blockFormat.addEventListener("change", function(){
+        const val = blockFormat.value;
+        editor.focus();
+        if(val === "p"){
+          document.execCommand("formatBlock", false, "p");
+        } else {
+          document.execCommand("formatBlock", false, val);
+        }
+        refreshCounts();
+        scheduleAutosave();
+      });
+
+      // Word/char counter
+      function refreshCounts(){
+        const text = editor.innerText || "";
+        const chars = text.replace(/\s+/g," ").trim().length;
+        const words = text.trim().length ? text.trim().split(/\s+/).length : 0;
+        charCountEl.textContent = chars;
+        wordCountEl.textContent = words;
+      }
+
+      // Autosave
+      function scheduleAutosave(){
+        if(saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          saveToLocal(true);
+        }, 1000);
+      }
+
+      function saveToLocal(isAuto = false){
+        try {
+          const data = {
+            html: editor.innerHTML || "",
+            ts:   Date.now()
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          statusText.textContent = isAuto ? "Autosaved locally" : "Saved to local storage";
+        } catch(err){
+          console.error("Save error:", err);
+          statusText.textContent = "Error saving (localStorage)";
+        }
+      }
+
+      function loadFromLocal(){
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw){
+          statusText.textContent = "No saved draft";
+          return;
+        }
+        try{
+          const data = JSON.parse(raw);
+          if(data && typeof data.html === "string"){
+            editor.innerHTML = data.html;
+            statusText.textContent = "Loaded from local storage";
+            refreshCounts();
+          }
+        }catch(err){
+          console.error("Load error:", err);
+          statusText.textContent = "Error loading draft";
+        }
+      }
+
+      function newDocument(){
+        if((editor.innerText || "").trim().length > 0){
+          const confirmReset = confirm("Buat dokumen baru? Perubahan yang belum disimpan akan hilang.");
+          if(!confirmReset) return;
+        }
+        editor.innerHTML = "<p></p>";
+        refreshCounts();
+        statusText.textContent = "New blank document";
+      }
+
+      // Editor input
+      editor.addEventListener("input", function(){
+        refreshCounts();
+        scheduleAutosave();
+      });
+
+      // Save buttons
+      btnSave.addEventListener("click", function(){
+        saveToLocal(false);
+      });
+
+      btnLoad.addEventListener("click", function(){
+        loadFromLocal();
+      });
+
+      btnNew.addEventListener("click", function(){
+        newDocument();
+      });
+
+      // Keyboard shortcuts (Ctrl+S / Cmd+S, Ctrl+Z/Y)
+      document.addEventListener("keydown", function(e){
+        const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+        const modKey = isMac ? e.metaKey : e.ctrlKey;
+
+        if(modKey && e.key.toLowerCase() === "s"){
+          e.preventDefault();
+          saveToLocal(false);
+        }
+      });
+
+      // Initial load from localStorage if any
+      window.addEventListener("load", function(){
+        loadFromLocal();
+        refreshCounts();
+      });
+    })();
+  </script>
+</body>
+</html>
