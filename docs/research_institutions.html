@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara – Market Research PDF Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <style>
+    :root {
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+      /* Firefox scrollbar */
+      scrollbar-width:thin;
+      scrollbar-color:#000000 #000000;
+    }
+
+    /* WebKit scrollbar */
+    *::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track{
+      background:#000000;
+    }
+    *::-webkit-scrollbar-thumb{
+      background:#000000;
+      border-radius:3px;
+    }
+
+    html,body{
+      width:100%;
+      height:100%;
+      background:#000000;
+      color:var(--text-main);
+    }
+
+    body{
+      padding:8px;
+    }
+
+    .kt-shell{
+      width:100%;
+      height:100%;
+    }
+
+    .kt-panel{
+      width:100%;
+      height:100%;
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:16px;
+      display:flex;
+      gap:12px;
+      overflow:hidden;
+    }
+
+    /* LEFT COLUMN (1/4) */
+    .kt-left{
+      flex:0 0 24%;
+      min-width:220px;
+      max-width:300px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      border-right:1px solid var(--border-soft);
+      padding-right:8px;
+    }
+
+    .kt-left-header{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      margin-bottom:4px;
+    }
+
+    .kt-section-title{
+      font-size:var(--fs-subtitle);
+      font-weight:600;
+      color:var(--text-main);
+    }
+
+    .kt-section-sub{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-filter-row{
+      display:flex;
+      gap:6px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .kt-select,
+    .kt-input-date,
+    .kt-btn{
+      background:#000000;
+      border:1px solid var(--border-soft);
+      border-radius:3px;
+      color:var(--text-main);
+      font-size:var(--fs-small);
+      padding:4px 6px;
+      outline:none;
+    }
+
+    .kt-select,
+    .kt-input-date{
+      flex:1;
+      min-width:0;
+    }
+
+    .kt-btn{
+      cursor:pointer;
+      white-space:nowrap;
+      background:linear-gradient(135deg,#1a1a1a,#050505);
+    }
+
+    .kt-btn-accent{
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+
+    .kt-btn:hover{
+      filter:brightness(1.15);
+    }
+
+    .kt-list-wrapper{
+      flex:1;
+      border:1px solid var(--border-soft);
+      border-radius:3px;
+      padding:8px;
+      background:#0b0b0b;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      overflow:hidden;
+    }
+
+    .kt-list-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-bottom:4px;
+    }
+
+    .kt-list{
+      flex:1;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      padding-right:2px;
+    }
+
+    .kt-doc-item{
+      border:1px solid var(--border-soft);
+      border-radius:3px;
+      padding:6px;
+      background:#101010;
+      cursor:pointer;
+      transition:background 0.15s, border-color 0.15s;
+    }
+
+    .kt-doc-item:hover{
+      background:#171717;
+      border-color:var(--accent);
+    }
+
+    .kt-doc-item.active{
+      background:rgba(255,191,0,0.08);
+      border-color:var(--accent);
+    }
+
+    .kt-doc-title{
+      font-size:var(--fs-body);
+      color:var(--text-main);
+      margin-bottom:2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .kt-doc-meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      gap:4px;
+    }
+
+    .kt-doc-tag{
+      padding:1px 4px;
+      border-radius:2px;
+      background:#181818;
+      color:var(--accent);
+      font-size:8.5px;
+    }
+
+    /* RIGHT COLUMN (3/4) */
+    .kt-right{
+      flex:1;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .kt-viewer-toolbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
+      font-size:var(--fs-small);
+      padding:6px 8px;
+      border-radius:3px;
+      border:1px solid var(--border-soft);
+      background:#0b0b0b;
+    }
+
+    .kt-toolbar-left,
+    .kt-toolbar-right{
+      display:flex;
+      align-items:center;
+      gap:4px;
+      flex-wrap:wrap;
+    }
+
+    .kt-toolbar-group{
+      display:flex;
+      align-items:center;
+      gap:4px;
+      border-radius:3px;
+      padding:3px 4px;
+      background:#050505;
+      border:1px solid #1a1a1a;
+    }
+
+    .kt-toolbar-label{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      opacity:0.85;
+    }
+
+    .kt-btn-icon{
+      font-size:var(--fs-small);
+      padding:3px 6px;
+      border-radius:2px;
+      border:1px solid var(--border-soft);
+      background:#000000;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:24px;
+    }
+
+    .kt-btn-icon.kt-active{
+      border-color:var(--accent);
+      color:var(--accent);
+      background:#151515;
+    }
+
+    .kt-zoom-label{
+      min-width:40px;
+      text-align:right;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .kt-viewer-wrapper{
+      flex:1;
+      border-radius:3px;
+      border:1px solid var(--border-soft);
+      background:#000000;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .kt-pdf-container{
+      position:relative;
+      flex:1;
+      overflow:auto;
+      background:#000000;
+    }
+
+    .kt-pdf-inner{
+      position:relative;
+      transform-origin:top left;
+      display:inline-block;
+      background:#202020;
+      margin:8px;
+      border-radius:3px;
+      overflow:hidden;
+    }
+
+    .kt-pdf-frame{
+      display:block;
+      border:none;
+      width:900px;
+      height:1200px;
+      background:#111111;
+    }
+
+    .kt-pdf-canvas{
+      position:absolute;
+      inset:0;
+      pointer-events:auto;
+    }
+
+    .kt-viewer-status{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      padding:4px 8px;
+      border-top:1px solid var(--border-soft);
+      background:#0b0b0b;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .kt-status-left,
+    .kt-status-right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .kt-dot{
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 4px var(--accent);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:900px){
+      .kt-panel{
+        flex-direction:column;
+      }
+      .kt-left{
+        flex:0 0 auto;
+        width:100%;
+        max-width:none;
+        border-right:none;
+        border-bottom:1px solid var(--border-soft);
+        padding-right:0;
+        padding-bottom:8px;
+      }
+      .kt-right{
+        flex:1;
+      }
+      .kt-pdf-frame{
+        width:100%;
+        height:70vh;
+      }
+      .kt-pdf-inner{
+        margin:4px;
+      }
+    }
+
+    @media (max-width:600px){
+      body{
+        padding:4px;
+      }
+      .kt-panel{
+        padding:10px;
+      }
+      .kt-viewer-toolbar{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-shell">
+    <div class="kt-panel">
+      <!-- LEFT: LIST & FILTERS -->
+      <div class="kt-left">
+        <div class="kt-left-header">
+          <div class="kt-section-title">Market Research PDFs</div>
+          <div class="kt-section-sub">Filter berdasarkan topik & tanggal rilis.</div>
+
+          <div class="kt-filter-row">
+            <select id="topicFilter" class="kt-select">
+              <option value="all">All Topics</option>
+              <option value="macro">Global Macro</option>
+              <option value="fx">FX Strategy</option>
+              <option value="rates">Rates & Credit</option>
+              <option value="equity">Equity Strategy</option>
+              <option value="commodities">Commodities</option>
+            </select>
+            <button id="resetFilterBtn" class="kt-btn kt-btn-accent">Reset</button>
+          </div>
+
+          <div class="kt-filter-row">
+            <input type="date" id="dateFrom" class="kt-input-date" />
+            <input type="date" id="dateTo" class="kt-input-date" />
+            <button id="applyDateFilterBtn" class="kt-btn">Filter</button>
+          </div>
+        </div>
+
+        <div class="kt-list-wrapper">
+          <div class="kt-list-header">
+            <span>Daftar Riset</span>
+            <span id="resultCount">0 item</span>
+          </div>
+          <div id="docList" class="kt-list">
+            <!-- Dummy items (ganti dengan feed backend) -->
+            <div class="kt-doc-item active"
+                 data-topic="fx"
+                 data-date="2025-11-20"
+                 data-pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf">
+              <div class="kt-doc-title">Forex Focus – AUD/USD Outlook</div>
+              <div class="kt-doc-meta">
+                <span>20 Nov 2025</span>
+                <span class="kt-doc-tag">FX Strategy</span>
+              </div>
+            </div>
+
+            <div class="kt-doc-item"
+                 data-topic="macro"
+                 data-date="2025-11-18"
+                 data-pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf">
+              <div class="kt-doc-title">Global Macro Weekly – US Recession Risk</div>
+              <div class="kt-doc-meta">
+                <span>18 Nov 2025</span>
+                <span class="kt-doc-tag">Global Macro</span>
+              </div>
+            </div>
+
+            <div class="kt-doc-item"
+                 data-topic="rates"
+                 data-date="2025-11-15"
+                 data-pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf">
+              <div class="kt-doc-title">Rates Strategy – Yield Curve Update</div>
+              <div class="kt-doc-meta">
+                <span>15 Nov 2025</span>
+                <span class="kt-doc-tag">Rates & Credit</span>
+              </div>
+            </div>
+
+            <div class="kt-doc-item"
+                 data-topic="equity"
+                 data-date="2025-11-10"
+                 data-pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf">
+              <div class="kt-doc-title">Equity Strategy – Earnings Season Wrap</div>
+              <div class="kt-doc-meta">
+                <span>10 Nov 2025</span>
+                <span class="kt-doc-tag">Equity Strategy</span>
+              </div>
+            </div>
+
+            <div class="kt-doc-item"
+                 data-topic="commodities"
+                 data-date="2025-11-05"
+                 data-pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf">
+              <div class="kt-doc-title">Commodities Review – Energy & Metals</div>
+              <div class="kt-doc-meta">
+                <span>05 Nov 2025</span>
+                <span class="kt-doc-tag">Commodities</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: PDF VIEWER -->
+      <div class="kt-right">
+        <div class="kt-viewer-toolbar">
+          <div class="kt-toolbar-left">
+            <div class="kt-toolbar-group">
+              <span class="kt-toolbar-label">Annotate</span>
+              <button id="toolPan" class="kt-btn-icon kt-active" title="Pan / Non-Edit">PAN</button>
+              <button id="toolPen" class="kt-btn-icon" title="Pen">✏</button>
+              <button id="toolHighlight" class="kt-btn-icon" title="Highlight">HL</button>
+              <button id="toolEraser" class="kt-btn-icon" title="Eraser">ER</button>
+              <button id="toolClear" class="kt-btn-icon" title="Clear Annotations">CLR</button>
+            </div>
+
+            <div class="kt-toolbar-group">
+              <span class="kt-toolbar-label">Zoom</span>
+              <button id="zoomOutBtn" class="kt-btn-icon" title="Zoom Out">-</button>
+              <button id="zoomResetBtn" class="kt-btn-icon" title="Reset Zoom">100%</button>
+              <button id="zoomInBtn" class="kt-btn-icon" title="Zoom In">+</button>
+              <span id="zoomLabel" class="kt-zoom-label">100%</span>
+            </div>
+          </div>
+
+          <div class="kt-toolbar-right">
+            <div class="kt-toolbar-group">
+              <span class="kt-toolbar-label">Viewer</span>
+              <button id="openNewTabBtn" class="kt-btn-icon" title="Buka di Tab Baru">TAB</button>
+              <button id="fitWidthBtn" class="kt-btn-icon" title="Fit Width">FW</button>
+              <button id="fitPageBtn" class="kt-btn-icon" title="Fit Page">FP</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="kt-viewer-wrapper">
+          <div class="kt-pdf-container" id="pdfContainer">
+            <div class="kt-pdf-inner" id="pdfInner">
+              <!-- PDF iframe -->
+              <iframe id="pdfFrame"
+                      class="kt-pdf-frame"
+                      src="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf#view=FitH"
+                      title="Market Research PDF">
+              </iframe>
+              <!-- Annotation canvas -->
+              <canvas id="pdfCanvas" class="kt-pdf-canvas"></canvas>
+            </div>
+          </div>
+          <div class="kt-viewer-status">
+            <div class="kt-status-left">
+              <span class="kt-dot"></span>
+              <span id="statusDocTitle">Forex Focus – AUD/USD Outlook</span>
+            </div>
+            <div class="kt-status-right">
+              <span id="statusTool">Mode: PAN</span>
+              <span id="statusHint" style="font-size:var(--fs-small);color:var(--text-muted);">
+                Klik dokumen di kiri untuk mengganti PDF.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const docListEl      = document.getElementById('docList');
+      const topicFilterEl  = document.getElementById('topicFilter');
+      const dateFromEl     = document.getElementById('dateFrom');
+      const dateToEl       = document.getElementById('dateTo');
+      const applyDateBtn   = document.getElementById('applyDateFilterBtn');
+      const resetFilterBtn = document.getElementById('resetFilterBtn');
+      const resultCountEl  = document.getElementById('resultCount');
+
+      const pdfFrame       = document.getElementById('pdfFrame');
+      const pdfInner       = document.getElementById('pdfInner');
+      const pdfCanvas      = document.getElementById('pdfCanvas');
+      const pdfContainer   = document.getElementById('pdfContainer');
+
+      const statusDocTitle = document.getElementById('statusDocTitle');
+      const statusTool     = document.getElementById('statusTool');
+
+      const zoomOutBtn     = document.getElementById('zoomOutBtn');
+      const zoomInBtn      = document.getElementById('zoomInBtn');
+      const zoomResetBtn   = document.getElementById('zoomResetBtn');
+      const zoomLabel      = document.getElementById('zoomLabel');
+      const openNewTabBtn  = document.getElementById('openNewTabBtn');
+      const fitWidthBtn    = document.getElementById('fitWidthBtn');
+      const fitPageBtn     = document.getElementById('fitPageBtn');
+
+      const toolPanBtn        = document.getElementById('toolPan');
+      const toolPenBtn        = document.getElementById('toolPen');
+      const toolHighlightBtn  = document.getElementById('toolHighlight');
+      const toolEraserBtn     = document.getElementById('toolEraser');
+      const toolClearBtn      = document.getElementById('toolClear');
+
+      let zoomLevel = 1.0;
+      let currentTool = 'pan'; // 'pan' | 'pen' | 'highlight' | 'eraser'
+      let currentPdfUrl = pdfFrame.src;
+
+      // === FILTER LOGIC ===
+      function applyFilters(){
+        const topicVal = topicFilterEl.value;
+        const dateFrom = dateFromEl.value ? new Date(dateFromEl.value) : null;
+        const dateTo   = dateToEl.value ? new Date(dateToEl.value) : null;
+
+        const items = Array.from(docListEl.getElementsByClassName('kt-doc-item'));
+        let visibleCount = 0;
+
+        items.forEach(item=>{
+          const topic = item.getAttribute('data-topic');
+          const dateStr = item.getAttribute('data-date');
+          const d = dateStr ? new Date(dateStr) : null;
+
+          let visible = true;
+
+          if(topicVal !== 'all' && topic !== topicVal){
+            visible = false;
+          }
+
+          if(visible && dateFrom && d && d < dateFrom){
+            visible = false;
+          }
+
+          if(visible && dateTo && d && d > dateTo){
+            visible = false;
+          }
+
+          item.style.display = visible ? 'block' : 'none';
+          if(visible) visibleCount++;
+        });
+
+        resultCountEl.textContent = visibleCount + ' item';
+      }
+
+      function resetFilters(){
+        topicFilterEl.value = 'all';
+        dateFromEl.value = '';
+        dateToEl.value = '';
+        applyFilters();
+      }
+
+      topicFilterEl.addEventListener('change', applyFilters);
+      applyDateBtn.addEventListener('click', applyFilters);
+      resetFilterBtn.addEventListener('click', resetFilters);
+
+      // Init count on load
+      applyFilters();
+
+      // === DOC CLICK HANDLER ===
+      docListEl.addEventListener('click', (e)=>{
+        const item = e.target.closest('.kt-doc-item');
+        if(!item) return;
+
+        const pdfUrl = item.getAttribute('data-pdf');
+        const title  = item.querySelector('.kt-doc-title')?.textContent || 'Selected PDF';
+
+        Array.from(docListEl.getElementsByClassName('kt-doc-item')).forEach(el=>{
+          el.classList.remove('active');
+        });
+        item.classList.add('active');
+
+        if(pdfUrl){
+          currentPdfUrl = pdfUrl;
+          pdfFrame.src = pdfUrl + '#view=FitH';
+          statusDocTitle.textContent = title;
+        }
+      });
+
+      // === ZOOM HANDLING ===
+      function updateZoomLabel(){
+        zoomLabel.textContent = Math.round(zoomLevel * 100) + '%';
+        pdfInner.style.transform = 'scale(' + zoomLevel + ')';
+      }
+
+      zoomOutBtn.addEventListener('click', ()=>{
+        zoomLevel = Math.max(0.4, zoomLevel - 0.1);
+        updateZoomLabel();
+      });
+
+      zoomInBtn.addEventListener('click', ()=>{
+        zoomLevel = Math.min(3.0, zoomLevel + 0.1);
+        updateZoomLabel();
+      });
+
+      zoomResetBtn.addEventListener('click', ()=>{
+        zoomLevel = 1.0;
+        updateZoomLabel();
+      });
+
+      openNewTabBtn.addEventListener('click', ()=>{
+        if(currentPdfUrl){
+          window.open(currentPdfUrl, '_blank');
+        }
+      });
+
+      // Fit width & page are placeholders – backend bisa override logika ini kalau pakai pdf.js
+      fitWidthBtn.addEventListener('click', ()=>{
+        const containerWidth = pdfContainer.clientWidth || 900;
+        zoomLevel = containerWidth / pdfFrame.clientWidth;
+        zoomLevel = Math.max(0.3, Math.min(zoomLevel, 3.0));
+        updateZoomLabel();
+      });
+
+      fitPageBtn.addEventListener('click', ()=>{
+        const containerHeight = pdfContainer.clientHeight || 1200;
+        zoomLevel = containerHeight / pdfFrame.clientHeight;
+        zoomLevel = Math.max(0.3, Math.min(zoomLevel, 3.0));
+        updateZoomLabel();
+      });
+
+      // === ANNOTATION CANVAS ===
+      let ctx = pdfCanvas.getContext('2d');
+      let drawing = false;
+      let lastX = 0;
+      let lastY = 0;
+
+      function resizeCanvas(){
+        const rect = pdfFrame.getBoundingClientRect();
+        const innerRect = pdfInner.getBoundingClientRect();
+
+        const width = rect.width;
+        const height = rect.height;
+
+        pdfCanvas.width = width;
+        pdfCanvas.height = height;
+
+        pdfCanvas.style.width = width + 'px';
+        pdfCanvas.style.height = height + 'px';
+
+        // Posisi canvas mengikuti iframe (relative di dalam pdfInner)
+        pdfCanvas.style.left = '0';
+        pdfCanvas.style.top = '0';
+
+        ctx = pdfCanvas.getContext('2d');
+        ctx.lineCap = 'round';
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      setTimeout(resizeCanvas, 300);
+
+      function setTool(tool){
+        currentTool = tool;
+        [toolPanBtn, toolPenBtn, toolHighlightBtn, toolEraserBtn].forEach(btn=>btn.classList.remove('kt-active'));
+
+        if(tool === 'pan') toolPanBtn.classList.add('kt-active');
+        if(tool === 'pen') toolPenBtn.classList.add('kt-active');
+        if(tool === 'highlight') toolHighlightBtn.classList.add('kt-active');
+        if(tool === 'eraser') toolEraserBtn.classList.add('kt-active');
+
+        statusTool.textContent = 'Mode: ' + tool.toUpperCase();
+        pdfCanvas.style.pointerEvents = (tool === 'pan') ? 'none' : 'auto';
+      }
+
+      toolPanBtn.addEventListener('click', ()=>setTool('pan'));
+      toolPenBtn.addEventListener('click', ()=>setTool('pen'));
+      toolHighlightBtn.addEventListener('click', ()=>setTool('highlight'));
+      toolEraserBtn.addEventListener('click', ()=>setTool('eraser'));
+      toolClearBtn.addEventListener('click', ()=>{
+        ctx.clearRect(0,0,pdfCanvas.width,pdfCanvas.height);
+      });
+
+      function startDraw(x,y){
+        if(currentTool === 'pan') return;
+        drawing = true;
+        [lastX,lastY] = [x,y];
+
+        ctx.beginPath();
+        ctx.moveTo(lastX,lastY);
+
+        if(currentTool === 'pen'){
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = '#ffbf00';
+          ctx.lineWidth = 2;
+          ctx.globalAlpha = 1.0;
+        }else if(currentTool === 'highlight'){
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = 'rgba(255,255,0,0.6)';
+          ctx.lineWidth = 10;
+          ctx.globalAlpha = 0.4;
+        }else if(currentTool === 'eraser'){
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.lineWidth = 14;
+          ctx.globalAlpha = 1.0;
+        }
+      }
+
+      function draw(x,y){
+        if(!drawing) return;
+        ctx.lineTo(x,y);
+        ctx.stroke();
+        [lastX,lastY] = [x,y];
+      }
+
+      function endDraw(){
+        drawing = false;
+        ctx.globalAlpha = 1.0;
+      }
+
+      // Mouse events
+      pdfCanvas.addEventListener('mousedown', (e)=>{
+        const rect = pdfCanvas.getBoundingClientRect();
+        startDraw(e.clientX - rect.left, e.clientY - rect.top);
+      });
+      pdfCanvas.addEventListener('mousemove', (e)=>{
+        if(!drawing) return;
+        const rect = pdfCanvas.getBoundingClientRect();
+        draw(e.clientX - rect.left, e.clientY - rect.top);
+      });
+      pdfCanvas.addEventListener('mouseup', endDraw);
+      pdfCanvas.addEventListener('mouseleave', endDraw);
+
+      // Touch events (basic)
+      pdfCanvas.addEventListener('touchstart', (e)=>{
+        const touch = e.touches[0];
+        const rect = pdfCanvas.getBoundingClientRect();
+        startDraw(touch.clientX - rect.left, touch.clientY - rect.top);
+        e.preventDefault();
+      }, {passive:false});
+
+      pdfCanvas.addEventListener('touchmove', (e)=>{
+        if(!drawing) return;
+        const touch = e.touches[0];
+        const rect = pdfCanvas.getBoundingClientRect();
+        draw(touch.clientX - rect.left, touch.clientY - rect.top);
+        e.preventDefault();
+      }, {passive:false});
+
+      pdfCanvas.addEventListener('touchend', (e)=>{
+        endDraw();
+        e.preventDefault();
+      }, {passive:false});
+
+      // Initial zoom apply
+      updateZoomLabel();
+
+    })();
+  </script>
+</body>
+</html>
