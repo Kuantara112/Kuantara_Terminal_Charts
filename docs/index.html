@@ -5,7 +5,6 @@
   <title>Kuantara Terminal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Fira Code -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
@@ -67,6 +66,7 @@
       bottom:46px;
       z-index:1;
       background:#0b0b0b;
+      transition: top 0.3s ease, bottom 0.3s ease; /* Smooth transition for pin */
     }
     .kt-iframe-layer iframe{
       width:100%;
@@ -77,16 +77,45 @@
       touch-action:auto;
     }
 
+    /* ===== PINNED MODE STYLES ===== */
+    /* Saat di-pin, bar tidak boleh autohide (override transform) */
+    body.kt-pinned .kt-mainmenu-strip,
+    body.kt-pinned .kt-content-header,
+    body.kt-pinned .kt-statusbar,
+    body.kt-pinned .kt-submenu-strip {
+      transform: translateY(0) !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    /* Atur ulang posisi iframe agar pas di tengah (tidak tertutup bar) */
+    body.kt-pinned .kt-iframe-layer {
+      top: 108px;   /* 38px Topbar + ~36px Menu + ~34px Header */
+      bottom: 112px; /* 46px Nav + ~36px Submenu + ~30px Status */
+    }
+
+    /* Atur stacking order bottom bar saat pinned agar tidak tumpang tindih */
+    body.kt-pinned .kt-submenu-strip {
+      bottom: 46px !important; /* Tepat di atas Nav */
+    }
+    body.kt-pinned .kt-statusbar {
+      bottom: 80px !important; /* Tepat di atas Submenu (46 + 34 approx) */
+      border-top: 1px solid var(--border-soft);
+      background: #050505; /* Solid background agar tidak transparan menumpuk */
+    }
+
+
     /* ===== TOPMOST BAR (NO AUTOHIDE) ===== */
     .kt-topbar{
       position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:center;
       background:#070707;
       border-bottom:1px solid var(--border-soft);
       padding:8px 12px;font-size:10px;z-index:3000;
+      user-select: none; /* Agar double click enak */
     }
     .kt-topbar-left{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;flex-wrap:wrap}
-    .kt-logo{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--amber);white-space:nowrap}
-    .kt-session-clock{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:9px;color:var(--text-muted)}
+    .kt-logo{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--amber);white-space:nowrap; cursor: pointer;}
+    .kt-session-clock{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:9px;color:var(--text-muted); cursor: pointer;}
     .kt-session-item{display:inline-flex;gap:2px;align-items:baseline;white-space:nowrap;padding:1px 4px;border-radius:2px;background:#101010;border:1px solid #151515}
     .kt-session-label{color:var(--amber);font-size:9px}.kt-session-time{font-size:9px}
 
@@ -97,7 +126,7 @@
     .kt-content-header,
     .kt-statusbar,
     .kt-submenu-strip{
-      transition:transform 220ms ease,opacity 180ms ease;
+      transition:transform 220ms ease,opacity 180ms ease, bottom 220ms ease; /* Added bottom transition */
       will-change:transform,opacity;
       pointer-events:auto;
       z-index:2800;
@@ -542,11 +571,9 @@
 </head>
 <body>
   <div class="kt-root">
-    <!-- IFRAME -->
     <div class="kt-iframe-layer" id="kt-iframe-layer"></div>
 
-    <!-- TOP BAR -->
-    <header class="kt-topbar">
+    <header class="kt-topbar" id="kt-topbar" title="Double click to Pin/Unpin interface">
       <div class="kt-topbar-left">
         <div class="kt-logo">KUANTARA TERMINAL</div>
         <div class="kt-session-clock" id="kt-session-clock">
@@ -558,7 +585,6 @@
       </div>
     </header>
 
-    <!-- MAIN MENU (TOP) -->
     <nav class="kt-mainmenu-strip kt-hide-top" id="kt-mainmenu-strip">
       <button class="kt-mainmenu-btn active" data-menu="0"><span>0</span><span>Markets</span></button>
       <button class="kt-mainmenu-btn" data-menu="1"><span>1</span><span>News</span></button>
@@ -572,7 +598,6 @@
       <button class="kt-mainmenu-btn" data-menu="9"><span>9</span><span>Tools</span></button>
     </nav>
 
-    <!-- BREADCRUMB -->
     <section class="kt-content">
       <div class="kt-content-header kt-hide-top" id="kt-content-header">
         <div class="kt-breadcrumb">
@@ -582,15 +607,12 @@
       </div>
     </section>
 
-    <!-- STATUS -->
     <div class="kt-statusbar kt-hide-bottom" id="kt-statusbar">
       <div class="kt-status-msg" id="kt-status-msg">READY</div>
     </div>
   </div>
 
-  <!-- SUB MENU (BOTTOM STRIP) -->
   <nav class="kt-submenu-strip kt-hide-bottom" id="kt-submenu-strip">
-    <!-- 0. Markets -->
     <div class="kt-submenu-group active" data-menu-sub="0">
       <button class="kt-submenu-btn active" data-menu="0" data-sub-index="0">Overview</button>
       <button class="kt-submenu-btn" data-menu="0" data-sub-index="1">Forex</button>
@@ -600,24 +622,22 @@
       <button class="kt-submenu-btn" data-menu="0" data-sub-index="5">Crypto</button>
     </div>
 
-    <!-- 1. News -->
     <div class="kt-submenu-group" data-menu-sub="1">
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="0">24/7</button>
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="1">Insights</button>
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="2">Calendar</button>
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="3">Global</button>
-      <button class="kt-submenu-btn" data-menu="1" data-sub-index="4">Recap</button>
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="4">Channel</button>
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="5">Indonesia</button>
     </div>
 
-    <!-- 2. Macroeconomic -->
     <div class="kt-submenu-group" data-menu-sub="2">
       <button class="kt-submenu-btn" data-menu="2" data-sub-index="0">US Macro</button>
-      <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">Central Bank</button>
-      <button class="kt-submenu-btn" data-menu="2" data-sub-index="2">Countries</button>
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">Major Country</button>
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="2">Central Bank</button>
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="3">Details</button>
     </div>
 
-    <!-- 3. Geo-Economic -->
     <div class="kt-submenu-group" data-menu-sub="3">
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="0">Trade &amp; Shipping</button>
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="1">Supply Chain</button>
@@ -626,7 +646,6 @@
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="4">Satellite</button>
     </div>
 
-    <!-- 4. Metrics -->
     <div class="kt-submenu-group" data-menu-sub="4">
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="0">Macro</button>
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="1">Liquidity</button>
@@ -639,21 +658,18 @@
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="8">Volatility</button>
     </div>
 
-    <!-- 5. Companies -->
     <div class="kt-submenu-group" data-menu-sub="5">
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="0">United States</button>
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="1">Indonesia</button>
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="2">Blockchain Projects</button>
     </div>
 
-    <!-- 6. Charts -->
     <div class="kt-submenu-group" data-menu-sub="6">
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="0">Technical</button>
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="1">Fundamental</button>
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="2">Economy</button>
     </div>
 
-    <!-- 7. Screener -->
     <div class="kt-submenu-group" data-menu-sub="7">
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">US Stocks</button>
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">ID Stocks</button>
@@ -661,14 +677,12 @@
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="3">Custom</button>
     </div>
 
-    <!-- 8. Research -->
     <div class="kt-submenu-group" data-menu-sub="8">
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Internal</button>
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Institutions</button>
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Reports</button>
     </div>
 
-    <!-- 9. Tools -->
     <div class="kt-submenu-group" data-menu-sub="9">
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Journal</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Education</button>
@@ -679,7 +693,6 @@
     </div>
   </nav>
 
-  <!-- PROFILE PAGE -->
   <div class="kt-profile-page" id="kt-profile-page">
     <div class="kt-profile-inner">
       <div class="kt-profile-header">
@@ -747,7 +760,6 @@
     </div>
   </div>
 
-  <!-- WORKSPACE PAGE -->
   <div class="kt-workspace-page" id="kt-workspace-page">
     <div class="kt-workspace-toolbar">
       <button class="kt-workspace-btn" id="kt-workspace-add-current">Add current view</button>
@@ -761,7 +773,6 @@
     </div>
   </div>
 
-  <!-- BOTTOM NAV (3 ITEM) -->
   <nav class="kt-bottom-nav" id="kt-bottom-nav">
     <div class="kt-bottom-item active" data-bottom-role="home">
       <span>Home</span>
@@ -774,7 +785,6 @@
     </div>
   </nav>
 
-  <!-- FLOATING FAB + MENU + PANEL -->
   <div class="kt-ai-fab" id="kt-ai-fab">≡</div>
 
   <div class="kt-ai-menu" id="kt-ai-menu">
@@ -797,7 +807,6 @@
     <div class="kt-ai-footer" id="kt-ai-footer"></div>
   </div>
 
-  <!-- SEARCH -->
   <div class="kt-overlay" id="kt-search-ovl" aria-hidden="true">
     <div class="kt-card">
       <div class="kt-card-title">Search</div>
@@ -806,7 +815,6 @@
     </div>
   </div>
 
-  <!-- CHEATSHEET -->
   <div class="kt-cheatsheet" id="kt-cheatsheet">
     <div><b>Alt+0–9</b> Menu · <b>Ctrl+1–9</b> Sub · <b>Esc</b>=Alt+0 · <b>Ctrl+F</b> Search · <b>Tab</b> Profile</div>
   </div>
@@ -838,6 +846,7 @@
       const searchClose = document.getElementById("kt-search-close");
 
       const iframeLayer   = document.getElementById("kt-iframe-layer");
+      const topbar        = document.getElementById("kt-topbar");
       const mainmenuStrip = document.getElementById("kt-mainmenu-strip");
       const contentHeader = document.getElementById("kt-content-header");
       const statusbar     = document.getElementById("kt-statusbar");
@@ -854,6 +863,9 @@
       const HIDE_DELAY = 1800;
       const CLICK_GRACE = 450;
       let hideTimer=null, graceTimer=null;
+      
+      /* Pin State */
+      let isPinned = false;
 
       let activeMenu=0;
       let activeBottom="home";
@@ -882,11 +894,22 @@
         "1:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_insights.html",
         "1:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_calendar.html",
         "1:3":"https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html",
-        "1:4":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_recap.html",
+        // 1:4 is Channel (No URL provided, will render empty/placeholder)
+        "1:4":"", 
+        // 1:5 is Indonesia (Shifted? No, Recap removed, Channel added. If it was Recap, it's replaced. If Indonesia was 5, it stays 5)
+        // Previous Recap was 1:4. Indonesia was 1:5.
 
         // Macroeconomic
         "2:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/usmacro.html",
-        "2:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_countries.html",
+        // 2:1 is Major Country (New)
+        "2:1":"", 
+        // 2:2 is Central Bank (Shifted from 2:1) - No URL in original for Central Bank? 
+        // Original map had: "2:2": "macroeconomic_countries.html". 
+        // Original map didn't explicitly list "2:1" (Central Bank) in the JS snippet provided previously, 
+        // it only had 2:0 and 2:2. Assuming Central Bank (old 2:1) didn't have a URL mapped in previous code or was empty.
+        
+        // 2:3 is Details (Renamed from Countries, old 2:2)
+        "2:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_countries.html",
 
         // Charts
         "6:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/technical_charts.html"
@@ -911,7 +934,7 @@
         currentViewUrl = url;
         currentViewTitleMain = breadcrumbMain.textContent || "";
         currentViewTitleSub  = breadcrumbSub.textContent || "";
-        statusMsg.textContent = url ? "EMBED: "+url : "READY";
+        statusMsg.textContent = url ? "EMBED: "+url : "READY (No content)";
       }
 
       function setActiveMenu(menuIndex){
@@ -928,7 +951,7 @@
         const firstSub = document.querySelector('.kt-submenu-btn[data-menu="'+menuIndex+'"][data-sub-index="0"]');
         if(firstSub){ setActiveSub(menuIndex,0); } else { breadcrumbSub.textContent=""; renderContent(menuIndex,-1); }
 
-        statusMsg.textContent = "ACTIVE MENU: "+menuIndex;
+        if(!isPinned) statusMsg.textContent = "ACTIVE MENU: "+menuIndex;
       }
 
       function setActiveSub(menuIndex, subIndex){
@@ -976,8 +999,7 @@
               hideWorkspacePage();
             }
             setActiveMenu(Number(btn.getAttribute("data-menu")));
-            showAllBars();
-            scheduleHide();
+            if(!isPinned) { showAllBars(); scheduleHide(); }
           });
         });
 
@@ -993,8 +1015,7 @@
             const menuIndex = Number(btn.getAttribute("data-menu"));
             const subIndex = Number(btn.getAttribute("data-sub-index"));
             setActiveSub(menuIndex, subIndex);
-            showAllBars();
-            scheduleHide();
+            if(!isPinned) { showAllBars(); scheduleHide(); }
           });
         });
 
@@ -1010,8 +1031,7 @@
               hideWorkspacePage();
               setActiveMenu(0);
               setActiveSub(0,0);
-              showAllBars();
-              scheduleHide();
+              if(!isPinned) { showAllBars(); scheduleHide(); }
             }
             else if(role==="workspace"){
               setBottomActive("workspace");
@@ -1043,6 +1063,23 @@
             clearWorkspace();
           });
         }
+
+        /* Pin/Unpin Double Click on Topbar */
+        topbar.addEventListener("dblclick", (e) => {
+          // Mencegah trigger jika double click di logo/jam yang mungkin punya action lain (opsional)
+          // Tapi instruksinya "header yang ada tulisan kuantara terminal dan jam dunia"
+          isPinned = !isPinned;
+          document.body.classList.toggle("kt-pinned", isPinned);
+          
+          if(isPinned){
+            clearTimeout(hideTimer);
+            statusMsg.textContent = "INTERFACE: Pinned (Autohide disabled)";
+            showAllBars(); // Ensure bars are visible when pinned
+          } else {
+            statusMsg.textContent = "INTERFACE: Unpinned (Autohide enabled)";
+            if(activeBottom==="home") scheduleHide();
+          }
+        });
       }
 
       /* SEARCH */
@@ -1082,7 +1119,7 @@
           showAllBars();
         }
       }
-      function closeSearch(){ closeOverlay(searchOvl); statusMsg.textContent="SEARCH: closed"; if(activeBottom==="home") scheduleHide(); }
+      function closeSearch(){ closeOverlay(searchOvl); statusMsg.textContent="SEARCH: closed"; if(activeBottom==="home" && !isPinned) scheduleHide(); }
 
       searchClose.addEventListener("click", closeSearch);
       searchOvl.addEventListener("click",(e)=>{ if(e.target===searchOvl) closeSearch(); });
@@ -1121,6 +1158,7 @@
       }
 
       function hideTopBars(){
+        if(isPinned) return; // Jangan hide jika pinned
         mainmenuStrip.classList.add("kt-hide-top");
         contentHeader.classList.add("kt-hide-top");
         updateIframeInteractivity();
@@ -1136,6 +1174,7 @@
       }
 
       function hideBottomBars(){
+        if(isPinned) return; // Jangan hide jika pinned
         submenuStrip.classList.add("kt-hide-bottom");
         statusbar.classList.add("kt-hide-bottom");
         updateIframeInteractivity();
@@ -1147,18 +1186,19 @@
       }
 
       function hideAllBars(){
+        if(isPinned) return;
         hideTopBars();
         hideBottomBars();
       }
 
       function scheduleHide(){
-        if(activeBottom!=="home") return;
+        if(activeBottom!=="home" || isPinned) return; // Disable autohide logic if pinned
         clearTimeout(hideTimer);
         hideTimer=setTimeout(()=>{ hideAllBars(); }, HIDE_DELAY);
       }
 
       function handleMouseMove(e){
-        if(activeBottom!=="home") return;
+        if(activeBottom!=="home" || isPinned) return; // Disable trigger if pinned
         const y = e.clientY;
         const h = window.innerHeight;
         const nearTop = y <= TOP_TRIGGER_ZONE;
@@ -1176,7 +1216,7 @@
       window.addEventListener("mousemove", handleMouseMove, {passive:true});
 
       window.addEventListener("touchstart",(e)=>{
-        if(activeBottom!=="home") return;
+        if(activeBottom!=="home" || isPinned) return;
         const y=e.touches[0]?.clientY??0, h=window.innerHeight;
         const nearTop = y <= TOP_TRIGGER_ZONE;
         const nearBottom = y >= (h - BOTTOM_TRIGGER_ZONE);
@@ -1496,8 +1536,7 @@
               hideWorkspacePage();
             }
             setActiveMenu(Number(k));
-            showAllBars();
-            scheduleHide();
+            if(!isPinned) { showAllBars(); scheduleHide(); }
             return;
           }
         }
@@ -1509,9 +1548,9 @@
               hideProfilePage();
               hideWorkspacePage();
             }
+            // Logic relies on data-sub-index, so re-ordering HTML handles this automatically
             setActiveSub(activeMenu, Number(k)-1);
-            showAllBars();
-            scheduleHide();
+            if(!isPinned) { showAllBars(); scheduleHide(); }
             return;
           }
         }
@@ -1522,8 +1561,7 @@
           hideWorkspacePage();
           setActiveMenu(0);
           setActiveSub(0,0);
-          showAllBars();
-          scheduleHide();
+          if(!isPinned) { showAllBars(); scheduleHide(); }
           return;
         }
         if(e.key==="Tab"){
@@ -1538,7 +1576,7 @@
         if(e.key==="Shift" && !e.repeat && !e.ctrlKey && !e.altKey){
           const cheats=document.getElementById("kt-cheatsheet");
           cheats.style.display="block"; setTimeout(()=>{cheats.style.display="none";},2000);
-          if(activeBottom==="home"){ showAllBars(); scheduleHide(); }
+          if(activeBottom==="home" && !isPinned){ showAllBars(); scheduleHide(); }
           return;
         }
       });
