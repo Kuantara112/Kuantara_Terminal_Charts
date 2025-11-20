@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-  <title>Research Terminal (Mobile)</title>
+  <title>Research Terminal</title>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap"/>
 
@@ -29,37 +29,38 @@
       --space-sm: 8px;
       --space-md: 16px;
       
-      /* Tinggi toolbar fix */
-      --toolbar-height: 56px;
+      --toolbar-height: 50px;
     }
 
     /* --- RESET --- */
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Fira Code", monospace !important; -webkit-tap-highlight-color: transparent; }
     
-    /* Custom Scrollbar (Thin) */
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-app); }
-    ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
 
     html, body {
       width: 100%; height: 100%;
       background: var(--bg-app);
       color: var(--text-main);
-      overflow: hidden; /* Prevent body scroll, we scroll inner elements */
-      position: fixed; /* Prevent bounce effect on iOS */
+      overflow: hidden; 
+      position: fixed;
     }
 
-    /* --- LAYOUT UTAMA --- */
+    /* --- LAYOUT SPLIT (3/4 vs 1/4) --- */
     .app-shell {
       display: flex;
       width: 100vw;
-      height: 100dvh; /* Dynamic viewport height for mobile browsers */
+      height: 100dvh;
       position: relative;
     }
 
-    /* --- SIDEBAR (OFF-CANVAS ON MOBILE) --- */
+    /* SIDEBAR: 25% Width (1/4 Page) */
     .sidebar {
-      width: 300px;
+      flex: 0 0 25%; /* Force 25% width */
+      max-width: 400px; /* Agar tidak terlalu lebar di layar ultrawide */
+      min-width: 280px; /* Agar tidak hancur di layar kecil */
+      
       background: var(--bg-panel);
       border-right: 1px solid var(--border-main);
       display: flex;
@@ -68,7 +69,6 @@
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* HEADER DIHAPUS SESUAI REQUEST - Langsung ke filter */
     .sidebar-content {
       padding: var(--space-md);
       display: flex;
@@ -78,13 +78,12 @@
       overflow-y: auto;
     }
 
-    /* Mobile Overlay Background */
+    /* Backdrop (Mobile Only) */
     .sidebar-backdrop {
+      display: none; /* Hide on desktop */
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.7);
       z-index: 90;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.3s;
       backdrop-filter: blur(2px);
     }
 
@@ -96,7 +95,7 @@
       background: var(--bg-app);
       border: 1px solid var(--border-main);
       color: var(--text-main);
-      padding: 10px; /* Larger touch target */
+      padding: 10px; 
       border-radius: var(--radius);
       font-size: 12px;
       outline: none;
@@ -117,6 +116,7 @@
       border-radius: var(--radius);
       width: 100%;
     }
+    .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
     
     /* --- DOC LIST --- */
     .list-header {
@@ -133,21 +133,24 @@
       border: 1px solid transparent;
       border-radius: var(--radius);
       cursor: pointer;
+      transition: background 0.2s;
     }
+    .doc-item:hover { background: var(--bg-hover); }
     .doc-item.active { background: var(--accent-dim); border-color: var(--accent); }
     
     .doc-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; line-height: 1.4; }
     .doc-meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); }
     .tag { color: var(--accent); }
 
-    /* --- MAIN CONTENT --- */
+    /* --- MAIN CONTENT (3/4 Page) --- */
     .main-content {
-      flex: 1;
+      flex: 1; /* Takes remaining space (approx 75%) */
       display: flex;
       flex-direction: column;
       background: #000;
       position: relative;
       width: 100%;
+      min-width: 0; /* Fix flex overflow issue */
     }
 
     /* --- TOOLBAR --- */
@@ -157,22 +160,20 @@
       border-bottom: 1px solid var(--border-main);
       display: flex;
       align-items: center;
-      padding: 0 8px;
-      gap: 8px;
-      overflow-x: auto; /* Scrollable horizontal on mobile */
+      padding: 0 12px;
+      gap: 12px;
+      overflow-x: auto;
       white-space: nowrap;
-      /* Hide scrollbar visual but keep functionality */
       scrollbar-width: none; 
     }
     .toolbar::-webkit-scrollbar { display: none; }
 
     .toolbar-group {
-      display: flex; align-items: center; gap: 4px;
-      padding-right: 8px; border-right: 1px solid var(--border-main);
+      display: flex; align-items: center; gap: 6px;
+      padding-right: 12px; border-right: 1px solid var(--border-main);
     }
     .toolbar-group:last-child { border-right: none; }
 
-    /* Mobile Menu Toggle Button */
     .btn-menu {
       display: none; /* Hidden on desktop */
       background: var(--accent);
@@ -180,72 +181,78 @@
       border: none;
       font-weight: 700;
       padding: 0 12px;
-      height: 32px;
+      height: 30px;
       border-radius: var(--radius);
       font-size: 12px;
       align-items: center; gap: 6px;
+      margin-right: 8px;
     }
 
     .tool-btn {
-      width: 36px; height: 36px; /* Touch friendly size */
+      width: 32px; height: 32px;
       display: flex; align-items: center; justify-content: center;
       border: 1px solid transparent;
       background: transparent;
       color: var(--text-muted);
       border-radius: var(--radius);
       flex-shrink: 0;
+      cursor: pointer;
     }
+    .tool-btn:hover { background: var(--bg-hover); color: var(--text-main); }
     .tool-btn.active { background: var(--bg-hover); color: var(--accent); border-color: var(--border-light); }
     
-    /* SVG Helper */
-    svg { width: 18px; height: 18px; stroke-width: 2; }
+    svg { width: 16px; height: 16px; stroke-width: 2; }
 
     /* --- VIEWER AREA --- */
     .viewer-viewport {
       flex: 1;
       position: relative;
-      overflow: auto; /* Native scroll */
+      overflow: auto;
       background: #0a0a0a;
       display: flex;
       justify-content: center;
-      padding: 20px;
-      -webkit-overflow-scrolling: touch; /* Smooth scroll iOS */
+      padding: 30px;
+      -webkit-overflow-scrolling: touch;
     }
 
-    /* Mode Handling */
-    .viewer-viewport.mode-pan { touch-action: pan-x pan-y; } /* Allow native scroll */
-    .viewer-viewport.mode-draw { touch-action: none; overflow: hidden; } /* Disable scroll when drawing */
+    .viewer-viewport.mode-pan { touch-action: pan-x pan-y; cursor: grab; } 
+    .viewer-viewport.mode-pan:active { cursor: grabbing; }
+    .viewer-viewport.mode-draw { touch-action: none; overflow: hidden; cursor: crosshair; }
 
     .pdf-wrapper {
       position: relative;
       background: #202020;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.6);
       transform-origin: top center;
+      transition: transform 0.1s linear;
     }
 
-    iframe { display: block; border: none; width: 100%; height: 100%; background: #fff; pointer-events: none; /* Let touch pass to canvas wrapper */ }
+    iframe { display: block; border: none; width: 100%; height: 100%; background: #fff; pointer-events: none; }
     
-    /* Canvas sits on top */
     canvas {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      touch-action: none; /* Handle touches manually in JS */
+      touch-action: none; 
     }
 
-    /* --- RESPONSIVE LOGIC --- */
+    /* --- RESPONSIVE LOGIC (MOBILE) --- */
     @media (max-width: 768px) {
+      /* Reset Sidebar untuk Mobile menjadi Drawer */
       .sidebar {
-        position: absolute; top: 0; left: 0; height: 100%; width: 85%; max-width: 320px;
+        position: absolute; top: 0; left: 0; height: 100%; 
+        width: 85%; max-width: 320px; min-width: auto;
+        flex: none; /* Hapus aturan flex 25% */
         transform: translateX(-100%);
         box-shadow: 4px 0 20px rgba(0,0,0,0.8);
       }
       .sidebar.open { transform: translateX(0); }
+      
+      .sidebar-backdrop { display: block; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
       .sidebar-backdrop.open { opacity: 1; pointer-events: auto; }
       
-      .btn-menu { display: flex; }
-      .viewer-viewport { padding: 10px; align-items: flex-start; }
+      .btn-menu { display: flex; } /* Show Menu Button */
       
-      /* Optimize for small screens */
-      .pdf-wrapper { margin-bottom: 100px; } /* Extra space at bottom for scrolling */
+      .viewer-viewport { padding: 10px; align-items: flex-start; }
+      .pdf-wrapper { margin-bottom: 100px; }
     }
   </style>
 </head>
@@ -293,8 +300,9 @@
       </button>
 
       <div class="toolbar-group">
-        <button class="tool-btn active" id="toolPan" title="Pan">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11l5-5 5 5"/><path d="M7 13l5 5 5-5"/></svg> </button>
+        <button class="tool-btn active" id="toolPan" title="Pan / Scroll">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11l5-5 5 5"/><path d="M7 13l5 5 5-5"/></svg>
+        </button>
         <button class="tool-btn" id="toolPen" title="Pen">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
         </button>
@@ -311,8 +319,11 @@
 
       <div class="toolbar-group">
         <button class="tool-btn" id="zoomOutBtn">-</button>
-        <span style="font-size:11px; color:var(--text-muted); min-width:30px; text-align:center;" id="zoomLabel">100%</span>
+        <span style="font-size:11px; color:var(--text-muted); min-width:36px; text-align:center;" id="zoomLabel">100%</span>
         <button class="tool-btn" id="zoomInBtn">+</button>
+        <button class="tool-btn" id="fitWidthBtn" title="Fit Width">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12H3"/><path d="M21 3H3"/><path d="M21 7.5H3"/><path d="M21 16.5H3"/><path d="M21 21H3"/></svg>
+        </button>
       </div>
     </div>
 
@@ -331,7 +342,9 @@
     { title: "FX Strategy: USD/JPY Outlook", date: "2025-11-20", topic: "fx", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
     { title: "Macro: Inflation Data Analysis", date: "2025-11-19", topic: "macro", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
     { title: "Rates: 10Y Treasury Yields", date: "2025-11-18", topic: "rates", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
-    { title: "Weekly Market Recap", date: "2025-11-15", topic: "macro", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+    { title: "Equity: AI Sector Bubble Risk", date: "2025-11-15", topic: "equity", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+    { title: "Weekly Market Recap", date: "2025-11-14", topic: "macro", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+    { title: "Commodities: Oil Price Shock", date: "2025-11-10", topic: "macro", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
   ];
 
   /* --- ELEMENTS --- */
@@ -352,7 +365,7 @@
   let isDrawing = false;
   let lastX=0, lastY=0;
 
-  /* --- MOBILE SIDEBAR LOGIC --- */
+  /* --- SIDEBAR LOGIC --- */
   function toggleSidebar(show) {
     if(show) {
       sidebar.classList.add('open');
@@ -376,30 +389,20 @@
         <div class="doc-meta"><span>${doc.date}</span> <span class="tag" style="color:var(--accent)">${doc.topic.toUpperCase()}</span></div>
       `;
       el.onclick = () => {
-        // Load PDF
         pdfFrame.src = doc.pdf + "#view=FitH";
-        
-        // Highlight item
         document.querySelectorAll('.doc-item').forEach(i => i.classList.remove('active'));
         el.classList.add('active');
-        
-        // Clear canvas
         ctx.clearRect(0,0,pdfCanvas.width, pdfCanvas.height);
-        
-        // Close sidebar on mobile automatically
         if(window.innerWidth <= 768) toggleSidebar(false);
       };
       docList.appendChild(el);
     });
     resultCount.textContent = docs.length;
-    
-    // Select first automatically
     if(docs.length > 0) docList.children[0].click();
   }
   renderList();
 
   /* --- ZOOM & SIZE --- */
-  // Set base size relative to CSS (assume ~900px base width for PDF)
   const BASE_WIDTH = 900;
   const BASE_HEIGHT = 1200;
 
@@ -414,12 +417,10 @@
   resizeCanvas();
 
   function updateZoom() {
-    // Zoom using CSS transform for performance
     pdfWrapper.style.transform = `scale(${zoom})`;
     document.getElementById('zoomLabel').textContent = Math.round(zoom*100) + "%";
     
-    // Adjust container size so scrolling works
-    // Not strictly necessary with transform, but good for margin
+    // Margin handling for centering when zoomed out/in
     const margin = (BASE_WIDTH * zoom - BASE_WIDTH) / 2;
     if(zoom > 1) pdfWrapper.style.margin = `${margin}px`;
     else pdfWrapper.style.margin = '0';
@@ -428,10 +429,19 @@
   document.getElementById('zoomInBtn').onclick = () => { zoom = Math.min(zoom+0.1, 3.0); updateZoom(); };
   document.getElementById('zoomOutBtn').onclick = () => { zoom = Math.max(zoom-0.1, 0.4); updateZoom(); };
   
-  // Auto fit width on load
+  // Fit Width Function
+  document.getElementById('fitWidthBtn').onclick = () => {
+    // Calculate available width inside viewport
+    const available = viewport.clientWidth - 60; // minus padding
+    zoom = available / BASE_WIDTH;
+    updateZoom();
+  };
+
+  // Auto Fit on Init (Responsive)
   setTimeout(() => {
-    if(window.innerWidth < 900) {
-      zoom = (window.innerWidth - 40) / BASE_WIDTH;
+    const w = viewport.clientWidth;
+    if(w < BASE_WIDTH) {
+      zoom = (w - 40) / BASE_WIDTH;
       updateZoom();
     }
   }, 500);
@@ -439,21 +449,18 @@
   /* --- TOOLS LOGIC --- */
   function setTool(t) {
     currentTool = t;
-    // Toggle UI classes
     document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-    
     const map = {'pan':'toolPan','pen':'toolPen','high':'toolHigh','erase':'toolErase'};
     if(map[t]) document.getElementById(map[t]).classList.add('active');
 
-    // Mode switching for Touch/Scroll behavior
     if(t === 'pan') {
       viewport.classList.remove('mode-draw');
       viewport.classList.add('mode-pan');
-      pdfCanvas.style.pointerEvents = 'none'; // Allow touch to go through to iframe/div for scrolling
+      pdfCanvas.style.pointerEvents = 'none'; 
     } else {
       viewport.classList.remove('mode-pan');
       viewport.classList.add('mode-draw');
-      pdfCanvas.style.pointerEvents = 'auto'; // Capture touch for drawing
+      pdfCanvas.style.pointerEvents = 'auto'; 
     }
   }
 
@@ -466,19 +473,9 @@
   /* --- DRAWING & TOUCH HANDLING --- */
   function getPos(e) {
     const rect = pdfCanvas.getBoundingClientRect();
-    let clientX = e.clientX;
-    let clientY = e.clientY;
-    
-    if(e.touches && e.touches.length > 0) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    }
-
-    // Need to reverse the scale to get correct coordinate on canvas
-    return {
-      x: (clientX - rect.left) / zoom,
-      y: (clientY - rect.top) / zoom
-    };
+    let cx = e.clientX; let cy = e.clientY;
+    if(e.touches && e.touches.length > 0) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; }
+    return { x: (cx - rect.left) / zoom, y: (cy - rect.top) / zoom };
   }
 
   function startDraw(e) {
@@ -490,30 +487,22 @@
 
   function draw(e) {
     if(!isDrawing || currentTool === 'pan') return;
-    
-    // PENTING: Prevent scrolling saat menggambar
     if(e.type === 'touchmove') e.preventDefault();
 
     const p = getPos(e);
-    
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
     ctx.lineTo(p.x, p.y);
     
     if(currentTool === 'pen') {
       ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = '#ffbf00';
-      ctx.lineWidth = 2;
-      ctx.globalAlpha = 1;
+      ctx.strokeStyle = '#ffbf00'; ctx.lineWidth = 2; ctx.globalAlpha = 1;
     } else if(currentTool === 'high') {
       ctx.globalCompositeOperation = 'multiply';
-      ctx.strokeStyle = '#ffeb3b';
-      ctx.lineWidth = 12;
-      ctx.globalAlpha = 0.3;
+      ctx.strokeStyle = '#ffeb3b'; ctx.lineWidth = 12; ctx.globalAlpha = 0.3;
     } else if(currentTool === 'erase') {
       ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = 20;
-      ctx.globalAlpha = 1;
+      ctx.lineWidth = 20; ctx.globalAlpha = 1;
     }
     
     ctx.stroke();
@@ -522,12 +511,10 @@
 
   function endDraw() { isDrawing = false; }
 
-  // Mouse Events
   pdfCanvas.addEventListener('mousedown', startDraw);
   pdfCanvas.addEventListener('mousemove', draw);
   pdfCanvas.addEventListener('mouseup', endDraw);
   
-  // Touch Events (Passive: false required to preventDefault)
   pdfCanvas.addEventListener('touchstart', startDraw, {passive: false});
   pdfCanvas.addEventListener('touchmove', draw, {passive: false});
   pdfCanvas.addEventListener('touchend', endDraw);
