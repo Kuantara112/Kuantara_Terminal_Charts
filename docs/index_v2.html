@@ -5,82 +5,79 @@
   <title>Kuantara Terminal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
     :root {
-      /* Color Palette - Modern Cyberpunk/Fintech */
-      --amber: #ffbf00;
-      --amber-glow: rgba(255, 191, 0, 0.3);
-      --amber-dim: rgba(255, 191, 0, 0.1);
-      
-      --bg-root: #050505;
-      --bg-glass: rgba(10, 10, 10, 0.65);
-      --bg-glass-strong: rgba(5, 5, 5, 0.85);
-      --bg-panel: rgba(20, 20, 20, 0.6);
-      
-      --border-glass: rgba(255, 255, 255, 0.08);
-      --border-active: rgba(255, 191, 0, 0.5);
-      
-      --text-main: #e0e0e0;
-      --text-muted: #888888;
-      
-      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-      
-      /* Transitions */
-      --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+      --amber:#ffbf00; --bg-root:#000; --bg-main:#111; --border-soft:#2b2b2b;
+      --text-main:#f5f5f5; --text-muted:#9b9b9b; --overlay:rgba(0,0,0,0.6);
     }
 
-    /* GLOBAL RESET */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Fira Code", monospace !important;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border-glass) transparent;
-      -webkit-tap-highlight-color: transparent;
+    /* GLOBAL RESET + SCROLLBAR HITAM */
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace!important;
+      /* Firefox scrollbar */
+      scrollbar-width:thin;
+      scrollbar-color:#000000 #000000; /* thumb | track */
     }
 
-    /* Modern Scrollbar */
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--amber); }
-
-    html, body { height: 100%; }
-
-    body {
-      background-color: var(--bg-root);
-      background-image: radial-gradient(circle at 50% 0%, #1a1200 0%, #050505 60%);
-      color: var(--text-main);
-      overflow: hidden;
+    /* WebKit scrollbar (Chrome, Edge, Safari) */
+    ::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    ::-webkit-scrollbar-track{
+      background:#000000; /* track hitam */
+    }
+    ::-webkit-scrollbar-thumb{
+      background:#000000; /* thumb hitam */
+      border-radius:4px;
+    }
+    ::-webkit-scrollbar-thumb:hover{
+      background:#050505; /* sedikit lebih terang saat hover */
     }
 
-    @media (max-width: 768px) {
-      body { overflow: auto; -webkit-overflow-scrolling: touch; }
+    html,body{height:100%}
+
+    /* Scroll behavior */
+    body{
+      background-color:var(--bg-root);
+      color:var(--text-main);
+      overflow:hidden;
+    }
+    @media (max-width: 768px){
+      body{
+        overflow:auto;
+        -webkit-overflow-scrolling:touch;
+      }
     }
 
-    .kt-root { display: flex; flex-direction: column; height: 100vh; position: relative; }
+    .kt-root{display:flex;flex-direction:column;height:100vh;position:relative}
 
-    /* ===== ANIMATIONS ===== */
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 var(--amber-glow); } 70% { box-shadow: 0 0 0 6px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
-
-    /* ===== IFRAME LAYER ===== */
-    .kt-iframe-layer {
-      position: fixed;
-      left: 0; right: 0; top: 38px; bottom: 46px;
-      z-index: 1;
-      background: #000;
-      transition: top 0.4s var(--ease-smooth), bottom 0.4s var(--ease-smooth);
+    /* ===== IFRAME LAYER (RESPECT HEADER + BOTTOM NAV) ===== */
+    .kt-iframe-layer{
+      position:fixed;
+      left:0;
+      right:0;
+      top:38px;
+      bottom:46px;
+      z-index:1;
+      background:#0b0b0b;
+      transition: top 0.3s ease, bottom 0.3s ease; /* Smooth transition for pin */
     }
-    .kt-iframe-layer iframe { width: 100%; height: 100%; border: 0; display: block; background: #000; }
+    .kt-iframe-layer iframe{
+      width:100%;
+      height:100%;
+      border:0;
+      display:block;
+      background:#0b0b0b;
+      touch-action:auto;
+    }
 
-    /* ===== PINNED MODE ===== */
+    /* ===== PINNED MODE STYLES ===== */
     body.kt-pinned .kt-mainmenu-strip,
     body.kt-pinned .kt-content-header,
     body.kt-pinned .kt-statusbar,
@@ -89,277 +86,557 @@
       opacity: 1 !important;
       pointer-events: auto !important;
     }
-    body.kt-pinned .kt-iframe-layer { top: 108px; bottom: 112px; }
-    body.kt-pinned .kt-submenu-strip { bottom: 46px !important; }
-    body.kt-pinned .kt-statusbar { bottom: 80px !important; border-top: 1px solid var(--border-glass); background: var(--bg-root); }
 
-    /* ===== GLASS UI COMPONENTS ===== */
-    .kt-glass {
-      background: var(--bg-glass);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-glass);
+    body.kt-pinned .kt-iframe-layer {
+      top: 108px;   /* 38px Topbar + ~36px Menu + ~34px Header */
+      bottom: 112px; /* 46px Nav + ~36px Submenu + ~30px Status */
     }
 
-    /* ===== TOP BAR ===== */
-    .kt-topbar {
-      position: fixed; top: 0; left: 0; right: 0;
-      display: flex; align-items: center; justify-content: center;
-      padding: 8px 12px; font-size: 10px; z-index: 3000;
-      background: var(--bg-glass-strong);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border-glass);
+    body.kt-pinned .kt-submenu-strip {
+      bottom: 46px !important; /* Tepat di atas Nav */
+    }
+    body.kt-pinned .kt-statusbar {
+      bottom: 80px !important; /* Tepat di atas Submenu (46 + 34 approx) */
+      border-top: 1px solid var(--border-soft);
+      background: #050505; /* Solid background agar tidak transparan menumpuk */
+    }
+
+    /* ===== TOPMOST BAR (NO AUTOHIDE) ===== */
+    .kt-topbar{
+      position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:center;
+      background:#070707;
+      border-bottom:1px solid var(--border-soft);
+      padding:8px 12px;font-size:10px;z-index:3000;
       user-select: none;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
-    .kt-topbar-left { display: flex; align-items: center; gap: 10px; }
-    
-    .kt-logo {
-      font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-      font-size: 14px; color: var(--amber); cursor: pointer;
-      text-shadow: 0 0 10px var(--amber-glow);
-      transition: text-shadow 0.3s ease;
-    }
-    .kt-logo:hover { text-shadow: 0 0 20px var(--amber); }
+    .kt-topbar-left{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;flex-wrap:wrap}
+    .kt-logo{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--amber);white-space:nowrap; cursor: pointer;}
+    .kt-session-clock{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:9px;color:var(--text-muted); cursor: pointer;}
+    .kt-session-item{display:inline-flex;gap:2px;align-items:baseline;white-space:nowrap;padding:1px 4px;border-radius:2px;background:#101010;border:1px solid #151515}
+    .kt-session-label{color:var(--amber);font-size:9px}.kt-session-time{font-size:9px}
 
-    .kt-session-clock { display: flex; gap: 6px; color: var(--text-muted); cursor: pointer; }
-    .kt-session-item {
-      display: inline-flex; gap: 3px; padding: 2px 6px;
-      border-radius: 4px; background: rgba(255,255,255,0.03);
-      border: 1px solid transparent;
-      transition: all 0.3s ease;
-    }
-    .kt-session-item:hover { border-color: var(--border-glass); background: rgba(255,255,255,0.07); }
-    .kt-session-label { color: var(--amber); font-weight: 600; font-size: 9px; }
+    /* ===== UI CHROME (AUTOHIDE) ===== */
+    .kt-main{flex:1;display:flex;flex-direction:column;background:transparent;min-height:0;position:relative;z-index:5}
 
-    /* ===== MENU STRIPS (Top & Bottom) ===== */
-    .kt-mainmenu-strip, .kt-content-header, .kt-statusbar, .kt-submenu-strip {
-      position: fixed; z-index: 2800;
-      transition: transform 0.4s var(--ease-smooth), opacity 0.3s ease, bottom 0.4s ease;
+    .kt-mainmenu-strip,
+    .kt-content-header,
+    .kt-statusbar,
+    .kt-submenu-strip{
+      transition:transform 220ms ease,opacity 180ms ease, bottom 220ms ease;
+      will-change:transform,opacity;
+      pointer-events:auto;
+      z-index:2800;
+      position:fixed;
     }
 
-    /* Main Menu */
-    .kt-mainmenu-strip {
-      top: 38px; left: 0; right: 0;
-      display: flex; gap: 6px; padding: 8px 12px;
-      background: var(--bg-glass);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-glass);
-      overflow-x: auto; justify-content: center;
+    /* MAIN MENU (TOP) */
+    .kt-mainmenu-strip{
+      top:38px;
+      left:0;
+      right:0;
+      display:flex;
+      gap:4px;
+      padding:6px 8px;
+      background:#050505cf;
+      border-bottom:1px solid var(--border-soft);
+      overflow-x:auto;
+      scrollbar-width:thin;
+      backdrop-filter:blur(4px);
+      justify-content:center;
     }
-    .kt-hide-top { transform: translateY(-120%); opacity: 0; pointer-events: none; }
+    .kt-hide-top{transform:translateY(-100%);opacity:.02;pointer-events:none}
 
-    .kt-mainmenu-btn {
-      padding: 6px 12px; border-radius: 6px; border: 1px solid transparent;
-      background: rgba(255,255,255,0.03); color: var(--text-muted);
-      font-size: 11px; display: inline-flex; align-items: center; gap: 6px;
-      cursor: pointer; transition: all 0.2s ease;
+    .kt-mainmenu-btn{
+      flex:0 0 auto;padding:4px 8px;border-radius:3px;border:1px solid var(--border-soft);
+      background:#101010;color:var(--text-muted);font-size:11px;display:inline-flex;align-items:center;gap:4px;
+      cursor:pointer;white-space:nowrap;touch-action:manipulation;
+      box-shadow:0 1px 0 rgba(255,255,255,0.04), 0 1px 3px rgba(0,0,0,0.8);
+      transition:background 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease, color 0.15s ease, border-color 0.15s ease;
     }
-    .kt-mainmenu-btn span:first-child { color: var(--amber); font-weight: 600; opacity: 0.8; }
-    .kt-mainmenu-btn:hover { background: rgba(255,255,255,0.08); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-    .kt-mainmenu-btn:active { transform: scale(0.96); }
-    .kt-mainmenu-btn.active {
-      background: var(--amber-dim); border-color: var(--amber-glow);
-      color: #fff; box-shadow: 0 0 15px var(--amber-dim);
+    .kt-mainmenu-btn span:first-child{color:var(--amber);font-weight:500}
+    .kt-mainmenu-btn:hover{
+      background:#181818;
+      color:var(--text-main);
+      box-shadow:0 1px 0 rgba(255,255,255,0.06), 0 2px 4px rgba(0,0,0,0.9);
     }
-    .kt-mainmenu-btn.active span:first-child { color: var(--amber); opacity: 1; }
+    .kt-mainmenu-btn:active{
+      transform:translateY(1px);
+      box-shadow:0 0 0 rgba(0,0,0,0.6);
+    }
+    .kt-mainmenu-btn.active{
+      background:var(--amber);color:#000;border-color:#f0f0f0;
+      box-shadow:0 1px 0 rgba(255,255,255,0.12), 0 2px 5px rgba(0,0,0,0.95);
+    }
+    .kt-mainmenu-btn.active span:first-child{color:#000}
 
-    /* Content Header */
-    .kt-content-header {
-      top: 82px; left: 0; right: 0;
-      border-bottom: 1px solid var(--border-glass);
-      padding: 6px 12px; display: flex; align-items: center;
-      background: rgba(5, 5, 5, 0.7); backdrop-filter: blur(8px);
+    /* CONTENT HEADER */
+    .kt-content-header{
+      top:78px;left:0;right:0;border-bottom:1px solid var(--border-soft);padding:6px 10px;display:flex;
+      justify-content:space-between;align-items:center;font-size:11px;gap:8px;flex-wrap:wrap;background:#0a0a0acc;backdrop-filter:blur(4px)
     }
-    .kt-breadcrumb { display: flex; gap: 8px; align-items: baseline; }
-    .kt-breadcrumb-main { color: var(--amber); font-weight: 600; text-shadow: 0 0 5px var(--amber-dim); }
-    .kt-breadcrumb-sub { color: var(--text-muted); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .kt-breadcrumb{display:flex;gap:6px;align-items:baseline;min-width:0}
+    .kt-breadcrumb-main{color:var(--amber);font-weight:500;white-space:nowrap}
+    .kt-breadcrumb-sub{color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px}
 
-    /* Sub Menu */
-    .kt-submenu-strip {
-      bottom: 46px; left: 0; right: 0;
-      background: rgba(10, 10, 10, 0.85);
-      backdrop-filter: blur(16px);
-      border-top: 1px solid var(--border-glass);
-      padding: 6px 0; min-height: 36px;
+    /* STATUS BAR */
+    .kt-statusbar{
+      left:0;right:0;bottom:46px;border-top:1px solid var(--border-soft);padding:4px 10px 6px;font-size:10px;display:flex;align-items:center;
+      background:#050505cc;color:var(--text-muted);backdrop-filter:blur(4px)
     }
-    .kt-submenu-group { display: none; gap: 6px; overflow-x: auto; padding: 0 12px; }
-    .kt-submenu-group.active { display: flex; justify-content: center; }
-    
-    .kt-submenu-btn {
-      padding: 4px 10px; border-radius: 4px; border: 1px solid transparent;
-      background: transparent; color: var(--text-muted); font-size: 10px;
-      cursor: pointer; transition: all 0.2s ease;
-    }
-    .kt-submenu-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
-    .kt-submenu-btn.active {
-      background: var(--amber); color: #000; font-weight: 600;
-      box-shadow: 0 0 10px var(--amber-glow);
-    }
+    .kt-hide-bottom{transform:translateY(100%);opacity:.02;pointer-events:none}
+    .kt-status-msg{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 
-    /* Status Bar */
-    .kt-statusbar {
-      bottom: 46px; left: 0; right: 0;
-      background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-      border-top: 1px solid var(--border-glass);
-      padding: 4px 12px; color: #666;
+    /* SUB MENU (BOTTOM STRIP) */
+    .kt-submenu-strip{
+      left:0;right:0;bottom:46px;border-top:1px solid var(--border-soft);background:#090909cc;padding:4px 6px 4px 8px;min-height:32px;backdrop-filter:blur(4px)
     }
-    .kt-hide-bottom { transform: translateY(120%); opacity: 0; pointer-events: none; }
-
-    /* ===== BOTTOM NAV ===== */
-    .kt-bottom-nav {
-      position: fixed; left: 0; right: 0; bottom: 0; height: 46px;
-      background: var(--bg-glass-strong); backdrop-filter: blur(20px);
-      border-top: 1px solid var(--border-glass);
-      display: flex; justify-content: space-around; align-items: center;
-      z-index: 2800;
+    .kt-submenu-group{display:none;gap:4px;overflow-x:auto;padding-bottom:2px}
+    .kt-submenu-group.active{display:flex}
+    .kt-submenu-btn{
+      flex:0 0 auto;padding:3px 8px;border-radius:3px;border:1px solid var(--border-soft);background:#101010;color:var(--text-muted);
+      font-size:10px;cursor:pointer;white-space:nowrap;touch-action:manipulation;
+      box-shadow:0 1px 0 rgba(255,255,255,0.04), 0 1px 3px rgba(0,0,0,0.8);
+      transition:background 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease, border-color 0.15s ease, color 0.15s ease;
     }
-    .kt-bottom-item {
-      flex: 1; height: 100%; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 4px;
-      color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;
-      position: relative; overflow: hidden;
+    .kt-submenu-btn:hover{
+      background:#181818;
+      color:var(--text-main);
+      box-shadow:0 1px 0 rgba(255,255,255,0.06), 0 2px 4px rgba(0,0,0,0.9);
     }
-    .kt-bottom-item:hover { color: var(--text-main); background: rgba(255,255,255,0.02); }
-    .kt-bottom-item.active { color: var(--amber); }
-    .kt-bottom-item.active::after {
-      content: ''; position: absolute; bottom: 0; width: 40px; height: 2px;
-      background: var(--amber); box-shadow: 0 0 8px var(--amber);
-      animation: slideUp 0.3s ease;
+    .kt-submenu-btn:active{
+      transform:translateY(1px);
+      box-shadow:0 0 0 rgba(0,0,0,0.6);
+    }
+    .kt-submenu-btn.active{
+      background:var(--amber);color:#000;border-color:#f0f0f0;
+      box-shadow:0 1px 0 rgba(255,255,255,0.12), 0 2px 5px rgba(0,0,0,0.95);
     }
 
-    /* ===== PAGES (PROFILE & WORKSPACE) - MODAL STYLE ===== */
-    .kt-profile-page, .kt-workspace-page {
-      position: fixed; inset: 38px 0 46px 0; z-index: 2000;
-      display: none; overflow: auto;
-      background: rgba(5, 5, 5, 0.95);
-      backdrop-filter: blur(5px);
-      animation: fadeIn 0.3s ease;
+    /* BOTTOM NAV (HOME / WORKSPACE / PROFILE) */
+    .kt-bottom-nav{
+      position:fixed;
+      left:0;right:0;bottom:0;height:46px;background:#050505e6;border-top:1px solid var(--border-soft);
+      display:flex;justify-content:space-around;align-items:stretch;font-size:10px;backdrop-filter:blur(4px);
+      z-index:2800;
     }
-    
-    .kt-profile-inner {
-      max-width: 700px; margin: 20px auto;
-      background: var(--bg-panel);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--border-glass);
-      border-radius: 16px; padding: 24px;
-      box-shadow: var(--shadow-glass);
-      animation: slideUp 0.4s var(--ease-elastic);
+    .kt-bottom-item{
+      flex:1;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      color:var(--text-muted);
+      cursor:pointer;gap:2px;
+      touch-action:manipulation;
+      font-size:11px;
+      box-shadow:inset 0 0 0 rgba(0,0,0,0);
+      transition:background 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease, color 0.15s ease;
     }
-    .kt-profile-header { display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--border-glass); padding-bottom: 15px; }
-    .kt-profile-title { font-size: 14px; color: var(--amber); letter-spacing: 1px; margin-bottom: 4px; }
-    .kt-profile-name { font-size: 18px; font-weight: 700; color: #fff; }
-    
-    .kt-badge {
-      background: rgba(255, 191, 0, 0.1); border: 1px solid var(--amber); color: var(--amber);
-      padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 600;
-      box-shadow: 0 0 10px var(--amber-dim);
+    .kt-bottom-item:hover{
+      background:#101010;
+      color:var(--text-main);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
     }
-
-    .kt-profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-    .kt-profile-card {
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass);
-      border-radius: 10px; padding: 12px; transition: transform 0.2s ease;
+    .kt-bottom-item:active{
+      transform:translateY(1px);
+      box-shadow:inset 0 0 0 rgba(0,0,0,0.6);
     }
-    .kt-profile-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
-    .kt-profile-card-title { color: var(--amber); font-size: 11px; margin-bottom: 6px; font-weight: 600; }
-    .kt-profile-card-body { font-size: 11px; color: #ccc; line-height: 1.6; }
-
-    .kt-profile-menu-btn {
-      padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border-glass);
-      background: rgba(0,0,0,0.4); color: #eee; cursor: pointer; transition: 0.2s;
-    }
-    .kt-profile-menu-btn:hover { background: var(--amber); color: #000; border-color: var(--amber); }
-
-    /* Workspace */
-    .kt-workspace-board { background: radial-gradient(circle at center, #111 0%, #000 100%); }
-    .kt-workspace-toolbar { padding: 10px; }
-    .kt-workspace-btn {
-      padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border-glass);
-      background: rgba(20,20,20,0.8); color: #fff; cursor: pointer;
-      backdrop-filter: blur(4px); transition: 0.2s;
-    }
-    .kt-workspace-btn:hover { background: var(--amber); color: #000; box-shadow: 0 0 12px var(--amber-glow); border-color: var(--amber); }
-    .kt-workspace-btn.secondary:hover { background: #333; color: #fff; box-shadow: none; border-color: #555; }
-
-    .kt-workspace-window {
-      background: rgba(15, 15, 15, 0.9);
-      border: 1px solid var(--border-active);
-      border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-      animation: popIn 0.3s var(--ease-elastic);
-    }
-    .kt-workspace-window-header {
-      background: linear-gradient(90deg, rgba(30,30,30,1) 0%, rgba(10,10,10,1) 100%);
-      border-bottom: 1px solid #333; padding: 0 10px;
-    }
-    .kt-workspace-window-title { font-weight: 600; color: var(--amber); }
-
-    /* ===== FLOATING FAB & PANEL ===== */
-    .kt-ai-fab {
-      position: fixed; right: 20px; bottom: 90px;
-      width: 50px; height: 50px; border-radius: 50%;
-      background: var(--amber); color: #000;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: bold;
-      box-shadow: 0 0 20px var(--amber-glow);
-      cursor: pointer; z-index: 3000; border: 2px solid #fff;
-      transition: transform 0.3s var(--ease-elastic);
-      animation: pulseGlow 3s infinite;
-    }
-    .kt-ai-fab:hover { transform: scale(1.1) rotate(90deg); }
-    .kt-ai-fab:active { transform: scale(0.95); }
-
-    .kt-ai-menu { display: none; flex-direction: column; gap: 10px; animation: slideUp 0.3s var(--ease-elastic); }
-    .kt-ai-menu-btn {
-      padding: 8px 14px; border-radius: 30px; border: 1px solid var(--border-glass);
-      background: rgba(10,10,10,0.8); backdrop-filter: blur(10px);
-      color: #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      transform-origin: right center; transition: 0.2s;
-    }
-    .kt-ai-menu-btn:hover { transform: scale(1.05) translateX(-5px); background: #222; border-color: var(--amber); color: #fff; }
-    
-    .kt-ai-panel {
-      background: rgba(15, 15, 15, 0.85);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--border-glass);
-      box-shadow: var(--shadow-glass);
-      border-radius: 16px;
-      animation: popIn 0.3s var(--ease-elastic);
-    }
-    .kt-ai-panel-header { padding: 0; height: 0; }
-    .kt-ai-panel-close {
-      background: rgba(0,0,0,0.5); border: 1px solid #444; color: #fff;
-      transition: 0.2s;
-    }
-    .kt-ai-panel-close:hover { background: var(--amber); color: #000; border-color: var(--amber); }
-
-    /* ===== OVERLAY / SEARCH ===== */
-    .kt-overlay {
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(5px);
-      animation: fadeIn 0.2s ease;
-    }
-    .kt-card {
-      background: #111; border: 1px solid var(--border-active);
-      box-shadow: 0 0 30px rgba(255, 191, 0, 0.15);
-      animation: popIn 0.3s var(--ease-elastic);
-    }
-    .kt-search-input {
-      background: #050505; border: 1px solid #333; color: #fff;
-      transition: border 0.3s;
-    }
-    .kt-search-input:focus { border-color: var(--amber); box-shadow: 0 0 8px var(--amber-dim); }
-    .kt-close-btn:hover { background: #333; color: #fff; }
-
-    .kt-cheatsheet {
-      background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); border: 1px solid var(--amber-dim);
-      border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    .kt-bottom-item.active{
+      background:#151515;
+      color:var(--amber);
+      box-shadow:0 -1px 3px rgba(0,0,0,0.9);
     }
 
-    /* Desktop Tweaks */
-    @media (min-width: 900px) {
-      .kt-submenu-strip { justify-content: center; }
-      .kt-submenu-group { max-width: 1000px; }
+    /* PROFILE PAGE */
+    .kt-profile-page{
+      position:fixed;
+      left:0;
+      right:0;
+      top:38px;
+      bottom:46px;
+      padding:26px 16px 16px;
+      z-index:2;
+      display:none;
+      overflow:auto;
+      background:radial-gradient(circle at top left,#1a1200,#050505 55%);
+      box-sizing:border-box;
+    }
+    .kt-profile-inner{
+      max-width:720px;
+      margin:0 auto;
+      background:#0e0e0e;
+      border-radius:12px;
+      border:1px solid var(--border-soft);
+      padding:16px 18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.7);
+      font-size:11px;
+      color:var(--text-muted);
+    }
+    .kt-profile-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .kt-profile-title{
+      font-size:12px;
+      color:var(--amber);
+      font-weight:600;
+    }
+    .kt-profile-name{
+      font-size:13px;
+      color:var(--text-main);
+      font-weight:600;
+    }
+    .kt-profile-meta{
+      font-size:10px;
+      color:var(--text-muted);
+    }
+    .kt-badge{
+      display:inline-flex;
+      align-items:center;
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#151515;
+      font-size:10px;
+      color:var(--amber);
+      gap:4px;
+      box-shadow:0 1px 3px rgba(0,0,0,0.8);
+    }
+    .kt-profile-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:10px;
+      margin-top:8px;
+    }
+    .kt-profile-card{
+      border-radius:8px;
+      border:1px solid var(--border-soft);
+      background:#101010;
+      padding:8px 10px;
+      box-shadow:0 1px 3px rgba(0,0,0,0.7);
+    }
+    .kt-profile-card-title{
+      font-size:10px;
+      color:var(--amber);
+      margin-bottom:4px;
+    }
+    .kt-profile-card-body{
+      font-size:10px;
+      line-height:1.5;
+    }
+
+    .kt-profile-menu{
+      margin-top:14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .kt-profile-menu-btn{
+      padding:6px 12px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#111;
+      color:var(--text-main);
+      font-size:10px;
+      cursor:pointer;
+    }
+
+    /* TACTILE SHARED BUTTON STYLES (tanpa ubah ukuran) */
+    .kt-profile-menu-btn,
+    .kt-workspace-btn,
+    .kt-ai-menu-btn,
+    .kt-ai-btn{
+      box-shadow:0 1px 0 rgba(255,255,255,0.04), 0 1px 3px rgba(0,0,0,0.8);
+      transition:background 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .kt-profile-menu-btn:hover,
+    .kt-workspace-btn:hover,
+    .kt-ai-menu-btn:hover,
+    .kt-ai-btn:hover{
+      background:#181818;
+      color:var(--text-main);
+      box-shadow:0 1px 0 rgba(255,255,255,0.06), 0 2px 4px rgba(0,0,0,0.9);
+    }
+    .kt-profile-menu-btn:active,
+    .kt-workspace-btn:active,
+    .kt-ai-menu-btn:active,
+    .kt-ai-btn:active{
+      transform:translateY(1px);
+      box-shadow:0 0 0 rgba(0,0,0,0.6);
+    }
+
+    .kt-profile-footer{
+      margin-top:14px;
+      padding-top:8px;
+      border-top:1px solid var(--border-soft);
+      font-size:9px;
+      color:var(--text-muted);
+      line-height:1.4;
+    }
+
+    /* WORKSPACE – FULL PAGE BOARD, CLEAR OF TOP & BOTTOM BARS */
+    .kt-workspace-page{
+      position:fixed;
+      left:0;
+      right:0;
+      top:38px;
+      bottom:46px;
+      z-index:2;
+      display:none;
+      background:#050505;
+      overflow:hidden;
+      box-sizing:border-box;
+    }
+    .kt-workspace-toolbar{
+      position:absolute;
+      top:10px;
+      left:10px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      z-index:3;
+    }
+    .kt-workspace-btn{
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#111;
+      color:var(--text-main);
+      font-size:10px;
+      cursor:pointer;
+    }
+    .kt-workspace-btn.secondary{
+      background:#151515;
+      color:var(--text-muted);
+    }
+    .kt-workspace-board{
+      position:absolute;
+      inset:0;
+      border-radius:0;
+      border:none;
+      background:#000;
+      overflow:auto;
+      box-sizing:border-box;
+      padding-top:36px;
+    }
+    .kt-workspace-placeholder{
+      font-size:10px;
+      color:var(--text-muted);
+      line-height:1.5;
+      padding:12px 14px;
+      text-align:center;
+    }
+
+    .kt-workspace-window{
+      position:absolute;
+      min-width:220px;
+      min-height:140px;
+      width:360px;
+      height:220px;
+      background:#0d0d0d;
+      border:1px solid var(--border-soft);
+      border-radius:8px;
+      box-shadow:0 10px 26px rgba(0,0,0,.8);
+      overflow:hidden;
+      max-width:100%;
+      touch-action:none;
+    }
+    .kt-workspace-window-header{
+      height:28px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 8px;
+      font-size:10px;
+      background:rgba(10,10,10,0.9);
+      color:var(--text-main);
+      cursor:move;
+      touch-action:none;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+    .kt-workspace-window-title{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .kt-workspace-window-close{
+      border:none;
+      background:transparent;
+      color:var(--text-muted);
+      font-size:11px;
+      cursor:pointer;
+      padding:0 2px;
+      touch-action:manipulation;
+      transition:color 0.15s ease, transform 0.12s ease;
+    }
+    .kt-workspace-window-close:hover{
+      color:var(--amber);
+    }
+    .kt-workspace-window-close:active{
+      transform:translateY(1px);
+    }
+    .kt-workspace-window-body{
+      position:absolute;
+      top:28px;
+      left:0;
+      right:0;
+      bottom:0;
+      background:#000;
+    }
+    .kt-workspace-window-body iframe{
+      width:100%;
+      height:100%;
+      border:0;
+      display:block;
+    }
+    .kt-workspace-resizer{
+      position:absolute;
+      right:0;
+      bottom:0;
+      width:18px;
+      height:18px;
+      cursor:nwse-resize;
+      background:linear-gradient(135deg,transparent 0,transparent 40%,var(--border-soft) 40%,var(--border-soft) 60%,transparent 60%,transparent 100%);
+      opacity:0.9;
+      touch-action:none;
+    }
+
+    /* FLOATING FAB + MENU + PANEL */
+    .kt-ai-fab{
+      position:fixed;right:16px;bottom:90px;width:48px;height:48px;border-radius:50%;
+      background:var(--amber);color:#000;display:flex;align-items:center;justify-content:center;
+      font-size:15px;font-weight:700;box-shadow:0 6px 14px rgba(0,0,0,.6);cursor:pointer;z-index:3000;border:1px solid #f0f0f0;user-select:none;
+      transition:box-shadow 0.15s ease, transform 0.12s ease, background 0.15s ease;
+    }
+    .kt-ai-fab:hover{
+      box-shadow:0 8px 18px rgba(0,0,0,.8);
+      background:#ffd54d;
+    }
+    .kt-ai-fab:active{
+      transform:translateY(1px);
+      box-shadow:0 4px 10px rgba(0,0,0,.7);
+    }
+
+    .kt-ai-menu{
+      position:fixed;right:16px;bottom:150px;display:none;flex-direction:column;gap:6px;
+      z-index:3000;
+    }
+    .kt-ai-menu-btn{
+      padding:6px 10px;border-radius:999px;border:1px solid var(--border-soft);
+      background:#111;color:#9b9b9b;font-size:11px;
+      display:flex;align-items:center;gap:6px;cursor:pointer;
+    }
+    .kt-ai-menu-btn span:first-child{
+      width:22px;text-align:center;color:var(--amber);font-weight:500;font-size:11px;
+    }
+
+    .kt-ai-panel{
+      position:fixed;
+      right:16px;
+      bottom:140px;
+      width:min(400px,92vw);
+      height:min(440px,78vh);
+      max-height:78vh;
+      background:#111;
+      border-radius:10px;
+      border:1px solid var(--border-soft);
+      box-shadow:0 10px 26px rgba(0,0,0,.8);
+      display:none;
+      flex-direction:column;
+      overflow:hidden;
+      z-index:3000;
+    }
+
+    .kt-ai-panel-header{
+      position:relative;
+      padding:0;
+      border:none;
+      height:0;
+      overflow:visible;
+      flex:0 0 auto;
+    }
+    .kt-ai-panel-title{display:none;}
+    .kt-ai-panel-close{
+      position:absolute;
+      top:4px;
+      right:6px;
+      cursor:pointer;
+      font-size:12px;
+      color:var(--text-main);
+      padding:2px 7px;
+      border-radius:999px;
+      background:rgba(0,0,0,0.7);
+      border:1px solid var(--border-soft);
+      transition:background 0.15s ease, transform 0.12s ease, color 0.15s ease;
+    }
+    .kt-ai-panel-close:hover{
+      background:rgba(0,0,0,0.9);
+      color:var(--amber);
+    }
+    .kt-ai-panel-close:active{
+      transform:translateY(1px);
+    }
+
+    .kt-ai-panel-body{
+      padding:0;
+      font-size:11px;
+      color:var(--text-muted);
+      display:flex;
+      flex-direction:column;
+      gap:0;
+      flex:1;
+      min-height:0;
+      overflow:hidden;
+    }
+
+    .kt-ai-footer{
+      padding:0;
+      border-top:none;
+      display:none;
+      justify-content:flex-end;
+      gap:6px;
+      flex:0 0 auto;
+    }
+    .kt-ai-btn{padding:4px 10px;border-radius:3px;font-size:11px;border:1px solid var(--border-soft);background:#181818;color:var(--text-muted);cursor:pointer}
+    .kt-ai-btn.primary{background:var(--amber);color:#000;border-color:#f0f0f0}
+
+    /* Overlays (search) */
+    .kt-overlay{position:fixed;inset:0;background:var(--overlay);display:none;align-items:center;justify-content:center;z-index:4000}
+    .kt-card{background:#0e0e0e;border:1px solid var(--border-soft);border-radius:10px;padding:12px;width:min(560px,92vw);box-shadow:0 10px 26px rgba(0,0,0,.8)}
+    .kt-card-title{color:var(--amber);font-size:12px;margin-bottom:8px}
+    .kt-search-input{width:100%;padding:10px;border-radius:6px;border:1px solid var(--border-soft);background:#111;color:var(--text-main);outline:none}
+    .kt-close-btn{margin-top:10px;padding:6px 10px;font-size:11px;border-radius:4px;border:1px solid var(--border-soft);background:#181818;color:var(--text-muted);cursor:pointer}
+
+    .kt-cheatsheet{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);background:#0e0e0e;border:1px solid var(--border-soft);border-radius:8px;padding:8px 10px;z-index:3500;display:none;font-size:10px;color:var(--text-muted)}
+    .kt-cheatsheet b{color:var(--amber)}
+
+    /* Desktop center submenu strip (bottom) */
+    @media (min-width:900px){
+      .kt-submenu-strip{display:flex;justify-content:center;padding-left:0;padding-right:0}
+      .kt-submenu-group{max-width:980px}
+      .kt-submenu-group.active{justify-content:center}
+    }
+
+    /* Mobile tweaks */
+    @media (max-width:600px){
+      .kt-topbar{padding:4px 8px}
+      .kt-logo{font-size:12px}
+      .kt-session-clock{gap:2px;font-size:8px}
+      .kt-session-item{padding:0 3px}
+      .kt-session-label,.kt-session-time{font-size:8px}
+
+      .kt-mainmenu-strip{
+        justify-content:flex-start;
+      }
+      .kt-profile-inner{
+        padding:12px 12px;
+      }
+      .kt-workspace-window{
+        width:88vw;
+        height:45vh;
+      }
     }
   </style>
 </head>
@@ -471,19 +748,20 @@
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="3">Custom</button>
     </div>
 
+    <!-- Research: Internal removed, Quantitative moved here -->
     <div class="kt-submenu-group" data-menu-sub="8">
-      <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Internal</button>
-      <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Institutions</button>
-      <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Reports</button>
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Institutions</button>
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Reports</button>
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Quantitative</button>
     </div>
 
+    <!-- Tools: Quantitative removed -->
     <div class="kt-submenu-group" data-menu-sub="9">
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Journal</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Education</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Notes</button>
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Quantitative</button>
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="4">Calculator</button>
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="5">Others</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Calculator</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="4">Others</button>
     </div>
   </nav>
 
@@ -657,7 +935,7 @@
       const HIDE_DELAY = 1800;
       const CLICK_GRACE = 450;
       let hideTimer=null, graceTimer=null;
-      
+
       /* Pin State */
       let isPinned = false;
 
@@ -688,16 +966,21 @@
         "1:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_insights.html",
         "1:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_calendar.html",
         "1:3":"https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html",
-        "1:4":"", 
-        "1:5":"", 
+        "1:4":"",
+        "1:5":"",
 
         // Macroeconomic
         "2:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/usmacro.html",
-        "2:1":"", 
+        "2:1":"",
         "2:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_countries.html",
 
         // Charts
-        "6:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/technical_charts.html"
+        "6:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/technical_charts.html",
+
+        // Research
+        "8:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_institutions.html",
+        "8:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_reports.html",
+        "8:2":""
       };
 
       function injectIframe(url){
@@ -717,7 +1000,7 @@
         currentViewUrl = url;
         currentViewTitleMain = breadcrumbMain.textContent || "";
         currentViewTitleSub  = breadcrumbSub.textContent || "";
-        
+
         if(!isPinned){
           statusMsg.textContent = url ? "EMBED: "+url : "READY (No content)";
         }
@@ -747,13 +1030,13 @@
           btn.classList.toggle("active", m===menuIndex && s===subIndex);
         });
         const sub = document.querySelector('.kt-submenu-btn[data-menu="'+menuIndex+'"][data-sub-index="'+subIndex+'"]');
-        if(sub){ 
-          breadcrumbSub.textContent=sub.textContent.trim(); 
-          if(!isPinned) statusMsg.textContent="ACTIVE: "+menuIndex+" · "+breadcrumbSub.textContent; 
+        if(sub){
+          breadcrumbSub.textContent=sub.textContent.trim();
+          if(!isPinned) statusMsg.textContent="ACTIVE: "+menuIndex+" · "+breadcrumbSub.textContent;
         }
-        else { 
-          breadcrumbSub.textContent=""; 
-          if(!isPinned) statusMsg.textContent="ACTIVE MENU: "+menuIndex+" · (no sub)"; 
+        else{
+          breadcrumbSub.textContent="";
+          if(!isPinned) statusMsg.textContent="ACTIVE MENU: "+menuIndex+" · (no sub)";
         }
 
         renderContent(menuIndex, subIndex);
@@ -860,7 +1143,7 @@
         topbar.addEventListener("dblclick", (e) => {
           isPinned = !isPinned;
           document.body.classList.toggle("kt-pinned", isPinned);
-          
+
           if(isPinned){
             clearTimeout(hideTimer);
             statusMsg.textContent = "Autohide disabled";
@@ -909,10 +1192,10 @@
           showAllBars();
         }
       }
-      function closeSearch(){ 
-        closeOverlay(searchOvl); 
-        if(!isPinned) statusMsg.textContent="SEARCH: closed"; 
-        if(activeBottom==="home" && !isPinned) scheduleHide(); 
+      function closeSearch(){
+        closeOverlay(searchOvl);
+        if(!isPinned) statusMsg.textContent="SEARCH: closed";
+        if(activeBottom==="home" && !isPinned) scheduleHide();
       }
 
       searchClose.addEventListener("click", closeSearch);
@@ -922,10 +1205,10 @@
         if(e.key==="Enter"){
           e.preventDefault();
           const q=(searchInput.value||"").trim();
-          if(!q){ 
-            if(!isPinned) statusMsg.textContent="SEARCH: empty"; 
-            closeSearch(); 
-            return; 
+          if(!q){
+            if(!isPinned) statusMsg.textContent="SEARCH: empty";
+            closeSearch();
+            return;
           }
           const match=findBestMatch(searchIndex,q);
           if(match){
@@ -966,6 +1249,7 @@
         if(activeBottom!=="home") return;
         submenuStrip.classList.remove("kt-hide-bottom");
         statusbar.classList.remove("kt-hide-bottom");
+        clearTimeout(hideTimer);
         clearTimeout(graceTimer);
         graceTimer=setTimeout(()=>{},CLICK_GRACE);
         updateIframeInteractivity();
