@@ -2,18 +2,19 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Kuantara – Market Research PDF Viewer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <title>Research Terminal (Mobile)</title>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap"/>
 
   <style>
     /* --- THEME VARIABLES --- */
     :root {
-      --bg-app: #050505;       /* Latar belakang aplikasi paling gelap */
-      --bg-panel: #111111;     /* Latar belakang panel */
-      --bg-element: #1a1a1a;   /* Input / Item list */
-      --bg-hover: #252525;     /* Hover state */
+      --bg-app: #050505;
+      --bg-panel: #111111;
+      --bg-element: #1a1a1a;
+      --bg-hover: #252525;
       
       --border-main: #333333;
       --border-light: #444444;
@@ -21,96 +22,85 @@
       --text-main: #eeeeee;
       --text-muted: #888888;
       
-      --accent: #ffbf00;       /* Kuning Kuantara */
+      --accent: #ffbf00;
       --accent-dim: rgba(255, 191, 0, 0.15);
 
       --radius: 4px;
-      --space-xs: 4px;
       --space-sm: 8px;
       --space-md: 16px;
+      
+      /* Tinggi toolbar fix */
+      --toolbar-height: 56px;
     }
 
-    /* --- RESET & BASE --- */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Fira Code", monospace !important;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border-light) var(--bg-app);
-    }
+    /* --- RESET --- */
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Fira Code", monospace !important; -webkit-tap-highlight-color: transparent; }
     
-    *::-webkit-scrollbar { width: 6px; height: 6px; }
-    *::-webkit-scrollbar-track { background: var(--bg-app); }
-    *::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
-    *::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    /* Custom Scrollbar (Thin) */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg-app); }
+    ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
 
     html, body {
       width: 100%; height: 100%;
       background: var(--bg-app);
       color: var(--text-main);
-      overflow: hidden; /* App shell handling */
+      overflow: hidden; /* Prevent body scroll, we scroll inner elements */
+      position: fixed; /* Prevent bounce effect on iOS */
     }
 
-    /* --- ICONS (SVG Helper) --- */
-    svg { width: 16px; height: 16px; stroke-width: 2; }
-
-    /* --- LAYOUT --- */
+    /* --- LAYOUT UTAMA --- */
     .app-shell {
       display: flex;
       width: 100vw;
-      height: 100vh;
-      border-top: 2px solid var(--accent); /* Top accent line */
+      height: 100dvh; /* Dynamic viewport height for mobile browsers */
+      position: relative;
     }
 
-    /* --- LEFT SIDEBAR (Navigation) --- */
+    /* --- SIDEBAR (OFF-CANVAS ON MOBILE) --- */
     .sidebar {
       width: 300px;
-      min-width: 260px;
       background: var(--bg-panel);
       border-right: 1px solid var(--border-main);
       display: flex;
       flex-direction: column;
-      z-index: 10;
+      z-index: 100;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .sidebar-header {
-      padding: var(--space-md);
-      border-bottom: 1px solid var(--border-main);
-    }
-
-    .app-brand {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--accent);
-      letter-spacing: -0.5px;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .sidebar-filters {
+    /* HEADER DIHAPUS SESUAI REQUEST - Langsung ke filter */
+    .sidebar-content {
       padding: var(--space-md);
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      background: var(--bg-panel);
+      gap: 16px;
+      height: 100%;
+      overflow-y: auto;
     }
 
-    /* Inputs & Selects */
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    /* Mobile Overlay Background */
+    .sidebar-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 90;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+      backdrop-filter: blur(2px);
+    }
+
+    /* --- FORM ELEMENTS --- */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
     
     .kt-input, .kt-select {
       background: var(--bg-app);
       border: 1px solid var(--border-main);
       color: var(--text-main);
-      padding: 8px;
+      padding: 10px; /* Larger touch target */
       border-radius: var(--radius);
-      font-size: 11px;
+      font-size: 12px;
       outline: none;
-      transition: border-color 0.2s;
+      width: 100%;
     }
     .kt-input:focus, .kt-select:focus { border-color: var(--accent); }
 
@@ -118,230 +108,164 @@
     .filter-row > * { flex: 1; }
 
     .btn-reset {
-      background: transparent;
+      background: var(--bg-element);
       border: 1px solid var(--border-main);
       color: var(--text-muted);
-      padding: 6px;
-      font-size: 10px;
+      padding: 10px;
+      font-size: 11px;
       cursor: pointer;
       border-radius: var(--radius);
+      width: 100%;
     }
-    .btn-reset:hover { color: var(--accent); border-color: var(--accent); }
-
-    /* Document List */
-    .doc-list-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 var(--space-sm) var(--space-sm) var(--space-sm);
-    }
-
+    
+    /* --- DOC LIST --- */
     .list-header {
-      font-size: 10px;
-      color: var(--text-muted);
-      margin: 8px 4px;
-      display: flex;
-      justify-content: space-between;
+      font-size: 10px; color: var(--text-muted);
+      display: flex; justify-content: space-between;
+      margin-top: 8px; border-bottom: 1px solid var(--border-main);
+      padding-bottom: 4px; margin-bottom: 8px;
     }
 
     .doc-item {
-      padding: 10px;
-      margin-bottom: 6px;
+      padding: 12px;
+      margin-bottom: 8px;
       background: var(--bg-element);
       border: 1px solid transparent;
       border-radius: var(--radius);
       cursor: pointer;
-      transition: all 0.2s;
     }
+    .doc-item.active { background: var(--accent-dim); border-color: var(--accent); }
+    
+    .doc-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; line-height: 1.4; }
+    .doc-meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); }
+    .tag { color: var(--accent); }
 
-    .doc-item:hover {
-      background: var(--bg-hover);
-      border-color: var(--border-light);
-    }
-
-    .doc-item.active {
-      background: var(--accent-dim);
-      border-color: var(--accent);
-    }
-
-    .doc-title {
-      font-size: 12px;
-      font-weight: 500;
-      margin-bottom: 4px;
-      line-height: 1.4;
-    }
-
-    .doc-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 10px;
-      color: var(--text-muted);
-    }
-
-    .tag {
-      background: #000;
-      border: 1px solid var(--border-main);
-      color: var(--accent);
-      padding: 2px 6px;
-      border-radius: 2px;
-      font-size: 9px;
-      text-transform: uppercase;
-    }
-
-    /* --- RIGHT MAIN CONTENT (Viewer) --- */
+    /* --- MAIN CONTENT --- */
     .main-content {
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: #080808; /* Slightly distinct from sidebar */
+      background: #000;
       position: relative;
+      width: 100%;
     }
 
-    /* Toolbar */
+    /* --- TOOLBAR --- */
     .toolbar {
-      height: 50px;
+      height: var(--toolbar-height);
       background: var(--bg-panel);
       border-bottom: 1px solid var(--border-main);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 var(--space-md);
-      gap: 16px;
+      padding: 0 8px;
+      gap: 8px;
+      overflow-x: auto; /* Scrollable horizontal on mobile */
+      white-space: nowrap;
+      /* Hide scrollbar visual but keep functionality */
+      scrollbar-width: none; 
     }
+    .toolbar::-webkit-scrollbar { display: none; }
 
-    .toolbar-section {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--bg-app);
-      padding: 4px;
+    .toolbar-group {
+      display: flex; align-items: center; gap: 4px;
+      padding-right: 8px; border-right: 1px solid var(--border-main);
+    }
+    .toolbar-group:last-child { border-right: none; }
+
+    /* Mobile Menu Toggle Button */
+    .btn-menu {
+      display: none; /* Hidden on desktop */
+      background: var(--accent);
+      color: #000;
+      border: none;
+      font-weight: 700;
+      padding: 0 12px;
+      height: 32px;
       border-radius: var(--radius);
-      border: 1px solid var(--border-main);
+      font-size: 12px;
+      align-items: center; gap: 6px;
     }
 
     .tool-btn {
-      width: 32px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: none;
+      width: 36px; height: 36px; /* Touch friendly size */
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid transparent;
       background: transparent;
       color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 2px;
-      transition: all 0.2s;
+      border-radius: var(--radius);
+      flex-shrink: 0;
     }
+    .tool-btn.active { background: var(--bg-hover); color: var(--accent); border-color: var(--border-light); }
+    
+    /* SVG Helper */
+    svg { width: 18px; height: 18px; stroke-width: 2; }
 
-    .tool-btn:hover {
-      background: var(--bg-hover);
-      color: var(--text-main);
-    }
-
-    .tool-btn.active {
-      background: var(--accent);
-      color: #000; /* Contrast for active yellow */
-    }
-
-    .divider {
-      width: 1px;
-      height: 20px;
-      background: var(--border-main);
-      margin: 0 4px;
-    }
-
-    .zoom-display {
-      font-size: 11px;
-      width: 45px;
-      text-align: center;
-      color: var(--text-muted);
-    }
-
-    /* PDF Viewer Area */
+    /* --- VIEWER AREA --- */
     .viewer-viewport {
       flex: 1;
       position: relative;
-      overflow: auto;
+      overflow: auto; /* Native scroll */
       background: #0a0a0a;
       display: flex;
-      justify-content: center; /* Centers the PDF horizontally */
-      padding: 40px;
-      cursor: grab; /* Default cursor for PAN */
+      justify-content: center;
+      padding: 20px;
+      -webkit-overflow-scrolling: touch; /* Smooth scroll iOS */
     }
 
-    .viewer-viewport.mode-pen { cursor: crosshair; }
-    .viewer-viewport.mode-eraser { cursor: not-allowed; }
-    .viewer-viewport:active { cursor: grabbing; }
+    /* Mode Handling */
+    .viewer-viewport.mode-pan { touch-action: pan-x pan-y; } /* Allow native scroll */
+    .viewer-viewport.mode-draw { touch-action: none; overflow: hidden; } /* Disable scroll when drawing */
 
     .pdf-wrapper {
       position: relative;
-      box-shadow: 0 0 30px rgba(0,0,0,0.5);
       background: #202020;
-      transition: transform 0.1s linear;
-      transform-origin: top center; /* Zoom from top center feels more natural */
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      transform-origin: top center;
     }
 
-    iframe {
-      display: block;
-      border: none;
-      width: 900px; /* Base width */
-      height: 1200px; /* Base height */
-      background: #fff;
-    }
-
+    iframe { display: block; border: none; width: 100%; height: 100%; background: #fff; pointer-events: none; /* Let touch pass to canvas wrapper */ }
+    
+    /* Canvas sits on top */
     canvas {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none; /* Let clicks pass through by default */
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      touch-action: none; /* Handle touches manually in JS */
     }
 
-    /* Status Bar */
-    .status-bar {
-      height: 28px;
-      background: var(--bg-panel);
-      border-top: 1px solid var(--border-main);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 var(--space-md);
-      font-size: 10px;
-      color: var(--text-muted);
-    }
-
-    /* --- RESPONSIVE --- */
+    /* --- RESPONSIVE LOGIC --- */
     @media (max-width: 768px) {
-      .app-shell { flex-direction: column; }
-      .sidebar { width: 100%; height: auto; max-height: 35vh; border-right: none; border-bottom: 1px solid var(--border-main); }
-      .toolbar { overflow-x: auto; }
-      .viewer-viewport { padding: 10px; }
-      .pdf-wrapper { margin-bottom: 50px; } /* Space for scroll */
+      .sidebar {
+        position: absolute; top: 0; left: 0; height: 100%; width: 85%; max-width: 320px;
+        transform: translateX(-100%);
+        box-shadow: 4px 0 20px rgba(0,0,0,0.8);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-backdrop.open { opacity: 1; pointer-events: auto; }
+      
+      .btn-menu { display: flex; }
+      .viewer-viewport { padding: 10px; align-items: flex-start; }
+      
+      /* Optimize for small screens */
+      .pdf-wrapper { margin-bottom: 100px; } /* Extra space at bottom for scrolling */
     }
   </style>
 </head>
 <body>
 
 <div class="app-shell">
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="app-brand">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-        KUANTARA
-      </div>
-      <div style="font-size:10px; color:var(--text-muted);">Research Terminal v2.0</div>
-    </div>
+  <div class="sidebar-backdrop" id="backdrop"></div>
 
-    <div class="sidebar-filters">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-content">
       <div class="form-group">
-        <label class="form-label">Topic</label>
+        <label class="form-label">Topic Filter</label>
         <select id="topicFilter" class="kt-select">
-          <option value="all">All Sectors</option>
+          <option value="all">All Topics</option>
           <option value="macro">Global Macro</option>
           <option value="fx">FX Strategy</option>
           <option value="rates">Rates & Credit</option>
-          <option value="equity">Equity Strategy</option>
         </select>
       </div>
+      
       <div class="form-group">
         <label class="form-label">Date Range</label>
         <div class="filter-row">
@@ -349,286 +273,264 @@
           <input type="date" id="dateTo" class="kt-input" />
         </div>
       </div>
+      
       <button id="resetFilterBtn" class="btn-reset">Reset Filters</button>
-    </div>
 
-    <div class="doc-list-container">
       <div class="list-header">
-        <span>AVAILABLE REPORTS</span>
+        <span>DOCUMENTS</span>
         <span id="resultCount">0</span>
       </div>
-      <div id="docList">
+      
+      <div id="docList" style="flex:1; overflow-y:auto;">
         </div>
     </div>
   </aside>
 
   <main class="main-content">
     <div class="toolbar">
-      <div class="toolbar-section">
-        <button class="tool-btn active" id="toolPan" title="Pan / Scroll (H)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
+      <button class="btn-menu" id="menuToggle">
+        <span>☰ LIST</span>
+      </button>
+
+      <div class="toolbar-group">
+        <button class="tool-btn active" id="toolPan" title="Pan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11l5-5 5 5"/><path d="M7 13l5 5 5-5"/></svg> </button>
+        <button class="tool-btn" id="toolPen" title="Pen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
         </button>
-        <div class="divider"></div>
-        <button class="tool-btn" id="toolPen" title="Pen (P)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+        <button class="tool-btn" id="toolHigh" title="Highlight">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l-6 6v3h9l3-3"/><line x1="22" y1="12" x2="17.4" y2="16.6"/></svg>
         </button>
-        <button class="tool-btn" id="toolHighlight" title="Highlighter">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+        <button class="tool-btn" id="toolErase" title="Eraser">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/></svg>
         </button>
-        <button class="tool-btn" id="toolEraser" title="Eraser">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
-        </button>
-        <button class="tool-btn" id="toolClear" title="Clear All">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+        <button class="tool-btn" id="toolClear" title="Clear">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
         </button>
       </div>
 
-      <div class="toolbar-section">
-        <button class="tool-btn" id="zoomOutBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-        </button>
-        <span class="zoom-display" id="zoomLabel">100%</span>
-        <button class="tool-btn" id="zoomInBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-        </button>
-        <div class="divider"></div>
-        <button class="tool-btn" id="fitWidthBtn" title="Fit Width">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12H3"/><path d="M21 3H3"/><path d="M21 7.5H3"/><path d="M21 16.5H3"/><path d="M21 21H3"/><path d="M3 12l3-3"/><path d="M3 12l3 3"/><path d="M21 12l-3-3"/><path d="M21 12l-3 3"/></svg>
-        </button>
-      </div>
-
-      <div class="toolbar-section">
-        <button class="tool-btn" id="openNewTabBtn" title="Open in New Tab">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </button>
+      <div class="toolbar-group">
+        <button class="tool-btn" id="zoomOutBtn">-</button>
+        <span style="font-size:11px; color:var(--text-muted); min-width:30px; text-align:center;" id="zoomLabel">100%</span>
+        <button class="tool-btn" id="zoomInBtn">+</button>
       </div>
     </div>
 
-    <div class="viewer-viewport" id="viewport">
+    <div class="viewer-viewport mode-pan" id="viewport">
       <div class="pdf-wrapper" id="pdfWrapper">
         <iframe id="pdfFrame" src="about:blank"></iframe>
         <canvas id="pdfCanvas"></canvas>
       </div>
     </div>
-
-    <div class="status-bar">
-      <span id="statusDocTitle">No Document Selected</span>
-      <span id="statusTool">Mode: PAN</span>
-    </div>
   </main>
 </div>
 
 <script>
-  // --- MOCK DATA ---
-  const documents = [
-    { id: 1, title: "Forex Focus – AUD/USD Technical Outlook", date: "2025-11-20", topic: "fx", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
-    { id: 2, title: "Global Macro – Recession Probabilities", date: "2025-11-18", topic: "macro", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
-    { id: 3, title: "Rates Strategy – Yield Curve Inversion", date: "2025-11-15", topic: "rates", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
-    { id: 4, title: "Equity Strategy – Tech Sector Review", date: "2025-11-10", topic: "equity", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
-    { id: 5, title: "Commodities – Gold & Silver Analysis", date: "2025-11-05", topic: "commodities", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+  /* --- MOCK DATA --- */
+  const docs = [
+    { title: "FX Strategy: USD/JPY Outlook", date: "2025-11-20", topic: "fx", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+    { title: "Macro: Inflation Data Analysis", date: "2025-11-19", topic: "macro", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+    { title: "Rates: 10Y Treasury Yields", date: "2025-11-18", topic: "rates", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+    { title: "Weekly Market Recap", date: "2025-11-15", topic: "macro", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
   ];
 
-  // --- DOM ELEMENTS ---
+  /* --- ELEMENTS --- */
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('backdrop');
+  const menuBtn = document.getElementById('menuToggle');
   const docList = document.getElementById('docList');
   const resultCount = document.getElementById('resultCount');
-  const topicFilter = document.getElementById('topicFilter');
-  const dateFrom = document.getElementById('dateFrom');
-  const dateTo = document.getElementById('dateTo');
-  const resetBtn = document.getElementById('resetFilterBtn');
-
-  const pdfFrame = document.getElementById('pdfFrame');
-  const pdfWrapper = document.getElementById('pdfWrapper');
-  const pdfCanvas = document.getElementById('pdfCanvas');
-  const viewport = document.getElementById('viewport');
   
-  const statusTitle = document.getElementById('statusDocTitle');
-  const statusTool = document.getElementById('statusTool');
-  const zoomLabel = document.getElementById('zoomLabel');
-
-  // --- STATE ---
-  let currentZoom = 1.0;
+  const viewport = document.getElementById('viewport');
+  const pdfWrapper = document.getElementById('pdfWrapper');
+  const pdfFrame = document.getElementById('pdfFrame');
+  const pdfCanvas = document.getElementById('pdfCanvas');
+  
+  let ctx = pdfCanvas.getContext('2d');
+  let zoom = 1.0;
   let currentTool = 'pan';
   let isDrawing = false;
-  let ctx = pdfCanvas.getContext('2d');
-  let lastX = 0; let lastY = 0;
+  let lastX=0, lastY=0;
 
-  // --- INIT UI ---
+  /* --- MOBILE SIDEBAR LOGIC --- */
+  function toggleSidebar(show) {
+    if(show) {
+      sidebar.classList.add('open');
+      backdrop.classList.add('open');
+    } else {
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+  }
+  menuBtn.onclick = () => toggleSidebar(true);
+  backdrop.onclick = () => toggleSidebar(false);
+
+  /* --- LIST RENDERING --- */
   function renderList() {
     docList.innerHTML = '';
-    let count = 0;
-    const tVal = topicFilter.value;
-    const dStart = dateFrom.value ? new Date(dateFrom.value) : null;
-    const dEnd = dateTo.value ? new Date(dateTo.value) : null;
-
-    documents.forEach(doc => {
-      const docDate = new Date(doc.date);
-      let show = true;
-
-      if (tVal !== 'all' && doc.topic !== tVal) show = false;
-      if (dStart && docDate < dStart) show = false;
-      if (dEnd && docDate > dEnd) show = false;
-
-      if (show) {
-        count++;
-        const el = document.createElement('div');
-        el.className = 'doc-item';
-        el.innerHTML = `
-          <div class="doc-title">${doc.title}</div>
-          <div class="doc-meta">
-            <span>${doc.date}</span>
-            <span class="tag">${doc.topic}</span>
-          </div>
-        `;
-        el.onclick = () => loadDoc(doc, el);
-        docList.appendChild(el);
-      }
+    docs.forEach(doc => {
+      const el = document.createElement('div');
+      el.className = 'doc-item';
+      el.innerHTML = `
+        <div class="doc-title">${doc.title}</div>
+        <div class="doc-meta"><span>${doc.date}</span> <span class="tag" style="color:var(--accent)">${doc.topic.toUpperCase()}</span></div>
+      `;
+      el.onclick = () => {
+        // Load PDF
+        pdfFrame.src = doc.pdf + "#view=FitH";
+        
+        // Highlight item
+        document.querySelectorAll('.doc-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+        
+        // Clear canvas
+        ctx.clearRect(0,0,pdfCanvas.width, pdfCanvas.height);
+        
+        // Close sidebar on mobile automatically
+        if(window.innerWidth <= 768) toggleSidebar(false);
+      };
+      docList.appendChild(el);
     });
-    resultCount.textContent = count;
-  }
-
-  function loadDoc(doc, el) {
-    // Active Class Logic
-    document.querySelectorAll('.doc-item').forEach(d => d.classList.remove('active'));
-    if(el) el.classList.add('active');
-
-    pdfFrame.src = doc.pdf + "#view=FitH"; // Add view param for better default
-    statusTitle.textContent = doc.title;
+    resultCount.textContent = docs.length;
     
-    // Reset canvas on new doc
-    ctx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+    // Select first automatically
+    if(docs.length > 0) docList.children[0].click();
   }
+  renderList();
 
-  // --- FILTERS ---
-  topicFilter.addEventListener('change', renderList);
-  dateFrom.addEventListener('change', renderList);
-  dateTo.addEventListener('change', renderList);
-  resetBtn.addEventListener('click', () => {
-    topicFilter.value = 'all';
-    dateFrom.value = '';
-    dateTo.value = '';
-    renderList();
-  });
+  /* --- ZOOM & SIZE --- */
+  // Set base size relative to CSS (assume ~900px base width for PDF)
+  const BASE_WIDTH = 900;
+  const BASE_HEIGHT = 1200;
 
-  // --- ZOOM & FIT ---
-  function setZoom(z) {
-    currentZoom = Math.max(0.5, Math.min(z, 3.0)); // Clamp
-    pdfWrapper.style.transform = `scale(${currentZoom})`;
-    zoomLabel.textContent = Math.round(currentZoom * 100) + '%';
-  }
-
-  document.getElementById('zoomInBtn').addEventListener('click', () => setZoom(currentZoom + 0.1));
-  document.getElementById('zoomOutBtn').addEventListener('click', () => setZoom(currentZoom - 0.1));
-  document.getElementById('fitWidthBtn').addEventListener('click', () => {
-    // Simple Fit Width calc
-    const margin = 80;
-    const availableWidth = viewport.clientWidth - margin;
-    const baseWidth = 900; // matches CSS width
-    setZoom(availableWidth / baseWidth);
-  });
-
-  // --- TOOLBAR LOGIC ---
-  const tools = ['pan', 'pen', 'highlight', 'eraser'];
-  
-  function setTool(tool) {
-    currentTool = tool;
-    
-    // Update UI Buttons
-    document.querySelectorAll('.toolbar-section .tool-btn').forEach(b => b.classList.remove('active'));
-    
-    const btnMap = {
-      'pan': 'toolPan', 'pen': 'toolPen', 
-      'highlight': 'toolHighlight', 'eraser': 'toolEraser'
-    };
-    if(btnMap[tool]) document.getElementById(btnMap[tool]).classList.add('active');
-
-    // Update Cursor & Interaction
-    viewport.classList.remove('mode-pen', 'mode-eraser');
-    if (tool === 'pan') {
-      pdfCanvas.style.pointerEvents = 'none'; // Pass click to iframe/scroll
-    } else {
-      pdfCanvas.style.pointerEvents = 'auto'; // Catch click for canvas
-      if(tool === 'pen' || tool === 'highlight') viewport.classList.add('mode-pen');
-      if(tool === 'eraser') viewport.classList.add('mode-eraser');
-    }
-
-    statusTool.textContent = "Mode: " + tool.toUpperCase();
-  }
-
-  document.getElementById('toolPan').onclick = () => setTool('pan');
-  document.getElementById('toolPen').onclick = () => setTool('pen');
-  document.getElementById('toolHighlight').onclick = () => setTool('highlight');
-  document.getElementById('toolEraser').onclick = () => setTool('eraser');
-  document.getElementById('toolClear').onclick = () => {
-    if(confirm("Clear all annotations?")) {
-      ctx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
-    }
-  };
-
-  // --- DRAWING LOGIC ---
-  // Resize canvas to match iframe resolution
   function resizeCanvas() {
-    const w = 900; // fixed base width from CSS
-    const h = 1200; // fixed base height from CSS
-    pdfCanvas.width = w;
-    pdfCanvas.height = h;
+    pdfCanvas.width = BASE_WIDTH;
+    pdfCanvas.height = BASE_HEIGHT;
+    pdfWrapper.style.width = BASE_WIDTH + 'px';
+    pdfWrapper.style.height = BASE_HEIGHT + 'px';
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
   }
   resizeCanvas();
 
+  function updateZoom() {
+    // Zoom using CSS transform for performance
+    pdfWrapper.style.transform = `scale(${zoom})`;
+    document.getElementById('zoomLabel').textContent = Math.round(zoom*100) + "%";
+    
+    // Adjust container size so scrolling works
+    // Not strictly necessary with transform, but good for margin
+    const margin = (BASE_WIDTH * zoom - BASE_WIDTH) / 2;
+    if(zoom > 1) pdfWrapper.style.margin = `${margin}px`;
+    else pdfWrapper.style.margin = '0';
+  }
+
+  document.getElementById('zoomInBtn').onclick = () => { zoom = Math.min(zoom+0.1, 3.0); updateZoom(); };
+  document.getElementById('zoomOutBtn').onclick = () => { zoom = Math.max(zoom-0.1, 0.4); updateZoom(); };
+  
+  // Auto fit width on load
+  setTimeout(() => {
+    if(window.innerWidth < 900) {
+      zoom = (window.innerWidth - 40) / BASE_WIDTH;
+      updateZoom();
+    }
+  }, 500);
+
+  /* --- TOOLS LOGIC --- */
+  function setTool(t) {
+    currentTool = t;
+    // Toggle UI classes
+    document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+    
+    const map = {'pan':'toolPan','pen':'toolPen','high':'toolHigh','erase':'toolErase'};
+    if(map[t]) document.getElementById(map[t]).classList.add('active');
+
+    // Mode switching for Touch/Scroll behavior
+    if(t === 'pan') {
+      viewport.classList.remove('mode-draw');
+      viewport.classList.add('mode-pan');
+      pdfCanvas.style.pointerEvents = 'none'; // Allow touch to go through to iframe/div for scrolling
+    } else {
+      viewport.classList.remove('mode-pan');
+      viewport.classList.add('mode-draw');
+      pdfCanvas.style.pointerEvents = 'auto'; // Capture touch for drawing
+    }
+  }
+
+  document.getElementById('toolPan').onclick = () => setTool('pan');
+  document.getElementById('toolPen').onclick = () => setTool('pen');
+  document.getElementById('toolHigh').onclick = () => setTool('high');
+  document.getElementById('toolErase').onclick = () => setTool('erase');
+  document.getElementById('toolClear').onclick = () => ctx.clearRect(0,0,BASE_WIDTH,BASE_HEIGHT);
+
+  /* --- DRAWING & TOUCH HANDLING --- */
   function getPos(e) {
-    // Need to account for Zoom Scale calculation
     const rect = pdfCanvas.getBoundingClientRect();
+    let clientX = e.clientX;
+    let clientY = e.clientY;
+    
+    if(e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    }
+
+    // Need to reverse the scale to get correct coordinate on canvas
     return {
-      x: (e.clientX - rect.left) / currentZoom,
-      y: (e.clientY - rect.top) / currentZoom
+      x: (clientX - rect.left) / zoom,
+      y: (clientY - rect.top) / zoom
     };
   }
 
-  pdfCanvas.addEventListener('mousedown', (e) => {
+  function startDraw(e) {
     if(currentTool === 'pan') return;
     isDrawing = true;
-    const pos = getPos(e);
-    lastX = pos.x;
-    lastY = pos.y;
-  });
+    const p = getPos(e);
+    lastX = p.x; lastY = p.y;
+  }
 
-  pdfCanvas.addEventListener('mousemove', (e) => {
-    if (!isDrawing || currentTool === 'pan') return;
-    const pos = getPos(e);
+  function draw(e) {
+    if(!isDrawing || currentTool === 'pan') return;
+    
+    // PENTING: Prevent scrolling saat menggambar
+    if(e.type === 'touchmove') e.preventDefault();
+
+    const p = getPos(e);
     
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
-    ctx.lineTo(pos.x, pos.y);
+    ctx.lineTo(p.x, p.y);
     
-    if (currentTool === 'pen') {
+    if(currentTool === 'pen') {
       ctx.globalCompositeOperation = 'source-over';
       ctx.strokeStyle = '#ffbf00';
       ctx.lineWidth = 2;
       ctx.globalAlpha = 1;
-    } else if (currentTool === 'highlight') {
-      ctx.globalCompositeOperation = 'multiply'; // Better highlight effect
-      ctx.strokeStyle = '#ffff00';
-      ctx.lineWidth = 15;
+    } else if(currentTool === 'high') {
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.strokeStyle = '#ffeb3b';
+      ctx.lineWidth = 12;
       ctx.globalAlpha = 0.3;
-    } else if (currentTool === 'eraser') {
+    } else if(currentTool === 'erase') {
       ctx.globalCompositeOperation = 'destination-out';
       ctx.lineWidth = 20;
       ctx.globalAlpha = 1;
     }
-
+    
     ctx.stroke();
-    lastX = pos.x;
-    lastY = pos.y;
-  });
+    lastX = p.x; lastY = p.y;
+  }
 
-  ['mouseup', 'mouseout'].forEach(ev => {
-    pdfCanvas.addEventListener(ev, () => isDrawing = false);
-  });
+  function endDraw() { isDrawing = false; }
 
-  // Load first doc on start
-  renderList();
-  loadDoc(documents[0], docList.firstChild);
+  // Mouse Events
+  pdfCanvas.addEventListener('mousedown', startDraw);
+  pdfCanvas.addEventListener('mousemove', draw);
+  pdfCanvas.addEventListener('mouseup', endDraw);
+  
+  // Touch Events (Passive: false required to preventDefault)
+  pdfCanvas.addEventListener('touchstart', startDraw, {passive: false});
+  pdfCanvas.addEventListener('touchmove', draw, {passive: false});
+  pdfCanvas.addEventListener('touchend', endDraw);
 
 </script>
 </body>
