@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -61,6 +62,14 @@
       padding:16px;
     }
 
+    /* Saat sidebar di-hide di desktop */
+    .app-shell.sidebar-collapsed .sidebar{
+      display:none;
+    }
+    .app-shell.sidebar-collapsed .main-content{
+      margin-left:0;
+    }
+
     /* SIDEBAR */
     .sidebar{
       flex:0 0 25%;
@@ -82,13 +91,6 @@
       gap:12px;
       height:100%;
       overflow-y:auto;
-    }
-
-    .brand-label{
-      font-weight:600;
-      color:var(--accent);
-      font-size:var(--fs-title);
-      letter-spacing:.5px;
     }
 
     .form-group{
@@ -259,7 +261,7 @@
       border:none;
       display:block;
       background:#ffffff;
-      pointer-events:auto; /* supaya scroll di dalam pdf berfungsi */
+      pointer-events:auto;
     }
 
     canvas{
@@ -328,6 +330,11 @@
       .btn-menu{
         display:flex !important;
       }
+
+      /* override: di mobile, biarkan sidebar tetap ada (dipakai drawer) */
+      .app-shell.sidebar-collapsed .sidebar{
+        display:block;
+      }
     }
 
     .btn-menu{
@@ -346,15 +353,15 @@
 </head>
 <body>
 
-<div class="app-shell">
+<div class="app-shell" id="appShell">
   <div class="sidebar-backdrop" id="backdrop"></div>
 
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-content">
-      <div class="brand-label">MARKET RESEARCH</div>
+      <!-- No page title / brand, sesuai permintaan -->
 
       <!-- SOURCE FILTER -->
-      <div class="form-group" style="margin-top:8px;">
+      <div class="form-group">
         <label class="form-label">Source</label>
         <select class="kt-input" id="sourceFilter">
           <option value="all">All Sources</option>
@@ -365,7 +372,7 @@
       </div>
 
       <!-- DATE FILTER -->
-      <div class="form-group" style="margin-top:4px;">
+      <div class="form-group">
         <label class="form-label">Release Date</label>
         <div style="display:flex;gap:6px;">
           <input type="date" class="kt-input" id="dateFrom" style="font-size:10px;padding:6px 8px;">
@@ -405,13 +412,6 @@
             <line x1="22" y1="12" x2="17.4" y2="16.6"/>
           </svg>
         </button>
-        <button class="tool-btn" id="btnErase" title="Eraser">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
-            <line x1="18" y1="9" x2="12" y2="15"/>
-            <line x1="12" y1="9" x2="18" y2="15"/>
-          </svg>
-        </button>
         <button class="tool-btn" id="btnUndo" title="Undo">
           &#8630;
         </button>
@@ -434,7 +434,7 @@
 </div>
 
 <script>
-  // --- DATA DEMO (tambah field "source") ---
+  // --- DATA DEMO (dengan field "source") ---
   const BASE_PDF_URL = "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
   const docs = [
     { id:1, title:"FX Strategy: USD Outlook",      date:"2025-11-21", source:"westpac",  url:BASE_PDF_URL },
@@ -442,6 +442,7 @@
     { id:3, title:"Commodities: Gold Rally",       date:"2025-11-19", source:"kuantara", url:BASE_PDF_URL },
   ];
 
+  const appShell   = document.getElementById('appShell');
   const viewport   = document.getElementById('viewport');
   const wrapper    = document.getElementById('wrapper');
   const canvas     = document.getElementById('pdfCanvas');
@@ -462,7 +463,7 @@
   // Rasio A4 kasar
   const BASE_RATIO = 1200 / 900;
 
-  // --- FILTER ---
+  // --- FILTER LOGIC ---
   function getFilteredDocs(){
     const sourceVal = sourceSel.value;
     const fromVal   = dateFromEl.value;
@@ -502,10 +503,9 @@
 
     document.getElementById('docCount').textContent = filteredDocs.length;
 
-    // Auto-select: kalau currentDocId masih ada di filtered, highlight, kalau tidak pilih yang pertama
     if(filteredDocs.length > 0){
       const current = filteredDocs.find(d => d.id === currentDocId) || filteredDocs[0];
-      const el = container.querySelector(`.doc-item[data-id="${current.id}"]`) || container.querySelector('.doc-item');
+      const el = container.querySelector(\`.doc-item[data-id="\${current.id}"]\`) || container.querySelector('.doc-item');
       if(el) loadDoc(current, el);
     } else {
       currentDocId = null;
@@ -524,7 +524,7 @@
     ctx.clearRect(0,0,canvas.width,canvas.height);
     historyStack = [];
 
-    const googleProxy = `https://docs.google.com/viewer?url=${encodeURIComponent(doc.url)}&embedded=true`;
+    const googleProxy = \`https://docs.google.com/viewer?url=\${encodeURIComponent(doc.url)}&embedded=true\`;
     pdfFrame.src = googleProxy;
 
     toggleSidebar(false);
@@ -548,12 +548,12 @@
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    // Ukuran berubah -> history harus direset
+    // Resize reset history
     historyStack = [];
   }
 
-  // TOOLS
-  const tools = { btnPan:'pan', btnPen:'pen', btnHigh:'high', btnErase:'erase' };
+  // TOOLS (tanpa Erase, cuma Pan, Pen, Highlighter)
+  const tools = { btnPan:'pan', btnPen:'pen', btnHigh:'high' };
 
   Object.keys(tools).forEach(id=>{
     document.getElementById(id).onclick = () => setTool(tools[id]);
@@ -643,14 +643,11 @@
       ctx.lineWidth = 2;
       ctx.globalAlpha = 1.0;
     }else if(currentTool === 'high'){
-      ctx.globalCompositeOperation = 'multiply';
-      ctx.strokeStyle = '#ffeb3b';
-      ctx.lineWidth = 14;
-      ctx.globalAlpha = 0.4;
-    }else if(currentTool === 'erase'){
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = 24;
-      ctx.globalAlpha = 1.0;
+      // Stabilo tebal & semi-transparan, teks tetap terlihat
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = '#fff59d';   // kuning stabilo lembut
+      ctx.lineWidth = 18;            // cukup tebal
+      ctx.globalAlpha = 0.35;        // transparan, teks tetap kebaca
     }
 
     ctx.stroke();
@@ -676,21 +673,42 @@
   dateFromEl.addEventListener('change', renderList);
   dateToEl.addEventListener('change', renderList);
 
-  // MOBILE SIDEBAR
+  // MOBILE + DESKTOP SIDEBAR TOGGLE
   const sidebar  = document.getElementById('sidebar');
   const backdrop = document.getElementById('backdrop');
+  const menuBtn  = document.getElementById('menuToggle');
+
+  function isMobile(){
+    return window.matchMedia("(max-width: 768px)").matches;
+  }
 
   function toggleSidebar(show){
-    if(show){
-      sidebar.classList.add('open');
-      backdrop.classList.add('open');
+    if(isMobile()){
+      if(show){
+        sidebar.classList.add('open');
+        backdrop.classList.add('open');
+      }else{
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('open');
+      }
     }else{
-      sidebar.classList.remove('open');
-      backdrop.classList.remove('open');
+      if(show){
+        appShell.classList.remove('sidebar-collapsed');
+      }else{
+        appShell.classList.add('sidebar-collapsed');
+      }
     }
   }
 
-  document.getElementById('menuToggle').onclick = () => toggleSidebar(true);
+  menuBtn.onclick = () => {
+    if(isMobile()){
+      toggleSidebar(true);
+    }else{
+      const collapsed = appShell.classList.contains('sidebar-collapsed');
+      toggleSidebar(collapsed); // kalau collapsed -> show, kalau visible -> hide
+    }
+  };
+
   backdrop.onclick = () => toggleSidebar(false);
 
   // INIT
