@@ -3,256 +3,368 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
-  <title>Research Terminal</title>
-
+  <title>Research Terminal – Kuantara</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap"/>
 
   <style>
-    /* --- THEME VARIABLES --- */
     :root {
-      --bg-app: #050505;
-      --bg-panel: #111111;
-      --bg-element: #1a1a1a;
-      --bg-hover: #252525;
-      
-      --border-main: #333333;
-      --border-light: #444444;
-
-      --text-main: #eeeeee;
-      --text-muted: #888888;
-      
+      /* KUANTARA TERMINAL CORE THEME */
+      --bg-root: #000000;
+      --bg-main: #111111;
+      --bg-element: #111111;
+      --bg-hover: #1a1a1a;
+      --border-main: #2b2b2b;
+      --border-soft: #2b2b2b;
+      --text-main: #f5f5f5;
+      --text-muted: #9b9b9b;
       --accent: #ffbf00;
       --accent-dim: rgba(255, 191, 0, 0.15);
 
-      --radius: 4px;
-      --space-sm: 8px;
-      --space-md: 16px;
-      
-      --toolbar-height: 50px;
+      --fs-title: 14px;
+      --fs-subtitle: 12px;
+      --fs-body: 11px;
+      --fs-small: 10px;
+
+      --toolbar-height: 48px;
     }
 
-    /* --- RESET --- */
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Fira Code", monospace !important; -webkit-tap-highlight-color: transparent; }
-    
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg-app); }
-    ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Fira Code", monospace !important;
+      -webkit-tap-highlight-color: transparent;
+      scrollbar-width: thin;
+      scrollbar-color: #000000 #000000;
+    }
+
+    /* WebKit scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #000000; }
+    ::-webkit-scrollbar-thumb { background: #000000; border-radius: 4px; }
 
     html, body {
-      width: 100%; height: 100%;
-      background: var(--bg-app);
+      width: 100%;
+      height: 100%;
+      background: var(--bg-root);
       color: var(--text-main);
-      overflow: hidden; 
-      position: fixed;
+      overflow: hidden;
     }
 
-    /* --- LAYOUT SPLIT (3/4 vs 1/4) --- */
+    /* LAYOUT UTAMA (NO EXTRA HEADER/FOOTER) */
     .app-shell {
       display: flex;
       width: 100vw;
-      height: 100dvh;
+      height: 100vh;
       position: relative;
+      background: var(--bg-root);
+      padding: 16px;
     }
 
-    /* SIDEBAR: 25% Width (1/4 Page) */
+    /* SIDEBAR (25% Desktop / Drawer Mobile) */
     .sidebar {
-      flex: 0 0 25%; /* Force 25% width */
-      max-width: 400px; /* Agar tidak terlalu lebar di layar ultrawide */
-      min-width: 280px; /* Agar tidak hancur di layar kecil */
-      
-      background: var(--bg-panel);
-      border-right: 1px solid var(--border-main);
+      flex: 0 0 25%;
+      max-width: 360px;
+      min-width: 260px;
+      background: var(--bg-main);
+      border: 1px solid var(--border-main);
+      border-radius: 4px;
       display: flex;
       flex-direction: column;
-      z-index: 100;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 20;
+      transition: transform 0.3s ease;
     }
 
     .sidebar-content {
-      padding: var(--space-md);
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
       height: 100%;
       overflow-y: auto;
     }
 
-    /* Backdrop (Mobile Only) */
-    .sidebar-backdrop {
-      display: none; /* Hide on desktop */
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.7);
-      z-index: 90;
-      backdrop-filter: blur(2px);
+    /* Form Elements */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    /* --- FORM ELEMENTS --- */
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    
-    .kt-input, .kt-select {
-      background: var(--bg-app);
+    .form-label {
+      font-size: var(--fs-small);
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .kt-input {
+      background: #000000;
       border: 1px solid var(--border-main);
       color: var(--text-main);
-      padding: 10px; 
-      border-radius: var(--radius);
-      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: var(--fs-body);
+      width: 100%;
       outline: none;
-      width: 100%;
     }
-    .kt-input:focus, .kt-select:focus { border-color: var(--accent); }
 
-    .filter-row { display: flex; gap: 8px; }
-    .filter-row > * { flex: 1; }
-
-    .btn-reset {
-      background: var(--bg-element);
-      border: 1px solid var(--border-main);
-      color: var(--text-muted);
-      padding: 10px;
-      font-size: 11px;
-      cursor: pointer;
-      border-radius: var(--radius);
-      width: 100%;
+    .kt-input:focus {
+      border-color: var(--accent);
     }
-    .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
-    
-    /* --- DOC LIST --- */
-    .list-header {
-      font-size: 10px; color: var(--text-muted);
-      display: flex; justify-content: space-between;
-      margin-top: 8px; border-bottom: 1px solid var(--border-main);
-      padding-bottom: 4px; margin-bottom: 8px;
+
+    /* List Documents */
+    #docList {
+      margin-top: 6px;
     }
 
     .doc-item {
-      padding: 12px;
-      margin-bottom: 8px;
+      padding: 10px 10px;
+      margin-bottom: 6px;
       background: var(--bg-element);
       border: 1px solid transparent;
-      border-radius: var(--radius);
+      border-radius: 4px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: 0.15s;
     }
-    .doc-item:hover { background: var(--bg-hover); }
-    .doc-item.active { background: var(--accent-dim); border-color: var(--accent); }
-    
-    .doc-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; line-height: 1.4; }
-    .doc-meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); }
-    .tag { color: var(--accent); }
 
-    /* --- MAIN CONTENT (3/4 Page) --- */
+    .doc-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .doc-item.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+    }
+
+    .doc-title {
+      font-size: var(--fs-body);
+      font-weight: 500;
+      margin-bottom: 2px;
+      color: var(--text-main);
+    }
+
+    .doc-meta {
+      font-size: var(--fs-small);
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* MAIN CONTENT (75% Desktop) */
     .main-content {
-      flex: 1; /* Takes remaining space (approx 75%) */
+      flex: 1;
       display: flex;
       flex-direction: column;
-      background: #000;
       position: relative;
-      width: 100%;
-      min-width: 0; /* Fix flex overflow issue */
+      min-width: 0;
+      margin-left: 12px;
     }
 
-    /* --- TOOLBAR --- */
+    /* Toolbar */
     .toolbar {
       height: var(--toolbar-height);
-      background: var(--bg-panel);
-      border-bottom: 1px solid var(--border-main);
+      background: var(--bg-main);
+      border: 1px solid var(--border-main);
+      border-radius: 4px;
       display: flex;
       align-items: center;
-      padding: 0 12px;
-      gap: 12px;
+      padding: 0 10px;
+      gap: 8px;
       overflow-x: auto;
-      white-space: nowrap;
-      scrollbar-width: none; 
+      margin-bottom: 12px;
     }
-    .toolbar::-webkit-scrollbar { display: none; }
 
     .toolbar-group {
-      display: flex; align-items: center; gap: 6px;
-      padding-right: 12px; border-right: 1px solid var(--border-main);
+      display: flex;
+      gap: 4px;
+      padding-right: 10px;
+      border-right: 1px solid var(--border-main);
+      align-items: center;
     }
-    .toolbar-group:last-child { border-right: none; }
 
-    .btn-menu {
-      display: none; /* Hidden on desktop */
-      background: var(--accent);
-      color: #000;
-      border: none;
-      font-weight: 700;
-      padding: 0 12px;
-      height: 30px;
-      border-radius: var(--radius);
-      font-size: 12px;
-      align-items: center; gap: 6px;
-      margin-right: 8px;
+    .toolbar-group:last-child {
+      border-right: none;
     }
 
     .tool-btn {
-      width: 32px; height: 32px;
-      display: flex; align-items: center; justify-content: center;
-      border: 1px solid transparent;
+      width: 30px;
+      height: 30px;
       background: transparent;
+      border: 1px solid transparent;
       color: var(--text-muted);
-      border-radius: var(--radius);
-      flex-shrink: 0;
+      border-radius: 4px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: var(--fs-body);
     }
-    .tool-btn:hover { background: var(--bg-hover); color: var(--text-main); }
-    .tool-btn.active { background: var(--bg-hover); color: var(--accent); border-color: var(--border-light); }
-    
-    svg { width: 16px; height: 16px; stroke-width: 2; }
 
-    /* --- VIEWER AREA --- */
+    .tool-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-main);
+    }
+
+    .tool-btn.active {
+      background: var(--bg-hover);
+      color: var(--accent);
+      border-color: var(--border-soft);
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2;
+    }
+
+    .zoom-label {
+      font-size: var(--fs-small);
+      min-width: 44px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    /* PDF VIEWER AREA */
     .viewer-viewport {
       flex: 1;
       position: relative;
-      overflow: auto;
-      background: #0a0a0a;
-      display: flex;
-      justify-content: center;
-      padding: 30px;
-      -webkit-overflow-scrolling: touch;
+      background: #000000;
+      border: 1px solid var(--border-main);
+      border-radius: 4px;
+      overflow-y: auto;
+      overflow-x: auto;
+      display: block;
+      text-align: center;
+      padding: 24px;
     }
-
-    .viewer-viewport.mode-pan { touch-action: pan-x pan-y; cursor: grab; } 
-    .viewer-viewport.mode-pan:active { cursor: grabbing; }
-    .viewer-viewport.mode-draw { touch-action: none; overflow: hidden; cursor: crosshair; }
 
     .pdf-wrapper {
+      display: inline-block;
       position: relative;
-      background: #202020;
-      box-shadow: 0 4px 30px rgba(0,0,0,0.6);
+      background: #111111;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.7);
       transform-origin: top center;
-      transition: transform 0.1s linear;
+      width: 900px;
+      height: 1200px;
     }
 
-    iframe { display: block; border: none; width: 100%; height: 100%; background: #fff; pointer-events: none; }
-    
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: #ffffff;
+      pointer-events: none;
+    }
+
     canvas {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      touch-action: none; 
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
     }
 
-    /* --- RESPONSIVE LOGIC (MOBILE) --- */
+    /* Mode PAN / DRAW */
+    .viewer-viewport.mode-pan canvas {
+      pointer-events: none;
+    }
+
+    .viewer-viewport.mode-pan {
+      cursor: grab;
+    }
+
+    .viewer-viewport.mode-draw canvas {
+      pointer-events: auto;
+      cursor: crosshair;
+    }
+
+    /* Mobile Responsive */
     @media (max-width: 768px) {
-      /* Reset Sidebar untuk Mobile menjadi Drawer */
-      .sidebar {
-        position: absolute; top: 0; left: 0; height: 100%; 
-        width: 85%; max-width: 320px; min-width: auto;
-        flex: none; /* Hapus aturan flex 25% */
-        transform: translateX(-100%);
-        box-shadow: 4px 0 20px rgba(0,0,0,0.8);
+      .app-shell {
+        padding: 8px;
       }
-      .sidebar.open { transform: translateX(0); }
-      
-      .sidebar-backdrop { display: block; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-      .sidebar-backdrop.open { opacity: 1; pointer-events: auto; }
-      
-      .btn-menu { display: flex; } /* Show Menu Button */
-      
-      .viewer-viewport { padding: 10px; align-items: flex-start; }
-      .pdf-wrapper { margin-bottom: 100px; }
+
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 82%;
+        transform: translateX(-100%);
+        box-shadow: 4px 0 20px #000;
+        border-radius: 0 4px 4px 0;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 15;
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.25s;
+      }
+
+      .sidebar-backdrop.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .main-content {
+        margin-left: 0;
+        margin-top: 0;
+      }
+
+      .viewer-viewport {
+        padding: 8px;
+      }
+
+      .pdf-wrapper {
+        margin-bottom: 64px;
+        width: 760px;
+        height: 1020px;
+      }
+
+      .btn-menu {
+        display: flex !important;
+      }
+    }
+
+    .btn-menu {
+      display: none;
+      margin-right: 4px;
+      background: var(--accent);
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-weight: 600;
+      font-size: var(--fs-small);
+      color: #000;
+      cursor: pointer;
+    }
+
+    .brand-label {
+      font-weight: 600;
+      color: var(--accent);
+      font-size: var(--fs-title);
+      letter-spacing: 0.5px;
+    }
+
+    .list-header {
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: var(--fs-small);
     }
   </style>
 </head>
@@ -263,73 +375,81 @@
 
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-content">
-      <div class="form-group">
-        <label class="form-label">Topic Filter</label>
-        <select id="topicFilter" class="kt-select">
+      <div class="brand-label">RESEARCH TERMINAL</div>
+
+      <div class="form-group" style="margin-top:8px;">
+        <label class="form-label">Topic</label>
+        <select class="kt-input" id="topicFilter">
           <option value="all">All Topics</option>
-          <option value="macro">Global Macro</option>
           <option value="fx">FX Strategy</option>
-          <option value="rates">Rates & Credit</option>
+          <option value="macro">Global Macro</option>
         </select>
       </div>
-      
-      <div class="form-group">
-        <label class="form-label">Date Range</label>
-        <div class="filter-row">
-          <input type="date" id="dateFrom" class="kt-input" />
-          <input type="date" id="dateTo" class="kt-input" />
-        </div>
-      </div>
-      
-      <button id="resetFilterBtn" class="btn-reset">Reset Filters</button>
 
       <div class="list-header">
-        <span>DOCUMENTS</span>
-        <span id="resultCount">0</span>
+        <span>AVAILABLE DOCS</span>
+        <span id="docCount">0</span>
       </div>
-      
-      <div id="docList" style="flex:1; overflow-y:auto;">
-        </div>
+
+      <div id="docList"></div>
     </div>
   </aside>
 
   <main class="main-content">
     <div class="toolbar">
-      <button class="btn-menu" id="menuToggle">
-        <span>☰ LIST</span>
-      </button>
+      <button class="btn-menu" id="menuToggle">MENU</button>
 
       <div class="toolbar-group">
-        <button class="tool-btn active" id="toolPan" title="Pan / Scroll">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11l5-5 5 5"/><path d="M7 13l5 5 5-5"/></svg>
+        <button class="tool-btn active" id="btnPan" title="Pan / Scroll">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 11l5-5 5 5"/>
+            <path d="M7 13l5 5 5-5"/>
+          </svg>
         </button>
-        <button class="tool-btn" id="toolPen" title="Pen">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+        <button class="tool-btn" id="btnPen" title="Pen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+          </svg>
         </button>
-        <button class="tool-btn" id="toolHigh" title="Highlight">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l-6 6v3h9l3-3"/><line x1="22" y1="12" x2="17.4" y2="16.6"/></svg>
+        <button class="tool-btn" id="btnHigh" title="Highlighter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l-6 6v3h9l3-3"/>
+            <line x1="22" y1="12" x2="17.4" y2="16.6"/>
+          </svg>
         </button>
-        <button class="tool-btn" id="toolErase" title="Eraser">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/></svg>
+        <button class="tool-btn" id="btnErase" title="Eraser">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
+            <line x1="18" y1="9" x2="12" y2="15"/>
+            <line x1="12" y1="9" x2="18" y2="15"/>
+          </svg>
         </button>
-        <button class="tool-btn" id="toolClear" title="Clear">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <button class="tool-btn" id="btnClear" title="Clear All">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
         </button>
       </div>
 
       <div class="toolbar-group">
-        <button class="tool-btn" id="zoomOutBtn">-</button>
-        <span style="font-size:11px; color:var(--text-muted); min-width:36px; text-align:center;" id="zoomLabel">100%</span>
-        <button class="tool-btn" id="zoomInBtn">+</button>
-        <button class="tool-btn" id="fitWidthBtn" title="Fit Width">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12H3"/><path d="M21 3H3"/><path d="M21 7.5H3"/><path d="M21 16.5H3"/><path d="M21 21H3"/></svg>
+        <button class="tool-btn" id="zoomOut">-</button>
+        <span class="zoom-label" id="zoomVal">100%</span>
+        <button class="tool-btn" id="zoomIn">+</button>
+        <button class="tool-btn" id="fitWidth" title="Fit Width">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12H3"/>
+            <path d="M21 3H3"/>
+            <path d="M21 21H3"/>
+          </svg>
         </button>
       </div>
     </div>
 
     <div class="viewer-viewport mode-pan" id="viewport">
-      <div class="pdf-wrapper" id="pdfWrapper">
-        <iframe id="pdfFrame" src="about:blank"></iframe>
+      <div class="pdf-wrapper" id="wrapper">
+        <iframe id="pdfFrame" src=""></iframe>
         <canvas id="pdfCanvas"></canvas>
       </div>
     </div>
@@ -337,37 +457,210 @@
 </div>
 
 <script>
-  /* --- MOCK DATA --- */
+  // --- DATA ---
+  const BASE_PDF_URL = "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
   const docs = [
-    { title: "FX Strategy: USD/JPY Outlook", date: "2025-11-20", topic: "fx", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
-    { title: "Macro: Inflation Data Analysis", date: "2025-11-19", topic: "macro", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
-    { title: "Rates: 10Y Treasury Yields", date: "2025-11-18", topic: "rates", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
-    { title: "Equity: AI Sector Bubble Risk", date: "2025-11-15", topic: "equity", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
-    { title: "Weekly Market Recap", date: "2025-11-14", topic: "macro", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
-    { title: "Commodities: Oil Price Shock", date: "2025-11-10", topic: "macro", pdf: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" },
+    { id:1, title: "FX Strategy: USD Outlook",       date: "2025-11-21", topic: "fx",    url: BASE_PDF_URL },
+    { id:2, title: "Global Macro: Recession Risk",   date: "2025-11-20", topic: "macro", url: BASE_PDF_URL },
+    { id:3, title: "Commodities: Gold Rally",        date: "2025-11-19", topic: "macro", url: BASE_PDF_URL },
   ];
 
-  /* --- ELEMENTS --- */
-  const sidebar = document.getElementById('sidebar');
-  const backdrop = document.getElementById('backdrop');
-  const menuBtn = document.getElementById('menuToggle');
-  const docList = document.getElementById('docList');
-  const resultCount = document.getElementById('resultCount');
-  
+  // --- ELEMENTS ---
   const viewport = document.getElementById('viewport');
-  const pdfWrapper = document.getElementById('pdfWrapper');
+  const wrapper = document.getElementById('wrapper');
+  const canvas = document.getElementById('pdfCanvas');
+  const ctx = canvas.getContext('2d');
   const pdfFrame = document.getElementById('pdfFrame');
-  const pdfCanvas = document.getElementById('pdfCanvas');
-  
-  let ctx = pdfCanvas.getContext('2d');
+
+  // --- STATE ---
   let zoom = 1.0;
   let currentTool = 'pan';
   let isDrawing = false;
-  let lastX=0, lastY=0;
+  let lastX = 0, lastY = 0;
 
-  /* --- SIDEBAR LOGIC --- */
+  const BASE_W = 900;
+  const BASE_H = 1200;
+
+  function init() {
+    renderList();
+    resizeCanvas();
+    if (docs.length > 0) loadDoc(docs[0]);
+    updateZoom();
+  }
+
+  // --- LIST & PDF LOADER ---
+  function renderList() {
+    const container = document.getElementById('docList');
+    container.innerHTML = '';
+    docs.forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'doc-item';
+      el.innerHTML = `
+        <div class="doc-title">${d.title}</div>
+        <div class="doc-meta">
+          <span>${d.date}</span>
+          <span style="color:var(--accent)">${d.topic}</span>
+        </div>`;
+      el.onclick = () => loadDoc(d, el);
+      container.appendChild(el);
+    });
+    document.getElementById('docCount').textContent = docs.length;
+  }
+
+  function loadDoc(doc, elBtn) {
+    document.querySelectorAll('.doc-item').forEach(b => b.classList.remove('active'));
+    if (elBtn) elBtn.classList.add('active');
+    else if (document.querySelector('.doc-item')) document.querySelector('.doc-item').classList.add('active');
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const googleProxy = `https://docs.google.com/viewer?url=${encodeURIComponent(doc.url)}&embedded=true`;
+    pdfFrame.src = googleProxy;
+
+    toggleSidebar(false);
+  }
+
+  // --- CANVAS & ZOOM LOGIC ---
+  function resizeCanvas() {
+    canvas.width = BASE_W;
+    canvas.height = BASE_H;
+    wrapper.style.width = BASE_W + "px";
+    wrapper.style.height = BASE_H + "px";
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+  }
+
+  function updateZoom() {
+    wrapper.style.transform = `scale(${zoom})`;
+    document.getElementById('zoomVal').textContent = Math.round(zoom * 100) + "%";
+
+    const currentW = BASE_W * zoom;
+    if (currentW < viewport.clientWidth) {
+      wrapper.style.margin = "0 auto";
+    } else {
+      wrapper.style.margin = "0";
+    }
+  }
+
+  document.getElementById('zoomIn').onclick = () => {
+    zoom = Math.min(zoom + 0.1, 3.0);
+    updateZoom();
+  };
+
+  document.getElementById('zoomOut').onclick = () => {
+    zoom = Math.max(zoom - 0.1, 0.5);
+    updateZoom();
+  };
+
+  document.getElementById('fitWidth').onclick = () => {
+    const padding = 48;
+    const available = viewport.clientWidth - padding;
+    zoom = available / BASE_W;
+    updateZoom();
+  };
+
+  // --- TOOLS ---
+  const tools = { btnPan: 'pan', btnPen: 'pen', btnHigh: 'high', btnErase: 'erase' };
+
+  Object.keys(tools).forEach(id => {
+    document.getElementById(id).onclick = () => setTool(tools[id]);
+  });
+
+  document.getElementById('btnClear').onclick = () => {
+    if (confirm('Clear annotations?')) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  };
+
+  function setTool(t) {
+    currentTool = t;
+    document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+
+    const btnId = Object.keys(tools).find(key => tools[key] === t);
+    if (btnId) document.getElementById(btnId).classList.add('active');
+
+    viewport.className = 'viewer-viewport mode-' + (t === 'pan' ? 'pan' : 'draw');
+  }
+
+  // --- DRAWING ---
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    let clientX = e.clientX;
+    let clientY = e.clientY;
+
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    }
+
+    return {
+      x: (clientX - rect.left) / zoom,
+      y: (clientY - rect.top) / zoom
+    };
+  }
+
+  function startDraw(e) {
+    if (currentTool === 'pan') return;
+    if (e.type !== 'mousedown') isDrawing = true;
+    if (e.type === 'mousedown' && e.button === 0) isDrawing = true;
+
+    const pos = getPos(e);
+    lastX = pos.x;
+    lastY = pos.y;
+  }
+
+  function draw(e) {
+    if (!isDrawing || currentTool === 'pan') return;
+
+    if (e.cancelable) e.preventDefault();
+
+    const pos = getPos(e);
+
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+
+    if (currentTool === 'pen') {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = '#ffbf00';
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 1.0;
+    } else if (currentTool === 'high') {
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.strokeStyle = '#ffeb3b';
+      ctx.lineWidth = 14;
+      ctx.globalAlpha = 0.4;
+    } else if (currentTool === 'erase') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth = 24;
+      ctx.globalAlpha = 1.0;
+    }
+
+    ctx.stroke();
+    lastX = pos.x;
+    lastY = pos.y;
+  }
+
+  function endDraw() {
+    isDrawing = false;
+  }
+
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('mouseout', endDraw);
+
+  canvas.addEventListener('touchstart', startDraw, { passive: false });
+  canvas.addEventListener('touchmove', draw, { passive: false });
+  canvas.addEventListener('touchend', endDraw);
+
+  // --- MOBILE SIDEBAR ---
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('backdrop');
+
   function toggleSidebar(show) {
-    if(show) {
+    if (show) {
       sidebar.classList.add('open');
       backdrop.classList.add('open');
     } else {
@@ -375,150 +668,12 @@
       backdrop.classList.remove('open');
     }
   }
-  menuBtn.onclick = () => toggleSidebar(true);
+
+  document.getElementById('menuToggle').onclick = () => toggleSidebar(true);
   backdrop.onclick = () => toggleSidebar(false);
 
-  /* --- LIST RENDERING --- */
-  function renderList() {
-    docList.innerHTML = '';
-    docs.forEach(doc => {
-      const el = document.createElement('div');
-      el.className = 'doc-item';
-      el.innerHTML = `
-        <div class="doc-title">${doc.title}</div>
-        <div class="doc-meta"><span>${doc.date}</span> <span class="tag" style="color:var(--accent)">${doc.topic.toUpperCase()}</span></div>
-      `;
-      el.onclick = () => {
-        pdfFrame.src = doc.pdf + "#view=FitH";
-        document.querySelectorAll('.doc-item').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
-        ctx.clearRect(0,0,pdfCanvas.width, pdfCanvas.height);
-        if(window.innerWidth <= 768) toggleSidebar(false);
-      };
-      docList.appendChild(el);
-    });
-    resultCount.textContent = docs.length;
-    if(docs.length > 0) docList.children[0].click();
-  }
-  renderList();
-
-  /* --- ZOOM & SIZE --- */
-  const BASE_WIDTH = 900;
-  const BASE_HEIGHT = 1200;
-
-  function resizeCanvas() {
-    pdfCanvas.width = BASE_WIDTH;
-    pdfCanvas.height = BASE_HEIGHT;
-    pdfWrapper.style.width = BASE_WIDTH + 'px';
-    pdfWrapper.style.height = BASE_HEIGHT + 'px';
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-  }
-  resizeCanvas();
-
-  function updateZoom() {
-    pdfWrapper.style.transform = `scale(${zoom})`;
-    document.getElementById('zoomLabel').textContent = Math.round(zoom*100) + "%";
-    
-    // Margin handling for centering when zoomed out/in
-    const margin = (BASE_WIDTH * zoom - BASE_WIDTH) / 2;
-    if(zoom > 1) pdfWrapper.style.margin = `${margin}px`;
-    else pdfWrapper.style.margin = '0';
-  }
-
-  document.getElementById('zoomInBtn').onclick = () => { zoom = Math.min(zoom+0.1, 3.0); updateZoom(); };
-  document.getElementById('zoomOutBtn').onclick = () => { zoom = Math.max(zoom-0.1, 0.4); updateZoom(); };
-  
-  // Fit Width Function
-  document.getElementById('fitWidthBtn').onclick = () => {
-    // Calculate available width inside viewport
-    const available = viewport.clientWidth - 60; // minus padding
-    zoom = available / BASE_WIDTH;
-    updateZoom();
-  };
-
-  // Auto Fit on Init (Responsive)
-  setTimeout(() => {
-    const w = viewport.clientWidth;
-    if(w < BASE_WIDTH) {
-      zoom = (w - 40) / BASE_WIDTH;
-      updateZoom();
-    }
-  }, 500);
-
-  /* --- TOOLS LOGIC --- */
-  function setTool(t) {
-    currentTool = t;
-    document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-    const map = {'pan':'toolPan','pen':'toolPen','high':'toolHigh','erase':'toolErase'};
-    if(map[t]) document.getElementById(map[t]).classList.add('active');
-
-    if(t === 'pan') {
-      viewport.classList.remove('mode-draw');
-      viewport.classList.add('mode-pan');
-      pdfCanvas.style.pointerEvents = 'none'; 
-    } else {
-      viewport.classList.remove('mode-pan');
-      viewport.classList.add('mode-draw');
-      pdfCanvas.style.pointerEvents = 'auto'; 
-    }
-  }
-
-  document.getElementById('toolPan').onclick = () => setTool('pan');
-  document.getElementById('toolPen').onclick = () => setTool('pen');
-  document.getElementById('toolHigh').onclick = () => setTool('high');
-  document.getElementById('toolErase').onclick = () => setTool('erase');
-  document.getElementById('toolClear').onclick = () => ctx.clearRect(0,0,BASE_WIDTH,BASE_HEIGHT);
-
-  /* --- DRAWING & TOUCH HANDLING --- */
-  function getPos(e) {
-    const rect = pdfCanvas.getBoundingClientRect();
-    let cx = e.clientX; let cy = e.clientY;
-    if(e.touches && e.touches.length > 0) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; }
-    return { x: (cx - rect.left) / zoom, y: (cy - rect.top) / zoom };
-  }
-
-  function startDraw(e) {
-    if(currentTool === 'pan') return;
-    isDrawing = true;
-    const p = getPos(e);
-    lastX = p.x; lastY = p.y;
-  }
-
-  function draw(e) {
-    if(!isDrawing || currentTool === 'pan') return;
-    if(e.type === 'touchmove') e.preventDefault();
-
-    const p = getPos(e);
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(p.x, p.y);
-    
-    if(currentTool === 'pen') {
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = '#ffbf00'; ctx.lineWidth = 2; ctx.globalAlpha = 1;
-    } else if(currentTool === 'high') {
-      ctx.globalCompositeOperation = 'multiply';
-      ctx.strokeStyle = '#ffeb3b'; ctx.lineWidth = 12; ctx.globalAlpha = 0.3;
-    } else if(currentTool === 'erase') {
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = 20; ctx.globalAlpha = 1;
-    }
-    
-    ctx.stroke();
-    lastX = p.x; lastY = p.y;
-  }
-
-  function endDraw() { isDrawing = false; }
-
-  pdfCanvas.addEventListener('mousedown', startDraw);
-  pdfCanvas.addEventListener('mousemove', draw);
-  pdfCanvas.addEventListener('mouseup', endDraw);
-  
-  pdfCanvas.addEventListener('touchstart', startDraw, {passive: false});
-  pdfCanvas.addEventListener('touchmove', draw, {passive: false});
-  pdfCanvas.addEventListener('touchend', endDraw);
-
+  // Init
+  init();
 </script>
 </body>
 </html>
