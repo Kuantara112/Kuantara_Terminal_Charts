@@ -183,7 +183,7 @@
       display:flex;
       justify-content:space-between;
       gap:8px;
-      margin-bottom:6px;
+      margin-bottom:8px;
       font-size:var(--fs-small);
       color:var(--text-muted);
     }
@@ -192,21 +192,8 @@
     .kt-meta-right{
       display:flex;
       flex-wrap:wrap;
-      gap:4px 6px;
+      gap:6px;
       align-items:center;
-    }
-
-    .kt-pill{
-      border-radius:999px;
-      padding:2px 6px;
-      border:1px solid var(--border-soft);
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .kt-counter{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
     }
 
     .kt-feed{
@@ -216,9 +203,16 @@
       display:flex;
       flex-direction:column;
       gap:6px;
+    }
+
+    #fastbull-feed{
+      max-height:calc(100vh - 220px);
       overflow-y:auto;
-      /* tinggi adaptif: kira-kira penuh tapi tidak bikin scroll horizontal */
-      max-height:calc(100vh - 150px);
+    }
+
+    #te-feed{
+      max-height:calc(100vh - 220px);
+      overflow-y:auto;
     }
 
     .kt-item{
@@ -226,36 +220,92 @@
       border-radius:3px;
       padding:8px 8px;
       background:#111111;
+      cursor:pointer;
+      transition:border-color 0.2s ease, background 0.2s ease;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .kt-item.selected{
+      border-color:var(--accent);
+      background:#18120a;
+    }
+
+    .kt-item[data-important="true"] .kt-item-content{
+      border:1px solid rgba(14,165,233,0.65);
+      background:linear-gradient(140deg,rgba(5,10,20,0.95),rgba(8,47,73,0.85));
+      box-shadow:0 0 28px rgba(14,165,233,0.2);
+    }
+
+    .kt-item[data-important="true"].selected .kt-item-content{
+      border-color:rgba(59,130,246,0.8);
+    }
+
+    .kt-item[data-medium="true"]:not([data-important="true"]) .kt-item-content{
+      border-color:rgba(59,130,246,0.35);
+      background:linear-gradient(135deg,rgba(30,64,175,0.2),rgba(6,8,12,0.95));
+    }
+
+    .kt-item .kt-item-content{
+      background:rgba(255,255,255,0.01);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:4px;
+      padding:8px;
+    }
+
+    .kt-item-content{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
     }
 
     .kt-item-header{
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      gap:6px;
-      margin-bottom:4px;
+      justify-content:flex-end;
+      gap:8px;
     }
 
-    .kt-item-source{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
 
     .kt-item-tag{
       font-size:var(--fs-small);
       color:var(--accent);
     }
 
+    .kt-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:4px;
+    }
+
+    .kt-tag{
+      font-size:9px;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      padding:2px 6px;
+      border:1px solid rgba(255,255,255,0.2);
+      border-radius:999px;
+      color:var(--text-muted);
+    }
+
     .kt-item-title{
       font-size:var(--fs-body);
-      margin-bottom:4px;
       color:var(--text-main);
+    }
+
+    .kt-item-desc{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      line-height:1.4;
     }
 
     .kt-item-meta{
       display:flex;
       justify-content:space-between;
-      gap:8px;
+      align-items:center;
+      gap:12px;
       font-size:var(--fs-small);
       color:var(--text-muted);
     }
@@ -264,9 +314,36 @@
       white-space:nowrap;
     }
 
-    .kt-item-impact{
-      text-align:right;
-      white-space:nowrap;
+    .kt-copy-icon{
+      border:1px solid rgba(255,255,255,0.2);
+      background:rgba(0,0,0,0.3);
+      color:var(--text-main);
+      width:28px;
+      height:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:4px;
+      cursor:pointer;
+      transition:all 0.2s ease;
+      padding:0;
+      flex-shrink:0;
+    }
+
+    .kt-copy-icon svg{
+      width:14px;
+      height:14px;
+      stroke:currentColor;
+    }
+
+    .kt-copy-icon:hover{
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+
+    .kt-copy-icon.copied{
+      border-color:#2ea043;
+      color:#2ea043;
     }
 
     .kt-empty{
@@ -274,6 +351,145 @@
       color:var(--text-muted);
       padding:6px 2px;
       text-align:center;
+    }
+  </style>
+  <style>
+    /* Kuantara AI Modal Styles - Copied from news_global.html */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      z-index: 999;
+    }
+    .modal-card {
+      width: min(960px, 100%);
+      background: rgba(8, 8, 10, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 40px 160px rgba(0, 0, 0, 0.65);
+      padding: 1.5rem;
+      position: relative;
+      overflow-y: auto;
+    }
+    .modal-close {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: transparent;
+      color: #ffbf00;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      font-size: 1rem;
+    }
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .kuantara-chat {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.45);
+      padding: 1.25rem;
+      min-height: 240px;
+      max-height: calc(var(--chat-h) - 40px);
+      overflow-y: auto;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .kuantara-chat::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+    .kuantara-chat .placeholder {
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.35);
+    }
+    .kuantara-message {
+      margin-bottom: 1.1rem;
+    }
+    .kuantara-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.45);
+    }
+    .kuantara-message.user .kuantara-label {
+      color: #7dd3fc;
+    }
+    .kuantara-message.ai .kuantara-label {
+      color: #ffbf00;
+    }
+    .kuantara-block {
+      margin-top: 0.4rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+      padding: 0.85rem 1rem;
+      background: rgba(15, 23, 42, 0.85);
+    }
+    .kuantara-message.ai .kuantara-block {
+      border: none;
+      border-radius: 0;
+      padding: 0.6rem 0;
+      background: transparent;
+    }
+    .kuantara-block .md p {
+      margin: 0.45rem 0;
+    }
+    .kuantara-block .md ul,
+    .kuantara-block .md ol {
+      padding-left: 1.25rem;
+      margin: 0.4rem 0;
+    }
+    .kuantara-block .md code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.15rem 0.35rem;
+      border-radius: 0.35rem;
+      font-size: 0.85em;
+    }
+    .kuantara-input {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.75rem;
+    }
+    .kuantara-input textarea {
+      flex: 1;
+      min-height: 48px;
+      max-height: 220px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.35);
+      color: #fff;
+      padding: 0.6rem 0.75rem;
+      resize: none;
+    }
+    .kuantara-send-btn {
+      width: 56px;
+      border: none;
+      border-radius: 0.75rem;
+      background: #ffffff;
+      display: grid;
+      place-items: center;
+      color: #050505;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .kuantara-send-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+    .kuantara-send-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(255, 255, 255, 0.12);
+    }
+    .kuantara-send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    @keyframes shimmer-slide {
+      100% { transform: translateX(100%); }
     }
   </style>
 <style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
@@ -600,11 +816,15 @@
   padding: 9px 30px;
   border-radius: 5px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .hidden{
+      display:none !important;
+    }
 
 .immersive-translate-btn-container {
   display: flex;
@@ -801,7 +1021,6 @@
   
 
   <div class="kt-grid">
-    <!-- PANEL KIRI: 24/7 HEADLINES (FastBull) -->
     <section class="kt-panel" id="panel-fastbull">
       <div class="kt-panel-header">
         <div class="kt-panel-title">24/7 Headlines</div>
@@ -823,44 +1042,56 @@
 
       <div class="kt-panel-body">
         <div class="kt-meta-row">
-          <div class="kt-meta-left">
-            <span class="kt-pill">Source: FastBull</span>
-            <span class="kt-pill">Mode: Headlines</span>
-          </div>
-          <div class="kt-meta-right">
-            <span class="kt-counter" id="fastbull-count">3 items</span>
-          </div>
         </div>
 
         <ul class="kt-feed" id="fastbull-feed"><li class="kt-item" data-id="fb1">
-        <div class="kt-item-header">
-          <div class="kt-item-source">FastBull · Breaking</div>
-          <div class="kt-item-tag">Fed &amp; Rates</div>
-        </div>
-        <div class="kt-item-title">Fed officials flag 'higher for longer' even as inflation cools slightly</div>
-        <div class="kt-item-meta">
-          <span class="kt-item-time">14:05 GMT</span>
-          <span class="kt-item-impact">High impact</span>
+        <div class="kt-item-content">
+          <div class="kt-item-header">
+            <div class="kt-item-tag">Fed &amp; Rates</div>
+          </div>
+          <div class="kt-item-title">Fed officials flag 'higher for longer' even as inflation cools slightly</div>
+          <div class="kt-item-meta">
+            <span class="kt-item-time">21:05 WIB</span>
+            <button class="kt-copy-icon" type="button" aria-label="Copy headline">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </li><li class="kt-item" data-id="fb2">
-        <div class="kt-item-header">
-          <div class="kt-item-source">FastBull · FX</div>
-          <div class="kt-item-tag">USD · FX</div>
-        </div>
-        <div class="kt-item-title">Dollar eases as traders rotate into high-beta FX after risk-on overnight</div>
-        <div class="kt-item-meta">
-          <span class="kt-item-time">13:42 GMT</span>
-          <span class="kt-item-impact">Medium impact</span>
+        <div class="kt-item-content">
+          <div class="kt-item-header">
+            <div class="kt-item-tag">USD · FX</div>
+          </div>
+          <div class="kt-item-title">Dollar eases as traders rotate into high-beta FX after risk-on overnight</div>
+          <div class="kt-item-meta">
+            <span class="kt-item-time">20:42 WIB</span>
+            <button class="kt-copy-icon" type="button" aria-label="Copy headline">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </li><li class="kt-item" data-id="fb3">
-        <div class="kt-item-header">
-          <div class="kt-item-source">FastBull · Commodities</div>
-          <div class="kt-item-tag">Gold · Commodities</div>
-        </div>
-        <div class="kt-item-title">Gold holds near session highs as real yields pull back from recent peak</div>
-        <div class="kt-item-meta">
-          <span class="kt-item-time">13:10 GMT</span>
-          <span class="kt-item-impact">Medium impact</span>
+        <div class="kt-item-content">
+          <div class="kt-item-header">
+            
+            <div class="kt-item-tag">Gold · Commodities</div>
+          </div>
+          <div class="kt-item-title">Gold holds near session highs as real yields pull back from recent peak</div>
+          <div class="kt-item-meta">
+            <span class="kt-item-time">20:10 WIB</span>
+            <button class="kt-copy-icon" type="button" aria-label="Copy headline">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </li></ul>
       </div>
@@ -888,43 +1119,58 @@
       <div class="kt-panel-body">
         <div class="kt-meta-row">
           <div class="kt-meta-left">
-            <span class="kt-pill">Source: TradingEconomics</span>
-            <span class="kt-pill">Mode: Articles</span>
-          </div>
-          <div class="kt-meta-right">
-            <span class="kt-counter" id="te-count">3 items</span>
           </div>
         </div>
 
         <ul class="kt-feed" id="te-feed"><li class="kt-item" data-id="te1">
-        <div class="kt-item-header">
-          <div class="kt-item-source">TradingEconomics · Global</div>
-          <div class="kt-item-tag">US Outlook</div>
-        </div>
-        <div class="kt-item-title">US Macro Snapshot: Slowing but still resilient growth into next quarter</div>
-        <div class="kt-item-meta">
-          <span class="kt-item-time">Daily Brief</span>
-          <span class="kt-item-impact">Strategy note</span>
+        <div class="kt-item-content">
+          <div class="kt-item-header">
+            <div class="kt-item-tag">US Outlook</div>
+          </div>
+          <div class="kt-item-title">US Macro Snapshot: Slowing but still resilient growth into next quarter</div>
+          <div class="kt-item-meta">
+            <span class="kt-item-time">Daily Brief</span>
+            <button class="kt-copy-icon" type="button" aria-label="Copy headline">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </li><li class="kt-item" data-id="te2">
-        <div class="kt-item-header">
-          <div class="kt-item-source">TradingEconomics · Asia</div>
-          <div class="kt-item-tag">Japan</div>
-        </div>
-        <div class="kt-item-title">BoJ policy normalization path and implications for global yield curve</div>
-        <div class="kt-item-meta">
-          <span class="kt-item-time">Research</span>
-          <span class="kt-item-impact">In-depth</span>
+        <div class="kt-item-content">
+          <div class="kt-item-header">
+            
+            <div style="flex:1"></div><div class="kt-item-tag">Japan</div>
+          </div>
+          <div class="kt-item-title">BoJ policy normalization path and implications for global yield curve</div>
+          <div class="kt-item-meta">
+            <span class="kt-item-time">Research</span>
+            <button class="kt-copy-icon" type="button" aria-label="Copy headline">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </li><li class="kt-item" data-id="te3">
-        <div class="kt-item-header">
-          <div class="kt-item-source">TradingEconomics · Markets</div>
-          <div class="kt-item-tag">Equities</div>
-        </div>
-        <div class="kt-item-title">Global equity indices diverge as tech rotation accelerates</div>
-        <div class="kt-item-meta">
-          <span class="kt-item-time">Market Wrap</span>
-          <span class="kt-item-impact">Review</span>
+        <div class="kt-item-content">
+          <div class="kt-item-header">
+            
+            <div style="flex:1"></div><div class="kt-item-tag">Equities</div>
+          </div>
+          <div class="kt-item-title">Global equity indices diverge as tech rotation accelerates</div>
+          <div class="kt-item-meta">
+            <span class="kt-item-time">Market Wrap</span>
+            <button class="kt-copy-icon" type="button" aria-label="Copy headline">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </li></ul>
       </div>
@@ -932,183 +1178,727 @@
   </div>
 </div>
 
+<!-- Kuantara AI Modal - Copied from news_global.html -->
+<div id="kuantaraModal" class="modal-overlay hidden">
+  <div id="card" class="modal-card">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-[10px] uppercase tracking-[0.3em] text-neutral-500">Kuantara AI</p>
+        <h2 id="kuantaraTitle" class="text-2xl font-semibold text-white">Recap</h2>
+      </div>
+      <button id="kuantaraClose" type="button" class="modal-close">&times;</button>
+    </div>
+    <div class="kuantara-chat mt-4" id="chatList"></div>
+    <div class="kuantara-input">
+      <textarea id="input" placeholder="Tulis instruksi untuk Kuantara…"></textarea>
+      <button id="send" type="button" class="kuantara-send-btn" aria-label="Kirim">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 19V5"></path>
+          <path d="m5 12 7-7 7 7"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // ========== DUMMY DATA (bisa diganti data real-time dari API) ==========
-  const dummyFastbull = [
-    {
-      id:"fb1",
-      source:"FastBull · Breaking",
-      tag:"Fed & Rates",
-      title:"Fed officials flag 'higher for longer' even as inflation cools slightly",
-      time:"14:05 GMT",
-      topic:"macro",
-      impact:"High impact"
-    },
-    {
-      id:"fb2",
-      source:"FastBull · FX",
-      tag:"USD · FX",
-      title:"Dollar eases as traders rotate into high-beta FX after risk-on overnight",
-      time:"13:42 GMT",
-      topic:"fx",
-      impact:"Medium impact"
-    },
-    {
-      id:"fb3",
-      source:"FastBull · Commodities",
-      tag:"Gold · Commodities",
-      title:"Gold holds near session highs as real yields pull back from recent peak",
-      time:"13:10 GMT",
-      topic:"commodities",
-      impact:"Medium impact"
+  // ========== API & CONFIG CONSTANTS ==========
+  const SIDER_API_BASE = "https://sider.ai/api/chat/v1";
+  const TIMEZONE = "Asia/Makassar";
+  const SIDER_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyMTgzNzM0NiwicmVnaXN0ZXJfdHlwZSI6Im9hdXRoMiIsImFwcF9uYW1lIjoiQ2hpdENoYXRfQ2hyb21lX0V4dCIsInRva2VuX2lkIjoiZTZlOGIwZGUtN2Q3Zi00NTZkLTkxNGQtNzUwNDQ0ZjkyZTNjIiwiaXNzIjoic2lkZXIuYWkiLCJhdWQiOlsiIl0sImV4cCI6MTc4ODY5NjUxMCwibmJmIjoxNzU3NTkyNTEwLCJpYXQiOjE3NTc1OTI1MTB9.mcq86TwFwPtql3S77_vhnJRGj08878Ej5WGkvY3OxWI";
+  
+  const FASTBULL_NEWS_ENDPOINT = "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
+  const FASTBULL_HEADERS = { Accept: "application/json", "client-type": "4", clientversion: "latest", langid: "13" };
+  const FASTBULL_CORS_PROXY = "https://api.allorigins.win/raw?url=";
+  const CATALYST_FEED_API = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjMfNinXgjitGptTt1Uj6nE6WK7rYjGTPSt5bUFepyHsCV7ZBDGq6iUYbWvAjM_GhWNcK3REbD8jDIDwMCKO2bUgT_H_aHRBj09Gwkd2uraHiWcmpd3uD3lWgzxnxEu9UOACjLZnVbgZ9fYMy0qtS-DvoKx9KjMK-AuT30tktXjEUxt-JhCWomT15gnuyLeRstzneutXUmRPLHr_lfJyz9_SOovs6xBP-DDH4tUkDSY2SdlvYhf5nZmmY36BH4ncn8t63S2Ua7iCwCMVRs8Ey8R2aWWd6C0Sv39n4V0anX6oX-zfP8&lib=MakTJ382BM__YWV6a2eDZUSqaUOX12Qs5";
+
+  const CITYFALCON_API = "https://kuantara-newsapi.hf.space/api/cityfalcon";
+  const HF_API_TOKEN = "eyJhbGciOiJFZERTQSJ9.eyJyZWFkIjp0cnVlLCJwZXJtaXNzaW9ucyI6eyJyZXBvLmNvbnRlbnQucmVhZCI6dHJ1ZX0sIm9uQmVoYWxmT2YiOnsia2luZCI6InVzZXIiLCJfaWQiOiI2OGZlMzllMDcwNWJmOGFhNzYxNTI4YjciLCJ1c2VyIjoiS3VhbnRhcmEiLCJzZXNzaW9uSWQiOiI2OGZlMzllMDcwNWJmOGFhNzYxNTI4YmMifSwiaWF0IjoxNzYyNjc5NzE5LCJzdWIiOiIvc3BhY2VzL0t1YW50YXJhL25ld3NhcGkiLCJleHAiOjE3NjI3NjYxMTksImlzcyI6Imh0dHBzOi8vaHVnZ2luZ2ZhY2UuY28ifQ.TumyY_6mybtslQX6rlpqTnty0ri-tFWIfxBjMVKsGg2JGm99P3ES-7JKKF9xP2nLj1x5x1g2rXBVz1ztI_4jBg";
+
+  const MAX_RECAP_ITEMS = 15; // Recap hanya 15
+  const FEED_DISPLAY_LIMIT = 200; // Tampilkan lebih banyak data di feed utama
+  const COPY_ICON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+
+  // ========== DOM ELEMENTS ==========
+  const fastbullFeedEl = document.getElementById("fastbull-feed");
+  const fastbullCountEl = document.getElementById("fastbull-count");
+  const fastbullTopicEl = document.getElementById("fastbull-topic");
+  const fastbullRecapBtn = document.getElementById("fastbull-recap-btn");
+
+  const articlesFeedEl = document.getElementById("te-feed");
+  const articlesCountEl = document.getElementById("te-count");
+  const articlesTopicEl = document.getElementById("te-topic");
+  const articlesRecapBtn = document.getElementById("te-recap-btn");
+  
+  const kuantaraModal = document.getElementById("kuantaraModal");
+  const kuantaraCloseBtn = document.getElementById("kuantaraClose");
+  const kuantaraTitleEl = document.getElementById("kuantaraTitle");
+  const chatListEl = document.getElementById("chatList");
+  const inputEl = document.getElementById("input");
+  const sendBtn = document.getElementById("send");
+
+  // ========== STATE MANAGEMENT ==========
+  let hfApiToken = HF_API_TOKEN;
+  const fastbullCache = new Map();
+  const articlesCache = new Map();
+  let isStreaming = false;
+  let streamBuffer = "";
+  const recapConversations = new Map();
+  let messages = [];
+  let selectedFastbullItemId = null;
+  let selectedArticleItemId = null;
+  let fastbullProxyEnabled = false;
+
+  // ========== TOPIC MAPPINGS ==========
+  const FASTBULL_TOPIC_TAG_IDS = {
+    "all": "-1",
+    "macro": "100,109,110,111,112,117,119,122,125,127,129,132,133,135,143,144",
+    "fx": "94",
+    "equities": "95,152,154,156,158,169,174",
+    "commodities": "97",
+    "crypto": "98,134,137,155,157,162,164",
+    "geopolitics": "105,108,136,177,176",
+  };
+
+  const FASTBULL_TAG_LABELS = {
+    "100": "Central Banks",
+    "126": "RBNZ",
+    "124": "RBA",
+    "123": "BOJ",
+    "121": "SNB",
+    "120": "BOE",
+    "118": "ECB",
+    "116": "BOC",
+    "115": "FED",
+    "114": "PBOC",
+    "166": "Other Crypto News",
+    "164": "Blockchain/Public Blockchain",
+    "162": "Web3",
+    "160": "NFT",
+    "159": "Metaverse",
+    "157": "Airdrops/Tokens",
+    "155": "Mining/Miners",
+    "137": "Major Crypto",
+    "134": "Top Crypto",
+    "174": "Corporate Announcements",
+    "173": "Financial Statements",
+    "171": "تقلبات سوق الأوراق المالية",
+    "170": "Executive/Institutional Moves",
+    "169": "Stock Ratings/Forecasts",
+    "168": "Insider Trading",
+    "167": "Other Stock News",
+    "165": "Stock Splits",
+    "163": "Dividends",
+    "161": "Suspended/Delisted",
+    "158": "New Issues/IPO",
+    "156": "Most Popular Stocks",
+    "154": "Large-Cap Stocks",
+    "152": "Major Indices",
+    "150": "China A-Shares",
+    "149": "Vietnam Stocks",
+    "145": "U.S. Stocks",
+    "94": "Forex",
+    "95": "Stocks",
+    "96": "Bonds",
+    "97": "Commodities",
+    "98": "Cryptocurrencies",
+    "105": "Disasters/Accidents",
+    "178": "FB Top Picks",
+    "144": "Other Macro News",
+    "143": "Top/Focus/Breaking News",
+    "142": "Other Financial Markets",
+    "140": "Tech/Innovation",
+    "136": "National Security/Geopolitics",
+    "135": "Government/Political/Diplomatic Updates",
+    "133": "Banking/Financial Institution Updates",
+    "132": "Central Banks Updates",
+    "129": "Other Policies",
+    "127": "Fiscal Policy",
+    "125": "Monetary Policy",
+    "122": "Ratings",
+    "119": "Economic Forecasts/Analysis/Surveys",
+    "117": "International Economics and Trade",
+    "112": "Population/Employment/Income",
+    "111": "Interest Rates",
+    "110": "Inflation",
+    "109": "Macroeconomic Indicators",
+    "108": "Russia-Ukraine Conflict",
+    "177": "Middle East Flashpoint",
+    "176": "Trump Trade",
+  };
+
+  // ========== UTILITY & HELPER FUNCTIONS ==========
+  const withAuthHeaders = (headers = {}) => ({ ...headers, Authorization: `Bearer ${hfApiToken}` });
+  const fetchWithAuth = (url, options = {}) => fetch(url, { ...options, headers: withAuthHeaders(options.headers || {}) });
+  const markdownToHtml = (md) => (md || "").replace(/\n/g, "<br>");
+  const escapeHtml = (value = "") => {
+    const str = value == null ? "" : String(value);
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  };
+
+  const resolveFastbullTagLabel = (tagIds = []) => {
+    if (!Array.isArray(tagIds)) return "News";
+    for (const id of tagIds) {
+      const label = FASTBULL_TAG_LABELS?.[id] || FASTBULL_TAG_LABELS?.[String(id)];
+      if (label) return label;
     }
-  ];
+    return "News";
+  };
 
-  const dummyTE = [
-    {
-      id:"te1",
-      source:"TradingEconomics · Global",
-      tag:"US Outlook",
-      title:"US Macro Snapshot: Slowing but still resilient growth into next quarter",
-      time:"Daily Brief",
-      topic:"macro",
-      impact:"Strategy note"
-    },
-    {
-      id:"te2",
-      source:"TradingEconomics · Asia",
-      tag:"Japan",
-      title:"BoJ policy normalization path and implications for global yield curve",
-      time:"Research",
-      topic:"policy",
-      impact:"In-depth"
-    },
-    {
-      id:"te3",
-      source:"TradingEconomics · Markets",
-      tag:"Equities",
-      title:"Global equity indices diverge as tech rotation accelerates",
-      time:"Market Wrap",
-      topic:"markets",
-      impact:"Review"
+  const fallbackCopy = (text) => {
+    const temp = document.createElement("textarea");
+    temp.value = text;
+    temp.style.position = "fixed";
+    temp.style.opacity = "0";
+    document.body.appendChild(temp);
+    temp.focus();
+    temp.select();
+    try {
+      document.execCommand("copy");
+    } catch (err) {
+      console.error("Clipboard fallback failed", err);
     }
-  ];
+    document.body.removeChild(temp);
+  };
 
-  // ========== RENDER UTIL ==========
+  const copyHeadlineText = async (text, buttonEl) => {
+    if (!text || !buttonEl) return;
+    const originalLabel = buttonEl.getAttribute("aria-label") || "Copy headline";
+    const setState = (label, success = false) => {
+      buttonEl.setAttribute("aria-label", label);
+      buttonEl.classList.toggle("copied", success);
+      clearTimeout(buttonEl._copyTimer);
+      buttonEl._copyTimer = setTimeout(() => {
+        buttonEl.setAttribute("aria-label", originalLabel);
+        buttonEl.classList.remove("copied");
+      }, 1500);
+    };
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        fallbackCopy(text);
+      }
+      setState("Copied!", true);
+    } catch (error) {
+      console.error("Copy failed", error);
+      setState("Copy failed", false);
+    }
+  };
 
-  function renderFeed(listEl, items){
-    if(!listEl) return;
+  const bindCopyButton = (buttonEl, textProducer) => {
+    if (!buttonEl || buttonEl.dataset.bound === "true") return;
+    buttonEl.dataset.bound = "true";
+    buttonEl.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const text = typeof textProducer === "function" ? textProducer() : textProducer;
+      copyHeadlineText(text || "", buttonEl);
+    });
+  };
 
+  const formatTimestamp = (value) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return value;
+    return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' }) + ' WIB';
+  };
+
+  const buildCategoryChips = (categories = []) => {
+    if (!categories.length) return "";
+    const unique = Array.from(new Set(categories.filter(Boolean)));
+    if (!unique.length) return "";
+    return `<div class="kt-tags">${unique
+      .slice(0, 4)
+      .map((cat) => `<span class="kt-tag">${escapeHtml(cat)}</span>`)
+      .join("")}</div>`;
+  };
+
+  const normalizeCategoryKey = (value) => (value || "all").toLowerCase();
+
+  const populateArticleCategories = (items) => {
+    if (!articlesTopicEl) return;
+    const current = articlesTopicEl.value || "all";
+    const categories = Array.from(new Set(items.map((item) => item.tag).filter(Boolean))).sort((a, b) =>
+      a.localeCompare(b)
+    );
+    const previous = current;
+    articlesTopicEl.innerHTML = "";
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "all";
+    defaultOption.textContent = "All categories";
+    articlesTopicEl.appendChild(defaultOption);
+    categories.forEach((cat) => {
+      const opt = document.createElement("option");
+      opt.value = cat;
+      opt.textContent = cat;
+      articlesTopicEl.appendChild(opt);
+    });
+    if (categories.includes(previous)) {
+      articlesTopicEl.value = previous;
+    } else {
+      articlesTopicEl.value = "all";
+    }
+  };
+
+  const getArticleItemsForCategory = (categoryKey = "all") => {
+    const baseItems = articlesCache.get("all") || [];
+    if (!baseItems.length) return [];
+    const normalized = normalizeCategoryKey(categoryKey);
+    if (normalized === "all") return baseItems;
+    const cacheKey = `filter:${normalized}`;
+    if (!articlesCache.has(cacheKey)) {
+      const filtered = baseItems.filter((item) => normalizeCategoryKey(item.tag) === normalized);
+      articlesCache.set(cacheKey, filtered);
+    }
+    return articlesCache.get(cacheKey) || [];
+  };
+
+  const renderArticlesByFilter = (categoryKey = "all") => {
+    const items = getArticleItemsForCategory(categoryKey);
+    renderFeed(articlesFeedEl, articlesCountEl, items, "Catalyst Feed", selectedArticleItemId, { limit: Infinity }); // Infinity agar semua tampil
+  };
+
+  const renderFeed = (
+    listEl,
+    countEl,
+    items,
+    sourceName,
+    selectedId = null,
+    { showSource = true, limit = FEED_DISPLAY_LIMIT } = {}
+  ) => {
+    if (!listEl) return;
     listEl.innerHTML = "";
-    if(!items || items.length === 0){
-      listEl.innerHTML = '<li class="kt-empty">Tidak ada data untuk filter ini.</li>';
+    if (!items || items.length === 0) {
+      listEl.innerHTML = `<li class="kt-empty">No items found for this category.</li>`;
+      if (countEl) countEl.textContent = "0 items";
       return;
     }
-
-    items.forEach(row=>{
+    const itemsToRender = limit === Infinity ? [...items] : items.slice(0, limit);
+    if (countEl) countEl.textContent = `${itemsToRender.length} items`;
+    if(itemsToRender.length < 20) {
+      const debugMsg = document.createElement('li');
+      debugMsg.className = 'kt-empty';
+      debugMsg.style.color = 'orange';
+      debugMsg.textContent = `DEBUG: Only ${itemsToRender.length} items shown. Total fetched: ${items.length}. Cek filter/kategori.`;
+      listEl.appendChild(debugMsg);
+    }
+    itemsToRender.forEach(item => {
       const li = document.createElement("li");
       li.className = "kt-item";
-      li.dataset.id = row.id || "";
-
+      li.dataset.id = String(item.id ?? "");
+      const isImportant = !!item.isImportant;
+      const isMedium = !!item.isMedium;
+      li.dataset.important = isImportant ? "true" : "false";
+      li.dataset.medium = isMedium ? "true" : "false";
+      if (selectedId && String(item.id) === selectedId) {
+        li.classList.add("selected");
+      }
+      const sourceText = showSource ? escapeHtml(item.source || sourceName) : "";
+      const tagText = escapeHtml(item.tag || 'General');
+      const titleText = escapeHtml(item.title || "Untitled Headline");
+      const timeText = escapeHtml(item.time || "");
+      const chips = buildCategoryChips(item.categories);
+      const contentBlock = item.content ? `<p class="kt-item-desc">${escapeHtml(item.content)}</p>` : "";
       li.innerHTML = `
-        <div class="kt-item-header">
-          <div class="kt-item-source">${row.source || ""}</div>
-          <div class="kt-item-tag">${row.tag || ""}</div>
-        </div>
-        <div class="kt-item-title">${row.title || ""}</div>
-        <div class="kt-item-meta">
-          <span class="kt-item-time">${row.time || ""}</span>
-          <span class="kt-item-impact">${row.impact || ""}</span>
+        <div class="kt-item-content">
+          <div class="kt-item-header">
+            
+            <div class="kt-item-tag">${tagText}</div>
+          </div>
+          <div class="kt-item-title">${titleText}</div>
+          ${contentBlock}
+          ${chips}
+          <div class="kt-item-meta">
+            <span class="kt-item-time">${timeText}</span>
+            <button class="kt-copy-icon" type="button" aria-label="Copy headline">
+              ${COPY_ICON_SVG}
+            </button>
+          </div>
         </div>
       `;
       listEl.appendChild(li);
+      const copyBtn = li.querySelector(".kt-copy-icon");
+      bindCopyButton(copyBtn, () => item.title || "");
     });
+  };
+
+  const applySelectionState = (listEl, selectedId) => {
+    if (!listEl) return;
+    const entries = listEl.querySelectorAll(".kt-item");
+    entries.forEach((entry) => {
+      const entryId = entry.dataset?.id || "";
+      entry.classList.toggle("selected", !!selectedId && entryId === selectedId);
+    });
+  };
+
+  const resolveSelectedItems = (items, selectedId) => {
+    if (!items || !items.length || !selectedId) return items;
+    const filtered = items.filter((item) => String(item.id) === selectedId);
+    return filtered.length ? filtered : items;
+  };
+  
+  const renderLoading = (listEl, countEl) => {
+      if (listEl) listEl.innerHTML = `<li class="kt-empty">Loading...</li>`;
+      if (countEl) countEl.textContent = `...`;
+  };
+
+  // ========== DATA FETCHING & NORMALIZATION ==========
+
+  // --- FastBull (24/7 Headlines) ---
+  const normalizeFastbullItem = (item) => {
+    const tags = (typeof item.tags === "string" ? item.tags.split(',') : []).map(t => t.trim());
+    const tagName = resolveFastbullTagLabel(tags);
+    const isImportant = Number(item.important) === 1;
+    return {
+      id: item.newsId,
+      source: item.simWebsiteName || "FastBull",
+      tag: tagName,
+      title: item.newsTitle || "Untitled Headline",
+      time: formatTimestamp(item.releasedDate),
+      impact: item.important === 1 ? "High Impact" : "Medium Impact",
+      isImportant,
+      timestamp: item.releasedDate,
+    };
+  };
+
+  const fetchFastbullNews = async (topicKey = "all") => {
+    const tagIds = FASTBULL_TOPIC_TAG_IDS[topicKey] || "-1";
+    if (fastbullCache.has(tagIds)) {
+      const data = fastbullCache.get(tagIds);
+      renderFeed(fastbullFeedEl, fastbullCountEl, data, "FastBull", selectedFastbullItemId, { showSource: false });
+      return;
+    }
+    renderLoading(fastbullFeedEl, fastbullCountEl);
+    try {
+     const url = `${FASTBULL_NEWS_ENDPOINT}?checkImportant=0&pageSize=100&timestamp=&includeCalendar=0&tagIds=${tagIds}`;
+      let payload;
+      try {
+        const response = await fetch(url, { headers: FASTBULL_HEADERS });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        payload = await response.json();
+      } catch (primaryError) {
+        if (fastbullProxyEnabled) throw primaryError;
+        fastbullProxyEnabled = true;
+        const proxyResp = await fetch(`${FASTBULL_CORS_PROXY}${encodeURIComponent(url)}`);
+        if (!proxyResp.ok) throw new Error(`HTTP ${proxyResp.status}`);
+        payload = await proxyResp.json();
+      }
+      const list = JSON.parse(payload.bodyMessage || '{}')?.pageDatas || [];
+      const items = list.map(normalizeFastbullItem);
+      fastbullCache.set(tagIds, items);
+      renderFeed(fastbullFeedEl, fastbullCountEl, items, "FastBull", selectedFastbullItemId, { showSource: false });
+    } catch (error) {
+      console.error("FastBull Fetch Error:", error);
+      fastbullFeedEl.innerHTML = `<li class="kt-empty">Error loading headlines.</li>`;
+    }
+  };
+
+  // --- CityFalcon (Articles) ---
+  const normalizeCatalystItem = (item) => {
+    if (!item) return null;
+    const impact = (item.impact || item.importance || "").toString().trim();
+    const category = item.category1 || item.category || "Catalyst";
+    const isImportant = /high/i.test(impact);
+    const isMedium = /medium/i.test(impact);
+    return {
+      id: item.id || item.key || item.headline,
+      source: item.source || "Catalyst",
+      tag: category,
+      title: item.headline || item.title || "Catalyst Update",
+      time: formatTimestamp(item.timestamp || item.publishedAt || Date.now()),
+      impact,
+      isImportant,
+      isMedium,
+      content: item.content || item.summary || "",
+      url: item.url || item.link || "",
+      categories: [item.category1, item.category2, item.category3].filter(Boolean),
+    };
+  };
+
+  const fetchArticles = async () => {
+    if (!articlesCache.has("all")) {
+      renderLoading(articlesFeedEl, articlesCountEl);
+      try {
+        const response = await fetch(CATALYST_FEED_API);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const payload = await response.json();
+        const items = (Array.isArray(payload) ? payload : payload?.items || [])
+          .map(normalizeCatalystItem)
+          .filter(Boolean);
+        console.log("[CATALYST FEED] Items fetched:", items.length, items);
+        articlesCache.set("all", items);
+      } catch (error) {
+        console.error("Catalyst Fetch Error:", error);
+        articlesFeedEl.innerHTML = `<li class="kt-empty">Error loading catalyst feed.</li>`;
+        return;
+      }
+    }
+    const baseItems = articlesCache.get("all") || [];
+    console.log("[CATALYST FEED] Items to display:", baseItems.length, baseItems);
+    populateArticleCategories(baseItems);
+    renderArticlesByFilter(articlesTopicEl?.value || "all");
+  };
+
+  // ========== AI RECAP & MODAL ==========
+  const addMessage = (sender, contentMD) => {
+    messages.push({ sender, contentMD });
+    renderChat();
+    return messages.length - 1;
+  };
+
+  const updateMessage = (index, contentMD) => {
+    if (index < 0 || index >= messages.length) return;
+    messages[index].contentMD = contentMD;
+    renderChat();
+  };
+  
+  const renderChat = () => {
+    if (!chatListEl) return;
+    chatListEl.innerHTML = !messages.length
+      ? '<p class="placeholder text-center">AI is ready to summarize.</p>'
+      : messages.map(msg => `
+          <div class="kuantara-message ${msg.sender === 'Anda' ? 'user' : 'ai'}">
+            <p class="kuantara-label">${msg.sender === 'Anda' ? 'YOU' : 'AI'}</p>
+            <div class="kuantara-block"><div class="md">${markdownToHtml(msg.contentMD)}</div></div>
+          </div>`).join("");
+    chatListEl.scrollTop = chatListEl.scrollHeight;
+  };
+
+  const resetStreamFlags = () => { isStreaming = false; streamBuffer = ""; };
+
+  const handleSSEData = (dataStr) => {
+    if (!dataStr || dataStr === "[DONE]") return false;
+    try {
+      const obj = JSON.parse(dataStr);
+      const payload = obj?.data ?? obj;
+      if (payload?.type === "credit_info") return false;
+      if (payload?.type === "message_start") return false;
+
+      if (typeof payload?.text === "string" && payload.text) {
+        streamBuffer += payload.text;
+        return true;
+      }
+
+      const candidateKeys = ["token", "content", "output", "message"];
+      for (const key of candidateKeys) {
+        const value = payload?.[key];
+        if (typeof value === "string" && value) {
+          streamBuffer += value;
+          return true;
+        }
+      }
+
+      const choices = payload?.choices;
+      if (Array.isArray(choices)) {
+        let appended = false;
+        choices.forEach(choice => {
+          const delta = choice?.delta || choice;
+          const text = delta?.content || delta?.text;
+          if (typeof text === "string" && text) {
+            streamBuffer += text;
+            appended = true;
+          }
+        });
+        if (appended) return true;
+      }
+    } catch {
+      streamBuffer += dataStr;
+      return true;
+    }
+    return false;
+  };
+
+  async function startStreaming(promptText, { userVisibleText = null } = {}) {
+    if (isStreaming) return;
+    isStreaming = true;
+    streamBuffer = "";
+    if (userVisibleText) addMessage("Anda", userVisibleText);
+    const aiMessageIndex = addMessage("Kuantara", "Thinking...");
+
+    const payload = {
+      model: "grok-4", from: "chat", client_prompt: {},
+      multi_content: [{ type: "text", text: promptText, user_input_text: promptText }],
+      stream: true, output_language: "id",
+    };
+
+    try {
+      const resp = await fetch(`${SIDER_API_BASE}/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "text/event-stream",
+          "Authorization": `Bearer ${SIDER_TOKEN}`,
+          "x-app-name": "ChitChat_Web",
+          "x-time-zone": TIMEZONE,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!resp.ok || !resp.body) {
+        throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
+      }
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let idx;
+        let updated = false;
+        while ((idx = buffer.indexOf("\\n")) >= 0) {
+          const rawLine = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 1);
+          const line = (rawLine || "").trim();
+          if (!line || line === "[DONE]") continue;
+          let dataLine = line;
+          if (line.startsWith("data:")) {
+            dataLine = line.slice(5).trim();
+            if (!dataLine || dataLine === "[DONE]") continue;
+          }
+          if (handleSSEData(dataLine)) updated = true;
+        }
+        if (updated) {
+          updateMessage(aiMessageIndex, streamBuffer);
+        }
+      }
+    } catch (err) {
+      updateMessage(aiMessageIndex, `**Connection Error:** ${err.message}`);
+    } finally {
+      updateMessage(aiMessageIndex, streamBuffer || "No response from AI.");
+      resetStreamFlags();
+    }
   }
 
-  function applyFilterByTopic(data, topic){
-    if(topic === "all") return data;
-    return data.filter(d => (d.topic || "all") === topic);
-  }
+  const openKuantaraModal = async ({ key, label, getItems, buildPrompt }) => {
+    if (!kuantaraModal) return;
+    kuantaraModal.classList.remove("hidden");
+    kuantaraTitleEl.textContent = `${label} Recap`;
+    
+    if (!recapConversations.has(key)) recapConversations.set(key, []);
+    messages = recapConversations.get(key);
+    renderChat();
 
-  // ========== INTEGRASI & HOOK UNTUK API REAL-TIME ==========
-  // FastBull: panggil ini setelah berhasil fetch data dari backend
-  // dataApi harus sudah di-map ke struktur seperti dummyFastbull di atas
-  function updateFastbullFromApi(dataApi){
-    const listEl = document.getElementById("fastbull-feed");
-    const countEl = document.getElementById("fastbull-count");
-    renderFeed(listEl, dataApi);
-    if(countEl) countEl.textContent = `${dataApi.length} items`;
-  }
+    if (isStreaming) return;
+    
+    try {
+      const items = getItems();
+      if (!items || items.length === 0) {
+        addMessage("Kuantara", `No data available for ${label} to recap.`);
+        return;
+      }
+      const prompt = buildPrompt(label, items);
+      startStreaming(prompt, { userVisibleText: `Summarize ${label}` });
+    } catch (error) {
+      addMessage("Kuantara", `Failed to prepare recap data: ${error.message}`);
+    }
+  };
 
-  // TradingEconomics: panggil ini setelah fetch artikel dari backend
-  function updateTradingEconomicsFromApi(dataApi){
-    const listEl = document.getElementById("te-feed");
-    const countEl = document.getElementById("te-count");
-    renderFeed(listEl, dataApi);
-    if(countEl) countEl.textContent = `${dataApi.length} items`;
-  }
+  const buildRecapPrompt = (source, label, items) => {
+    const headlines = items.slice(0, MAX_RECAP_ITEMS).map((item, i) => 
+      `${i + 1}. [${item.time}] ${item.title}`
+    ).join("\\n");
+    return `You are Kuantara AI. Summarize the following ${source} headlines for the '${label}' category into key points, highlighting market catalysts, risks, and opportunities.\\n\\nData:\\n${headlines}`;
+  };
 
-  // ========== INIT ==========
-
+  // ========== INITIALIZATION & EVENT LISTENERS ==========
   document.addEventListener("DOMContentLoaded", () => {
-    const fastbullList = document.getElementById("fastbull-feed");
-    const fastbullCount = document.getElementById("fastbull-count");
-    const fastbullTopic = document.getElementById("fastbull-topic");
+    // Setup Initial Data
+    fetchFastbullNews(fastbullTopicEl.value);
+    fetchArticles();
 
-    const teList = document.getElementById("te-feed");
-    const teCount = document.getElementById("te-count");
-    const teTopic = document.getElementById("te-topic");
+    // Event Listeners
+    fastbullTopicEl.addEventListener("change", (e) => {
+      e.stopPropagation();
+      selectedFastbullItemId = null;
+      applySelectionState(fastbullFeedEl, null);
+      fetchFastbullNews(e.target.value);
+    });
+    articlesTopicEl.addEventListener("change", (e) => {
+      e.stopPropagation();
+      selectedArticleItemId = null;
+      applySelectionState(articlesFeedEl, null);
+      renderArticlesByFilter(e.target.value || "all");
+    });
 
-    // Render awal dummy (bisa diganti panggilan ke API)
-    renderFeed(fastbullList, dummyFastbull);
-    if(fastbullCount) fastbullCount.textContent = `${dummyFastbull.length} items`;
+    fastbullFeedEl?.addEventListener("click", (event) => {
+      if (event.target.closest(".kt-copy-icon")) return;
+      const itemEl = event.target.closest(".kt-item");
+      if (!itemEl || !fastbullFeedEl.contains(itemEl) || itemEl.classList.contains("kt-empty")) return;
+      const id = itemEl.dataset.id || "";
+      selectedFastbullItemId = itemEl.classList.contains("selected") ? null : id;
+      applySelectionState(fastbullFeedEl, selectedFastbullItemId);
+    });
 
-    renderFeed(teList, dummyTE);
-    if(teCount) teCount.textContent = `${dummyTE.length} items`;
+    articlesFeedEl?.addEventListener("click", (event) => {
+      if (event.target.closest(".kt-copy-icon")) return;
+      const itemEl = event.target.closest(".kt-item");
+      if (!itemEl || !articlesFeedEl.contains(itemEl) || itemEl.classList.contains("kt-empty")) return;
+      const id = itemEl.dataset.id || "";
+      selectedArticleItemId = itemEl.classList.contains("selected") ? null : id;
+      applySelectionState(articlesFeedEl, selectedArticleItemId);
+    });
 
-    // Filter topik FastBull
-    if(fastbullTopic){
-      fastbullTopic.addEventListener("change", () => {
-        const filtered = applyFilterByTopic(dummyFastbull, fastbullTopic.value);
-        renderFeed(fastbullList, filtered);
-        if(fastbullCount) fastbullCount.textContent = `${filtered.length} items`;
-        // nanti bisa trigger refetch ke backend berdasarkan fastbullTopic.value
+    document.querySelectorAll("#fastbull-feed .kt-copy-icon").forEach((btn) => {
+      bindCopyButton(btn, () => btn.closest(".kt-item")?.querySelector(".kt-item-title")?.textContent?.trim() || "");
+    });
+    document.querySelectorAll("#te-feed .kt-copy-icon").forEach((btn) => {
+      bindCopyButton(btn, () => btn.closest(".kt-item")?.querySelector(".kt-item-title")?.textContent?.trim() || "");
+    });
+
+    fastbullRecapBtn.addEventListener("click", () => {
+      const topic = fastbullTopicEl.value;
+      const topicLabel = fastbullTopicEl.options[fastbullTopicEl.selectedIndex].text;
+      const tagIds = FASTBULL_TOPIC_TAG_IDS[topic] || "-1";
+      const selectionActive = !!selectedFastbullItemId;
+      openKuantaraModal({
+        key: `fastbull-${topic}${selectionActive ? `-${selectedFastbullItemId}` : ""}`,
+        label: `${selectionActive ? "Selected Headline" : "Headlines"} (${topicLabel})`,
+        getItems: () => {
+          const items = fastbullCache.get(tagIds) || [];
+          return resolveSelectedItems(items, selectedFastbullItemId);
+        },
+        buildPrompt: (label, items) => buildRecapPrompt("FastBull", label, items),
       });
-    }
+    });
 
-    // Filter topik TradingEconomics
-    if(teTopic){
-      teTopic.addEventListener("change", () => {
-        const filtered = applyFilterByTopic(dummyTE, teTopic.value);
-        renderFeed(teList, filtered);
-        if(teCount) teCount.textContent = `${filtered.length} items`;
-        // nanti bisa trigger refetch ke backend berdasarkan teTopic.value
+    articlesRecapBtn.addEventListener("click", () => {
+      const topic = articlesTopicEl.value || "all";
+      const topicLabel = articlesTopicEl.options[articlesTopicEl.selectedIndex]?.text || topic;
+      const selectionActive = !!selectedArticleItemId;
+      openKuantaraModal({
+        key: `articles-${topic}${selectionActive ? `-${selectedArticleItemId}` : ""}`,
+        label: `${selectionActive ? "Selected Catalyst" : "Catalyst"} (${topicLabel})`,
+        getItems: () => {
+          const items = getArticleItemsForCategory(topic);
+          return resolveSelectedItems(items, selectedArticleItemId);
+        },
+        buildPrompt: (label, items) => buildRecapPrompt("Catalyst Feed", label, items),
       });
-    }
-
-    // Tombol Recap with AI – tinggal hubungkan ke backend AI-mu
-    const fastbullRecapBtn = document.getElementById("fastbull-recap-btn");
-    const teRecapBtn = document.getElementById("te-recap-btn");
-
-    if(fastbullRecapBtn){
-      fastbullRecapBtn.addEventListener("click", () => {
-        // Ambil data yang sedang tampil untuk dijadikan konteks AI
-        const topic = fastbullTopic ? fastbullTopic.value : "all";
-        console.log("[Recap FastBull] topic:", topic);
-        // TODO: kirim ke endpoint AI recap (misal via fetch)
-        // fetch('/api/ai/recap-fastbull', { method:'POST', body:JSON.stringify({ topic }) })
-      });
-    }
-
-    if(teRecapBtn){
-      teRecapBtn.addEventListener("click", () => {
-        const topic = teTopic ? teTopic.value : "all";
-        console.log("[Recap TradingEconomics] topic:", topic);
-        // TODO: kirim ke endpoint AI recap
-        // fetch('/api/ai/recap-te', { method:'POST', body:JSON.stringify({ topic }) })
-      });
-    }
+    });
+    
+    kuantaraCloseBtn.addEventListener("click", () => kuantaraModal.classList.add("hidden"));
+    sendBtn.addEventListener("click", () => {
+        const txt = inputEl.value.trim();
+        if (!txt || isStreaming) return;
+        inputEl.value = "";
+        startStreaming(txt, { userVisibleText: txt });
+    });
+    inputEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendBtn.click();
+        }
+    });
   });
+  
 </script>
 <!-- Code injected by live-server -->
 <script>
