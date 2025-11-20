@@ -259,8 +259,7 @@
       border:none;
       display:block;
       background:#ffffff;
-      /* penting: biarkan pointer events aktif agar scroll di dalam pdf berfungsi */
-      pointer-events:auto;
+      pointer-events:auto; /* supaya scroll di dalam pdf berfungsi */
     }
 
     canvas{
@@ -354,13 +353,24 @@
     <div class="sidebar-content">
       <div class="brand-label">MARKET RESEARCH</div>
 
+      <!-- SOURCE FILTER -->
       <div class="form-group" style="margin-top:8px;">
-        <label class="form-label">Topic</label>
-        <select class="kt-input" id="topicFilter">
-          <option value="all">All Topics</option>
-          <option value="fx">FX Strategy</option>
-          <option value="macro">Global Macro</option>
+        <label class="form-label">Source</label>
+        <select class="kt-input" id="sourceFilter">
+          <option value="all">All Sources</option>
+          <option value="westpac">Westpac</option>
+          <option value="mufg">MUFG</option>
+          <option value="kuantara">Kuantara AI</option>
         </select>
+      </div>
+
+      <!-- DATE FILTER -->
+      <div class="form-group" style="margin-top:4px;">
+        <label class="form-label">Release Date</label>
+        <div style="display:flex;gap:6px;">
+          <input type="date" class="kt-input" id="dateFrom" style="font-size:10px;padding:6px 8px;">
+          <input type="date" class="kt-input" id="dateTo"   style="font-size:10px;padding:6px 8px;">
+        </div>
       </div>
 
       <div class="list-header">
@@ -402,6 +412,9 @@
             <line x1="12" y1="9" x2="18" y2="15"/>
           </svg>
         </button>
+        <button class="tool-btn" id="btnUndo" title="Undo">
+          &#8630;
+        </button>
         <button class="tool-btn" id="btnClear" title="Clear All">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"/>
@@ -421,58 +434,95 @@
 </div>
 
 <script>
-  // --- DATA DEMO ---
+  // --- DATA DEMO (tambah field "source") ---
   const BASE_PDF_URL = "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
   const docs = [
-    { id:1, title:"FX Strategy: USD Outlook",     date:"2025-11-21", topic:"fx",    url:BASE_PDF_URL },
-    { id:2, title:"Global Macro: Recession Risk", date:"2025-11-20", topic:"macro", url:BASE_PDF_URL },
-    { id:3, title:"Commodities: Gold Rally",      date:"2025-11-19", topic:"macro", url:BASE_PDF_URL },
+    { id:1, title:"FX Strategy: USD Outlook",      date:"2025-11-21", source:"westpac",  url:BASE_PDF_URL },
+    { id:2, title:"Global Macro: Recession Risk",  date:"2025-11-20", source:"mufg",     url:BASE_PDF_URL },
+    { id:3, title:"Commodities: Gold Rally",       date:"2025-11-19", source:"kuantara", url:BASE_PDF_URL },
   ];
 
-  const viewport = document.getElementById('viewport');
-  const wrapper  = document.getElementById('wrapper');
-  const canvas   = document.getElementById('pdfCanvas');
-  const ctx      = canvas.getContext('2d');
-  const pdfFrame = document.getElementById('pdfFrame');
+  const viewport   = document.getElementById('viewport');
+  const wrapper    = document.getElementById('wrapper');
+  const canvas     = document.getElementById('pdfCanvas');
+  const ctx        = canvas.getContext('2d');
+  const pdfFrame   = document.getElementById('pdfFrame');
+  const sourceSel  = document.getElementById('sourceFilter');
+  const dateFromEl = document.getElementById('dateFrom');
+  const dateToEl   = document.getElementById('dateTo');
 
-  let currentTool = 'pan';
-  let isDrawing   = false;
+  let currentTool  = 'pan';
+  let isDrawing    = false;
   let lastX = 0, lastY = 0;
+  let currentDocId = null;
+
+  // History untuk Undo
+  let historyStack = [];
 
   // Rasio A4 kasar
-  const BASE_RATIO = 1200 / 900; // 4:3 kurang lebih
+  const BASE_RATIO = 1200 / 900;
 
-  function init(){
-    renderList();
-    resizeCanvas();
-    if(docs.length > 0) loadDoc(docs[0]);
-    window.addEventListener('resize', resizeCanvas);
+  // --- FILTER ---
+  function getFilteredDocs(){
+    const sourceVal = sourceSel.value;
+    const fromVal   = dateFromEl.value;
+    const toVal     = dateToEl.value;
+
+    return docs.filter(d => {
+      if(sourceVal !== 'all' && d.source !== sourceVal) return false;
+
+      if(fromVal){
+        if(new Date(d.date) < new Date(fromVal)) return false;
+      }
+      if(toVal){
+        if(new Date(d.date) > new Date(toVal)) return false;
+      }
+      return true;
+    });
   }
 
   function renderList(){
-    const container = document.getElementById('docList');
+    const container    = document.getElementById('docList');
+    const filteredDocs = getFilteredDocs();
     container.innerHTML = '';
-    docs.forEach(d=>{
+
+    filteredDocs.forEach(d=>{
       const el = document.createElement('div');
       el.className = 'doc-item';
+      el.dataset.id = d.id;
       el.innerHTML = `
         <div class="doc-title">${d.title}</div>
         <div class="doc-meta">
           <span>${d.date}</span>
-          <span style="color:var(--accent)">${d.topic}</span>
+          <span style="color:var(--accent)">${d.source}</span>
         </div>`;
       el.onclick = () => loadDoc(d, el);
       container.appendChild(el);
     });
-    document.getElementById('docCount').textContent = docs.length;
+
+    document.getElementById('docCount').textContent = filteredDocs.length;
+
+    // Auto-select: kalau currentDocId masih ada di filtered, highlight, kalau tidak pilih yang pertama
+    if(filteredDocs.length > 0){
+      const current = filteredDocs.find(d => d.id === currentDocId) || filteredDocs[0];
+      const el = container.querySelector(`.doc-item[data-id="${current.id}"]`) || container.querySelector('.doc-item');
+      if(el) loadDoc(current, el);
+    } else {
+      currentDocId = null;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      historyStack = [];
+      pdfFrame.src = "";
+    }
   }
 
+  // --- LOAD DOC ---
   function loadDoc(doc, elBtn){
+    currentDocId = doc.id;
     document.querySelectorAll('.doc-item').forEach(b=>b.classList.remove('active'));
     if(elBtn) elBtn.classList.add('active');
-    else if(document.querySelector('.doc-item')) document.querySelector('.doc-item').classList.add('active');
 
     ctx.clearRect(0,0,canvas.width,canvas.height);
+    historyStack = [];
 
     const googleProxy = `https://docs.google.com/viewer?url=${encodeURIComponent(doc.url)}&embedded=true`;
     pdfFrame.src = googleProxy;
@@ -482,7 +532,7 @@
 
   // RESPONSIVE CANVAS & WRAPPER
   function resizeCanvas(){
-    const padding = 32; // ruang kiri-kanan di viewport
+    const padding = 32;
     const available = Math.max(320, viewport.clientWidth - padding);
     const width  = available;
     const height = Math.round(width * BASE_RATIO);
@@ -497,6 +547,9 @@
 
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
+
+    // Ukuran berubah -> history harus direset
+    historyStack = [];
   }
 
   // TOOLS
@@ -506,8 +559,23 @@
     document.getElementById(id).onclick = () => setTool(tools[id]);
   });
 
+  // UNDO
+  document.getElementById('btnUndo').onclick = () => {
+    if(historyStack.length > 0){
+      const imgData = historyStack.pop();
+      ctx.putImageData(imgData, 0, 0);
+    } else {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+  };
+
+  // CLEAR (masuk history supaya bisa di-undo)
   document.getElementById('btnClear').onclick = () => {
     if(confirm('Clear annotations?')){
+      if(canvas.width && canvas.height){
+        const snapshot = ctx.getImageData(0,0,canvas.width,canvas.height);
+        historyStack.push(snapshot);
+      }
       ctx.clearRect(0,0,canvas.width,canvas.height);
     }
   };
@@ -532,7 +600,6 @@
       clientY = e.touches[0].clientY;
     }
 
-    // scaling CSS -> canvas resolusi
     const scaleX = canvas.width  / rect.width;
     const scaleY = canvas.height / rect.height;
 
@@ -544,8 +611,16 @@
 
   function startDraw(e){
     if(currentTool === 'pan') return;
+    if(e.type === 'mousedown' && e.button !== 0) return;
+
+    // Simpan snapshot sekali di awal stroke untuk Undo
+    if(canvas.width && canvas.height){
+      const snapshot = ctx.getImageData(0,0,canvas.width,canvas.height);
+      historyStack.push(snapshot);
+    }
+
     if(e.type !== 'mousedown') isDrawing = true;
-    if(e.type === 'mousedown' && e.button === 0) isDrawing = true;
+    if(e.type === 'mousedown') isDrawing = true;
 
     const pos = getPos(e);
     lastX = pos.x;
@@ -554,7 +629,6 @@
 
   function draw(e){
     if(!isDrawing || currentTool === 'pan') return;
-
     if(e.cancelable) e.preventDefault();
 
     const pos = getPos(e);
@@ -594,8 +668,13 @@
   canvas.addEventListener('mouseout', endDraw);
 
   canvas.addEventListener('touchstart', startDraw, { passive:false });
-  canvas.addEventListener('touchmove', draw,  { passive:false });
-  canvas.addEventListener('touchend', endDraw);
+  canvas.addEventListener('touchmove',  draw,      { passive:false });
+  canvas.addEventListener('touchend',   endDraw);
+
+  // FILTER EVENTS
+  sourceSel.addEventListener('change', renderList);
+  dateFromEl.addEventListener('change', renderList);
+  dateToEl.addEventListener('change', renderList);
 
   // MOBILE SIDEBAR
   const sidebar  = document.getElementById('sidebar');
@@ -613,6 +692,13 @@
 
   document.getElementById('menuToggle').onclick = () => toggleSidebar(true);
   backdrop.onclick = () => toggleSidebar(false);
+
+  // INIT
+  function init(){
+    resizeCanvas();
+    renderList();
+    window.addEventListener('resize', resizeCanvas);
+  }
 
   init();
 </script>
