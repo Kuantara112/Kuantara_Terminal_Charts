@@ -22,6 +22,42 @@
       /* Firefox scrollbar */
       scrollbar-width:thin;
       scrollbar-color:#000000 #000000; /* thumb | track */
+      /* HILANGKAN TAP HIGHLIGHT BIRU DI MOBILE */
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* HILANGKAN OUTLINE BIRU DI SEMUA TOMBOL & ITEM KLIKABLE */
+    button,
+    .kt-mainmenu-btn,
+    .kt-submenu-btn,
+    .kt-bottom-item,
+    .kt-profile-menu-btn,
+    .kt-workspace-btn,
+    .kt-ai-menu-btn,
+    .kt-ai-panel-close,
+    .kt-ai-btn {
+      outline:none;
+    }
+    button:focus,
+    button:active,
+    .kt-mainmenu-btn:focus,
+    .kt-mainmenu-btn:active,
+    .kt-submenu-btn:focus,
+    .kt-submenu-btn:active,
+    .kt-bottom-item:focus,
+    .kt-bottom-item:active,
+    .kt-profile-menu-btn:focus,
+    .kt-profile-menu-btn:active,
+    .kt-workspace-btn:focus,
+    .kt-workspace-btn:active,
+    .kt-ai-menu-btn:focus,
+    .kt-ai-menu-btn:active,
+    .kt-ai-panel-close:focus,
+    .kt-ai-panel-close:active,
+    .kt-ai-btn:focus,
+    .kt-ai-btn:active {
+      outline:none;
+      box-shadow:none;
     }
 
     /* WebKit scrollbar (Chrome, Edge, Safari) */
@@ -66,7 +102,8 @@
       bottom:46px;
       z-index:1;
       background:#0b0b0b;
-      transition: top 0.3s ease, bottom 0.3s ease; /* Smooth transition for pin */
+      transition: top 0.3s ease, bottom 0.3s ease;
+      overflow:hidden;
     }
     .kt-iframe-layer iframe{
       width:100%;
@@ -77,8 +114,27 @@
       touch-action:auto;
     }
 
+    /* VIGNETTE ATAS & BAWAH DI IFRAME (LEBIH TIPIS) */
+    .kt-iframe-layer::before,
+    .kt-iframe-layer::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      height:24px;
+      pointer-events:none;
+      z-index:2;
+    }
+    .kt-iframe-layer::before{
+      top:0;
+      background:linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+    }
+    .kt-iframe-layer::after{
+      bottom:0;
+      background:linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    }
+
     /* ===== PINNED MODE STYLES ===== */
-    /* Saat di-pin, bar tidak boleh autohide (override transform) */
     body.kt-pinned .kt-mainmenu-strip,
     body.kt-pinned .kt-content-header,
     body.kt-pinned .kt-statusbar,
@@ -88,36 +144,45 @@
       pointer-events: auto !important;
     }
 
-    /* Atur ulang posisi iframe agar pas di tengah (tidak tertutup bar) */
     body.kt-pinned .kt-iframe-layer {
-      top: 108px;   /* 38px Topbar + ~36px Menu + ~34px Header */
-      bottom: 112px; /* 46px Nav + ~36px Submenu + ~30px Status */
+      top: 108px;
+      bottom: 112px;
     }
 
-    /* Atur stacking order bottom bar saat pinned agar tidak tumpang tindih */
     body.kt-pinned .kt-submenu-strip {
-      bottom: 46px !important; /* Tepat di atas Nav */
+      bottom: 46px !important;
     }
     body.kt-pinned .kt-statusbar {
-      bottom: 80px !important; /* Tepat di atas Submenu (46 + 34 approx) */
+      bottom: 80px !important;
       border-top: 1px solid var(--border-soft);
-      background: #050505; /* Solid background agar tidak transparan menumpuk */
+      background: #050505;
     }
 
-
-    /* ===== TOPMOST BAR (NO AUTOHIDE) ===== */
+    /* ===== TOPMOST BAR ===== */
     .kt-topbar{
       position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:center;
       background:#070707;
       border-bottom:1px solid var(--border-soft);
       padding:8px 12px;font-size:10px;z-index:3000;
-      user-select: none; /* Agar double click enak */
+      user-select: none;
     }
     .kt-topbar-left{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;flex-wrap:wrap}
     .kt-logo{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--amber);white-space:nowrap; cursor: pointer;}
+
     .kt-session-clock{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:9px;color:var(--text-muted); cursor: pointer;}
-    .kt-session-item{display:inline-flex;gap:2px;align-items:baseline;white-space:nowrap;padding:1px 4px;border-radius:2px;background:#101010;border:1px solid #151515}
-    .kt-session-label{color:var(--amber);font-size:9px}.kt-session-time{font-size:9px}
+    .kt-session-item{
+      display:inline-flex;gap:2px;align-items:baseline;white-space:nowrap;
+      padding:1px 4px;border-radius:2px;background:#101010;border:1px solid #151515;
+      transition:border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .kt-session-label{color:var(--amber);font-size:9px}
+    .kt-session-time{font-size:9px}
+
+    /* OUTLINE TIPIS UNTUK MARKET YANG BUKA 08.00–17.00 WAKTU LOKAL */
+    .kt-session-item.open{
+      border-color:var(--amber);
+      box-shadow:none;
+    }
 
     /* ===== UI CHROME (AUTOHIDE) ===== */
     .kt-main{flex:1;display:flex;flex-direction:column;background:transparent;min-height:0;position:relative;z-index:5}
@@ -126,7 +191,7 @@
     .kt-content-header,
     .kt-statusbar,
     .kt-submenu-strip{
-      transition:transform 220ms ease,opacity 180ms ease, bottom 220ms ease; /* Added bottom transition */
+      transition:transform 220ms ease,opacity 180ms ease, bottom 220ms ease;
       will-change:transform,opacity;
       pointer-events:auto;
       z-index:2800;
@@ -153,10 +218,22 @@
     .kt-mainmenu-btn{
       flex:0 0 auto;padding:4px 8px;border-radius:3px;border:1px solid var(--border-soft);
       background:#101010;color:var(--text-muted);font-size:11px;display:inline-flex;align-items:center;gap:4px;
-      cursor:pointer;white-space:nowrap;touch-action:manipulation
+      cursor:pointer;white-space:nowrap;touch-action:manipulation;
+      transition:background 120ms ease, transform 80ms ease, box-shadow 120ms ease, border-color 120ms ease;
     }
     .kt-mainmenu-btn span:first-child{color:var(--amber);font-weight:500}
-    .kt-mainmenu-btn.active{background:var(--amber);color:#000;border-color:#f0f0f0}
+    .kt-mainmenu-btn:hover{
+      background:#141414;
+      box-shadow:0 0 0 1px rgba(255,255,255,0.04);
+    }
+    .kt-mainmenu-btn:active{
+      transform:translateY(1px);
+      box-shadow:0 0 0 1px rgba(0,0,0,0.6) inset;
+    }
+    .kt-mainmenu-btn.active{
+      background:var(--amber);color:#000;border-color:#f0f0f0;
+      box-shadow:0 0 0 1px rgba(0,0,0,0.6);
+    }
     .kt-mainmenu-btn.active span:first-child{color:#000}
 
     /* CONTENT HEADER */
@@ -184,9 +261,21 @@
     .kt-submenu-group.active{display:flex}
     .kt-submenu-btn{
       flex:0 0 auto;padding:3px 8px;border-radius:3px;border:1px solid var(--border-soft);background:#101010;color:var(--text-muted);
-      font-size:10px;cursor:pointer;white-space:nowrap;touch-action:manipulation
+      font-size:10px;cursor:pointer;white-space:nowrap;touch-action:manipulation;
+      transition:background 120ms ease, transform 80ms ease, box-shadow 120ms ease, border-color 120ms ease;
     }
-    .kt-submenu-btn.active{background:var(--amber);color:#000;border-color:#f0f0f0}
+    .kt-submenu-btn:hover{
+      background:#151515;
+      box-shadow:0 0 0 1px rgba(255,255,255,0.04);
+    }
+    .kt-submenu-btn:active{
+      transform:translateY(1px);
+      box-shadow:0 0 0 1px rgba(0,0,0,0.6) inset;
+    }
+    .kt-submenu-btn.active{
+      background:var(--amber);color:#000;border-color:#f0f0f0;
+      box-shadow:0 0 0 1px rgba(0,0,0,0.6);
+    }
 
     /* BOTTOM NAV (HOME / WORKSPACE / PROFILE) */
     .kt-bottom-nav{
@@ -203,10 +292,19 @@
       cursor:pointer;gap:2px;
       touch-action:manipulation;
       font-size:11px;
+      transition:background 120ms ease, transform 80ms ease, box-shadow 120ms ease;
+    }
+    .kt-bottom-item:hover{
+      background:#151515;
+    }
+    .kt-bottom-item:active{
+      transform:translateY(1px);
+      box-shadow:0 0 0 1px rgba(0,0,0,0.6) inset;
     }
     .kt-bottom-item.active{
       background:#151515;
       color:var(--amber);
+      box-shadow:0 0 0 1px rgba(255,191,0,0.35) inset;
     }
 
     /* PROFILE PAGE */
@@ -214,8 +312,8 @@
       position:fixed;
       left:0;
       right:0;
-      top:38px;      /* di bawah top bar */
-      bottom:46px;   /* di atas bottom nav */
+      top:38px;
+      bottom:46px;
       padding:26px 16px 16px;
       z-index:2;
       display:none;
@@ -302,9 +400,13 @@
       color:var(--text-main);
       font-size:10px;
       cursor:pointer;
+      transition:background 120ms ease, transform 80ms ease;
     }
     .kt-profile-menu-btn:hover{
       background:#181818;
+    }
+    .kt-profile-menu-btn:active{
+      transform:translateY(1px);
     }
     .kt-profile-footer{
       margin-top:14px;
@@ -315,13 +417,13 @@
       line-height:1.4;
     }
 
-    /* WORKSPACE – FULL PAGE BOARD, CLEAR OF TOP & BOTTOM BARS */
+    /* WORKSPACE – FULL PAGE BOARD */
     .kt-workspace-page{
       position:fixed;
       left:0;
       right:0;
-      top:38px;      /* mulai tepat di bawah top bar */
-      bottom:46px;   /* berhenti di atas bottom nav */
+      top:38px;
+      bottom:46px;
       z-index:2;
       display:none;
       background:#050505;
@@ -345,6 +447,7 @@
       color:var(--text-main);
       font-size:10px;
       cursor:pointer;
+      transition:background 120ms ease, transform 80ms ease, box-shadow 120ms ease;
     }
     .kt-workspace-btn.secondary{
       background:#151515;
@@ -352,6 +455,11 @@
     }
     .kt-workspace-btn:hover{
       background:#181818;
+      box-shadow:0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .kt-workspace-btn:active{
+      transform:translateY(1px);
+      box-shadow:0 0 0 1px rgba(0,0,0,0.6) inset;
     }
     .kt-workspace-board{
       position:absolute;
@@ -383,11 +491,11 @@
       box-shadow:0 10px 26px rgba(0,0,0,.8);
       overflow:hidden;
       max-width:100%;
-      /* optimasi drag di mobile */
       touch-action:none;
+      transition:box-shadow 120ms ease, border-color 120ms ease;
     }
     .kt-workspace-window-header{
-      height:28px; /* lebih besar agar enak di-tap */
+      height:28px;
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -413,9 +521,13 @@
       cursor:pointer;
       padding:0 2px;
       touch-action:manipulation;
+      transition:color 120ms ease, transform 80ms ease;
     }
     .kt-workspace-window-close:hover{
       color:var(--amber);
+    }
+    .kt-workspace-window-close:active{
+      transform:scale(0.95);
     }
     .kt-workspace-window-body{
       position:absolute;
@@ -435,7 +547,7 @@
       position:absolute;
       right:0;
       bottom:0;
-      width:18px;   /* diperbesar agar gampang di-swipe */
+      width:18px;
       height:18px;
       cursor:nwse-resize;
       background:linear-gradient(135deg,transparent 0,transparent 40%,var(--border-soft) 40%,var(--border-soft) 60%,transparent 60%,transparent 100%);
@@ -447,7 +559,15 @@
     .kt-ai-fab{
       position:fixed;right:16px;bottom:90px;width:48px;height:48px;border-radius:50%;
       background:var(--amber);color:#000;display:flex;align-items:center;justify-content:center;
-      font-size:15px;font-weight:700;box-shadow:0 6px 14px rgba(0,0,0,.6);cursor:pointer;z-index:3000;border:1px solid #f0f0f0;user-select:none
+      font-size:15px;font-weight:700;box-shadow:0 6px 14px rgba(0,0,0,.6);cursor:pointer;z-index:3000;border:1px solid #f0f0f0;user-select:none;
+      transition:transform 80ms ease, box-shadow 120ms ease;
+    }
+    .kt-ai-fab:hover{
+      box-shadow:0 8px 18px rgba(0,0,0,.8);
+    }
+    .kt-ai-fab:active{
+      transform:translateY(1px) scale(0.97);
+      box-shadow:0 4px 10px rgba(0,0,0,.7);
     }
 
     .kt-ai-menu{
@@ -458,12 +578,18 @@
       padding:6px 10px;border-radius:999px;border:1px solid var(--border-soft);
       background:#111;color:#9b9b9b;font-size:11px;
       display:flex;align-items:center;gap:6px;cursor:pointer;
+      transition:background 120ms ease, transform 80ms ease, box-shadow 120ms ease;
     }
     .kt-ai-menu-btn span:first-child{
       width:22px;text-align:center;color:var(--amber);font-weight:500;font-size:11px;
     }
     .kt-ai-menu-btn:hover{
       background:#181818;color:var(--text-main);
+      box-shadow:0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .kt-ai-menu-btn:active{
+      transform:translateY(1px);
+      box-shadow:0 0 0 1px rgba(0,0,0,0.7) inset;
     }
 
     .kt-ai-panel{
@@ -503,9 +629,14 @@
       border-radius:999px;
       background:rgba(0,0,0,0.7);
       border:1px solid var(--border-soft);
+      transition:background 120ms ease, transform 80ms ease, box-shadow 120ms ease;
     }
     .kt-ai-panel-close:hover{
       background:rgba(0,0,0,0.9);
+      box-shadow:0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .kt-ai-panel-close:active{
+      transform:scale(0.95);
     }
 
     .kt-ai-panel-body{
@@ -541,14 +672,12 @@
     .kt-cheatsheet{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);background:#0e0e0e;border:1px solid var(--border-soft);border-radius:8px;padding:8px 10px;z-index:3500;display:none;font-size:10px;color:var(--text-muted)}
     .kt-cheatsheet b{color:var(--amber)}
 
-    /* Desktop center submenu strip (bottom) */
     @media (min-width:900px){
       .kt-submenu-strip{display:flex;justify-content:center;padding-left:0;padding-right:0}
       .kt-submenu-group{max-width:980px}
       .kt-submenu-group.active{justify-content:center}
     }
 
-    /* Mobile tweaks */
     @media (max-width:600px){
       .kt-topbar{padding:4px 8px}
       .kt-logo{font-size:12px}
@@ -577,10 +706,22 @@
       <div class="kt-topbar-left">
         <div class="kt-logo">KUANTARA TERMINAL</div>
         <div class="kt-session-clock" id="kt-session-clock">
-          <div class="kt-session-item"><span class="kt-session-label">SYD</span><span class="kt-session-time" data-tz="10"></span></div>
-          <div class="kt-session-item"><span class="kt-session-label">TYO</span><span class="kt-session-time" data-tz="9"></span></div>
-          <div class="kt-session-item"><span class="kt-session-label">LDN</span><span class="kt-session-time" data-tz="0"></span></div>
-          <div class="kt-session-item"><span class="kt-session-label">NYC</span><span class="kt-session-time" data-tz="-5"></span></div>
+          <div class="kt-session-item" data-market="SYD">
+            <span class="kt-session-label">SYD</span>
+            <span class="kt-session-time" data-tz="10"></span>
+          </div>
+          <div class="kt-session-item" data-market="TYO">
+            <span class="kt-session-label">TYO</span>
+            <span class="kt-session-time" data-tz="9"></span>
+          </div>
+          <div class="kt-session-item" data-market="LDN">
+            <span class="kt-session-label">LDN</span>
+            <span class="kt-session-time" data-tz="0"></span>
+          </div>
+          <div class="kt-session-item" data-market="NYC">
+            <span class="kt-session-label">NYC</span>
+            <span class="kt-session-time" data-tz="-5"></span>
+          </div>
         </div>
       </div>
     </header>
@@ -677,19 +818,20 @@
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="3">Custom</button>
     </div>
 
+    <!-- MENU 8: RESEARCH -->
     <div class="kt-submenu-group" data-menu-sub="8">
-      <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Internal</button>
-      <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Institutions</button>
-      <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Reports</button>
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Institutions</button>
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Reports</button>
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Quantitative</button>
     </div>
 
+    <!-- MENU 9: TOOLS -->
     <div class="kt-submenu-group" data-menu-sub="9">
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Journal</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Education</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Notes</button>
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Quantitative</button>
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="4">Calculator</button>
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="5">Others</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Calculator</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="4">Others</button>
     </div>
   </nav>
 
@@ -895,7 +1037,7 @@
         "1:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_calendar.html",
         "1:3":"https://44e53ad6-8cf6-4090-9e60-c9e985282fe0.filesusr.com/html/5e69ae_59c85b29326635aadaac1f2286d8f292.html",
         "1:4":"", 
-        "1:5":"", // Indonesia placeholder
+        "1:5":"",
 
         // Macroeconomic
         "2:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/usmacro.html",
@@ -903,7 +1045,14 @@
         "2:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_countries.html",
 
         // Charts
-        "6:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/technical_charts.html"
+        "6:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/technical_charts.html",
+
+        // Research – Institutions & Reports & Quantitative
+        "8:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_institutions.html",
+        "8:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_reports.html",
+        "8:2":"", // Quantitative placeholder
+
+        // Tools: others handled by backend later
       };
 
       function injectIframe(url){
@@ -920,12 +1069,10 @@
         const key = menuIndex+":"+subIndex;
         const url = IFRAME_MAP[key] || "";
         injectIframe(url);
-        // update "current view" for workspace
         currentViewUrl = url;
         currentViewTitleMain = breadcrumbMain.textContent || "";
         currentViewTitleSub  = breadcrumbSub.textContent || "";
         
-        // Only update status text if NOT pinned
         if(!isPinned){
           statusMsg.textContent = url ? "EMBED: "+url : "READY (No content)";
         }
@@ -1071,7 +1218,7 @@
           
           if(isPinned){
             clearTimeout(hideTimer);
-            statusMsg.textContent = "Autohide disabled"; // CHANGED per instruction
+            statusMsg.textContent = "Autohide disabled";
             showAllBars();
           } else {
             statusMsg.textContent = currentViewUrl ? "EMBED: "+currentViewUrl : "READY";
@@ -1586,18 +1733,45 @@
         }
       });
 
+      /* HELPER: apakah market buka antara 08.00–17.00 waktu lokal */
+      function isMarketOpen(label, localDate){
+        const h = localDate.getHours();
+        const m = localDate.getMinutes();
+        const mins = h*60 + m;
+        return mins >= 8*60 && mins < 17*60;
+      }
+
       /* Clocks */
       function pad2(n){return n<10?"0"+n:""+n}
       function updateSessions(){
-        const now=new Date();
-        const utc=Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate(),now.getUTCHours(),now.getUTCMinutes(),now.getUTCSeconds());
+        const now = new Date();
+        const utcMs = Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          now.getUTCHours(),
+          now.getUTCMinutes(),
+          now.getUTCSeconds()
+        );
+
         sessionTimes.forEach(el=>{
-          const offset=Number(el.getAttribute("data-tz"))||0;
-          const d=new Date(utc+offset*3600*1000);
-          el.textContent=pad2(d.getUTCHours())+":"+pad2(d.getUTCMinutes());
+          const offset = Number(el.getAttribute("data-tz"))||0;
+          const d = new Date(utcMs+offset*3600*1000);
+          el.textContent = pad2(d.getHours())+":"+pad2(d.getMinutes());
+
+          const parent = el.closest(".kt-session-item");
+          if(!parent) return;
+          const labelEl = parent.querySelector(".kt-session-label");
+          const label = (labelEl?.textContent || "").trim();
+          if(isMarketOpen(label, d)){
+            parent.classList.add("open");
+          } else {
+            parent.classList.remove("open");
+          }
         });
       }
-      updateSessions(); setInterval(updateSessions,1000);
+      updateSessions();
+      setInterval(updateSessions,1000);
 
       /* Init */
       setupEventListeners();
