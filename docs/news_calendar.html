@@ -5,7 +5,6 @@
   <title>Kuantara – Economic Calendar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Fira Code biar konsisten sama style terminal -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
@@ -45,7 +44,6 @@
 <body>
   <div id="economic-calendar-272922"></div>
 
-  <!-- FXVerify Economic Calendar Widget -->
   <script type="text/javascript" src="https://fxverify.com/Content/remote/remote-calendar-widget.js"></script>
   <script type="text/javascript">
     RemoteCalendar({
@@ -55,6 +53,7 @@
       "Url": "https://fxverify.com",
       "SubPath": "economic-calendar",
       "IsShowEmbedButton": true,
+      "IsShowHeader": false, // <--- Ini yang ditambahkan untuk menyembunyikan top bar
       "DefaultCountries": "AU,CA,CH,CN,DE,FR,IT,ES,US,GB,NZ,JP,EU,id",
       "DefaultImpacts": "HIGH,MEDIUM",
       "ContainerId": "economic-calendar-272922"
