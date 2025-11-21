@@ -17,10 +17,10 @@
       --text-muted:#9b9b9b;
       --accent:#ffbf00;
 
-      --fs-title:14px;
-      --fs-subtitle:12px;
-      --fs-body:11px;
-      --fs-small:9.5px;
+      --fs-title:14px;    /* judul panel */
+      --fs-subtitle:12px; /* subheader / label */
+      --fs-body:11px;     /* body utama */
+      --fs-small:9.5px;   /* meta kecil */
     }
 
     *{
@@ -123,7 +123,7 @@
       padding:4px 6px;
       border-radius:3px;
       outline:none;
-      max-width:220px;
+      max-width:150px;
       width:100%;
       appearance:none;
       -moz-appearance:none;
@@ -198,6 +198,7 @@
       overflow-y:auto;
     }
 
+    /* tinggi feed supaya panel full tapi tetap smooth */
     #fastbull-feed,
     #te-feed{
       max-height:100%;
@@ -479,14 +480,27 @@
       box-shadow: none;
     }
 
-    .flex{display:flex;}
-    .items-center{align-items:center;}
-    .justify-between{justify-content:space-between;}
-    .hidden{display:none!important;}
+    .flex{
+      display:flex;
+    }
+    .items-center{
+      align-items:center;
+    }
+    .justify-between{
+      justify-content:space-between;
+    }
+
+    .hidden{
+      display:none!important;
+    }
 
     @media (max-width:600px){
-      .modal-card{padding:12px;}
-      .kuantara-chat{max-height:260px;}
+      .modal-card{
+        padding:12px;
+      }
+      .kuantara-chat{
+        max-height:260px;
+      }
     }
   </style>
 </head>
@@ -499,7 +513,13 @@
         <div class="kt-panel-title">24/7 Headlines</div>
         <div class="kt-panel-controls">
           <select class="kt-select" id="fastbull-topic">
-            <option value="all">All tags (Realtime)</option>
+            <option value="all">All topics</option>
+            <option value="macro">Macro &amp; Central Bank</option>
+            <option value="fx">FX &amp; Rates</option>
+            <option value="equities">Equities</option>
+            <option value="commodities">Commodities</option>
+            <option value="crypto">Crypto</option>
+            <option value="geopolitics">Geopolitics</option>
           </select>
           <button class="kt-btn" id="fastbull-recap-btn">
             Recap with AI
@@ -514,6 +534,7 @@
         </div>
 
         <ul class="kt-feed" id="fastbull-feed">
+          <!-- dummy awal (akan di-replace fetch) -->
           <li class="kt-item">
             <div class="kt-item-content">
               <div class="kt-item-header">
@@ -550,6 +571,7 @@
         </div>
 
         <ul class="kt-feed" id="te-feed">
+          <!-- dummy awal (akan di-replace fetch) -->
           <li class="kt-item">
             <div class="kt-item-content">
               <div class="kt-item-header">
@@ -591,29 +613,69 @@
 </div>
 
 <script>
-  // ========= CONFIG =========
+  // ========== CONFIG ==========
   const SIDER_API_BASE = "https://sider.ai/api/chat/v1";
   const TIMEZONE = "Asia/Makassar";
-  const SIDER_TOKEN = "<ISI TOKEN SIDER KAMU DI SINI>"; // PASTIKAN DIISI
+  const SIDER_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyMTgzNzM0NiwicmVnaXN0ZXJfdHlwZSI6Im9hdXRoMiIsImFwcF9uYW1lIjoiQ2hpdENoYXRfQ2hyb21lX0V4dCIsInRva2VuX2lkIjoiZTZlOGIwZGUtN2Q3Zi00NTZkLTkxNGQtNzUwNDQ0ZjkyZTNjIiwiaXNzIjoic2lkZXIuYWkiLCJhdWQiOlsiIl0sImV4cCI6MTc4ODY5NjUxMCwibmJmIjoxNzU3NTkyNTEwLCJpYXQiOjE3NTc1OTI1MTB9.mcq86TwFwPtql3S77_vhnJRGj08878Ej5WGkvY3OxWI";
 
   const FASTBULL_NEWS_ENDPOINT = "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
-  const FASTBULL_TAG_URL       = "https://api.fastbull.com/fastbull-news-service/api/getAINewsTagList?";
-  const FASTBULL_HEADERS = {
-    "Accept": "application/json",
-    "client-type": "4",
-    "clientversion": "latest",
-    "langid": "13"
-  };
+  const FASTBULL_HEADERS = { Accept: "application/json", "client-type": "4", clientversion: "latest", langid: "13" };
   const FASTBULL_CORS_PROXY = "https://api.allorigins.win/raw?url=";
 
   const CATALYST_FEED_API = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjMfNinXgjitGptTt1Uj6nE6WK7rYjGTPSt5bUFepyHsCV7ZBDGq6iUYbWvAjM_GhWNcK3REbD8jDIDwMCKO2bUgT_H_aHRBj09Gwkd2uraHiWcmpd3uD3lWgzxnxEu9UOACjLZnVbgZ9fYMy0qtS-DvoKx9KjMK-AuT30tktXjEUxt-JhCWomT15gnuyLeRstzneutXUmRPLHr_lfJyz9_SOovs6xBP-DDH4tUkDSY2SdlvYhf5nZmmY36BH4ncn8t63S2Ua7iCwCMVRs8Ey8R2aWWd6C0Sv39n4V0anX6oX-zfP8&lib=MakTJ382BM__YWV6a2eDZUSqaUOX12Qs5";
 
   const MAX_RECAP_ITEMS = 15;
-  const FEED_DISPLAY_LIMIT = Infinity;
-
+  const FEED_DISPLAY_LIMIT = 120;
   const COPY_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
 
-  // ========= DOM =========
+  const FASTBULL_TOPIC_TAG_IDS = {
+    "all": "-1",
+    "macro": "100,109,110,111,112,117,119,122,125,127,129,132,133,135,143,144",
+    "fx": "94",
+    "equities": "95,152,154,156,158,169,174",
+    "commodities": "97",
+    "crypto": "98,134,137,155,157,162,164",
+    "geopolitics": "105,108,136,177,176",
+  };
+
+  const FASTBULL_TAG_LABELS = {
+    "100": "Central Banks",
+    "124": "RBA",
+    "123": "BOJ",
+    "120": "BOE",
+    "118": "ECB",
+    "116": "BOC",
+    "115": "FED",
+    "114": "PBOC",
+    "174": "Corporate Announcements",
+    "169": "Stock Ratings/Forecasts",
+    "163": "Dividends",
+    "152": "Major Indices",
+    "94": "Forex",
+    "95": "Stocks",
+    "97": "Commodities",
+    "98": "Cryptocurrencies",
+    "105": "Disasters/Accidents",
+    "144": "Other Macro News",
+    "143": "Top/Focus/Breaking News",
+    "136": "National Security/Geopolitics",
+    "135": "Government/Political Updates",
+    "132": "Central Banks Updates",
+    "129": "Other Policies",
+    "127": "Fiscal Policy",
+    "125": "Monetary Policy",
+    "119": "Economic Forecasts",
+    "117": "Trade",
+    "112": "Employment/Income",
+    "111": "Interest Rates",
+    "110": "Inflation",
+    "109": "Macroeconomic Indicators",
+    "108": "Russia-Ukraine Conflict",
+    "177": "Middle East Flashpoint",
+    "176": "Trump Trade"
+  };
+
+  // ========== DOM ==========
   const fastbullFeedEl   = document.getElementById("fastbull-feed");
   const fastbullCountEl  = document.getElementById("fastbull-count");
   const fastbullTopicEl  = document.getElementById("fastbull-topic");
@@ -631,11 +693,9 @@
   const inputEl          = document.getElementById("input");
   const sendBtn          = document.getElementById("send");
 
-  // ========= STATE =========
+  // ========== STATE ==========
   const fastbullCache = new Map();
   const articlesCache = new Map();
-  const fastbullTagMap = {};
-  let fastbullTagsLoaded = false;
   let fastbullProxyEnabled = false;
 
   let isStreaming = false;
@@ -645,7 +705,7 @@
   let selectedFastbullItemId = null;
   let selectedArticleItemId = null;
 
-  // ========= HELPERS (SAMA SEPERTI SEBELUMNYA) =========
+  // ========== HELPERS ==========
   const markdownToHtml = (md) => (md || "").replace(/\n/g, "<br>");
 
   const escapeHtml = (value = "") => {
@@ -658,22 +718,11 @@
       .replace(/'/g, "&#39;");
   };
 
-  const parseBodyMessage = (payload) => {
-    if (!payload) return null;
-    let body = payload.bodyMessage;
-    if (!body) return null;
-    if (typeof body === "string") {
-      try { return JSON.parse(body); } catch { return null; }
-    }
-    return body;
-  };
-
   const resolveFastbullTagLabel = (tagIds = []) => {
-    if (!Array.isArray(tagIds) || !tagIds.length) return "News";
-    for (const idRaw of tagIds) {
-      const id = String(idRaw).trim();
-      if (!id) continue;
-      if (fastbullTagMap[id]) return fastbullTagMap[id];
+    if (!Array.isArray(tagIds)) return "News";
+    for (const id of tagIds) {
+      const label = FASTBULL_TAG_LABELS[id] || FASTBULL_TAG_LABELS[String(id)];
+      if (label) return label;
     }
     return "News";
   };
@@ -686,7 +735,9 @@
     document.body.appendChild(temp);
     temp.focus();
     temp.select();
-    try{ document.execCommand("copy"); }catch(e){}
+    try {
+      document.execCommand("copy");
+    } catch {}
     document.body.removeChild(temp);
   };
 
@@ -746,6 +797,8 @@
       .map((cat) => `<span class="kt-tag">${escapeHtml(cat)}</span>`)
       .join("")}</div>`;
   };
+
+  const normalizeCategoryKey = (value) => (value || "all").toLowerCase();
 
   const renderLoading = (listEl, countEl) => {
     if (listEl) listEl.innerHTML = '<li class="kt-empty">Loading...</li>';
@@ -828,10 +881,10 @@
     return filtered.length ? filtered : items;
   };
 
-  // ========= NORMALISASI DATA =========
+  // ========== NORMALISASI DATA ==========
   const normalizeFastbullItem = (item) => {
-    const tagsRaw = (item.tags || "").split(",").map(t => t.trim()).filter(Boolean);
-    const tagName = resolveFastbullTagLabel(tagsRaw);
+    const tags = (typeof item.tags === "string" ? item.tags.split(",") : []).map(t => t.trim());
+    const tagName = resolveFastbullTagLabel(tags);
     const isImportant = Number(item.important) === 1;
     return {
       id: item.newsId,
@@ -867,81 +920,20 @@
     };
   };
 
-  // ========= FASTBULL TAG DROPDOWN (all_tag_names style) =========
-  const populateFastbullDropdown = (tagData) => {
-    if (!fastbullTopicEl) return;
-    fastbullTopicEl.innerHTML = "";
+  // ========== FETCHING ==========
+  const fetchFastbullNews = async (topicKey = "all") => {
+    const tagIds = FASTBULL_TOPIC_TAG_IDS[topicKey] || "-1";
 
-    const optAll = document.createElement("option");
-    optAll.value = "all";
-    optAll.textContent = "All tags (Realtime)";
-    fastbullTopicEl.appendChild(optAll);
-
-    const flatTags = [];
-    (tagData || []).forEach(category => {
-      (category.tagList || []).forEach(tag => {
-        flatTags.push({
-          id: String(tag.tagId),
-          name: String(tag.tagName || "").trim()
-        });
-      });
-    });
-
-    // JS versi:
-    // const all_tag_names = flatTags.map(t => t.name);
-
-    flatTags.sort((a, b) => a.name.localeCompare(b.name));
-
-    flatTags.forEach(t => {
-      fastbullTagMap[t.id] = t.name;
-      const opt = document.createElement("option");
-      opt.value = t.id;         // value = tagId
-      opt.textContent = t.name; // text = tagName
-      fastbullTopicEl.appendChild(opt);
-    });
-
-    fastbullTagsLoaded = true;
-  };
-
-  const fetchFastbullTags = async () => {
-    try {
-      let payload;
-      try {
-        const resp = await fetch(FASTBULL_TAG_URL, { headers: FASTBULL_HEADERS });
-        if (!resp.ok) throw new Error("HTTP " + resp.status);
-        payload = await resp.json();
-      } catch (err) {
-        const proxyResp = await fetch(FASTBULL_CORS_PROXY + encodeURIComponent(FASTBULL_TAG_URL));
-        if (!proxyResp.ok) throw new Error("HTTP " + proxyResp.status);
-        payload = await proxyResp.json();
-      }
-      const body = parseBodyMessage(payload) || [];
-      populateFastbullDropdown(body);
-    } catch (e) {
-      console.error("Error fetching FastBull tags:", e);
-      fastbullTagsLoaded = false;
-    }
-  };
-
-  // ========= FETCH FASTBULL NEWS =========
-  const fetchFastbullNews = async (tagIds = "-1") => {
     if (fastbullCache.has(tagIds)) {
       const data = fastbullCache.get(tagIds);
-      renderFeed(
-        fastbullFeedEl,
-        fastbullCountEl,
-        data,
-        "FastBull",
-        selectedFastbullItemId,
-        { showSource:false }
-      );
+      renderFeed(fastbullFeedEl, fastbullCountEl, data, "FastBull", selectedFastbullItemId, { showSource:false });
       return;
     }
 
     renderLoading(fastbullFeedEl, fastbullCountEl);
 
     try {
-      const baseUrl = `${FASTBULL_NEWS_ENDPOINT}?checkImportant=0&pageSize=10000&timestamp=&includeCalendar=0&tagIds=${encodeURIComponent(tagIds)}`;
+      const baseUrl = `${FASTBULL_NEWS_ENDPOINT}?checkImportant=0&pageSize=100&timestamp=&includeCalendar=0&tagIds=${tagIds}`;
       let payload;
 
       try {
@@ -956,34 +948,17 @@
         payload = await proxyResp.json();
       }
 
-      const bodyObj = parseBodyMessage(payload) || {};
+      const bodyObj = JSON.parse(payload.bodyMessage || "{}");
       const list = bodyObj.pageDatas || [];
       const items = list.map(normalizeFastbullItem);
-
       fastbullCache.set(tagIds, items);
-      renderFeed(
-        fastbullFeedEl,
-        fastbullCountEl,
-        items,
-        "FastBull",
-        selectedFastbullItemId,
-        { showSource:false }
-      );
-    } catch (e) {
-      console.error("Error fetching FastBull news:", e);
+
+      renderFeed(fastbullFeedEl, fastbullCountEl, items, "FastBull", selectedFastbullItemId, { showSource:false });
+    } catch {
       fastbullFeedEl.innerHTML = '<li class="kt-empty">Error loading headlines.</li>';
       if (fastbullCountEl) fastbullCountEl.textContent = "0 items";
     }
   };
-
-  const getCurrentFastbullTagIds = () => {
-    const val = fastbullTopicEl?.value || "all";
-    if (val === "all") return "-1";
-    return val; // tagId
-  };
-
-  // ========= ARTICLES (KANAN) =========
-  const normalizeCategoryKey = (value) => (value || "all").toLowerCase();
 
   const populateArticleCategories = (items) => {
     if (!articlesTopicEl) return;
@@ -1027,14 +1002,7 @@
 
   const renderArticlesByFilter = (categoryKey = "all") => {
     const items = getArticleItemsForCategory(categoryKey);
-    renderFeed(
-      articlesFeedEl,
-      articlesCountEl,
-      items,
-      "Catalyst Feed",
-      selectedArticleItemId,
-      { limit:Infinity }
-    );
+    renderFeed(articlesFeedEl, articlesCountEl, items, "Catalyst Feed", selectedArticleItemId, { limit:Infinity });
   };
 
   const fetchArticles = async () => {
@@ -1048,8 +1016,7 @@
           .map(normalizeCatalystItem)
           .filter(Boolean);
         articlesCache.set("all", items);
-      } catch (e) {
-        console.error("Error fetching catalyst feed:", e);
+      } catch {
         articlesFeedEl.innerHTML = '<li class="kt-empty">Error loading catalyst feed.</li>';
         if (articlesCountEl) articlesCountEl.textContent = "0 items";
         return;
@@ -1060,7 +1027,7 @@
     renderArticlesByFilter(articlesTopicEl?.value || "all");
   };
 
-  // ========= CHAT / AI (PERSIS LOGIKA LAMA) =========
+  // ========== CHAT / AI ==========
   const addMessage = (sender, contentMD) => {
     messages.push({ sender, contentMD });
     renderChat();
@@ -1180,6 +1147,7 @@
         let idx;
         let updated = false;
 
+        // proses per-baris SSE
         while ((idx = buffer.indexOf("\n")) >= 0) {
           const rawLine = buffer.slice(0, idx);
           buffer = buffer.slice(idx + 1);
@@ -1239,27 +1207,18 @@
     }
   };
 
-  // ========= INIT =========
+  // ========== INIT ==========
   document.addEventListener("DOMContentLoaded", () => {
-    // Tag FastBull -> dropdown
-    fetchFastbullTags().finally(() => {
-      // Default: All (-1)
-      fetchFastbullNews("-1");
-    });
-
-    // Articles
+    fetchFastbullNews(fastbullTopicEl.value);
     fetchArticles();
 
-    // Ganti tag FastBull
     fastbullTopicEl.addEventListener("change", (e) => {
       e.stopPropagation();
       selectedFastbullItemId = null;
       applySelectionState(fastbullFeedEl, null);
-      const tagIds = getCurrentFastbullTagIds();
-      fetchFastbullNews(tagIds);
+      fetchFastbullNews(e.target.value);
     });
 
-    // Ganti kategori Articles
     articlesTopicEl.addEventListener("change", (e) => {
       e.stopPropagation();
       selectedArticleItemId = null;
@@ -1267,7 +1226,6 @@
       renderArticlesByFilter(e.target.value || "all");
     });
 
-    // Klik item FastBull
     fastbullFeedEl?.addEventListener("click", (event) => {
       if (event.target.closest(".kt-copy-icon")) return;
       const itemEl = event.target.closest(".kt-item");
@@ -1277,7 +1235,6 @@
       applySelectionState(fastbullFeedEl, selectedFastbullItemId);
     });
 
-    // Klik item Articles
     articlesFeedEl?.addEventListener("click", (event) => {
       if (event.target.closest(".kt-copy-icon")) return;
       const itemEl = event.target.closest(".kt-item");
@@ -1287,21 +1244,15 @@
       applySelectionState(articlesFeedEl, selectedArticleItemId);
     });
 
-    // Recap FastBull
     fastbullRecapBtn.addEventListener("click", () => {
-      const tagIds = getCurrentFastbullTagIds();
-      const val = fastbullTopicEl.value || "all";
+      const topic = fastbullTopicEl.value;
+      const topicLabel = fastbullTopicEl.options[fastbullTopicEl.selectedIndex].text;
+      const tagIds = FASTBULL_TOPIC_TAG_IDS[topic] || "-1";
       const selectionActive = !!selectedFastbullItemId;
-      let labelName;
-      if (val === "all") {
-        labelName = "All tags";
-      } else {
-        labelName = fastbullTagMap[val] || `Tag ${val}`;
-      }
 
       openKuantaraModal({
-        key: `fastbull-${tagIds}${selectionActive ? `-${selectedFastbullItemId}` : ""}`,
-        label: `${selectionActive ? "Selected Headline" : "Headlines"} (${labelName})`,
+        key: `fastbull-${topic}${selectionActive ? `-${selectedFastbullItemId}` : ""}`,
+        label: `${selectionActive ? "Selected Headline" : "Headlines"} (${topicLabel})`,
         getItems: () => {
           const items = fastbullCache.get(tagIds) || [];
           return resolveSelectedItems(items, selectedFastbullItemId);
@@ -1309,7 +1260,6 @@
       });
     });
 
-    // Recap Articles
     articlesRecapBtn.addEventListener("click", () => {
       const topic = articlesTopicEl.value || "all";
       const topicLabel = articlesTopicEl.options[articlesTopicEl.selectedIndex]?.text || topic;
@@ -1325,10 +1275,8 @@
       });
     });
 
-    // Modal close
     kuantaraCloseBtn.addEventListener("click", () => kuantaraModal.classList.add("hidden"));
 
-    // Chat manual
     sendBtn.addEventListener("click", () => {
       const txt = inputEl.value.trim();
       if (!txt || isStreaming) return;
