@@ -1,88 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Kuantara – Dark Calendar</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Kuantara – Dark Dukascopy Calendar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
-<style>
-  :root {
-    --amber:#ffbf00;
-    --bg:#000;
-    --text:#f5f5f5;
-    --muted:#9b9b9b;
-  }
+  <style>
+    :root {
+      --amber:#ffbf00;
+      --bg:#000000;
+      --text:#f5f5f5;
+      --muted:#9b9b9b;
+    }
 
-  * {
-    box-sizing:border-box;
-    font-family:"Fira Code",monospace;
-  }
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace;
+      -webkit-tap-highlight-color:transparent;
+    }
 
-  body {
-    background:#000;
-    margin:0;
-    padding:0;
-  }
+    html, body {
+      width:100%;
+      height:100%;
+      background:var(--bg);
+      color:var(--text);
+    }
 
-  /* ====== DARK MODE FIX FOR DUKASCOPY ====== */
-  .dk-wrap {
-    background:#000;
-    padding:0;
-    filter:invert(1) hue-rotate(180deg);
-  }
+    body {
+      display:flex;
+      flex-direction:column;
+    }
 
-  /* re-invert texts inside table */
-  .dk-wrap table,
-  .dk-wrap td,
-  .dk-wrap th,
-  .dk-wrap span,
-  .dk-wrap div {
-    color:#f5f5f5 !important;
-  }
+    /* Wrapper full page */
+    .page-root {
+      flex:1;
+      min-height:100vh;
+      display:flex;
+    }
 
-  /* fix flags & icons so they don’t invert */
-  .dk-wrap img {
-    filter:invert(1) hue-rotate(180deg) !important;
-  }
+    .dk-wrap {
+      flex:1;
+      width:100%;
+      height:100vh;
+      background:#000;
+      padding:8px;
+      overflow:auto;
+      filter:invert(1) hue-rotate(180deg);
+    }
 
-  /* border highlight Kuantara */
-  .dk-wrap table {
-    border-color: var(--amber) !important;
-  }
-</style>
+    /* Balikkan warna teks supaya tetap terang */
+    .dk-wrap table,
+    .dk-wrap td,
+    .dk-wrap th,
+    .dk-wrap span,
+    .dk-wrap div {
+      color:#f5f5f5 !important;
+    }
+
+    /* Biar flag & icon tidak ikut ke-invert aneh */
+    .dk-wrap img {
+      filter:invert(1) hue-rotate(180deg) !important;
+    }
+
+    /* Border tabel pakai amber Kuantara */
+    .dk-wrap table {
+      border-color:var(--amber) !important;
+    }
+
+    /* Mobile tweak kecil */
+    @media (max-width:768px) {
+      .dk-wrap {
+        padding:4px;
+        height:100vh;
+      }
+    }
+  </style>
 </head>
 
 <body>
-
-<!-- WRAPPER DARK MODE -->
-<div class="dk-wrap">
-<script type="text/javascript">
-DukascopyApplet = {
-  "type":"economic_calendar_new",
-  "params":{
-    "showHeader":false,
-    "tableBorderColor":"#ffbf00",
-    "defaultTimezone":0,
-    "defaultCountries":"c:AU,CA,CH,CN,EU,GB,JP,NZ,US,DE,FR,IT,ES",
-    "impacts":[1,2],
-    "dateTab":2,
-    "dateFrom":1459036800000,
-    "dateTo":1459555200000,
-    "showColCountry":true,
-    "showColCurrency":true,
-    "showColImpact":true,
-    "showColPrevious":true,
-    "showColForecast":true,
-    "width":"100%",
-    "height":"500",
-    "adv":"popup"
-  }
-};
-</script>
-<script type="text/javascript" src="https://freeserv-static.dukascopy.com/2.0/core.js"></script>
-</div>
-
+  <div class="page-root">
+    <div class="dk-wrap">
+      <script type="text/javascript">
+        DukascopyApplet = {
+          "type":"economic_calendar_new",
+          "params":{
+            "showHeader":false,
+            "tableBorderColor":"#ffbf00",
+            "defaultTimezone":0,
+            "defaultCountries":"c:AU,CA,CH,CN,EU,GB,JP,NZ,US,DE,FR,IT,ES",
+            "impacts":[1,2],
+            "dateTab":2,
+            "dateFrom":1459036800000,
+            "dateTo":1459555200000,
+            "showColCountry":true,
+            "showColCurrency":true,
+            "showColImpact":true,
+            "showColPrevious":true,
+            "showColForecast":true,
+            "width":"100%",
+            "height":"100%",
+            "adv":"popup"
+          }
+        };
+      </script>
+      <script type="text/javascript" src="https://freeserv-static.dukascopy.com/2.0/core.js"></script>
+    </div>
+  </div>
 </body>
 </html>
