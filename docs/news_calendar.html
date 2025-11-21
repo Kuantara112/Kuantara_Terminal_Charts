@@ -1,161 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Kuantara – Economic Calendar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Fira Code biar konsisten sama style terminal -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
+  <!-- Optional: Fira Code biar konsisten sama style terminal -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
     :root {
       --bg-root:#000000;
-      --bg-panel:#111111;
-      --border-soft:#2b2b2b;
-      --amber:#ffbf00;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
     }
 
     * {
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:"Fira Code",monospace;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Fira Code", monospace;
     }
 
     html, body {
-      width:100%;
-      height:100%;
-      background-color:var(--bg-root);
-      color:var(--text-main);
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-root);
+      color: var(--text-main);
     }
 
     body {
-      display:flex;
-      align-items:stretch;
-      justify-content:center;
-      padding:8px;
+      display: flex;
+      flex-direction: column;
     }
 
-    .kt-calendar-shell {
-      width:100%;
-      max-width:1200px;
-      height:100vh;
-      max-height:800px;
-      background:var(--bg-panel);
-      border:1px solid var(--border-soft);
-      border-radius:12px;
-      padding:8px;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      box-shadow:0 0 20px rgba(0,0,0,0.8);
-    }
-
-    .kt-calendar-header {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      font-size:11px;
-      color:var(--text-muted);
-    }
-
-    .kt-calendar-header-left {
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .kt-dot-live {
-      width:7px;
-      height:7px;
-      border-radius:999px;
-      background:var(--amber);
-      box-shadow:0 0 10px var(--amber);
-    }
-
-    .kt-calendar-header-right {
-      font-size:10px;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color:var(--text-muted);
-    }
-
-    .kt-calendar-iframe-wrap {
-      flex:1;
-      border-radius:8px;
-      overflow:hidden;
-      border:1px solid var(--border-soft);
-      background:#000; /* supaya pinggiran nggak putih */
-    }
-
-    .kt-calendar-iframe-wrap iframe {
-      width:100%;
-      height:100%;
-      border:0;
-      /* Kalau mau coba “pseudo dark mode”, aktifkan ini:
-      filter:invert(1) hue-rotate(180deg);
-      */
-    }
-
-    .kt-calendar-footer {
-      margin-top:4px;
-      display:flex;
-      justify-content:center;
-      font-size:10px;
-      color:var(--text-muted);
-      text-align:center;
-    }
-
-    .kt-calendar-footer a {
-      color:var(--amber);
-      text-decoration:none;
-    }
-
-    .kt-calendar-footer a:hover {
-      text-decoration:underline;
-    }
-
-    @media (max-width:768px) {
-      body {
-        padding:4px;
-      }
-      .kt-calendar-shell {
-        max-height:none;
-        height:calc(100vh - 8px);
-        border-radius:8px;
-      }
+    /* Container full page */
+    #economic-calendar-212246 {
+      width: 100%;
+      height: 100vh; /* full viewport */
+      overflow: auto;
     }
   </style>
 </head>
 <body>
-  <div class="kt-calendar-shell">
-    <div class="kt-calendar-header">
-      <div class="kt-calendar-header-left">
-        <span class="kt-dot-live"></span>
-        <span>FX & Macro – High & Medium Impact Only</span>
-      </div>
-      <div class="kt-calendar-header-right">
-        Economic Calendar • Myfxbook
-      </div>
-    </div>
+  <div id="economic-calendar-212246"></div>
 
-    <div class="kt-calendar-iframe-wrap">
-      <!-- myfxbook.com Economic Calendar Widget - Start -->
-      <iframe src="https://widget.myfxbook.com/widget/calendar.html?lang=en&impacts=2,3&symbols=AUD,CAD,CHF,CNY,EUR,GBP,JPY,NZD,USD"></iframe>
-      <!-- myfxbook.com Economic Calendar Widget - End -->
-    </div>
-
-    <div class="kt-calendar-footer">
-      <span>
-        <a href="https://www.myfxbook.com/forex-economic-calendar?utm_source=widget13&utm_medium=link&utm_campaign=copyright"
-           title="Economic Calendar" target="_blank" rel="noopener">
-          Economic Calendar
-        </a> • Embedded via Kuantara Terminal
-      </span>
-    </div>
-  </div>
+  <!-- FXVerify Economic Calendar Widget -->
+  <script type="text/javascript" src="https://fxverify.com/Content/remote/remote-calendar-widget.js"></script>
+  <script type="text/javascript">
+    RemoteCalendar({
+      "Lang": "en",
+      "DefaultTime": "7_days",
+      "DefaultTheme": "dark",
+      "Url": "https://fxverify.com",
+      "SubPath": "economic-calendar",
+      "IsShowEmbedButton": true,
+      "DefaultCountries": "AU,CA,CH,CN,DE,FR,IT,ES,US,GB,NZ,JP,EU,id",
+      "DefaultImpacts": "HIGH,MEDIUM",
+      "ContainerId": "economic-calendar-212246"
+    });
+  </script>
 </body>
 </html>
