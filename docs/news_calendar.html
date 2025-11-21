@@ -5,7 +5,7 @@
   <title>Kuantara – Economic Calendar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Optional: Fira Code biar konsisten sama style terminal -->
+  <!-- Fira Code biar konsisten sama style terminal -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
@@ -35,7 +35,7 @@
     }
 
     /* Container full page */
-    #economic-calendar-212246 {
+    #economic-calendar-272922 {
       width: 100%;
       height: 100vh; /* full viewport */
       overflow: auto;
@@ -43,21 +43,21 @@
   </style>
 </head>
 <body>
-  <div id="economic-calendar-212246"></div>
+  <div id="economic-calendar-272922"></div>
 
   <!-- FXVerify Economic Calendar Widget -->
   <script type="text/javascript" src="https://fxverify.com/Content/remote/remote-calendar-widget.js"></script>
   <script type="text/javascript">
     RemoteCalendar({
       "Lang": "en",
-      "DefaultTime": "7_days",
+      "DefaultTime": "this_week",
       "DefaultTheme": "dark",
       "Url": "https://fxverify.com",
       "SubPath": "economic-calendar",
       "IsShowEmbedButton": true,
       "DefaultCountries": "AU,CA,CH,CN,DE,FR,IT,ES,US,GB,NZ,JP,EU,id",
       "DefaultImpacts": "HIGH,MEDIUM",
-      "ContainerId": "economic-calendar-212246"
+      "ContainerId": "economic-calendar-272922"
     });
   </script>
 </body>
