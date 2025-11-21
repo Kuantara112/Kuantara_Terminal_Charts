@@ -2,127 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Kuantara – Dark Dukascopy Calendar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Kuantara – Economic Calendar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- Fira Code biar konsisten sama style terminal -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
     :root {
-      --amber:#ffbf00;
-      --bg:#000000;
-      --text:#f5f5f5;
-      --muted:#9b9b9b;
+      --bg-root:#000000;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
     }
 
     * {
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:"Fira Code",monospace;
-      -webkit-tap-highlight-color:transparent;
-    }
-
-    /* Outline jangan putih */
-    *:focus {
-      outline:1px solid var(--amber);
-      outline-offset:1px;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Fira Code", monospace;
     }
 
     html, body {
-      width:100%;
-      height:100%;
-      background:var(--bg);
-      color:var(--text);
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-root);
+      color: var(--text-main);
     }
 
     body {
-      display:flex;
-      flex-direction:column;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* Wrapper full page */
-    .page-root {
-      flex:1;
-      min-height:100vh;
-      display:flex;
-    }
-
-    .dk-wrap {
-      flex:1;
-      width:100%;
-      height:100vh;
-      background:#000;
-      padding:8px;
-      /* Bisa scroll atas–bawah dan samping */
-      overflow-x:auto;
-      overflow-y:auto;
-      filter:invert(1) hue-rotate(180deg);
-    }
-
-    /* Balikkan warna teks supaya tetap terang */
-    .dk-wrap table,
-    .dk-wrap td,
-    .dk-wrap th,
-    .dk-wrap span,
-    .dk-wrap div {
-      color:#f5f5f5 !important;
-    }
-
-    /* Biar flag & icon tidak ikut ke-invert aneh */
-    .dk-wrap img {
-      filter:invert(1) hue-rotate(180deg) !important;
-    }
-
-    /* Border tabel pakai amber Kuantara, bukan putih */
-    .dk-wrap table,
-    .dk-wrap td,
-    .dk-wrap th {
-      border-color:var(--amber) !important;
-    }
-
-    /* Paksa tabel agak lebar biar ada ruang untuk scroll horizontal di mobile */
-    .dk-wrap table {
-      min-width:1100px;
-    }
-
-    @media (max-width:768px) {
-      .dk-wrap {
-        padding:4px;
-        height:100vh;
-      }
+    /* Container full page */
+    #economic-calendar-272922 {
+      width: 100%;
+      height: 100vh; /* full viewport */
+      overflow: auto;
     }
   </style>
 </head>
-
 <body>
-  <div class="page-root">
-    <div class="dk-wrap">
-      <script type="text/javascript">
-        DukascopyApplet = {
-          "type":"economic_calendar_new",
-          "params":{
-            "showHeader":false,
-            "tableBorderColor":"#ffbf00",
-            "defaultTimezone":0,
-            "defaultCountries":"c:AU,CA,CH,CN,EU,GB,JP,NZ,US,DE,FR,IT,ES",
-            "impacts":[1,2],
-            "dateTab":2,
-            "dateFrom":1459036800000,
-            "dateTo":1459555200000,
-            "showColCountry":true,
-            "showColCurrency":true,
-            "showColImpact":true,
-            "showColPrevious":true,
-            "showColForecast":true,
-            "width":"1200",   // lebih lebar dari layar HP -> bisa geser samping
-            "height":"100%",
-            "adv":"popup"
-          }
-        };
-      </script>
-      <script type="text/javascript" src="https://freeserv-static.dukascopy.com/2.0/core.js"></script>
-    </div>
-  </div>
+  <div id="economic-calendar-272922"></div>
+
+  <!-- FXVerify Economic Calendar Widget -->
+  <script type="text/javascript" src="https://fxverify.com/Content/remote/remote-calendar-widget.js"></script>
+  <script type="text/javascript">
+    RemoteCalendar({
+      "Lang": "en",
+      "DefaultTime": "this_week",
+      "DefaultTheme": "dark",
+      "Url": "https://fxverify.com",
+      "SubPath": "economic-calendar",
+      "IsShowEmbedButton": true,
+      "DefaultCountries": "AU,CA,CH,CN,DE,FR,IT,ES,US,GB,NZ,JP,EU,id",
+      "DefaultImpacts": "HIGH,MEDIUM",
+      "ContainerId": "economic-calendar-272922"
+    });
+  </script>
 </body>
 </html>
