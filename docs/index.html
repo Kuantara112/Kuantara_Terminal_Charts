@@ -98,7 +98,7 @@
       position:fixed;
       left:0;
       right:0;
-      top:32px;         /* dulu 38px, sekarang pas di bawah topbar 32px */
+      top:38px;
       bottom:46px;
       z-index:1;
       background:#0b0b0b;
@@ -145,7 +145,7 @@
     }
 
     body.kt-pinned .kt-iframe-layer {
-      top: 96px;      /* 32 (topbar) + 32 (main menu) + ~32 (breadcrumb) */
+      top: 108px;
       bottom: 112px;
     }
 
@@ -160,21 +160,11 @@
 
     /* ===== TOPMOST BAR ===== */
     .kt-topbar{
-      position:fixed;
-      top:0;
-      left:0;
-      right:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:center;
       background:#070707;
       border-bottom:1px solid var(--border-soft);
-      padding:4px 10px;      /* dipersempit */
-      font-size:10px;
-      z-index:3000;
-      user-select:none;
-      height:32px;           /* tinggi fix supaya layout konsisten */
-      box-sizing:border-box;
+      padding:8px 12px;font-size:10px;z-index:3000;
+      user-select: none;
     }
     .kt-topbar-left{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;flex-wrap:wrap}
     .kt-logo{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--amber);white-space:nowrap; cursor: pointer;}
@@ -210,12 +200,12 @@
 
     /* MAIN MENU (TOP) */
     .kt-mainmenu-strip{
-      top:32px;    /* dulu 38px, sekarang langsung nempel di bawah topbar 32px */
+      top:38px;
       left:0;
       right:0;
       display:flex;
       gap:4px;
-      padding:4px 8px;   /* dipersempit */
+      padding:4px 8px;
       background:#050505cf;
       border-bottom:1px solid var(--border-soft);
       overflow-x:auto;
@@ -246,21 +236,10 @@
     }
     .kt-mainmenu-btn.active span:first-child{color:#000}
 
-    /* CONTENT HEADER / BREADCRUMB */
+    /* CONTENT HEADER (BREADCRUMB NEMPEL KE MAIN MENU) */
     .kt-content-header{
-      top:64px;    /* 32 (topbar) + 32 (main menu) = 64, nempel di bawah main menu */
-      left:0;
-      right:0;
-      border-bottom:1px solid var(--border-soft);
-      padding:4px 10px;  /* dipersempit */
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      font-size:11px;
-      gap:8px;
-      flex-wrap:wrap;
-      background:#0a0a0acc;
-      backdrop-filter:blur(4px);
+      top:70px;left:0;right:0;border-bottom:1px solid var(--border-soft);padding:4px 10px;display:flex;
+      justify-content:space-between;align-items:center;font-size:11px;gap:8px;flex-wrap:wrap;background:#0a0a0acc;backdrop-filter:blur(4px)
     }
     .kt-breadcrumb{display:flex;gap:6px;align-items:baseline;min-width:0}
     .kt-breadcrumb-main{color:var(--amber);font-weight:500;white-space:nowrap}
@@ -328,15 +307,15 @@
       box-shadow:0 0 0 1px rgba(255,191,0,0.35) inset;
     }
 
-    /* PROFILE PAGE – FULL PAGE PANEL */
+    /* PROFILE PAGE (FULL WORK AREA BETWEEN HEADER & BOTTOM NAV) */
     .kt-profile-page{
       position:fixed;
       left:0;
       right:0;
-      top:0;          /* full page dari bawah header, tapi kita kosongkan area atas sendiri */
-      bottom:0;
-      padding:32px 16px 16px;   /* top 32px biar tidak ketimpa topbar di visual */
-      z-index:2900;
+      top:32px;      /* tepat di bawah topbar */
+      bottom:46px;   /* tepat di atas bottom nav */
+      padding:16px;
+      z-index:2700;  /* di bawah bottom nav, di atas iframe */
       display:none;
       overflow:auto;
       background:radial-gradient(circle at top left,#1a1200,#050505 55%);
@@ -438,19 +417,19 @@
       line-height:1.4;
     }
 
-    /* WORKSPACE – FULL PAGE BOARD */
+    /* WORKSPACE – FULL PAGE BOARD (ANTARA HEADER & BOTTOM NAV) */
     .kt-workspace-page{
       position:fixed;
       left:0;
       right:0;
-      top:0;
-      bottom:0;
-      z-index:2900;
+      top:32px;     /* di bawah topbar */
+      bottom:46px;  /* di atas bottom nav */
+      z-index:2700; /* bawah bottom nav, atas iframe */
       display:none;
       background:#050505;
       overflow:hidden;
       box-sizing:border-box;
-      padding-top:32px; /* supaya konten mulai sedikit di bawah topbar */
+      padding:0;
     }
     .kt-workspace-toolbar{
       position:absolute;
@@ -847,12 +826,12 @@
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Quantitative</button>
     </div>
 
-    <!-- MENU 9: TOOLS (Notes dihapus) -->
+    <!-- MENU 9: TOOLS -->
     <div class="kt-submenu-group" data-menu-sub="9">
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Journal</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Education</button>
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Calculator</button>
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Others</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Calculator</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="4">Others</button>
     </div>
   </nav>
 
@@ -1080,6 +1059,7 @@
         if(!url){ iframeLayer.innerHTML=""; return; }
         iframeLayer.innerHTML = '<iframe title="embedded" loading="lazy" src="'+url+'"></iframe>';
         updateIframeInteractivity();
+        currentViewUrl = url;
       }
 
       function updateIframeInteractivity(){
@@ -1090,7 +1070,6 @@
         const key = menuIndex+":"+subIndex;
         const url = IFRAME_MAP[key] || "";
         injectIframe(url);
-        currentViewUrl = url;
         currentViewTitleMain = breadcrumbMain.textContent || "";
         currentViewTitleSub  = breadcrumbSub.textContent || "";
         
@@ -1762,7 +1741,7 @@
         return mins >= 8*60 && mins < 17*60;
       }
 
-      /* Clocks */
+      /* Clocks – pakai UTC + offset jam */
       function pad2(n){return n<10?"0"+n:""+n}
       function updateSessions(){
         const now = new Date();
@@ -1770,7 +1749,7 @@
           now.getUTCFullYear(),
           now.getUTCMonth(),
           now.getUTCDate(),
-          now.getUTCHours(),
+          now.getUTCFullYear(),
           now.getUTCMinutes(),
           now.getUTCSeconds()
         );
@@ -1791,8 +1770,36 @@
           }
         });
       }
-      updateSessions();
-      setInterval(updateSessions,1000);
+      // Corrected UTC usage
+      function updateSessionsCorrect(){
+        const now = new Date();
+        const utcMs = Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          now.getUTCHours(),
+          now.getUTCMinutes(),
+          now.getUTCSeconds()
+        );
+        sessionTimes.forEach(el=>{
+          const offset = Number(el.getAttribute("data-tz"))||0;
+          const d = new Date(utcMs+offset*3600*1000);
+          el.textContent = pad2(d.getHours())+":"+pad2(d.getMinutes());
+
+          const parent = el.closest(".kt-session-item");
+          if(!parent) return;
+          const labelEl = parent.querySelector(".kt-session-label");
+          const label = (labelEl?.textContent || "").trim();
+          if(isMarketOpen(label, d)){
+            parent.classList.add("open");
+          } else {
+            parent.classList.remove("open");
+          }
+        });
+      }
+
+      updateSessionsCorrect();
+      setInterval(updateSessionsCorrect,1000);
 
       /* Init */
       setupEventListeners();
