@@ -52,44 +52,40 @@
       flex-direction:column;
     }
 
-    .panel-root{
+    /* ROW: 1/4 + 3/4 layout */
+    .panel-row{
       flex:1;
+      display:flex;
+      flex-direction:row;
+      gap:12px;
+      min-height:0;
       width:100%;
+    }
+
+    .panel-card{
       background:var(--bg-main);
       border-radius:4px;
       border:1px solid var(--border-soft);
       padding:16px;
       display:flex;
-      flex-direction:row;
-      gap:12px;
+      flex-direction:column;
       overflow:hidden;
       min-height:0;
     }
 
-    .left-panel,
-    .right-panel{
-      background:#000000;
-      border-radius:4px;
-      border:1px solid var(--border-soft);
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      overflow:hidden;
-    }
-
-    .left-panel{
-      flex:0 0 320px;
+    .snapshot-panel{
+      flex:1;         /* 1/4 */
       max-width:420px;
+      min-width:240px;
       overflow-y:auto;
     }
 
-    .right-panel{
-      flex:1;
-      position:relative;
+    .map-panel{
+      flex:3;         /* 3/4 */
       min-width:0;
     }
 
-    /* --- Typography & Components --- */
+    /* --- Market Snapshot content --- */
     .section-header{
       margin-bottom:10px;
     }
@@ -208,7 +204,7 @@
       line-height:1.4;
     }
 
-    /* --- Map & Overlay --- */
+    /* --- Map content --- */
     .map-header{
       margin-bottom:8px;
     }
@@ -226,11 +222,12 @@
       position:relative;
       width:100%;
       height:100%;
-      min-height:320px;
+      min-height:320px;   /* ukuran map dipertahankan */
       border-radius:4px;
       overflow:hidden;
       border:1px solid var(--border-soft);
       background:#000000;
+      margin-top:6px;
     }
 
     /* Overlay mini quote stack (dummy) */
@@ -248,7 +245,7 @@
       border:1px solid var(--border-soft);
       border-radius:4px;
       padding:6px 8px;
-      min-width:135px;
+      min-width:150px;
       box-shadow:0 0 10px rgba(0,0,0,0.6);
     }
     .map-stat-header{
@@ -324,25 +321,16 @@
       z-index:1;
     }
 
+    /* Mobile: stack vertical */
     @media (max-width:900px){
-      .panel-root{
+      .panel-row{
         flex-direction:column;
-        height:auto;
-        overflow:visible;
       }
-      .left-panel{
-        flex:0 0 auto;
+      .snapshot-panel{
         max-width:100%;
-        max-height:260px;
       }
-      .right-panel{
-        height:480px;
-      }
-      .map-stats{
-        top:8px;
-        right:8px;
-        transform:scale(0.95);
-        transform-origin:top right;
+      .map-panel{
+        min-height:360px;
       }
     }
 
@@ -350,7 +338,7 @@
       body{
         padding:12px;
       }
-      .panel-root{
+      .panel-card{
         padding:12px;
       }
     }
@@ -877,9 +865,9 @@
 </style></head>
 <body>
 
-  <div class="panel-root">
-    <!-- LEFT: Shipping Rates / Macro Proxy -->
-    <div class="left-panel">
+  <div class="panel-row">
+    <!-- PANEL 1: Market Snapshot (1/4) -->
+    <div class="panel-card snapshot-panel">
       <div class="section-header">
         <span class="section-label">Market Snapshot</span>
         <h2>Shipping Rates</h2>
@@ -977,15 +965,15 @@
       </div>
     </div>
 
-    <!-- RIGHT: VesselFinder Map -->
-    <div class="right-panel">
+    <!-- PANEL 2: Map (3/4) -->
+    <div class="panel-card map-panel">
       <div class="map-header">
         <div class="map-title">Shipping Traffic</div>
         <div class="map-sub">Live AIS Positioning Data</div>
       </div>
 
       <div class="map-wrapper" id="vf-map">
-        <!-- Overlay mini quote stack (dummy) -->
+        
         
 
         <!-- Top blocker -->
@@ -1010,7 +998,10 @@
           var fleet_timespan = "1440";
         </script>
         <script type="text/javascript" src="https://www.vesselfinder.com/aismap.js"></script><iframe name="vesselfinder" id="vesselfinder" width="100%" height="400" frameborder="0" src="https://www.vesselfinder.com/aismap?zoom=9&amp;lat=36.00&amp;lon=-5.40&amp;width=100%25&amp;height=400&amp;names=true&amp;track=false&amp;fleet=&amp;fleet_name=&amp;fleet_timespan=1440&amp;fleet_hide_old_positions=false&amp;clicktoact=false&amp;store_pos=true&amp;ra=http%3A%2F%2F127.0.0.1%3A5500%2Fwebsite-project%2Fsrc%2Findex.html">Browser does not support embedded objects.<br/>Visit directly <a href="https://www.vesselfinder.com" target="_blank">www.vesselfinder.com</a></iframe>
-
+        <iframe name="vesselfinder" id="vesselfinder" width="100%" height="400" frameborder="0" src="https://www.vesselfinder.com/aismap?zoom=9&amp;lat=36.00&amp;lon=-5.40&amp;width=100%25&amp;height=400&amp;names=true&amp;track=false&amp;fleet=&amp;fleet_name=&amp;fleet_timespan=1440&amp;fleet_hide_old_positions=false&amp;clicktoact=false&amp;store_pos=true">
+          Browser does not support embedded objects.<br/>
+          Visit directly <a href="https://www.vesselfinder.com" target="_blank">www.vesselfinder.com</a>
+        </iframe>
       </div>
     </div>
   </div>
