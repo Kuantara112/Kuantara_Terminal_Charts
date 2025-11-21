@@ -98,7 +98,7 @@
       position:fixed;
       left:0;
       right:0;
-      top:38px;
+      top:32px;         /* dulu 38px, sekarang pas di bawah topbar 32px */
       bottom:46px;
       z-index:1;
       background:#0b0b0b;
@@ -145,7 +145,7 @@
     }
 
     body.kt-pinned .kt-iframe-layer {
-      top: 108px;
+      top: 96px;      /* 32 (topbar) + 32 (main menu) + ~32 (breadcrumb) */
       bottom: 112px;
     }
 
@@ -160,11 +160,21 @@
 
     /* ===== TOPMOST BAR ===== */
     .kt-topbar{
-      position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:center;
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       background:#070707;
       border-bottom:1px solid var(--border-soft);
-      padding:8px 12px;font-size:10px;z-index:3000;
-      user-select: none;
+      padding:4px 10px;      /* dipersempit */
+      font-size:10px;
+      z-index:3000;
+      user-select:none;
+      height:32px;           /* tinggi fix supaya layout konsisten */
+      box-sizing:border-box;
     }
     .kt-topbar-left{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;flex-wrap:wrap}
     .kt-logo{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--amber);white-space:nowrap; cursor: pointer;}
@@ -200,12 +210,12 @@
 
     /* MAIN MENU (TOP) */
     .kt-mainmenu-strip{
-      top:38px;
+      top:32px;    /* dulu 38px, sekarang langsung nempel di bawah topbar 32px */
       left:0;
       right:0;
       display:flex;
       gap:4px;
-      padding:6px 8px;
+      padding:4px 8px;   /* dipersempit */
       background:#050505cf;
       border-bottom:1px solid var(--border-soft);
       overflow-x:auto;
@@ -236,10 +246,21 @@
     }
     .kt-mainmenu-btn.active span:first-child{color:#000}
 
-    /* CONTENT HEADER */
+    /* CONTENT HEADER / BREADCRUMB */
     .kt-content-header{
-      top:78px;left:0;right:0;border-bottom:1px solid var(--border-soft);padding:6px 10px;display:flex;
-      justify-content:space-between;align-items:center;font-size:11px;gap:8px;flex-wrap:wrap;background:#0a0a0acc;backdrop-filter:blur(4px)
+      top:64px;    /* 32 (topbar) + 32 (main menu) = 64, nempel di bawah main menu */
+      left:0;
+      right:0;
+      border-bottom:1px solid var(--border-soft);
+      padding:4px 10px;  /* dipersempit */
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:11px;
+      gap:8px;
+      flex-wrap:wrap;
+      background:#0a0a0acc;
+      backdrop-filter:blur(4px);
     }
     .kt-breadcrumb{display:flex;gap:6px;align-items:baseline;min-width:0}
     .kt-breadcrumb-main{color:var(--amber);font-weight:500;white-space:nowrap}
@@ -307,36 +328,30 @@
       box-shadow:0 0 0 1px rgba(255,191,0,0.35) inset;
     }
 
-    /* PROFILE PAGE – FULL PANEL */
+    /* PROFILE PAGE – FULL PAGE PANEL */
     .kt-profile-page{
       position:fixed;
       left:0;
       right:0;
-      top:38px;
-      bottom:46px;
-      padding:0;
-      z-index:2;
+      top:0;          /* full page dari bawah header, tapi kita kosongkan area atas sendiri */
+      bottom:0;
+      padding:32px 16px 16px;   /* top 32px biar tidak ketimpa topbar di visual */
+      z-index:2900;
       display:none;
       overflow:auto;
-      background:#050505;
+      background:radial-gradient(circle at top left,#1a1200,#050505 55%);
       box-sizing:border-box;
     }
     .kt-profile-inner{
-      width:100%;
-      height:100%;
-      max-width:none;
-      margin:0;
+      max-width:720px;
+      margin:0 auto;
       background:#0e0e0e;
-      border-radius:0;
-      border-top:1px solid var(--border-soft);
-      border-left:none;
-      border-right:none;
-      border-bottom:none;
+      border-radius:12px;
+      border:1px solid var(--border-soft);
       padding:16px 18px;
-      box-shadow:none;
+      box-shadow:0 10px 30px rgba(0,0,0,.7);
       font-size:11px;
       color:var(--text-muted);
-      box-sizing:border-box;
     }
     .kt-profile-header{
       display:flex;
@@ -428,13 +443,14 @@
       position:fixed;
       left:0;
       right:0;
-      top:38px;
-      bottom:46px;
-      z-index:2;
+      top:0;
+      bottom:0;
+      z-index:2900;
       display:none;
       background:#050505;
       overflow:hidden;
       box-sizing:border-box;
+      padding-top:32px; /* supaya konten mulai sedikit di bawah topbar */
     }
     .kt-workspace-toolbar{
       position:absolute;
@@ -693,7 +709,6 @@
 
       .kt-mainmenu-strip{
         justify-content:flex-start;
-        top:32px; /* jarak header – main menu diperpendek di mobile */
       }
       .kt-profile-inner{
         padding:12px 12px;
@@ -715,19 +730,19 @@
         <div class="kt-session-clock" id="kt-session-clock">
           <div class="kt-session-item" data-market="SYD">
             <span class="kt-session-label">SYD</span>
-            <span class="kt-session-time" data-tzid="Australia/Sydney"></span>
+            <span class="kt-session-time" data-tz="10"></span>
           </div>
           <div class="kt-session-item" data-market="TYO">
             <span class="kt-session-label">TYO</span>
-            <span class="kt-session-time" data-tzid="Asia/Tokyo"></span>
+            <span class="kt-session-time" data-tz="9"></span>
           </div>
           <div class="kt-session-item" data-market="LDN">
             <span class="kt-session-label">LDN</span>
-            <span class="kt-session-time" data-tzid="Europe/London"></span>
+            <span class="kt-session-time" data-tz="0"></span>
           </div>
           <div class="kt-session-item" data-market="NYC">
             <span class="kt-session-label">NYC</span>
-            <span class="kt-session-time" data-tzid="America/New_York"></span>
+            <span class="kt-session-time" data-tz="-5"></span>
           </div>
         </div>
       </div>
@@ -1740,42 +1755,36 @@
       });
 
       /* HELPER: apakah market buka antara 08.00–17.00 waktu lokal */
-      function isMarketOpen(label, hour, minute){
-        const mins = hour*60 + minute;
+      function isMarketOpen(label, localDate){
+        const h = localDate.getHours();
+        const m = localDate.getMinutes();
+        const mins = h*60 + m;
         return mins >= 8*60 && mins < 17*60;
       }
 
-      /* Clocks pakai timezone asli (akurasi DST) */
+      /* Clocks */
+      function pad2(n){return n<10?"0"+n:""+n}
       function updateSessions(){
         const now = new Date();
+        const utcMs = Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          now.getUTCHours(),
+          now.getUTCMinutes(),
+          now.getUTCSeconds()
+        );
+
         sessionTimes.forEach(el=>{
-          const tzid = el.getAttribute("data-tzid");
-          if(!tzid){
-            el.textContent="--:--";
-            return;
-          }
-
-          const parts = new Intl.DateTimeFormat('en-GB',{
-            hour:'2-digit',
-            minute:'2-digit',
-            hour12:false,
-            timeZone: tzid
-          }).formatToParts(now);
-
-          const hourStr = (parts.find(p=>p.type==="hour")?.value) || "00";
-          const minStr  = (parts.find(p=>p.type==="minute")?.value) || "00";
-
-          el.textContent = hourStr+":"+minStr;
-
-          const hour = parseInt(hourStr,10);
-          const minute = parseInt(minStr,10);
+          const offset = Number(el.getAttribute("data-tz"))||0;
+          const d = new Date(utcMs+offset*3600*1000);
+          el.textContent = pad2(d.getHours())+":"+pad2(d.getMinutes());
 
           const parent = el.closest(".kt-session-item");
           if(!parent) return;
           const labelEl = parent.querySelector(".kt-session-label");
           const label = (labelEl?.textContent || "").trim();
-
-          if(isMarketOpen(label,hour,minute)){
+          if(isMarketOpen(label, d)){
             parent.classList.add("open");
           } else {
             parent.classList.remove("open");
