@@ -205,7 +205,7 @@
       right:0;
       display:flex;
       gap:4px;
-      padding:4px 8px;
+      padding:6px 8px;
       background:#050505cf;
       border-bottom:1px solid var(--border-soft);
       overflow-x:auto;
@@ -236,9 +236,9 @@
     }
     .kt-mainmenu-btn.active span:first-child{color:#000}
 
-    /* CONTENT HEADER (BREADCRUMB NEMPEL KE MAIN MENU) */
+    /* CONTENT HEADER */
     .kt-content-header{
-      top:70px;left:0;right:0;border-bottom:1px solid var(--border-soft);padding:4px 10px;display:flex;
+      top:78px;left:0;right:0;border-bottom:1px solid var(--border-soft);padding:6px 10px;display:flex;
       justify-content:space-between;align-items:center;font-size:11px;gap:8px;flex-wrap:wrap;background:#0a0a0acc;backdrop-filter:blur(4px)
     }
     .kt-breadcrumb{display:flex;gap:6px;align-items:baseline;min-width:0}
@@ -307,30 +307,36 @@
       box-shadow:0 0 0 1px rgba(255,191,0,0.35) inset;
     }
 
-    /* PROFILE PAGE (FULL WORK AREA BETWEEN HEADER & BOTTOM NAV) */
+    /* PROFILE PAGE – FULL PANEL */
     .kt-profile-page{
       position:fixed;
       left:0;
       right:0;
-      top:32px;      /* tepat di bawah topbar */
-      bottom:46px;   /* tepat di atas bottom nav */
-      padding:16px;
-      z-index:2700;  /* di bawah bottom nav, di atas iframe */
+      top:38px;
+      bottom:46px;
+      padding:0;
+      z-index:2;
       display:none;
       overflow:auto;
-      background:radial-gradient(circle at top left,#1a1200,#050505 55%);
+      background:#050505;
       box-sizing:border-box;
     }
     .kt-profile-inner{
-      max-width:720px;
-      margin:0 auto;
+      width:100%;
+      height:100%;
+      max-width:none;
+      margin:0;
       background:#0e0e0e;
-      border-radius:12px;
-      border:1px solid var(--border-soft);
+      border-radius:0;
+      border-top:1px solid var(--border-soft);
+      border-left:none;
+      border-right:none;
+      border-bottom:none;
       padding:16px 18px;
-      box-shadow:0 10px 30px rgba(0,0,0,.7);
+      box-shadow:none;
       font-size:11px;
       color:var(--text-muted);
+      box-sizing:border-box;
     }
     .kt-profile-header{
       display:flex;
@@ -417,19 +423,18 @@
       line-height:1.4;
     }
 
-    /* WORKSPACE – FULL PAGE BOARD (ANTARA HEADER & BOTTOM NAV) */
+    /* WORKSPACE – FULL PAGE BOARD */
     .kt-workspace-page{
       position:fixed;
       left:0;
       right:0;
-      top:32px;     /* di bawah topbar */
-      bottom:46px;  /* di atas bottom nav */
-      z-index:2700; /* bawah bottom nav, atas iframe */
+      top:38px;
+      bottom:46px;
+      z-index:2;
       display:none;
       background:#050505;
       overflow:hidden;
       box-sizing:border-box;
-      padding:0;
     }
     .kt-workspace-toolbar{
       position:absolute;
@@ -688,6 +693,7 @@
 
       .kt-mainmenu-strip{
         justify-content:flex-start;
+        top:32px; /* jarak header – main menu diperpendek di mobile */
       }
       .kt-profile-inner{
         padding:12px 12px;
@@ -709,19 +715,19 @@
         <div class="kt-session-clock" id="kt-session-clock">
           <div class="kt-session-item" data-market="SYD">
             <span class="kt-session-label">SYD</span>
-            <span class="kt-session-time" data-tz="10"></span>
+            <span class="kt-session-time" data-tzid="Australia/Sydney"></span>
           </div>
           <div class="kt-session-item" data-market="TYO">
             <span class="kt-session-label">TYO</span>
-            <span class="kt-session-time" data-tz="9"></span>
+            <span class="kt-session-time" data-tzid="Asia/Tokyo"></span>
           </div>
           <div class="kt-session-item" data-market="LDN">
             <span class="kt-session-label">LDN</span>
-            <span class="kt-session-time" data-tz="0"></span>
+            <span class="kt-session-time" data-tzid="Europe/London"></span>
           </div>
           <div class="kt-session-item" data-market="NYC">
             <span class="kt-session-label">NYC</span>
-            <span class="kt-session-time" data-tz="-5"></span>
+            <span class="kt-session-time" data-tzid="America/New_York"></span>
           </div>
         </div>
       </div>
@@ -826,12 +832,12 @@
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Quantitative</button>
     </div>
 
-    <!-- MENU 9: TOOLS -->
+    <!-- MENU 9: TOOLS (Notes dihapus) -->
     <div class="kt-submenu-group" data-menu-sub="9">
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Journal</button>
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Education</button>
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Calculator</button>
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="4">Others</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Calculator</button>
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Others</button>
     </div>
   </nav>
 
@@ -1059,7 +1065,6 @@
         if(!url){ iframeLayer.innerHTML=""; return; }
         iframeLayer.innerHTML = '<iframe title="embedded" loading="lazy" src="'+url+'"></iframe>';
         updateIframeInteractivity();
-        currentViewUrl = url;
       }
 
       function updateIframeInteractivity(){
@@ -1070,6 +1075,7 @@
         const key = menuIndex+":"+subIndex;
         const url = IFRAME_MAP[key] || "";
         injectIframe(url);
+        currentViewUrl = url;
         currentViewTitleMain = breadcrumbMain.textContent || "";
         currentViewTitleSub  = breadcrumbSub.textContent || "";
         
@@ -1734,72 +1740,50 @@
       });
 
       /* HELPER: apakah market buka antara 08.00–17.00 waktu lokal */
-      function isMarketOpen(label, localDate){
-        const h = localDate.getHours();
-        const m = localDate.getMinutes();
-        const mins = h*60 + m;
+      function isMarketOpen(label, hour, minute){
+        const mins = hour*60 + minute;
         return mins >= 8*60 && mins < 17*60;
       }
 
-      /* Clocks – pakai UTC + offset jam */
-      function pad2(n){return n<10?"0"+n:""+n}
+      /* Clocks pakai timezone asli (akurasi DST) */
       function updateSessions(){
         const now = new Date();
-        const utcMs = Date.UTC(
-          now.getUTCFullYear(),
-          now.getUTCMonth(),
-          now.getUTCDate(),
-          now.getUTCFullYear(),
-          now.getUTCMinutes(),
-          now.getUTCSeconds()
-        );
-
         sessionTimes.forEach(el=>{
-          const offset = Number(el.getAttribute("data-tz"))||0;
-          const d = new Date(utcMs+offset*3600*1000);
-          el.textContent = pad2(d.getHours())+":"+pad2(d.getMinutes());
+          const tzid = el.getAttribute("data-tzid");
+          if(!tzid){
+            el.textContent="--:--";
+            return;
+          }
+
+          const parts = new Intl.DateTimeFormat('en-GB',{
+            hour:'2-digit',
+            minute:'2-digit',
+            hour12:false,
+            timeZone: tzid
+          }).formatToParts(now);
+
+          const hourStr = (parts.find(p=>p.type==="hour")?.value) || "00";
+          const minStr  = (parts.find(p=>p.type==="minute")?.value) || "00";
+
+          el.textContent = hourStr+":"+minStr;
+
+          const hour = parseInt(hourStr,10);
+          const minute = parseInt(minStr,10);
 
           const parent = el.closest(".kt-session-item");
           if(!parent) return;
           const labelEl = parent.querySelector(".kt-session-label");
           const label = (labelEl?.textContent || "").trim();
-          if(isMarketOpen(label, d)){
+
+          if(isMarketOpen(label,hour,minute)){
             parent.classList.add("open");
           } else {
             parent.classList.remove("open");
           }
         });
       }
-      // Corrected UTC usage
-      function updateSessionsCorrect(){
-        const now = new Date();
-        const utcMs = Date.UTC(
-          now.getUTCFullYear(),
-          now.getUTCMonth(),
-          now.getUTCDate(),
-          now.getUTCHours(),
-          now.getUTCMinutes(),
-          now.getUTCSeconds()
-        );
-        sessionTimes.forEach(el=>{
-          const offset = Number(el.getAttribute("data-tz"))||0;
-          const d = new Date(utcMs+offset*3600*1000);
-          el.textContent = pad2(d.getHours())+":"+pad2(d.getMinutes());
-
-          const parent = el.closest(".kt-session-item");
-          if(!parent) return;
-          const labelEl = parent.querySelector(".kt-session-label");
-          const label = (labelEl?.textContent || "").trim();
-          if(isMarketOpen(label, d)){
-            parent.classList.add("open");
-          } else {
-            parent.classList.remove("open");
-          }
-        });
-      }
-
-      updateSessionsCorrect();
-      setInterval(updateSessionsCorrect,1000);
+      updateSessions();
+      setInterval(updateSessions,1000);
 
       /* Init */
       setupEventListeners();
