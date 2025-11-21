@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Kuantara – Economic Calendar (Dark Mode)</title>
+  <title>Kuantara – Economic Calendar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+  <!-- Fira Code biar konsisten sama style terminal -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
     :root {
@@ -17,32 +18,32 @@
       --text-muted:#9b9b9b;
     }
 
-    *{
+    * {
       box-sizing:border-box;
       margin:0;
       padding:0;
       font-family:"Fira Code",monospace;
     }
 
-    html, body{
+    html, body {
       width:100%;
       height:100%;
-      background:var(--bg-root);
+      background-color:var(--bg-root);
       color:var(--text-main);
     }
 
-    body{
+    body {
       display:flex;
-      padding:8px;
       align-items:stretch;
       justify-content:center;
+      padding:8px;
     }
 
-    .kt-shell{
+    .kt-calendar-shell {
       width:100%;
-      max-width:1300px;
+      max-width:1200px;
       height:100vh;
-      max-height:900px;
+      max-height:800px;
       background:var(--bg-panel);
       border:1px solid var(--border-soft);
       border-radius:12px;
@@ -50,86 +51,110 @@
       display:flex;
       flex-direction:column;
       gap:6px;
+      box-shadow:0 0 20px rgba(0,0,0,0.8);
     }
 
-    .kt-header{
+    .kt-calendar-header {
       display:flex;
-      justify-content:space-between;
       align-items:center;
+      justify-content:space-between;
       font-size:11px;
       color:var(--text-muted);
     }
 
-    .kt-left{
+    .kt-calendar-header-left {
       display:flex;
       align-items:center;
       gap:10px;
     }
 
-    .kt-dot{
+    .kt-dot-live {
       width:7px;
       height:7px;
-      border-radius:50%;
+      border-radius:999px;
       background:var(--amber);
       box-shadow:0 0 10px var(--amber);
     }
 
-    .kt-iframe-wrap{
+    .kt-calendar-header-right {
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--text-muted);
+    }
+
+    .kt-calendar-iframe-wrap {
       flex:1;
       border-radius:8px;
       overflow:hidden;
       border:1px solid var(--border-soft);
-      background:#000;
+      background:#000; /* supaya pinggiran nggak putih */
     }
 
-    .kt-iframe-wrap iframe{
+    .kt-calendar-iframe-wrap iframe {
       width:100%;
       height:100%;
       border:0;
-      filter: invert(1) hue-rotate(180deg) brightness(1.05);
+      /* Kalau mau coba “pseudo dark mode”, aktifkan ini:
+      filter:invert(1) hue-rotate(180deg);
+      */
     }
 
-    .kt-footer{
-      text-align:center;
+    .kt-calendar-footer {
+      margin-top:4px;
+      display:flex;
+      justify-content:center;
       font-size:10px;
       color:var(--text-muted);
+      text-align:center;
     }
 
-    .kt-footer a{
+    .kt-calendar-footer a {
       color:var(--amber);
       text-decoration:none;
     }
 
-    .kt-footer a:hover{
+    .kt-calendar-footer a:hover {
       text-decoration:underline;
     }
 
-    @media(max-width:768px){
-      body{padding:4px;}
-      .kt-shell{
+    @media (max-width:768px) {
+      body {
+        padding:4px;
+      }
+      .kt-calendar-shell {
+        max-height:none;
         height:calc(100vh - 8px);
         border-radius:8px;
       }
     }
   </style>
-
 </head>
 <body>
-  <div class="kt-shell">
-    <div class="kt-header">
-      <div class="kt-left">
-        <div class="kt-dot"></div>
-        <span>FX & Macro Calendar · High & Medium Impact</span>
+  <div class="kt-calendar-shell">
+    <div class="kt-calendar-header">
+      <div class="kt-calendar-header-left">
+        <span class="kt-dot-live"></span>
+        <span>FX & Macro – High & Medium Impact Only</span>
       </div>
-      <div style="font-size:10px;">Myfxbook Calendar</div>
+      <div class="kt-calendar-header-right">
+        Economic Calendar • Myfxbook
+      </div>
     </div>
 
-    <div class="kt-iframe-wrap">
+    <div class="kt-calendar-iframe-wrap">
+      <!-- myfxbook.com Economic Calendar Widget - Start -->
       <iframe src="https://widget.myfxbook.com/widget/calendar.html?lang=en&impacts=2,3&symbols=AUD,CAD,CHF,CNY,EUR,GBP,JPY,NZD,USD"></iframe>
+      <!-- myfxbook.com Economic Calendar Widget - End -->
     </div>
 
-    <div class="kt-footer">
-      <a href="https://www.myfxbook.com/forex-economic-calendar" target="_blank">Economic Calendar</a> • Embedded by Kuantara Terminal
+    <div class="kt-calendar-footer">
+      <span>
+        <a href="https://www.myfxbook.com/forex-economic-calendar?utm_source=widget13&utm_medium=link&utm_campaign=copyright"
+           title="Economic Calendar" target="_blank" rel="noopener">
+          Economic Calendar
+        </a> • Embedded via Kuantara Terminal
+      </span>
     </div>
   </div>
 </body>
