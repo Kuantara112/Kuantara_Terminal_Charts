@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Kuantara – Reports</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Kuantara – Doc Editor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Fira Code -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap"/>
@@ -20,556 +20,469 @@
       --fs-title:14px;
       --fs-subtitle:12px;
       --fs-body:11px;
-      --fs-small:9.5px;
+      --fs-small:10px;
+
+      --card-radius:4px;
+      --card-padding-v:12px;
+      --card-padding-h:16px;
     }
 
     *{
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family:"Fira Code",monospace !important;
-      /* Firefox scrollbar */
-      scrollbar-width:thin;
-      scrollbar-color:#000000 #000000;
+      outline:none;
+      font-family:"Fira Code",monospace;
     }
 
-    /* WebKit scrollbar (Chrome/Edge/Safari) */
-    *::-webkit-scrollbar{
-      width:6px;
-      height:6px;
-    }
-    *::-webkit-scrollbar-track{
-      background:#000000;
-    }
-    *::-webkit-scrollbar-thumb{
-      background:#000000;
-      border-radius:3px;
-    }
-
-    html, body {
+    html,body{
       width:100%;
       height:100%;
       background-color:var(--bg-root);
       color:var(--text-main);
     }
 
-    body {
+    body{
       display:flex;
-    }
-
-    .page-root {
-      flex:1;
+      flex-direction:column;
       padding:16px;
+      gap:12px;
+      overflow:hidden; /* scroll di workspace, bukan body */
     }
 
-    .panel {
-      width:100%;
-      height:100%;
+    /* ============ GENERIC ============ */
+    .card{
       background:var(--bg-main);
       border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:12px 12px 10px;
+      border-radius:var(--card-radius);
+      padding:var(--card-padding-v) var(--card-padding-h);
+    }
+
+    .title-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:8px;
+    }
+
+    .title-row h1{
+      font-size:var(--fs-title);
+      font-weight:600;
+      letter-spacing:0.5px;
+      color:var(--text-main);
+    }
+
+    .title-tag{
+      font-size:var(--fs-small);
+      color:var(--accent);
+      opacity:0.9;
+    }
+
+    /* ============ TOOLBAR / HEADER ============ */
+    .app-header{
       display:flex;
       flex-direction:column;
       gap:8px;
     }
 
-    /* Toolbar */
-    .toolbar {
+    .toolbar-container{
       display:flex;
       flex-wrap:wrap;
-      gap:6px;
-      padding:6px 8px;
-      background:#000000;
-      border-radius:4px;
-      border:1px solid var(--border-soft);
+      gap:8px;
+      align-items:center;
+      font-size:var(--fs-small);
     }
 
-    .toolbar-group {
+    .toolbar-group{
       display:flex;
-      flex-wrap:wrap;
       gap:4px;
-      border-right:1px solid #222222;
-      padding-right:6px;
-      margin-right:4px;
+      padding-right:10px;
+      border-right:1px solid var(--border-soft);
+      align-items:center;
     }
 
-    .toolbar-group:last-child {
+    .toolbar-group:last-child{
       border-right:none;
-      margin-right:0;
       padding-right:0;
     }
 
-    .tb-btn {
-      cursor:pointer;
-      font-size:10px;
-      padding:4px 6px;
+    .tb-label{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-right:4px;
+    }
+
+    .tb-btn{
+      background:#141414;
+      border:1px solid transparent;
       border-radius:3px;
-      border:1px solid #262626;
-      background:#111111;
+      cursor:pointer;
+      padding:4px 6px;
+      font-size:var(--fs-small);
       color:var(--text-main);
-      display:inline-flex;
+      min-width:26px;
+      display:flex;
       align-items:center;
       justify-content:center;
-      gap:2px;
-      min-width:26px;
-      user-select:none;
-      transition:background 0.12s ease,border-color 0.12s ease,transform 0.05s ease;
+      transition:all 0.12s ease-out;
     }
 
-    .tb-btn span {
-      line-height:1;
-    }
-
-    .tb-btn:hover {
+    .tb-btn:hover{
       background:#181818;
-      border-color:var(--accent);
+      border-color:var(--border-soft);
     }
 
-    .tb-btn:active {
-      transform:scale(0.97);
-      background:#151515;
-    }
-
-    .tb-btn.toggled {
-      background:#222222;
+    .tb-btn:active,
+    .tb-btn.active{
+      background:#1f1f1f;
       border-color:var(--accent);
       color:var(--accent);
     }
 
-    .tb-btn.primary {
-      border-color:var(--accent);
-      color:var(--accent);
-    }
-
-    .tb-label {
-      font-size:9.5px;
-      color:var(--text-muted);
-      margin-right:2px;
-      align-self:center;
-    }
-
-    .tb-select {
-      background:#111111;
-      border:1px solid #262626;
-      color:var(--text-main);
-      font-size:10px;
-      padding:3px 18px 3px 6px;
-      border-radius:3px;
-      appearance:none;
-      -moz-appearance:none;
-      -webkit-appearance:none;
-      position:relative;
-      min-width:80px;
-    }
-
-    .tb-select-wrap {
-      position:relative;
-      display:inline-flex;
-      align-items:center;
-    }
-
-    .tb-select-wrap::after{
-      content:"▾";
-      position:absolute;
-      right:6px;
-      font-size:9px;
-      color:var(--text-muted);
-      pointer-events:none;
-    }
-
-    .status-bar {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      font-size:9.5px;
-      color:var(--text-muted);
-      padding:0 2px;
-      gap:6px;
-    }
-
-    .status-left,
-    .status-right {
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .status-pill {
-      padding:2px 6px;
-      border-radius:999px;
-      border:1px solid #262626;
-      background:#000000;
-      font-size:9.5px;
-      display:flex;
-      align-items:center;
-      gap:4px;
-    }
-
-    .accent-dot {
-      width:7px;
-      height:7px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 4px rgba(255,191,0,0.8);
-    }
-
-    /* Editor region */
-    .editor-wrap {
-      flex:1;
-      min-height:0;
-      border-radius:4px;
-      border:1px solid var(--border-soft);
-      background:#000000;
-      padding:10px;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-    }
-
-    .editor-scroll {
-      flex:1;
-      min-height:0;
-      overflow:auto;
-      padding:4px 2px;
-    }
-
-    .editor-page {
-      margin:0 auto 16px;
-      max-width:860px;
-      min-height:80vh;
-      padding:18px 18px 32px;
-      border-radius:4px;
-      background:#111111;
-      border:1px solid #262626;
-      box-shadow:0 0 0 1px rgba(0,0,0,0.6);
-      position:relative;
-      font-size:11px;
-      line-height:1.5;
-      color:var(--text-main);
-      outline:none;
-      /* Watermark repeat via SVG background */
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='180' viewBox='0 0 260 180'%3E%3Ctext x='0' y='90' transform='rotate(-30 0 90)' fill='%232b2b2b' font-size='16' font-family='Fira Code, monospace' opacity='0.28'%3EGenerated by Kuantara Terminal%3C/text%3E%3C/svg%3E");
-      background-repeat:repeat;
-      background-size:260px 180px;
-    }
-
-    .editor-page:focus {
-      border-color:var(--accent);
-      box-shadow:0 0 0 1px rgba(255,191,0,0.3);
-    }
-
-    .editor-page h1,
-    .editor-page h2,
-    .editor-page h3,
-    .editor-page h4,
-    .editor-page h5 {
-      margin:6px 0;
+    .tb-btn span{
       font-weight:600;
     }
 
-    .editor-page h1 { font-size:14px; }
-    .editor-page h2 { font-size:13px; }
-    .editor-page h3 { font-size:12px; }
-
-    .editor-page p {
-      margin:4px 0 6px;
-      font-size:11px;
+    .tb-select{
+      border:1px solid var(--border-soft);
+      background:#141414;
+      padding:4px 6px;
+      border-radius:3px;
+      font-size:var(--fs-small);
+      color:var(--text-main);
+      cursor:pointer;
+      min-width:120px;
     }
 
-    .editor-page ul,
-    .editor-page ol {
-      margin:4px 0 6px 16px;
+    .tb-select:hover{
+      border-color:var(--accent);
+    }
+
+    /* ============ WORKSPACE / EDITOR ============ */
+    .workspace{
+      flex:1 1 auto;
+      overflow-y:auto;
+      display:flex;
+      justify-content:center;
+      padding:0;
+      scrollbar-width:thin;
+      scrollbar-color:#333333 #000000;
+    }
+
+    .workspace::-webkit-scrollbar{
+      width:6px;
+    }
+    .workspace::-webkit-scrollbar-thumb{
+      background:#333333;
+      border-radius:4px;
+    }
+
+    .paper-wrapper{
+      width:100%;
+      max-width:860px;
+    }
+
+    .paper{
+      background:#0b0b0b;
+      border:1px solid var(--border-soft);
+      border-radius:var(--card-radius);
+      padding:24px 28px;
+      min-height:72vh;
+      font-size:var(--fs-body);
+      line-height:1.6;
+      color:var(--text-main);
+      white-space:pre-wrap;
+    }
+
+    .paper h1,
+    .paper h2,
+    .paper h3{
+      margin-top:10px;
+      margin-bottom:6px;
+      font-weight:600;
+      color:var(--accent);
+    }
+    .paper h1{ font-size:var(--fs-title); }
+    .paper h2{ font-size:var(--fs-subtitle); }
+    .paper h3{ font-size:var(--fs-body); }
+
+    .paper p{
+      margin-bottom:8px;
+      color:var(--text-main);
+    }
+
+    .paper ul,
+    .paper ol{
+      margin-bottom:8px;
+      padding-left:18px;
+    }
+
+    .paper blockquote{
+      border-left:2px solid var(--accent);
       padding-left:10px;
-      font-size:11px;
-    }
-
-    .editor-page li {
-      margin:2px 0;
-    }
-
-    .editor-page hr {
-      border:0;
-      height:1px;
-      background:#222222;
       margin:8px 0;
-    }
-
-    .watermark-tag {
-      position:fixed;
-      right:10px;
-      bottom:8px;
-      font-size:9px;
-      color:#444444;
-      pointer-events:none;
-      user-select:none;
-      z-index:20;
-      text-align:right;
-    }
-
-    .watermark-tag span {
-      opacity:0.75;
-    }
-
-    /* Small helper text */
-    .hint {
-      font-size:9px;
       color:var(--text-muted);
+      font-style:italic;
     }
 
-    @media (max-width:768px) {
-      .page-root {
+    .paper hr{
+      border:0;
+      border-top:1px solid var(--border-soft);
+      margin:12px 0;
+    }
+
+    /* ============ STATUS BAR ============ */
+    .status-bar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      padding:6px 10px;
+      background:#080808;
+      border:1px solid var(--border-soft);
+      border-radius:var(--card-radius);
+    }
+
+    .status-left,
+    .status-right{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .status-pill{
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      font-size:var(--fs-small);
+    }
+
+    .status-dot{
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:#22c55e;
+      margin-right:4px;
+      display:inline-block;
+    }
+
+    /* ============ MOBILE ============ */
+    @media (max-width:768px){
+      body{
         padding:10px;
+        gap:8px;
       }
-      .panel {
-        padding:10px 8px 8px;
+
+      .toolbar-container{
+        overflow-x:auto;
+        padding-bottom:2px;
       }
-      .toolbar {
-        gap:4px;
-        padding:5px 6px;
+
+      .toolbar-group{
+        flex-shrink:0;
       }
-      .tb-btn {
-        padding:3px 5px;
-        font-size:9.5px;
+
+      .paper{
+        padding:16px 14px;
+        min-height:65vh;
+        font-size:10px;
       }
-      .editor-page {
-        padding:12px 10px 30px;
-        min-height:70vh;
-        margin-bottom:12px;
-      }
-      .status-bar {
-        flex-direction:column;
-        align-items:flex-start;
-      }
-      .status-right {
-        justify-content:flex-start;
+
+      .title-row h1{
+        font-size:13px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="page-root">
-    <div class="panel">
-      <!-- Toolbar -->
-      <div class="toolbar" id="toolbar">
-        <div class="toolbar-group">
-          <span class="tb-label">Font</span>
-          <div class="tb-select-wrap">
-            <select id="block-format" class="tb-select">
-              <option value="p">Body</option>
-              <option value="h1">Heading 1</option>
-              <option value="h2">Heading 2</option>
-              <option value="h3">Heading 3</option>
-            </select>
-          </div>
-        </div>
 
-        <div class="toolbar-group">
-          <button class="tb-btn" data-cmd="bold"><span><b>B</b></span></button>
-          <button class="tb-btn" data-cmd="italic"><span><i>I</i></span></button>
-          <button class="tb-btn" data-cmd="underline"><span><u>U</u></span></button>
-          <button class="tb-btn" data-cmd="removeFormat"><span>CLR</span></button>
-        </div>
-
-        <div class="toolbar-group">
-          <button class="tb-btn" data-cmd="insertUnorderedList"><span>• List</span></button>
-          <button class="tb-btn" data-cmd="insertOrderedList"><span>1. List</span></button>
-          <button class="tb-btn" data-cmd="insertHorizontalRule"><span>HR</span></button>
-        </div>
-
-        <div class="toolbar-group">
-          <button class="tb-btn" data-cmd="justifyLeft"><span>⟸</span></button>
-          <button class="tb-btn" data-cmd="justifyCenter"><span>≡</span></button>
-          <button class="tb-btn" data-cmd="justifyRight"><span>⟹</span></button>
-        </div>
-
-        <div class="toolbar-group">
-          <button class="tb-btn" data-cmd="undo"><span>Undo</span></button>
-          <button class="tb-btn" data-cmd="redo"><span>Redo</span></button>
-        </div>
-
-        <div class="toolbar-group">
-          <button class="tb-btn primary" id="btn-save"><span>Save</span></button>
-          <button class="tb-btn" id="btn-new"><span>New</span></button>
-          <button class="tb-btn" id="btn-load"><span>Load</span></button>
-        </div>
+  <!-- HEADER + TOOLBAR (CARD) -->
+  <div class="card app-header">
+    <div class="title-row">
+      <h1>Doc Editor – Kuantara Terminal</h1>
+      <span class="title-tag">DOC MODE</span>
+    </div>
+    <div class="toolbar-container" id="toolbar">
+      <div class="toolbar-group">
+        <span class="tb-label">Style</span>
+        <select id="font-style" class="tb-select" title="Style">
+          <option value="p">Normal</option>
+          <option value="h1">Heading 1</option>
+          <option value="h2">Heading 2</option>
+          <option value="h3">Heading 3</option>
+          <option value="blockquote">Quote</option>
+        </select>
       </div>
 
-      <!-- Status bar -->
-      <div class="status-bar">
-        <div class="status-left">
-          <div class="status-pill">
-            <div class="accent-dot"></div>
-            <span id="status-text">Idle · local draft</span>
-          </div>
-          <span class="hint">CTRL+S untuk Save · CTRL+Z/CTRL+Y untuk Undo/Redo</span>
-        </div>
-        <div class="status-right">
-          <div class="status-pill">
-            <span id="char-count">0</span><span>chars</span>
-          </div>
-          <div class="status-pill">
-            <span id="word-count">0</span><span>words</span>
-          </div>
-        </div>
+      <div class="toolbar-group">
+        <span class="tb-label">Font</span>
+        <select id="font-family" class="tb-select" title="Font">
+          <option value="'Fira Code', monospace">Fira Code</option>
+          <option value="'Courier New', monospace">Courier</option>
+          <option value="'Consolas', monospace">Consolas</option>
+        </select>
       </div>
 
-      <!-- Editor -->
-      <div class="editor-wrap">
-        <div class="editor-scroll">
-          <div id="editor" class="editor-page" contenteditable="true">
-            <p>Mulai menulis laporan market kamu di sini...</p>
-          </div>
-        </div>
+      <div class="toolbar-group">
+        <button class="tb-btn" data-cmd="bold" title="Bold (Ctrl+B)"><span>B</span></button>
+        <button class="tb-btn" data-cmd="italic" title="Italic (Ctrl+I)"><span style="font-style:italic">I</span></button>
+        <button class="tb-btn" data-cmd="underline" title="Underline (Ctrl+U)"><span style="text-decoration:underline">U</span></button>
+        <button class="tb-btn" data-cmd="strikeThrough" title="Strikethrough"><span style="text-decoration:line-through">S</span></button>
+      </div>
+
+      <div class="toolbar-group">
+        <button class="tb-btn" data-cmd="justifyLeft" title="Align Left">⟸</button>
+        <button class="tb-btn" data-cmd="justifyCenter" title="Center">≡</button>
+        <button class="tb-btn" data-cmd="justifyRight" title="Align Right">⟹</button>
+        <button class="tb-btn" data-cmd="insertUnorderedList" title="Bullet List">•</button>
+        <button class="tb-btn" data-cmd="insertOrderedList" title="Number List">1.</button>
+      </div>
+
+      <div class="toolbar-group" style="border-right:none;">
+        <button class="tb-btn" data-cmd="undo" title="Undo">↺</button>
+        <button class="tb-btn" data-cmd="redo" title="Redo">↻</button>
+        <button class="tb-btn" id="btn-clean" title="New Document" style="color:#ff4b4b;">🗑</button>
       </div>
     </div>
   </div>
 
-  <!-- Global watermark overlay (visual cue per "page") -->
-  <div class="watermark-tag">
-    <span>Generated by Kuantara Terminal</span>
+  <!-- WORKSPACE -->
+  <div class="workspace" id="workspace-area">
+    <div class="paper-wrapper">
+      <div id="editor" class="paper" contenteditable="true" spellcheck="false">
+<h1>Laporan Market – Kuantara</h1>
+<p>Mulai tulis laporanmu di sini. Gunakan heading untuk setiap section (misalnya: Executive Summary, Global Macro, Cross-Asset, dll).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div class="status-left">
+      <span class="status-pill" id="page-count">Page 1</span>
+      <span id="word-count">0 words</span>
+    </div>
+    <div class="status-right">
+      <span>
+        <span class="status-dot"></span>
+        <span id="save-status">Ready</span>
+      </span>
+    </div>
   </div>
 
   <script>
     (function(){
-      const editor      = document.getElementById("editor");
-      const toolbar     = document.getElementById("toolbar");
-      const blockFormat = document.getElementById("block-format");
-      const statusText  = document.getElementById("status-text");
-      const charCountEl = document.getElementById("char-count");
+      const editor = document.getElementById("editor");
       const wordCountEl = document.getElementById("word-count");
-      const btnSave     = document.getElementById("btn-save");
-      const btnLoad     = document.getElementById("btn-load");
-      const btnNew      = document.getElementById("btn-new");
+      const saveStatusEl = document.getElementById("save-status");
+      const fontStyleSel = document.getElementById("font-style");
+      const fontFamilySel = document.getElementById("font-family");
 
-      const STORAGE_KEY = "kuantara_reports_doc_v1";
+      const STORAGE_KEY = "kuantara_doc_editor_dark_v1";
       let saveTimer = null;
 
-      function execCommand(cmd, value = null){
+      function execCmd(command, value = null) {
+        document.execCommand(command, false, value);
         editor.focus();
-        document.execCommand(cmd, false, value);
-        refreshCounts();
-        scheduleAutosave();
+        updateStats();
+        triggerAutosave();
+        updateToolbarState();
       }
 
-      // Toolbar button handling
-      toolbar.addEventListener("click", function(e){
-        const btn = e.target.closest(".tb-btn");
-        if(!btn) return;
-        const cmd = btn.getAttribute("data-cmd");
-        if(!cmd) return;
-        execCommand(cmd);
-      });
-
-      // Block format
-      blockFormat.addEventListener("change", function(){
-        const val = blockFormat.value;
-        editor.focus();
-        if(val === "p"){
-          document.execCommand("formatBlock", false, "p");
-        } else {
-          document.execCommand("formatBlock", false, val);
-        }
-        refreshCounts();
-        scheduleAutosave();
-      });
-
-      // Word/char counter
-      function refreshCounts(){
-        const text = editor.innerText || "";
-        const chars = text.replace(/\s+/g," ").trim().length;
-        const words = text.trim().length ? text.trim().split(/\s+/).length : 0;
-        charCountEl.textContent = chars;
-        wordCountEl.textContent = words;
-      }
-
-      // Autosave
-      function scheduleAutosave(){
-        if(saveTimer) clearTimeout(saveTimer);
-        saveTimer = setTimeout(() => {
-          saveToLocal(true);
-        }, 1000);
-      }
-
-      function saveToLocal(isAuto = false){
-        try {
-          const data = {
-            html: editor.innerHTML || "",
-            ts:   Date.now()
-          };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-          statusText.textContent = isAuto ? "Autosaved locally" : "Saved to local storage";
-        } catch(err){
-          console.error("Save error:", err);
-          statusText.textContent = "Error saving (localStorage)";
-        }
-      }
-
-      function loadFromLocal(){
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if(!raw){
-          statusText.textContent = "No saved draft";
-          return;
-        }
-        try{
-          const data = JSON.parse(raw);
-          if(data && typeof data.html === "string"){
-            editor.innerHTML = data.html;
-            statusText.textContent = "Loaded from local storage";
-            refreshCounts();
-          }
-        }catch(err){
-          console.error("Load error:", err);
-          statusText.textContent = "Error loading draft";
-        }
-      }
-
-      function newDocument(){
-        if((editor.innerText || "").trim().length > 0){
-          const confirmReset = confirm("Buat dokumen baru? Perubahan yang belum disimpan akan hilang.");
-          if(!confirmReset) return;
-        }
-        editor.innerHTML = "<p></p>";
-        refreshCounts();
-        statusText.textContent = "New blank document";
-      }
-
-      // Editor input
-      editor.addEventListener("input", function(){
-        refreshCounts();
-        scheduleAutosave();
-      });
-
-      // Save buttons
-      btnSave.addEventListener("click", function(){
-        saveToLocal(false);
-      });
-
-      btnLoad.addEventListener("click", function(){
-        loadFromLocal();
-      });
-
-      btnNew.addEventListener("click", function(){
-        newDocument();
-      });
-
-      // Keyboard shortcuts (Ctrl+S / Cmd+S, Ctrl+Z/Y)
-      document.addEventListener("keydown", function(e){
-        const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
-        const modKey = isMac ? e.metaKey : e.ctrlKey;
-
-        if(modKey && e.key.toLowerCase() === "s"){
+      // Toolbar buttons
+      document.querySelectorAll(".tb-btn[data-cmd]").forEach(btn => {
+        btn.addEventListener("click", (e) => {
           e.preventDefault();
-          saveToLocal(false);
+          execCmd(btn.dataset.cmd);
+        });
+      });
+
+      // Dropdowns
+      fontStyleSel.addEventListener("change", () => execCmd("formatBlock", fontStyleSel.value));
+      fontFamilySel.addEventListener("change", () => execCmd("fontName", fontFamilySel.value));
+
+      // New document
+      document.getElementById("btn-clean").addEventListener("click", () => {
+        if(confirm("Hapus semua isi dan mulai dokumen baru?")) {
+          editor.innerHTML = "<h1>Laporan Market – Kuantara</h1><p>Mulai tulis laporanmu di sini...</p>";
+          updateStats();
+          triggerAutosave();
         }
       });
 
-      // Initial load from localStorage if any
-      window.addEventListener("load", function(){
-        loadFromLocal();
-        refreshCounts();
+      // Editor events
+      editor.addEventListener("input", () => {
+        updateStats();
+        triggerAutosave();
       });
+
+      editor.addEventListener("keyup", () => {
+        updateToolbarState();
+      });
+
+      editor.addEventListener("click", () => {
+        updateToolbarState();
+      });
+
+      // Paste as plain text
+      editor.addEventListener("paste", (e) => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData("text");
+        document.execCommand("insertText", false, text);
+      });
+
+      function updateStats() {
+        const text = editor.innerText || "";
+        const words = text.trim().length ? text.trim().split(/\s+/).length : 0;
+        wordCountEl.textContent = words + " words";
+      }
+
+      function updateToolbarState() {
+        const cmds = ["bold", "italic", "underline", "justifyLeft", "justifyCenter", "justifyRight"];
+        cmds.forEach(cmd => {
+          const btn = document.querySelector(`.tb-btn[data-cmd="${cmd}"]`);
+          if (!btn) return;
+          if (document.queryCommandState(cmd)) {
+            btn.classList.add("active");
+          } else {
+            btn.classList.remove("active");
+          }
+        });
+      }
+
+      function triggerAutosave() {
+        saveStatusEl.textContent = "Saving...";
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          try{
+            localStorage.setItem(STORAGE_KEY, editor.innerHTML);
+            saveStatusEl.textContent = "Saved (local)";
+          }catch(err){
+            saveStatusEl.textContent = "Save error";
+          }
+        }, 800);
+      }
+
+      function loadDoc() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          editor.innerHTML = saved;
+        }
+        updateStats();
+      }
+
+      // Ctrl+S
+      document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+          e.preventDefault();
+          triggerAutosave();
+        }
+      });
+
+      // Init
+      loadDoc();
+      updateToolbarState();
     })();
   </script>
 </body>
