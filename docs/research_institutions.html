@@ -132,12 +132,14 @@
 
     .doc-item{
       padding:10px 10px;
-      margin-bottom:6px;
+      margin-bottom:8px;
       background:var(--bg-element);
       border:1px solid transparent;
       border-radius:4px;
       cursor:pointer;
       transition:.15s;
+      display:flex;
+      gap:10px;
     }
 
     .doc-item:hover{
@@ -154,13 +156,85 @@
       font-weight:500;
       margin-bottom:2px;
       color:var(--text-main);
+      text-align:left;
     }
 
     .doc-meta{
       font-size:var(--fs-small);
       color:var(--text-muted);
       display:flex;
-      justify-content:space-between;
+      gap:6px;
+      align-items:center;
+      flex-wrap:wrap;
+      text-align:left;
+    }
+
+    .doc-thumb{
+      width:52px;
+      min-width:52px;
+      height:52px;
+      border-radius:4px;
+      background:#1f1f1f;
+      border:1px solid var(--border-main);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+
+    .doc-thumb img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      background:#fff;
+    }
+
+    .doc-body{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+
+    .doc-desc{
+      font-size:var(--fs-body);
+      color:var(--text-muted);
+      text-align:left;
+      line-height:1.4;
+      overflow:hidden;
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+      line-clamp:3;
+      box-orient:vertical;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 8px;
+      border-radius:999px;
+      font-size:var(--fs-small);
+      border:1px solid var(--border-soft);
+      background:var(--bg-hover);
+      text-transform:uppercase;
+      letter-spacing:.4px;
+      color:var(--text-main);
+    }
+
+    .pill-accent{
+      background:var(--accent-dim);
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+
+    .logo-inline{
+      height:14px;
+      width:auto;
+      display:inline-block;
+      vertical-align:middle;
+      margin-right:2px;
     }
 
     /* MAIN CONTENT */
@@ -359,18 +433,12 @@
         <select class="kt-input" id="sourceFilter">
           <option value="all">All Sources</option>
           <option value="westpac">Westpac</option>
+          <option value="scotia">Scotiabank</option>
+          <option value="cibc">CIBC</option>
+          <option value="seb">SEB</option>
           <option value="mufg">MUFG</option>
           <option value="kuantara">Kuantara AI</option>
         </select>
-      </div>
-
-      <!-- DATE FILTER -->
-      <div class="form-group" style="margin-top:4px;">
-        <label class="form-label">Release Date</label>
-        <div style="display:flex;gap:6px;">
-          <input type="date" class="kt-input" id="dateFrom" style="font-size:10px;padding:6px 8px;">
-          <input type="date" class="kt-input" id="dateTo"   style="font-size:10px;padding:6px 8px;">
-        </div>
       </div>
 
       <div class="list-header">
@@ -434,13 +502,22 @@
 </div>
 
 <script>
-  // --- DATA DEMO (tambah field "source") ---
-  const BASE_PDF_URL = "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
-  const docs = [
-    { id:1, title:"FX Strategy: USD Outlook",      date:"2025-11-21", source:"westpac",  url:BASE_PDF_URL },
-    { id:2, title:"Global Macro: Recession Risk",  date:"2025-11-20", source:"mufg",     url:BASE_PDF_URL },
-    { id:3, title:"Commodities: Gold Rally",       date:"2025-11-19", source:"kuantara", url:BASE_PDF_URL },
-  ];
+  const PROXY   = "https://cors.eu.org/";
+  const URL     = "https://www.westpaciq.com.au/markets/";
+  const PDF_BASE = "https://library.westpaciq.com.au";
+  const SCOTIA_DATA_URL = "https://cors.eu.org/https://www.scotiabank.com/ca/en/about/economics/economics-publications/jcr:content/main-par/section_container/section-container-par/generic_filter_copy_.economicfilterservlet.0.english.all.all.all.html";
+  const SCOTIA_BASE_URL = "https://www.scotiabank.com";
+  const SCOTIA_LOGO = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRh1OsngKUW447EUB_9K5Iz6ssVozVGIYGx4g&s";
+  const WESTPAC_LOGO = "https://images.seeklogo.com/logo-png/15/1/westpac-logo-png_seeklogo-152472.png";
+  const SCOTIA_PAGE_SIZE = 12;
+  const SCOTIA_MAX_PAGES = 5;
+  const CIBC_API_URL = "https://economics.cibccm.com/api/search";
+  const CIBC_DOWNLOAD_BASE = "https://economics.cibccm.com/api/download?relativePath=";
+  const CIBC_SITE_BASE = "https://economics.cibccm.com/";
+  const CIBC_LOGO = "https://images.seeklogo.com/logo-png/49/1/cibc-bank-logo-png_seeklogo-490346.png";
+  const SEB_API_URL = "https://cors.eu.org/https://research.sebgroup.com/mapi/v2/reports?nbrows=100&language=English";
+  const SEB_BASE_URL = "https://research.sebgroup.com";
+  const SEB_LOGO = "https://pbs.twimg.com/profile_images/1968263186546597888/4XYqkNUN_400x400.png";
 
   const viewport   = document.getElementById('viewport');
   const wrapper    = document.getElementById('wrapper');
@@ -448,9 +525,13 @@
   const ctx        = canvas.getContext('2d');
   const pdfFrame   = document.getElementById('pdfFrame');
   const sourceSel  = document.getElementById('sourceFilter');
-  const dateFromEl = document.getElementById('dateFrom');
-  const dateToEl   = document.getElementById('dateTo');
+  const docListEl  = document.getElementById('docList');
+  const docCountEl = document.getElementById('docCount');
 
+  const sidebar  = document.getElementById('sidebar');
+  const backdrop = document.getElementById('backdrop');
+
+  let docs = [];
   let currentTool  = 'pan';
   let isDrawing    = false;
   let lastX = 0, lastY = 0;
@@ -462,28 +543,131 @@
   // Rasio A4 kasar
   const BASE_RATIO = 1200 / 900;
 
+  function makePdfUrl(path) {
+    if (!path) return null;
+    path = path.trim();
+    if (!path) return null;
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+        return path;
+    }
+    if (!path.startsWith("/")) path = "/" + path;
+    return PDF_BASE + path;
+  }
+
+  function absolutize(url, base){
+    if(!url) return "";
+    if(url.startsWith("http://") || url.startsWith("https://")) return url;
+    if(url.startsWith("//")) return window.location.protocol + url;
+    if(!url.startsWith("/")) url = "/" + url;
+    return base.replace(/\/+$/,'') + url;
+  }
+
+  function extractExecutivePdfs(htmlStr) {
+    const list = [];
+    if (!htmlStr) return list;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlStr, "text/html");
+    const links = doc.querySelectorAll("a[href$='.pdf']");
+
+    links.forEach(a => {
+        const hrefRaw = a.getAttribute("href") || "";
+        const pdfUrl  = makePdfUrl(hrefRaw);
+        const title   = a.innerText.trim();
+        list.push({
+            url: pdfUrl,
+            title: title
+        });
+    });
+
+    return list;
+  }
+
+  function pickPdf(article){
+    const summaryPdfs = extractExecutivePdfs(article.executiveSummary || article.articledescription || "");
+    if (article.fileReference && article.fileReference.endsWith(".pdf")) {
+      return makePdfUrl(article.fileReference);
+    }
+    if(summaryPdfs.length > 0) return summaryPdfs[0].url;
+    return null;
+  }
+
+  function extractPlainText(htmlStr){
+    if(!htmlStr) return '';
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlStr, "text/html");
+    return (doc.body.textContent || '').replace(/\s+/g,' ').trim();
+  }
+
+  function decodeHtml(str){
+    if(!str) return '';
+    const txt = document.createElement("textarea");
+    txt.innerHTML = str;
+    return txt.value;
+  }
+
+  function cleanTitle(val){
+    if(!val) return '(no title)';
+    return extractPlainText(decodeHtml(val)) || '(no title)';
+  }
+
+  function buildCibcPdf(path){
+    if(!path) return '';
+    if(/^https?:\/\//i.test(path)) return path;
+    const rel = path.replace(/^\/+/, '');
+    return CIBC_DOWNLOAD_BASE + rel;
+  }
+
+  function toPreview(text, len=160){
+    if(!text) return '';
+    if(text.length <= len) return text;
+    return text.slice(0, len).trim() + '…';
+  }
+
+  function formatDateOnly(d){
+    if(!(d instanceof Date) || Number.isNaN(d.getTime())) return '';
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  function normalizeDate(value){
+    if(!value) return { display:'', ts:0 };
+    const tryDate = new Date(value);
+    if(!Number.isNaN(tryDate.getTime())){
+      return { display: formatDateOnly(tryDate), ts: tryDate.getTime() };
+    }
+    const m1 = value.match(/(20\d{2})[-\/](\d{1,2})[-\/](\d{1,2})/);
+    if(m1){
+      const iso = `${m1[1]}-${m1[2].padStart(2,'0')}-${m1[3].padStart(2,'0')}`;
+      const d = new Date(iso);
+      return { display: iso, ts: d.getTime() };
+    }
+    const m2 = value.match(/(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(20\d{2})/i);
+    if(m2){
+      const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+      const monthIndex = months.indexOf(m2[2].slice(0,3).toLowerCase());
+      const iso = `${m2[3]}-${String(monthIndex+1).padStart(2,'0')}-${m2[1].padStart(2,'0')}`;
+      const d = new Date(iso);
+      return { display: iso, ts: d.getTime() };
+    }
+    return { display:value, ts:0 };
+  }
+
   // --- FILTER ---
   function getFilteredDocs(){
     const sourceVal = sourceSel.value;
-    const fromVal   = dateFromEl.value;
-    const toVal     = dateToEl.value;
 
     return docs.filter(d => {
-      if(sourceVal !== 'all' && d.source !== sourceVal) return false;
-
-      if(fromVal){
-        if(new Date(d.date) < new Date(fromVal)) return false;
-      }
-      if(toVal){
-        if(new Date(d.date) > new Date(toVal)) return false;
-      }
+      if(sourceVal !== 'all' && (d.source || '').toLowerCase() !== sourceVal) return false;
       return true;
     });
   }
 
   function renderList(){
-    const container    = document.getElementById('docList');
-    const filteredDocs = getFilteredDocs();
+    const container    = docListEl;
+    const filteredDocs = getFilteredDocs().sort((a,b)=> (b.dateTs||0)-(a.dateTs||0));
     container.innerHTML = '';
 
     filteredDocs.forEach(d=>{
@@ -491,18 +675,31 @@
       el.className = 'doc-item';
       el.dataset.id = d.id;
       el.innerHTML = `
-        <div class="doc-title">${d.title}</div>
-        <div class="doc-meta">
-          <span>${d.date}</span>
-          <span style="color:var(--accent)">${d.source}</span>
+        <div class="doc-thumb">
+          <img src="${d.logo || 'https://images.seeklogo.com/logo-png/15/1/westpac-logo-png_seeklogo-152472.png'}" alt="logo">
+        </div>
+        <div class="doc-body">
+          <div class="doc-title">${d.title}</div>
+          <div class="doc-meta">
+            <span style="color:var(--accent);font-weight:600;">${d.displaySource || 'Source'}</span>
+            <span>|</span>
+            <span>${d.date || '-'}</span>
+            <span>|</span>
+            <span class="pill">${d.umbrella || 'Umbrella'}</span>
+          </div>
+          <div class="doc-desc">${d.preview || ''}</div>
         </div>`;
       el.onclick = () => loadDoc(d, el);
       container.appendChild(el);
     });
 
-    document.getElementById('docCount').textContent = filteredDocs.length;
+    docCountEl.textContent = filteredDocs.length;
 
-    // Auto-select: kalau currentDocId masih ada di filtered, highlight, kalau tidak pilih yang pertama
+    if(filteredDocs.length === 0){
+      container.innerHTML = `<div class="doc-meta" style="color:var(--text-muted);">Tidak ada dokumen yang bisa ditampilkan.</div>`;
+      return;
+    }
+
     if(filteredDocs.length > 0){
       const current = filteredDocs.find(d => d.id === currentDocId) || filteredDocs[0];
       const el = container.querySelector(`.doc-item[data-id="${current.id}"]`) || container.querySelector('.doc-item');
@@ -524,8 +721,22 @@
     ctx.clearRect(0,0,canvas.width,canvas.height);
     historyStack = [];
 
-    const googleProxy = `https://docs.google.com/viewer?url=${encodeURIComponent(doc.url)}&embedded=true`;
-    pdfFrame.src = googleProxy;
+    let pdfUrl = doc.pdf || '';
+    if(doc.source === 'scotia'){
+      pdfUrl = absolutize(pdfUrl, SCOTIA_BASE_URL);
+    }else if(doc.source === 'cibc'){
+      pdfUrl = buildCibcPdf(pdfUrl);
+    }
+
+    if(pdfUrl){
+      // Some sources block iframe; use Google viewer for those
+      const needsProxy = doc.source === 'westpac' || doc.source === 'scotia' || doc.source === 'cibc' || doc.source === 'seb';
+      pdfFrame.src = needsProxy
+        ? `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(pdfUrl)}`
+        : `${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`;
+    } else {
+      pdfFrame.src = doc.fullUrl || '';
+    }
 
     toggleSidebar(false);
   }
@@ -673,13 +884,8 @@
 
   // FILTER EVENTS
   sourceSel.addEventListener('change', renderList);
-  dateFromEl.addEventListener('change', renderList);
-  dateToEl.addEventListener('change', renderList);
 
   // MOBILE SIDEBAR
-  const sidebar  = document.getElementById('sidebar');
-  const backdrop = document.getElementById('backdrop');
-
   function toggleSidebar(show){
     if(show){
       sidebar.classList.add('open');
@@ -693,11 +899,253 @@
   document.getElementById('menuToggle').onclick = () => toggleSidebar(true);
   backdrop.onclick = () => toggleSidebar(false);
 
-  // INIT
+  async function loadWestpac() {
+    try {
+        const res = await fetch(PROXY + URL);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const html = await res.text();
+
+        const match = html.match(/var JSONobject\s*=\s*'(.*?)';/s);
+        if (!match) throw new Error("JSONobject not found!");
+
+        const rawString = decodeHtml(match[1]);
+        const obj = JSON.parse(rawString);
+
+        const articles = obj.articleAggregator || [];
+        return articles.map((a, idx) => {
+          const pdfUrl = pickPdf(a);
+          const preview = toPreview(extractPlainText(a.executiveSummary || a.articledescription || ''), 180);
+          const dateInfo = normalizeDate((a.publishdate || '').split(' ')[0]);
+          return {
+            id: a.articleId || `westpac-${idx + 1}`,
+            title: cleanTitle(a.articleheadline || '(no title)'),
+            date: dateInfo.display,
+            dateTs: dateInfo.ts,
+            source: 'westpac',
+            displaySource: a.articleauthor || a.sourceName || 'Westpac',
+            umbrella: a.umbrella || '',
+            preview,
+            logo: WESTPAC_LOGO,
+            pdf: pdfUrl,
+            fullUrl: "https://www.westpaciq.com.au" + (a.articlePath || '')
+          };
+        });
+    } catch (e) {
+        console.error(e);
+        return [{ id:'westpac-error', title:'Error memuat Westpac', date:'', dateTs:0, source:'westpac', displaySource:'Westpac', umbrella:'', preview:e.message, logo:WESTPAC_LOGO, pdf:null, fullUrl:'' }];
+    }
+  }
+
+  function parseDateFromText(text){
+    const regex = /(20\d{2})[-/](\d{1,2})[-/](\d{1,2})/;
+    const m = text.match(regex);
+    if(m){
+      return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+    }
+    const m2 = text.match(/(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(20\d{2})/i);
+    if(m2){
+      const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+      const idx = months.indexOf(m2[2].slice(0,3).toLowerCase());
+      return `${m2[3]}-${String(idx+1).padStart(2,'0')}-${m2[1].padStart(2,'0')}`;
+    }
+    return '';
+  }
+
+  function parseScotiaJson(data){
+    const items = Array.isArray(data) ? data : (data.jsonArticles || data.items || data.list || []);
+    if(!Array.isArray(items)) return [];
+    return items.map((it, idx) => {
+      const title = cleanTitle(it.title || it.fragment_title || it.headline || it.name || `Scotia Doc ${idx+1}`);
+      const dateRaw = it.publicationDate || it.publishDate || it.fragment_date || it.date || '';
+      const dateInfo = normalizeDate(dateRaw || parseDateFromText(title));
+      const pdfUrlRaw = it.file || it.pdf || it.fragment_pdf_path || it.assetPath || it.assetUrl || it.assetURL || it.path || it.url || it.href || '';
+      const pdfUrl = pdfUrlRaw ? absolutize(pdfUrlRaw, SCOTIA_BASE_URL) : '';
+      const fullUrl = absolutize(it.articleUrl || it.fragment_url || it.detailUrl || it.detailURL || pdfUrlRaw || '', SCOTIA_BASE_URL);
+      const desc = toPreview(it.description || it.fragment_description || it.summary || it.subtitle || '', 180);
+      const umbrella = (it.category || it.fragment_category_tag || it.topic || it.tag || [])[0] || '';
+      return {
+        id: it.id || `scotia-${idx+1}`,
+        title,
+        date: dateInfo.display,
+        dateTs: dateInfo.ts,
+        source: 'scotia',
+        displaySource: 'Scotiabank',
+        umbrella,
+        preview: desc,
+        logo: SCOTIA_LOGO,
+        pdf: pdfUrl && pdfUrl.toLowerCase().includes('.pdf') ? pdfUrl : null,
+        fullUrl: fullUrl
+      };
+    });
+  }
+
+  function parseScotiaHtml(text){
+    const list = [];
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, "text/html");
+    const anchors = Array.from(doc.querySelectorAll("a[href]"));
+    anchors.forEach((a, idx) => {
+      const href = a.getAttribute("href") || "";
+      const url = absolutize(href, SCOTIA_BASE_URL);
+      if(!url) return;
+      const isPdf = url.toLowerCase().includes(".pdf");
+      const title = (a.textContent || a.getAttribute("title") || "").trim() || `Scotia Doc ${idx+1}`;
+      const near = a.closest("div, li, article") || a.parentElement;
+      let dateRaw = a.getAttribute("data-publicationdate") || a.getAttribute("data-publication-date") || "";
+      if(!dateRaw && near){
+        const timeEl = near.querySelector("time");
+        if(timeEl) dateRaw = timeEl.getAttribute("datetime") || timeEl.textContent.trim();
+      }
+      if(!dateRaw) dateRaw = parseDateFromText(title);
+      const dateInfo = normalizeDate(dateRaw);
+      const desc = toPreview(extractPlainText(near ? near.textContent : title), 180);
+      list.push({
+        id: `scotia-${idx+1}`,
+        title,
+        date: dateInfo.display,
+        dateTs: dateInfo.ts,
+        source: 'scotia',
+        displaySource: 'Scotiabank',
+        umbrella: '',
+        preview: desc,
+        logo: SCOTIA_LOGO,
+        pdf: isPdf ? url : null,
+        fullUrl: url
+      });
+    });
+    return list;
+  }
+
+  async function loadScotia(){
+    const all = [];
+    let offset = 0;
+    for(let i=0;i<SCOTIA_MAX_PAGES;i++){
+      const url = SCOTIA_DATA_URL.replace(/economicfilterservlet\.\d+\.english/, `economicfilterservlet.${offset}.english`);
+      try{
+        const res = await fetch(url);
+        if(!res.ok) throw new Error("HTTP " + res.status);
+        const text = await res.text();
+        let chunk = [];
+        try{
+          const json = JSON.parse(text);
+          chunk = parseScotiaJson(json);
+        }catch(_){
+          chunk = parseScotiaHtml(text);
+        }
+        all.push(...chunk);
+        if(chunk.length < SCOTIA_PAGE_SIZE) break; // no more items
+      }catch(e){
+        console.error(e);
+        all.push({ id:`scotia-error-${i}`, title:'Error memuat Scotiabank', date:'', dateTs:0, source:'scotia', displaySource:'Scotiabank', umbrella:'', preview:e.message, logo:SCOTIA_LOGO, pdf:null, fullUrl:'' });
+        break;
+      }
+      offset += SCOTIA_PAGE_SIZE;
+    }
+    return all;
+  }
+
+  async function loadCibc(){
+    try{
+      const payload = {
+        Title: null,
+        ReportGroup: "1,2,6,8,9,4,3,7",
+        FromDate: null,
+        ToDate: null
+      };
+      const headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Content-Type": "application/json",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-ch-ua": "\"Chromium\";v=\"142\", \"Google Chrome\";v=\"142\", \"Not_A Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0",
+        "origin": "https://economics.cibccm.com",
+        "sec-fetch-site": "same-origin",
+        "priority": "u=1, i"
+      };
+      const res = await fetch(CIBC_API_URL, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload)
+      });
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const json = await res.json();
+      const items = Array.isArray(json) ? json : (json.results || json.items || json.data || []);
+      return (items || []).map((it, idx) => {
+        const dateInfo = normalizeDate((it.PublishedDate || '').split('T')[0]);
+        const pdfUrlRaw = it.PdfPath || it.pdf || it.PDF || '';
+        const pdfUrl = pdfUrlRaw ? buildCibcPdf(pdfUrlRaw) : '';
+        const desc = toPreview(it.Description || it.TeaserText || '', 180);
+        return {
+          id: it.PublicationId || `cibc-${idx+1}`,
+          title: cleanTitle(it.Title || it.ReportType || `CIBC Doc ${idx+1}`),
+          date: dateInfo.display,
+          dateTs: dateInfo.ts,
+          source: 'cibc',
+          displaySource: 'CIBC',
+          umbrella: it.ReportType || '',
+          preview: desc,
+          logo: CIBC_LOGO,
+          pdf: pdfUrl && pdfUrl.toLowerCase().includes('.pdf') ? pdfUrl : null,
+          fullUrl: pdfUrl || CIBC_SITE_BASE
+        };
+      });
+    }catch(e){
+      console.error(e);
+      return [{ id:'cibc-error', title:'Error memuat CIBC', date:'', dateTs:0, source:'cibc', displaySource:'CIBC', umbrella:'', preview:e.message, logo:CIBC_LOGO, pdf:null, fullUrl:CIBC_SITE_BASE }];
+    }
+  }
+
+  async function loadSeb(){
+    try{
+      const res = await fetch(SEB_API_URL);
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const json = await res.json();
+      const items = (json && json.reports) || [];
+      return items.map((it, idx) => {
+        const dateInfo = normalizeDate((it.publishedDate || '').split('T')[0]);
+        const pdfUrl = it.attachment && it.attachment.fileName ? absolutize(it.attachment.fileName, SEB_BASE_URL) : '';
+        const fallbackPdf = `${SEB_BASE_URL}/api/puppeteer/mficc/${it.articleId}`;
+        const desc = toPreview(extractPlainText(it.text || it.heading || it.title || ''), 180);
+        const umbrella = (it.displayTags && it.displayTags[0] && it.displayTags[0].tags && it.displayTags[0].tags[0]) || it.reportType || '';
+        return {
+          id: it.articleId || `seb-${idx+1}`,
+          title: cleanTitle(it.title || it.heading || `SEB Doc ${idx+1}`),
+          date: dateInfo.display,
+          dateTs: dateInfo.ts,
+          source: 'seb',
+          displaySource: 'SEB',
+          umbrella,
+          preview: desc,
+          logo: SEB_LOGO,
+          pdf: pdfUrl || fallbackPdf,
+          fullUrl: pdfUrl || fallbackPdf
+        };
+      });
+    }catch(e){
+      console.error(e);
+      return [{ id:'seb-error', title:'Error memuat SEB', date:'', dateTs:0, source:'seb', displaySource:'SEB', umbrella:'', preview:e.message, logo:SEB_LOGO, pdf:null, fullUrl:SEB_BASE_URL }];
+    }
+  }
+
+  async function loadAll(){
+    try{
+      const [westpacDocs, scotiaDocs, cibcDocs, sebDocs] = await Promise.all([loadWestpac(), loadScotia(), loadCibc(), loadSeb()]);
+      docs = [...(westpacDocs || []), ...(scotiaDocs || []), ...(cibcDocs || []), ...(sebDocs || [])].sort((a,b) => (b.dateTs||0) - (a.dateTs||0));
+      renderList();
+      console.log("Loaded docs:", docs.length);
+    }catch(e){
+      console.error("loadAll error", e);
+      docs = [];
+      docListEl.innerHTML = `<div class="doc-meta" style="color:red;">Gagal memuat data: ${e.message}</div>`;
+      docCountEl.textContent = "0";
+    }
+  }
+
   function init(){
     resizeCanvas();
-    renderList();
     window.addEventListener('resize', resizeCanvas);
+    loadAll();
   }
 
   init();
