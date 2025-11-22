@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Kuantara – Economic Calendar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
     :root {
@@ -15,49 +15,66 @@
     }
 
     * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Fira Code", monospace;
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace;
     }
 
     html, body {
-      width: 100%;
-      height: 100%;
-      background-color: var(--bg-root);
-      color: var(--text-main);
+      width:100%;
+      height:100%;
+      background-color:var(--bg-root);
+      color:var(--text-main);
     }
 
     body {
-      display: flex;
-      flex-direction: column;
+      display:flex;
+      flex-direction:column;
     }
 
-    /* Container full page */
-    #economic-calendar-272922 {
-      width: 100%;
-      height: 100vh; /* full viewport */
-      overflow: auto;
+    #economicCalendarWidget {
+      flex:1 1 auto;
+      width:100%;
+      height:100%;
+      padding:0;
+    }
+
+    .tradingview-widget-container {
+      width:100%;
+      height:100%;
+    }
+
+    .tradingview-widget-container__widget {
+      width:100%;
+      height:100%;
+    }
+
+    /* CSS untuk copyright disembunyikan sepenuhnya sebagai pengaman tambahan */
+    .tradingview-widget-copyright {
+      display: none !important;
     }
   </style>
 </head>
 <body>
-  <div id="economic-calendar-272922"></div>
 
-  <script type="text/javascript" src="https://fxverify.com/Content/remote/remote-calendar-widget.js"></script>
-  <script type="text/javascript">
-    RemoteCalendar({
-      "Lang": "en",
-      "DefaultTime": "this_week",
-      "DefaultTheme": "dark",
-      "Url": "https://fxverify.com",
-      "SubPath": "economic-calendar",
-      "IsShowEmbedButton": true,
-      "IsShowHeader": false, // <--- Ini yang ditambahkan untuk menyembunyikan top bar
-      "DefaultCountries": "AU,CA,CH,CN,DE,FR,IT,ES,US,GB,NZ,JP,EU,id",
-      "DefaultImpacts": "HIGH,MEDIUM",
-      "ContainerId": "economic-calendar-272922"
-    });
-  </script>
+  <div id="economicCalendarWidget">
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+      {
+        "colorTheme": "dark",
+        "isTransparent": true,
+        "locale": "id",
+        "countryFilter": "ar,au,br,ca,cn,fr,de,in,id,it,jp,kr,mx,ru,sa,za,tr,gb,us,eu",
+        "importanceFilter": "-1,0,1",
+        "width": "100%",
+        "height": "100%"
+      }
+      </script>
+    </div>
+    </div>
+
 </body>
 </html>
