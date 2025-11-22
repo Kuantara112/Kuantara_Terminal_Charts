@@ -54,15 +54,15 @@
       width:100%;
     }
 
+    /* FULL PAGE CANVAS */
     main{
-      padding:12px;
-      min-height:100vh;
       width:100%;
-      max-width:1200px;
-      margin:0 auto;
+      min-height:100vh;
+      margin:0;
+      padding:0;
     }
 
-    /* SINGLE PANEL WRAPPER */
+    /* SINGLE PANEL WRAPPER – full page */
     .panel{
       border:1px solid var(--border-soft);
       background:var(--bg-main);
@@ -70,7 +70,7 @@
       padding:12px;
       display:flex;
       flex-direction:column;
-      min-height:100vh;
+      min-height:100vh; /* panel = tinggi penuh page */
       gap:12px;
     }
 
@@ -84,7 +84,8 @@
       font-size:var(--fs-title);
       letter-spacing:0.06em;
       color:var(--accent);
-      text-transform:uppercase;
+      /* tidak lagi full uppercase */
+      /* text-transform:uppercase; */
     }
 
     .panel-sub{
@@ -227,7 +228,7 @@
       border:none;
       width:100%;
       height:100%;
-      min-height:220px;
+      min-height:260px; /* bigger */
       display:block;
     }
 
@@ -266,16 +267,12 @@
 
     /* RESPONSIVE BREAKPOINTS */
     @media (min-width:768px){
-      main{
-        padding:16px;
-      }
-      .panel{
-        padding:14px;
-      }
       .chart-box{
         min-height:220px;
       }
-      .sat-body iframe,
+      .sat-body iframe{
+        min-height:320px;
+      }
       .heatmap-box{
         min-height:260px;
       }
@@ -296,10 +293,10 @@
         align-items:stretch;
       }
 
-      /* satellite + big heatmap: 3:2 */
+      /* satellite + big heatmap: map dibuat lebih besar (1.6 : 1) */
       .section-grid-map-heatmap{
         display:grid;
-        grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+        grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);
         align-items:stretch;
       }
     }
@@ -309,7 +306,7 @@
 <main>
   <section class="panel">
     <header class="panel-header">
-      <div class="panel-title">Resources &amp; Trade Flows · WTO Snapshot</div>
+      <div class="panel-title">Resources & Trade Flows · WTO Snapshot</div>
       <div class="panel-sub">Global exports, product mix, and spatial view · 1995–2024 · dummy data for layout</div>
     </header>
 
@@ -318,7 +315,7 @@
       <section class="section">
         <div>
           <div class="section-label">Section 1 · Global overview</div>
-          <div class="section-title">Long-run exports &amp; top exporters</div>
+          <div class="section-title">Long-run exports & top exporters</div>
         </div>
 
         <div class="section-grid-1-1">
@@ -350,7 +347,7 @@
       <section class="section">
         <div>
           <div class="section-label">Section 2 · Composition</div>
-          <div class="section-title">World export composition &amp; agriculture vs fuels</div>
+          <div class="section-title">World export composition & agriculture vs fuels</div>
         </div>
 
         <div class="section-grid-2-1">
@@ -368,7 +365,7 @@
           <!-- Agri vs fuels bar -->
           <article class="chart-card">
             <div class="chart-head">
-              <div class="chart-title">Agriculture vs fuels &amp; mining (2024)</div>
+              <div class="chart-title">Agriculture vs fuels & mining (2024)</div>
               <div class="chart-meta">Selected economies · million USD</div>
             </div>
             <div class="chart-body">
@@ -381,7 +378,7 @@
       <!-- SECTION 3: PRODUCT MIX & PROFILES -->
       <section class="section">
         <div>
-          <div class="section-label">Section 3 · Product mix &amp; profiles</div>
+          <div class="section-label">Section 3 · Product mix & profiles</div>
           <div class="section-title">Export structure, time trend, and country profiles</div>
         </div>
 
@@ -418,25 +415,14 @@
               <div id="chartRadar" class="chart-box"></div>
             </div>
           </article>
-
-          <!-- Mini heatmap -->
-          <article class="chart-card">
-            <div class="chart-head">
-              <div class="chart-title">Mini resource intensity matrix</div>
-              <div class="chart-meta">Export share by product group · %</div>
-            </div>
-            <div class="chart-body">
-              <div id="chartHeatmapSmall" class="chart-box"></div>
-            </div>
-          </article>
         </div>
       </section>
 
       <!-- SECTION 4: MAP & BIG HEATMAP -->
       <section class="section">
         <div>
-          <div class="section-label">Section 4 · Spatial &amp; intensity</div>
-          <div class="section-title">Satellite layer &amp; resource intensity matrix</div>
+          <div class="section-label">Section 4 · Spatial & intensity</div>
+          <div class="section-title">Satellite layer & resource intensity matrix</div>
         </div>
 
         <div class="section-grid-map-heatmap">
@@ -969,58 +955,6 @@
     for(let i=0;i<reporters.length;i++){
       for(let j=0;j<heatmapCategories.length;j++){
         heatmapData.push([j, i, heatmapValues[i][j]]);
-      }
-    }
-
-    // MINI HEATMAP
-    {
-      const el = document.getElementById('chartHeatmapSmall');
-      if(el){
-        const c = echarts.init(el);
-        c.setOption({
-          backgroundColor:'#000000',
-          textStyle: baseTextStyle(),
-          grid:{left:80,right:10,top:10,bottom:40},
-          xAxis:{
-            type:'category',
-            data:heatmapCategories,
-            axisLabel:{color:'#f5f5f5',rotate:-15},
-            axisLine:{lineStyle:{color:'#ffffff40'}}
-          },
-          yAxis:{
-            type:'category',
-            data:reporters,
-            axisLabel:{color:'#f5f5f5'},
-            axisLine:{lineStyle:{color:'#ffffff40'}}
-          },
-          visualMap:{
-            min:0,
-            max:100,
-            calculable:true,
-            orient:'vertical',
-            left:'right',
-            top:'center',
-            textStyle:{color:'#f5f5f5',fontSize:8},
-            inRange:{
-              color:['#020617','#1e293b','#0ea5e9','#22c55e','#ffbf00']
-            }
-          },
-          series:[{
-            type:'heatmap',
-            data:heatmapData,
-            label:{show:false},
-            emphasis:{itemStyle:{borderColor:'#fff',borderWidth:1}}
-          }],
-          tooltip:{
-            formatter:(params)=>{
-              const rep = reporters[params.data[1]];
-              const cat = heatmapCategories[params.data[0]];
-              const val = params.data[2].toFixed(1);
-              return `<b>${rep}</b><br>${cat}: ${val}%`;
-            }
-          }
-        });
-        charts.chartHeatmapSmall = c;
       }
     }
 
