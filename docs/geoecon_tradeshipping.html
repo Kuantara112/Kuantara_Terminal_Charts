@@ -1,10 +1,12 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
-  <title>Kuantara – Trade &amp; Shipping</title>
+  <title>Kuantara – Trade & Shipping</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
     :root {
@@ -41,25 +43,12 @@
 
     html,body{
       width:100%;
-      height:100%;
       background-color:var(--bg-root);
       color:var(--text-main);
     }
 
     body{
       padding:16px;
-      display:flex;
-      flex-direction:column;
-    }
-
-    /* ROW: 1/4 + 3/4 layout */
-    .panel-row{
-      flex:1;
-      display:flex;
-      flex-direction:row;
-      gap:12px;
-      min-height:0;
-      width:100%;
     }
 
     .panel-card{
@@ -70,22 +59,8 @@
       display:flex;
       flex-direction:column;
       overflow:hidden;
-      min-height:0;
     }
 
-    .snapshot-panel{
-      flex:1;         /* 1/4 */
-      max-width:420px;
-      min-width:240px;
-      overflow-y:auto;
-    }
-
-    .map-panel{
-      flex:3;         /* 3/4 */
-      min-width:0;
-    }
-
-    /* --- Market Snapshot content --- */
     .section-header{
       margin-bottom:10px;
     }
@@ -103,10 +78,127 @@
       color:var(--amber);
     }
 
-    .asset-grid{
+    /* === HEATMAP PANEL (TOP) === */
+    .heatmap-panel{
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:16px;
       display:flex;
       flex-direction:column;
+      overflow:hidden;
+      width:100%;
+      margin-top:4px;
+      margin-bottom:16px;
+      gap:12px;
+    }
+
+    .heatmap-wrapper{
+      width:100%;
+      background:#000000;
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      overflow:hidden;
+      position:relative;
+      height:580px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .heatmap-title{
+      font-size:12px;
+      font-weight:600;
+      color:var(--amber);
+      padding:6px 8px;
+      background:#111;
+      border-bottom:1px solid #222;
+      flex:0 0 auto;
+      z-index:2;
+      position:relative;
+    }
+
+    .heatmap-body{
+      position:relative;
+      flex:1 1 auto;
+      overflow:hidden;
+    }
+
+    .heatmap-dark-overlay{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,0.25);
+      z-index:3;
+      pointer-events:none;
+    }
+
+    .heatmap-body iframe{
+      width:100%;
+      height:100%;
+      border:none;
+      display:block;
+      position:relative;
+      z-index:2;
+      filter: invert(1) hue-rotate(180deg) brightness(0.85);
+    }
+
+    .heatmap-footer{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      height:60px;
+      padding:8px 10px;
+      border-top:1px solid #222;
+      background:linear-gradient(to top, #000000 80%, rgba(0,0,0,0.2));
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
       gap:8px;
+      font-size:10px;
+      color:var(--text-muted);
+      z-index:5;
+    }
+    .heatmap-footer-left{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .heatmap-footer-right{
+      text-align:right;
+      font-size:10px;
+    }
+
+    /* === SHIPPING SECTION (BOTTOM) === */
+    .panel-row{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      width:100%;
+      margin-bottom:4px;
+    }
+
+    .snapshot-panel{
+      width:100%;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .snapshot-scroll{
+      margin-top:8px;
+      flex:1 1 auto;
+      max-height:260px;
+      min-height:0;
+      overflow-x:auto;
+      overflow-y:hidden;
+    }
+
+    /* HORIZONTALLY ALIGNED CARDS */
+    .asset-grid{
+      display:flex;
+      flex-direction:row;
+      gap:8px;
+      padding-bottom:4px;
+      min-width:max-content; /* supaya bisa di-scroll horizontal */
     }
 
     .asset-card{
@@ -118,6 +210,8 @@
       flex-direction:column;
       gap:4px;
       transition:border-color 0.15s, background 0.15s;
+      flex:0 0 220px;           /* lebar standar card */
+      max-width:220px;
     }
     .asset-card:hover{
       border-color:#444;
@@ -169,6 +263,7 @@
       border:1px solid #2b2b2b;
       font-size:9px;
       color:#d0d0d0;
+      white-space:nowrap;
     }
 
     .price-block{
@@ -186,6 +281,7 @@
       display:flex;
       justify-content:flex-end;
       gap:4px;
+      flex-wrap:wrap;
     }
     .price-label{
       color:var(--text-muted);
@@ -194,7 +290,7 @@
     .neg{color:var(--neg);}
 
     .panel-note{
-      margin-top:10px;
+      margin-top:6px;
       padding:8px;
       background:#080808;
       border:1px dashed #333;
@@ -202,9 +298,15 @@
       font-size:9px;
       color:var(--text-muted);
       line-height:1.4;
+      white-space:nowrap;
     }
 
-    /* --- Map content --- */
+    .map-panel{
+      width:100%;
+      display:flex;
+      flex-direction:column;
+    }
+
     .map-header{
       margin-bottom:8px;
     }
@@ -221,61 +323,21 @@
     .map-wrapper{
       position:relative;
       width:100%;
-      height:100%;
-      min-height:320px;   /* ukuran map dipertahankan */
       border-radius:4px;
       overflow:hidden;
       border:1px solid var(--border-soft);
       background:#000000;
       margin-top:6px;
+      height:420px;
     }
 
-    /* Overlay mini quote stack (dummy) */
-    .map-stats{
-      position:absolute;
-      top:6px;
-      right:6px;
-      z-index:60;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-    .map-stat-card{
-      background:rgba(17,17,17,0.95);
-      border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:6px 8px;
-      min-width:150px;
-      box-shadow:0 0 10px rgba(0,0,0,0.6);
-    }
-    .map-stat-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:2px;
-    }
-    .map-stat-ticker{
-      font-size:10px;
-      color:var(--amber);
-      font-weight:600;
-    }
-    .map-stat-label{
-      font-size:9px;
-      color:var(--text-muted);
-    }
-    .map-stat-price{
-      font-size:11px;
-      font-weight:600;
-    }
-    .map-stat-change{
-      font-size:9px;
-      display:flex;
-      justify-content:space-between;
-      gap:6px;
-      margin-top:1px;
+    .map-wrapper iframe{
+      width:100%;
+      height:100%;
+      border:none;
+      display:block;
     }
 
-    /* Header blocker */
     .vf-header-blocker{
       position:absolute;
       top:0;
@@ -283,12 +345,12 @@
       width:100%;
       height:22px;
       background-color:#000000;
-      z-index:50;
+      z-index:5;
       display:flex;
       align-items:center;
       justify-content:center;
       border-bottom:1px solid var(--border-soft);
-      pointer-events:auto;
+      pointer-events:none;
     }
     .vf-header-blocker::after{
       content:"LIVE AIS FEED • REALTIME TRACKING";
@@ -298,7 +360,6 @@
       letter-spacing:0.2em;
     }
 
-    /* Footer blocker */
     .vf-footer-blocker{
       position:absolute;
       bottom:0;
@@ -306,31 +367,18 @@
       width:100%;
       height:25px;
       background-color:#000000;
-      z-index:50;
+      z-index:5;
       border-top:1px solid #1a1a1a;
-      pointer-events:auto;
+      pointer-events:none;
     }
 
-    .map-wrapper iframe{
-      position:absolute !important;
-      top:0 !important;
-      left:0 !important;
-      width:100% !important;
-      height:100% !important;
-      border:none !important;
-      z-index:1;
-    }
-
-    /* Mobile: stack vertical */
+    /* Responsive */
     @media (max-width:900px){
-      .panel-row{
-        flex-direction:column;
+      .heatmap-wrapper{
+        height:520px;
       }
-      .snapshot-panel{
-        max-width:100%;
-      }
-      .map-panel{
-        min-height:360px;
+      .map-wrapper{
+        height:360px;
       }
     }
 
@@ -341,709 +389,205 @@
       .panel-card{
         padding:12px;
       }
+      .heatmap-wrapper{
+        height:480px;
+      }
+      .map-wrapper{
+        height:320px;
+      }
+      .heatmap-footer{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .heatmap-footer-right{
+        text-align:left;
+      }
+      .asset-card{
+        flex:0 0 200px;
+        max-width:200px;
+      }
+      .panel-note{
+        white-space:normal;
+      }
     }
   </style>
-<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 2147483647;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.immersive-translate-attach-loading::after {
-  content: " ";
-
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-2000%, -50%);
-  z-index: 100;
-}
-
-.immersive-translate-loading-spinner {
-  vertical-align: middle !important;
-  width: 10px !important;
-  height: 10px !important;
-  display: inline-block !important;
-  margin: 0 4px !important;
-  border: 2px rgba(221, 244, 255, 0.6) solid !important;
-  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-}
-
-@-webkit-keyframes immersive-translate-loading-animation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-
-@keyframes immersive-translate-loading-animation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.immersive-translate-input-loading {
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-}
-
-@keyframes immersiveTranslateShadowRolling {
-  0% {
-    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  12% {
-    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  25% {
-    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  36% {
-    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
-      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  50% {
-    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
-      110px 0 var(--loading-color), 100px 0 var(--loading-color);
-  }
-
-  62% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
-      120px 0 var(--loading-color), 110px 0 var(--loading-color);
-  }
-
-  75% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      130px 0 var(--loading-color), 120px 0 var(--loading-color);
-  }
-
-  87% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
-  }
-
-  100% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.immersive-translate-toast {
-  display: flex;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  right: 0;
-  top: 1%;
-  width: fit-content;
-  padding: 12px 20px;
-  margin: auto;
-  overflow: auto;
-  background: #fef6f9;
-  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
-  font-size: 15px;
-  border-radius: 8px;
-  color: #333;
-}
-
-.immersive-translate-toast-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.immersive-translate-toast-hidden {
-  margin: 0 20px 0 72px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.immersive-translate-toast-close {
-  color: #666666;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-toast {
-    top: 0;
-    padding: 12px 0px 0 10px;
-  }
-  .immersive-translate-toast-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .immersive-translate-toast-hidden {
-    margin: 10px auto;
-  }
-}
-
-.immersive-translate-dialog {
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  display: flex;
-  width: 300px;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: fit-content;
-  border-radius: 20px;
-  background-color: #fff;
-}
-
-.immersive-translate-modal {
-  display: none;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-}
-
-.immersive-translate-modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 40px 24px 24px;
-  border-radius: 12px;
-  width: 350px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
-    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-content {
-    margin: 25% auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .immersive-translate-modal-content {
-    width: 80vw !important;
-    margin: 20vh auto !important;
-    padding: 20px 12px 12px !important;
-  }
-
-  .immersive-translate-modal-title {
-    font-size: 14px !important;
-  }
-
-  .immersive-translate-modal-body {
-    font-size: 13px !important;
-    max-height: 60vh !important;
-  }
-
-  .immersive-translate-btn {
-    font-size: 13px !important;
-    padding: 8px 16px !important;
-    margin: 0 4px !important;
-  }
-
-  .immersive-translate-modal-footer {
-    gap: 6px !important;
-    margin-top: 16px !important;
-  }
-}
-
-.immersive-translate-modal .immersive-translate-modal-content-in-input {
-  max-width: 500px;
-}
-.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
-  text-align: left;
-  max-height: unset;
-}
-
-.immersive-translate-modal-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333333;
-}
-
-.immersive-translate-modal-body {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #333333;
-  margin-top: 24px;
-  word-break: break-all;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-body {
-    max-height: 250px;
-    overflow-y: auto;
-  }
-}
-
-.immersive-translate-close {
-  color: #666666;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.immersive-translate-close:hover,
-.immersive-translate-close:focus {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.immersive-translate-modal-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.immersive-translate-btn {
-  width: fit-content;
-  color: #fff;
-  background-color: #ea4c89;
-  border: none;
-  font-size: 14px;
-  margin: 0 8px;
-  padding: 9px 30px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.immersive-translate-btn-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.immersive-translate-btn:hover {
-  background-color: #f082ac;
-}
-.immersive-translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.immersive-translate-btn:disabled:hover {
-  background-color: #ea4c89;
-}
-
-.immersive-translate-link-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: none;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-}
-
-.immersive-translate-cancel-btn {
-  /* gray color */
-  background-color: rgb(89, 107, 120);
-}
-
-.immersive-translate-cancel-btn:hover {
-  background-color: hsl(205, 20%, 32%);
-}
-
-.immersive-translate-action-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: 1px solid #ea4c89;
-}
-
-.immersive-translate-btn svg {
-  margin-right: 5px;
-}
-
-.immersive-translate-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-primary-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-modal input[type="radio"] {
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.immersive-translate-modal label {
-  cursor: pointer;
-}
-
-.immersive-translate-close-action {
-  position: absolute;
-  top: 2px;
-  right: 0px;
-  cursor: pointer;
-}
-
-.imt-image-status {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 16px !important;
-}
-.imt-image-status img,
-.imt-image-status svg,
-.imt-img-loading {
-  width: 28px !important;
-  height: 28px !important;
-  margin: 0 0 8px 0 !important;
-  min-height: 28px !important;
-  min-width: 28px !important;
-  position: relative !important;
-}
-.imt-img-loading {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
-  background-size: 28px 28px;
-  animation: image-loading-rotate 1s linear infinite !important;
-}
-
-.imt-image-status span {
-  color: var(--bg-2, #fff) !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
-  font-weight: 500 !important;
-  font-family: "PingFang SC", Arial, sans-serif !important;
-}
-
-.imt-primary-button {
-  display: flex;
-  padding: 12px 80px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #ea4c89;
-  color: #fff;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.imt-retry-text {
-  color: #999;
-  text-align: center;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  cursor: pointer;
-}
-
-.imt-action-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.imt-modal-content-text {
-  text-align: left;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-@keyframes image-loading-rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.imt-linear-gradient-text {
-  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.imt-flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.imt-linear-black-btn {
-  border-radius: 50px;
-  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
-  height: 48px;
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
-</style></head>
+</head>
 <body>
 
+  <!-- TOP: Global Trade Heatmaps -->
+  <div class="panel-card heatmap-panel">
+    <div class="section-header">
+      <span class="section-label">Global Trade Heatmaps</span>
+      <h2>Country &amp; Product Analysis</h2>
+    </div>
+
+    <!-- HEATMAP 1 -->
+    <div class="heatmap-wrapper">
+      <div class="heatmap-title">Country Analysis Heatmap</div>
+      <div class="heatmap-body">
+        <div class="heatmap-dark-overlay"></div>
+        <iframe
+          src="https://dataviz.worldbank.org/t/WITS/views/Countryprofile/CountryAnalysisDashboard?:embed=y&:showVizHome=no&:tabs=no&:toolbar=yes"
+          title="WITS Country Analysis">
+        </iframe>
+      </div>
+      <div class="heatmap-footer">
+        <div class="heatmap-footer-left">
+          <span>Notes: Country-level trade, partners, and flows.</span>
+          <span>Source: World Bank </span>
+        </div>
+        <div class="heatmap-footer-right">
+          Hint: gunakan filter bawaan Tableau<br>untuk zoom ke negara / periode tertentu.
+        </div>
+      </div>
+    </div>
+
+    <!-- HEATMAP 2 -->
+    <div class="heatmap-wrapper">
+      <div class="heatmap-title">Product Analysis Heatmap</div>
+      <div class="heatmap-body">
+        <div class="heatmap-dark-overlay"></div>
+        <iframe
+          src="https://dataviz.worldbank.org/t/WITS/views/Countryprofile/ProductAnalysisDashboard?:embed=y&:showVizHome=no&:tabs=no&:toolbar=yes"
+          title="WITS Product Analysis">
+        </iframe>
+      </div>
+      <div class="heatmap-footer">
+        <div class="heatmap-footer-left">
+          <span>Notes: HS product breakdown, exports vs imports.</span>
+          <span>Source: World Bank </span>
+        </div>
+        <div class="heatmap-footer-right">
+          Tip: fokus ke komoditas utama untuk<br>membaca risiko &amp; peluang supply chain.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM: Market Snapshot (strip horizontal) + Shipping Traffic -->
   <div class="panel-row">
-    <!-- PANEL 1: Market Snapshot (1/4) -->
+    <!-- PANEL: Market Snapshot -->
     <div class="panel-card snapshot-panel">
       <div class="section-header">
         <span class="section-label">Market Snapshot</span>
         <h2>Shipping Rates</h2>
       </div>
 
-      <div class="asset-grid">
-        <article class="asset-card">
-          <div class="asset-card-header">
-            <span class="ticker">BDI</span>
-            <span class="exchange">INDEX</span>
-          </div>
-          <div class="asset-name">Baltic Dry Index</div>
-          <div class="asset-desc">Benchmark for dry bulk shipping raw materials.</div>
-          <div class="asset-meta-row">
-            <span class="chip">Macro</span>
-            <div class="price-block">
-              <span class="price-main">2,145</span>
-              <div class="price-line">
-                <span class="price-label">D:</span>
-                <span class="pos">+1.8%</span>
-                <span class="price-label">Y:</span>
-                <span class="pos">+12.4%</span>
+      <div class="snapshot-scroll">
+        <div class="asset-grid">
+          <!-- BDI -->
+          <article class="asset-card">
+            <div class="asset-card-header">
+              <span class="ticker">BDI</span>
+              <span class="exchange">INDEX</span>
+            </div>
+            <div class="asset-name">Baltic Dry Index</div>
+            <div class="asset-desc">Benchmark for dry bulk shipping raw materials.</div>
+            <div class="asset-meta-row">
+              <span class="chip">Macro</span>
+              <div class="price-block">
+                <span class="price-main">2,145</span>
+                <div class="price-line">
+                  <span class="price-label">D:</span>
+                  <span class="pos">+1.8%</span>
+                  <span class="price-label">Y:</span>
+                  <span class="pos">+12.4%</span>
+                </div>
               </div>
             </div>
-          </div>
-        </article>
+          </article>
 
-        <article class="asset-card">
-          <div class="asset-card-header">
-            <span class="ticker">BDRY</span>
-            <span class="exchange">ETF</span>
-          </div>
-          <div class="asset-name">Breakwave Dry Bulk</div>
-          <div class="asset-desc">Futures exposure to dry freight rates.</div>
-          <div class="asset-meta-row">
-            <span class="chip">Dry Bulk</span>
-            <div class="price-block">
-              <span class="price-main">$24.32</span>
-              <div class="price-line">
-                <span class="price-label">D:</span>
-                <span class="pos">+3.2%</span>
-                <span class="price-label">Y:</span>
-                <span class="pos">+27.9%</span>
+          <!-- BDRY -->
+          <article class="asset-card">
+            <div class="asset-card-header">
+              <span class="ticker">BDRY</span>
+              <span class="exchange">ETF</span>
+            </div>
+            <div class="asset-name">Breakwave Dry Bulk</div>
+            <div class="asset-desc">Futures exposure to dry freight rates.</div>
+            <div class="asset-meta-row">
+              <span class="chip">Dry Bulk</span>
+              <div class="price-block">
+                <span class="price-main">$24.32</span>
+                <div class="price-line">
+                  <span class="price-label">D:</span>
+                  <span class="pos">+3.2%</span>
+                  <span class="price-label">Y:</span>
+                  <span class="pos">+27.9%</span>
+                </div>
               </div>
             </div>
-          </div>
-        </article>
+          </article>
 
-        <article class="asset-card">
-          <div class="asset-card-header">
-            <span class="ticker">SEA</span>
-            <span class="exchange">ETF</span>
-          </div>
-          <div class="asset-name">US Global Sea to Sky</div>
-          <div class="asset-desc">Global cargo &amp; logistics demand proxy.</div>
-          <div class="asset-meta-row">
-            <span class="chip">Logistics</span>
-            <div class="price-block">
-              <span class="price-main">$18.76</span>
-              <div class="price-line">
-                <span class="price-label">D:</span>
-                <span class="neg">-0.6%</span>
-                <span class="price-label">Y:</span>
-                <span class="pos">+4.1%</span>
+          <!-- SEA -->
+          <article class="asset-card">
+            <div class="asset-card-header">
+              <span class="ticker">SEA</span>
+              <span class="exchange">ETF</span>
+            </div>
+            <div class="asset-name">US Global Sea to Sky</div>
+            <div class="asset-desc">Global cargo & logistics demand proxy.</div>
+            <div class="asset-meta-row">
+              <span class="chip">Logistics</span>
+              <div class="price-block">
+                <span class="price-main">$18.76</span>
+                <div class="price-line">
+                  <span class="price-label">D:</span>
+                  <span class="neg">-0.6%</span>
+                  <span class="price-label">Y:</span>
+                  <span class="pos">+4.1%</span>
+                </div>
               </div>
             </div>
-          </div>
-        </article>
+          </article>
 
-        <article class="asset-card">
-          <div class="asset-card-header">
-            <span class="ticker">BOAT</span>
-            <span class="exchange">ETF</span>
-          </div>
-          <div class="asset-name">SonicShares Shipping</div>
-          <div class="asset-desc">Broad maritime shipping equity exposure.</div>
-          <div class="asset-meta-row">
-            <span class="chip">Equities</span>
-            <div class="price-block">
-              <span class="price-main">$22.41</span>
-              <div class="price-line">
-                <span class="price-label">D:</span>
-                <span class="pos">+1.1%</span>
-                <span class="price-label">Y:</span>
-                <span class="pos">+9.7%</span>
+          <!-- BOAT -->
+          <article class="asset-card">
+            <div class="asset-card-header">
+              <span class="ticker">BOAT</span>
+              <span class="exchange">ETF</span>
+            </div>
+            <div class="asset-name">SonicShares Shipping</div>
+            <div class="asset-desc">Broad maritime shipping equity exposure.</div>
+            <div class="asset-meta-row">
+              <span class="chip">Equities</span>
+              <div class="price-block">
+                <span class="price-main">$22.41</span>
+                <div class="price-line">
+                  <span class="price-label">D:</span>
+                  <span class="pos">+1.1%</span>
+                  <span class="price-label">Y:</span>
+                  <span class="pos">+9.7%</span>
+                </div>
               </div>
             </div>
-          </div>
-        </article>
-      </div>
+          </article>
+        </div>
 
-      <div class="panel-note">
-        &gt; SYSTEM STATUS: ONLINE<br>
-        &gt; DATA FEED: DELAYED 15m (DUMMY)
+        <div class="panel-note">
+          &gt; SYSTEM STATUS: ONLINE · DATA FEED: DELAYED 15m (DUMMY)
+        </div>
       </div>
     </div>
 
-    <!-- PANEL 2: Map (3/4) -->
+    <!-- PANEL: Shipping Traffic -->
     <div class="panel-card map-panel">
       <div class="map-header">
         <div class="map-title">Shipping Traffic</div>
         <div class="map-sub">Live AIS Positioning Data</div>
       </div>
 
-      <div class="map-wrapper" id="vf-map">
-        
-        
-
-        <!-- Top blocker -->
+      <div class="map-wrapper">
         <div class="vf-header-blocker"></div>
-        <!-- Bottom blocker -->
         <div class="vf-footer-blocker"></div>
 
-        <!-- VesselFinder embed -->
-        <script type="text/javascript">
-          var width = "100%";
-          var height = "100%";
-          var latitude = "36.00";
-          var longitude = "-5.40";
-          var zoom = "9";
-          var names = true;
-
-          var mmsi = "";
-          var imo = "";
-          var show_track = false;
-          var fleet = "";
-          var fleet_name = "";
-          var fleet_timespan = "1440";
-        </script>
-        <script type="text/javascript" src="https://www.vesselfinder.com/aismap.js"></script><iframe name="vesselfinder" id="vesselfinder" width="100%" height="400" frameborder="0" src="https://www.vesselfinder.com/aismap?zoom=9&amp;lat=36.00&amp;lon=-5.40&amp;width=100%25&amp;height=400&amp;names=true&amp;track=false&amp;fleet=&amp;fleet_name=&amp;fleet_timespan=1440&amp;fleet_hide_old_positions=false&amp;clicktoact=false&amp;store_pos=true&amp;ra=http%3A%2F%2F127.0.0.1%3A5500%2Fwebsite-project%2Fsrc%2Findex.html">Browser does not support embedded objects.<br/>Visit directly <a href="https://www.vesselfinder.com" target="_blank">www.vesselfinder.com</a></iframe>
-        <iframe name="vesselfinder" id="vesselfinder" width="100%" height="400" frameborder="0" src="https://www.vesselfinder.com/aismap?zoom=9&amp;lat=36.00&amp;lon=-5.40&amp;width=100%25&amp;height=400&amp;names=true&amp;track=false&amp;fleet=&amp;fleet_name=&amp;fleet_timespan=1440&amp;fleet_hide_old_positions=false&amp;clicktoact=false&amp;store_pos=true">
-          Browser does not support embedded objects.<br/>
-          Visit directly <a href="https://www.vesselfinder.com" target="_blank">www.vesselfinder.com</a>
+        <iframe
+          src="https://www.vesselfinder.com/aismap?zoom=9&lat=36.00&lon=-5.40&width=100%25&height=420&names=true&track=false&fleet=&fleet_name=&fleet_timespan=1440&fleet_hide_old_positions=false&clicktoact=false&store_pos=true"
+          title="VesselFinder Map">
         </iframe>
       </div>
     </div>
   </div>
 
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
-
-
-</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
+</body>
+</html>
