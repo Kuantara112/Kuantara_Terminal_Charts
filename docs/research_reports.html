@@ -2,1153 +2,488 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Market Research – Kuantara</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap"/>
+  <title>Kuantara – Doc Editor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap"/>
 
   <style>
     :root {
-      /* KUANTARA TERMINAL THEME */
-      --bg-root: #000000;
-      --bg-main: #111111;
-      --bg-element: #111111;
-      --bg-hover: #1a1a1a;
-      --border-main: #2b2b2b;
-      --border-soft: #2b2b2b;
-      --text-main: #f5f5f5;
-      --text-muted: #9b9b9b;
-      --accent: #ffbf00;
-      --accent-dim: rgba(255, 191, 0, 0.15);
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
 
-      --fs-title: 14px;
-      --fs-subtitle: 12px;
-      --fs-body: 11px;
-      --fs-small: 10px;
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:10px;
 
-      --toolbar-height: 44px;
+      --card-radius:4px;
+      --card-padding-v:12px;
+      --card-padding-h:16px;
     }
 
     *{
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family:"Fira Code",monospace !important;
-      -webkit-tap-highlight-color:transparent;
-      scrollbar-width:thin;
-      scrollbar-color:#000000 #000000;
+      outline:none;
+      font-family:"Fira Code",monospace;
     }
-
-    /* WebKit scrollbar */
-    ::-webkit-scrollbar{width:8px;height:8px;}
-    ::-webkit-scrollbar-track{background:#000000;}
-    ::-webkit-scrollbar-thumb{background:#000000;border-radius:4px;}
 
     html,body{
       width:100%;
       height:100%;
-      background:var(--bg-root);
+      background-color:var(--bg-root);
       color:var(--text-main);
-      overflow:hidden;
     }
 
-    /* LAYOUT */
-    .app-shell{
-      display:flex;
-      width:100vw;
-      height:100vh;
-      position:relative;
-      background:var(--bg-root);
-      padding:16px;
-    }
-
-    /* SIDEBAR */
-    .sidebar{
-      flex:0 0 25%;
-      max-width:360px;
-      min-width:260px;
-      background:var(--bg-main);
-      border:1px solid var(--border-main);
-      border-radius:4px;
+    body{
       display:flex;
       flex-direction:column;
-      z-index:20;
-      transition:transform .3s ease;
-    }
-
-    .sidebar-content{
       padding:16px;
-      display:flex;
-      flex-direction:column;
       gap:12px;
-      height:100%;
-      overflow-y:auto;
+      overflow:hidden; /* scroll di workspace, bukan body */
     }
 
-    .brand-label{
-      font-weight:600;
-      color:var(--accent);
-      font-size:var(--fs-title);
-      letter-spacing:.5px;
+    /* ============ GENERIC ============ */
+    .card{
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:var(--card-radius);
+      padding:var(--card-padding-v) var(--card-padding-h);
     }
 
-    .form-group{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-
-    .form-label{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      letter-spacing:.5px;
-      font-weight:500;
-      text-transform:uppercase;
-    }
-
-    .kt-input{
-      background:#000000;
-      border:1px solid var(--border-main);
-      color:var(--text-main);
-      padding:8px 10px;
-      border-radius:4px;
-      font-size:var(--fs-body);
-      width:100%;
-      outline:none;
-    }
-
-    .kt-input:focus{
-      border-color:var(--accent);
-    }
-
-    .list-header{
-      margin-top:6px;
+    .title-row{
       display:flex;
       justify-content:space-between;
-      color:var(--text-muted);
-      font-size:var(--fs-small);
-    }
-
-    #docList{margin-top:6px;}
-
-    .doc-item{
-      padding:10px 10px;
+      align-items:center;
       margin-bottom:8px;
-      background:var(--bg-element);
-      border:1px solid transparent;
-      border-radius:4px;
-      cursor:pointer;
-      transition:.15s;
-      display:flex;
-      gap:10px;
     }
 
-    .doc-item:hover{
-      background:var(--bg-hover);
-    }
-
-    .doc-item.active{
-      background:var(--accent-dim);
-      border-color:var(--accent);
-    }
-
-    .doc-title{
-      font-size:var(--fs-body);
-      font-weight:500;
-      margin-bottom:2px;
-      color:var(--text-main);
-      text-align:left;
-    }
-
-    .doc-meta{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      display:flex;
-      gap:6px;
-      align-items:center;
-      flex-wrap:wrap;
-      text-align:left;
-    }
-
-    .doc-thumb{
-      width:52px;
-      min-width:52px;
-      height:52px;
-      border-radius:4px;
-      background:#1f1f1f;
-      border:1px solid var(--border-main);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-    }
-
-    .doc-thumb img{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      background:#fff;
-    }
-
-    .doc-body{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width:0;
-    }
-
-    .doc-desc{
-      font-size:var(--fs-body);
-      color:var(--text-muted);
-      text-align:left;
-      line-height:1.4;
-      overflow:hidden;
-      display:-webkit-box;
-      -webkit-line-clamp:3;
-      -webkit-box-orient:vertical;
-      line-clamp:3;
-      box-orient:vertical;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      padding:4px 8px;
-      border-radius:999px;
-      font-size:var(--fs-small);
-      border:1px solid var(--border-soft);
-      background:var(--bg-hover);
-      text-transform:uppercase;
-      letter-spacing:.4px;
+    .title-row h1{
+      font-size:var(--fs-title);
+      font-weight:600;
+      letter-spacing:0.5px;
       color:var(--text-main);
     }
 
-    .pill-accent{
-      background:var(--accent-dim);
-      border-color:var(--accent);
+    .title-tag{
+      font-size:var(--fs-small);
       color:var(--accent);
+      opacity:0.9;
     }
 
-    .logo-inline{
-      height:14px;
-      width:auto;
-      display:inline-block;
-      vertical-align:middle;
-      margin-right:2px;
-    }
-
-    /* MAIN CONTENT */
-    .main-content{
-      flex:1;
+    /* ============ TOOLBAR / HEADER ============ */
+    .app-header{
       display:flex;
       flex-direction:column;
-      position:relative;
-      min-width:0;
-      margin-left:12px;
+      gap:8px;
     }
 
-    .toolbar{
-      height:var(--toolbar-height);
-      background:var(--bg-main);
-      border:1px solid var(--border-main);
-      border-radius:4px;
+    .toolbar-container{
       display:flex;
-      align-items:center;
-      padding:0 10px;
+      flex-wrap:wrap;
       gap:8px;
-      overflow-x:auto;
-      margin-bottom:12px;
+      align-items:center;
+      font-size:var(--fs-small);
     }
 
     .toolbar-group{
       display:flex;
       gap:4px;
       padding-right:10px;
-      border-right:1px solid var(--border-main);
+      border-right:1px solid var(--border-soft);
       align-items:center;
     }
 
     .toolbar-group:last-child{
       border-right:none;
+      padding-right:0;
     }
 
-    .tool-btn{
-      width:30px;
-      height:30px;
-      background:transparent;
-      border:1px solid transparent;
+    .tb-label{
+      font-size:var(--fs-small);
       color:var(--text-muted);
-      border-radius:4px;
+      margin-right:4px;
+    }
+
+    .tb-btn{
+      background:#141414;
+      border:1px solid transparent;
+      border-radius:3px;
       cursor:pointer;
+      padding:4px 6px;
+      font-size:var(--fs-small);
+      color:var(--text-main);
+      min-width:26px;
       display:flex;
       align-items:center;
       justify-content:center;
-      flex-shrink:0;
-      font-size:var(--fs-body);
+      transition:all 0.12s ease-out;
     }
 
-    .tool-btn:hover{
-      background:var(--bg-hover);
-      color:var(--text-main);
-    }
-
-    .tool-btn.active{
-      background:var(--bg-hover);
-      color:var(--accent);
+    .tb-btn:hover{
+      background:#181818;
       border-color:var(--border-soft);
     }
 
-    svg{
-      width:16px;
-      height:16px;
-      stroke-width:2;
+    .tb-btn:active,
+    .tb-btn.active{
+      background:#1f1f1f;
+      border-color:var(--accent);
+      color:var(--accent);
     }
 
-    /* VIEWER */
-    .viewer-viewport{
-      flex:1;
-      position:relative;
-      background:#000000;
-      border:1px solid var(--border-main);
-      border-radius:4px;
-      overflow-y:auto;
-      overflow-x:auto;
-      display:block;
-      text-align:center;
-      padding:16px;
-    }
-
-    .pdf-wrapper{
-      display:inline-block;
-      position:relative;
-      background:#111111;
-      box-shadow:0 8px 30px rgba(0,0,0,0.7);
-      transform-origin:top center;
-      /* width/height di-set via JS untuk responsive */
-    }
-
-    iframe{
-      width:100%;
-      height:100%;
-      border:none;
-      display:block;
-      background:#ffffff;
-      pointer-events:auto; /* supaya scroll di dalam pdf berfungsi */
-    }
-
-    canvas{
-      position:absolute;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      touch-action:none;
-    }
-
-    /* Mode PAN / DRAW */
-    .viewer-viewport.mode-pan canvas{
-      pointer-events:none;
-      cursor:grab;
-    }
-    .viewer-viewport.mode-draw canvas{
-      pointer-events:auto;
-      cursor:crosshair;
-    }
-
-    /* MOBILE */
-    @media (max-width:768px){
-      .app-shell{
-        padding:8px;
-      }
-
-      .sidebar{
-        position:fixed;
-        left:0;
-        top:0;
-        height:100%;
-        width:82%;
-        transform:translateX(-100%);
-        box-shadow:4px 0 20px #000;
-        border-radius:0 4px 4px 0;
-      }
-
-      .sidebar.open{
-        transform:translateX(0);
-      }
-
-      .sidebar-backdrop{
-        position:fixed;
-        inset:0;
-        background:rgba(0,0,0,0.8);
-        z-index:15;
-        opacity:0;
-        pointer-events:none;
-        transition:.25s;
-      }
-
-      .sidebar-backdrop.open{
-        opacity:1;
-        pointer-events:auto;
-      }
-
-      .main-content{
-        margin-left:0;
-      }
-
-      .viewer-viewport{
-        padding:8px;
-      }
-
-      .btn-menu{
-        display:flex !important;
-      }
-    }
-
-    .btn-menu{
-      display:none;
-      margin-right:4px;
-      background:var(--accent);
-      border:none;
-      border-radius:4px;
-      padding:6px 10px;
+    .tb-btn span{
       font-weight:600;
+    }
+
+    .tb-select{
+      border:1px solid var(--border-soft);
+      background:#141414;
+      padding:4px 6px;
+      border-radius:3px;
       font-size:var(--fs-small);
-      color:#000;
+      color:var(--text-main);
       cursor:pointer;
+      min-width:120px;
+    }
+
+    .tb-select:hover{
+      border-color:var(--accent);
+    }
+
+    /* ============ WORKSPACE / EDITOR ============ */
+    .workspace{
+      flex:1 1 auto;
+      overflow-y:auto;
+      display:flex;
+      justify-content:center;
+      padding:0;
+      scrollbar-width:thin;
+      scrollbar-color:#333333 #000000;
+    }
+
+    .workspace::-webkit-scrollbar{
+      width:6px;
+    }
+    .workspace::-webkit-scrollbar-thumb{
+      background:#333333;
+      border-radius:4px;
+    }
+
+    .paper-wrapper{
+      width:100%;
+      max-width:860px;
+    }
+
+    .paper{
+      background:#0b0b0b;
+      border:1px solid var(--border-soft);
+      border-radius:var(--card-radius);
+      padding:24px 28px;
+      min-height:72vh;
+      font-size:var(--fs-body);
+      line-height:1.6;
+      color:var(--text-main);
+      white-space:pre-wrap;
+    }
+
+    .paper h1,
+    .paper h2,
+    .paper h3{
+      margin-top:10px;
+      margin-bottom:6px;
+      font-weight:600;
+      color:var(--accent);
+    }
+    .paper h1{ font-size:var(--fs-title); }
+    .paper h2{ font-size:var(--fs-subtitle); }
+    .paper h3{ font-size:var(--fs-body); }
+
+    .paper p{
+      margin-bottom:8px;
+      color:var(--text-main);
+    }
+
+    .paper ul,
+    .paper ol{
+      margin-bottom:8px;
+      padding-left:18px;
+    }
+
+    .paper blockquote{
+      border-left:2px solid var(--accent);
+      padding-left:10px;
+      margin:8px 0;
+      color:var(--text-muted);
+      font-style:italic;
+    }
+
+    .paper hr{
+      border:0;
+      border-top:1px solid var(--border-soft);
+      margin:12px 0;
+    }
+
+    /* ============ STATUS BAR ============ */
+    .status-bar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      padding:6px 10px;
+      background:#080808;
+      border:1px solid var(--border-soft);
+      border-radius:var(--card-radius);
+    }
+
+    .status-left,
+    .status-right{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .status-pill{
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      font-size:var(--fs-small);
+    }
+
+    .status-dot{
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:#22c55e;
+      margin-right:4px;
+      display:inline-block;
+    }
+
+    /* ============ MOBILE ============ */
+    @media (max-width:768px){
+      body{
+        padding:10px;
+        gap:8px;
+      }
+
+      .toolbar-container{
+        overflow-x:auto;
+        padding-bottom:2px;
+      }
+
+      .toolbar-group{
+        flex-shrink:0;
+      }
+
+      .paper{
+        padding:16px 14px;
+        min-height:65vh;
+        font-size:10px;
+      }
+
+      .title-row h1{
+        font-size:13px;
+      }
     }
   </style>
 </head>
 <body>
 
-<div class="app-shell">
-  <div class="sidebar-backdrop" id="backdrop"></div>
-
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-content">
-      <div class="brand-label">MARKET RESEARCH</div>
-
-      <!-- SOURCE FILTER -->
-      <div class="form-group" style="margin-top:8px;">
-        <label class="form-label">Source</label>
-        <select class="kt-input" id="sourceFilter">
-          <option value="all">All Sources</option>
-          <option value="westpac">Westpac</option>
-          <option value="scotia">Scotiabank</option>
-          <option value="cibc">CIBC</option>
-          <option value="seb">SEB</option>
-          <option value="mufg">MUFG</option>
-          <option value="kuantara">Kuantara AI</option>
+  <!-- HEADER + TOOLBAR (CARD) -->
+  <div class="card app-header">
+    <div class="title-row">
+      <h1>Doc Editor – Kuantara Terminal</h1>
+      <span class="title-tag">DOC MODE</span>
+    </div>
+    <div class="toolbar-container" id="toolbar">
+      <div class="toolbar-group">
+        <span class="tb-label">Style</span>
+        <select id="font-style" class="tb-select" title="Style">
+          <option value="p">Normal</option>
+          <option value="h1">Heading 1</option>
+          <option value="h2">Heading 2</option>
+          <option value="h3">Heading 3</option>
+          <option value="blockquote">Quote</option>
         </select>
       </div>
 
-      <div class="list-header">
-        <span>AVAILABLE DOCS</span>
-        <span id="docCount">0</span>
+      <div class="toolbar-group">
+        <span class="tb-label">Font</span>
+        <select id="font-family" class="tb-select" title="Font">
+          <option value="'Fira Code', monospace">Fira Code</option>
+          <option value="'Courier New', monospace">Courier</option>
+          <option value="'Consolas', monospace">Consolas</option>
+        </select>
       </div>
-
-      <div id="docList"></div>
-    </div>
-  </aside>
-
-  <main class="main-content">
-    <div class="toolbar">
-      <button class="btn-menu" id="menuToggle">MENU</button>
 
       <div class="toolbar-group">
-        <button class="tool-btn active" id="btnPan" title="Pan / Scroll">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7 11l5-5 5 5"/>
-            <path d="M7 13l5 5 5-5"/>
-          </svg>
-        </button>
-        <button class="tool-btn" id="btnPen" title="Pen">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 19l7-7 3 3-7 7-3-3z"/>
-            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
-          </svg>
-        </button>
-        <button class="tool-btn" id="btnHigh" title="Highlighter">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 11l-6 6v3h9l3-3"/>
-            <line x1="22" y1="12" x2="17.4" y2="16.6"/>
-          </svg>
-        </button>
-        <button class="tool-btn" id="btnErase" title="Eraser">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
-            <line x1="18" y1="9" x2="12" y2="15"/>
-            <line x1="12" y1="9" x2="18" y2="15"/>
-          </svg>
-        </button>
-        <button class="tool-btn" id="btnUndo" title="Undo">
-          &#8630;
-        </button>
-        <button class="tool-btn" id="btnClear" title="Clear All">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"/>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-          </svg>
-        </button>
+        <button class="tb-btn" data-cmd="bold" title="Bold (Ctrl+B)"><span>B</span></button>
+        <button class="tb-btn" data-cmd="italic" title="Italic (Ctrl+I)"><span style="font-style:italic">I</span></button>
+        <button class="tb-btn" data-cmd="underline" title="Underline (Ctrl+U)"><span style="text-decoration:underline">U</span></button>
+        <button class="tb-btn" data-cmd="strikeThrough" title="Strikethrough"><span style="text-decoration:line-through">S</span></button>
+      </div>
+
+      <div class="toolbar-group">
+        <button class="tb-btn" data-cmd="justifyLeft" title="Align Left">⟸</button>
+        <button class="tb-btn" data-cmd="justifyCenter" title="Center">≡</button>
+        <button class="tb-btn" data-cmd="justifyRight" title="Align Right">⟹</button>
+        <button class="tb-btn" data-cmd="insertUnorderedList" title="Bullet List">•</button>
+        <button class="tb-btn" data-cmd="insertOrderedList" title="Number List">1.</button>
+      </div>
+
+      <div class="toolbar-group" style="border-right:none;">
+        <button class="tb-btn" data-cmd="undo" title="Undo">↺</button>
+        <button class="tb-btn" data-cmd="redo" title="Redo">↻</button>
+        <button class="tb-btn" id="btn-clean" title="New Document" style="color:#ff4b4b;">🗑</button>
       </div>
     </div>
+  </div>
 
-    <div class="viewer-viewport mode-pan" id="viewport">
-      <div class="pdf-wrapper" id="wrapper">
-        <iframe id="pdfFrame" src=""></iframe>
-        <canvas id="pdfCanvas"></canvas>
+  <!-- WORKSPACE -->
+  <div class="workspace" id="workspace-area">
+    <div class="paper-wrapper">
+      <div id="editor" class="paper" contenteditable="true" spellcheck="false">
+<h1>Laporan Market – Kuantara</h1>
+<p>Mulai tulis laporanmu di sini. Gunakan heading untuk setiap section (misalnya: Executive Summary, Global Macro, Cross-Asset, dll).</p>
       </div>
     </div>
-  </main>
-</div>
+  </div>
 
-<script>
-  const PROXY   = "https://cors.eu.org/";
-  const URL     = "https://www.westpaciq.com.au/markets/";
-  const PDF_BASE = "https://library.westpaciq.com.au";
-  const SCOTIA_DATA_URL = "https://cors.eu.org/https://www.scotiabank.com/ca/en/about/economics/economics-publications/jcr:content/main-par/section_container/section-container-par/generic_filter_copy_.economicfilterservlet.0.english.all.all.all.html";
-  const SCOTIA_BASE_URL = "https://www.scotiabank.com";
-  const SCOTIA_LOGO = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRh1OsngKUW447EUB_9K5Iz6ssVozVGIYGx4g&s";
-  const WESTPAC_LOGO = "https://images.seeklogo.com/logo-png/15/1/westpac-logo-png_seeklogo-152472.png";
-  const SCOTIA_PAGE_SIZE = 12;
-  const SCOTIA_MAX_PAGES = 5;
-  const CIBC_API_URL = "https://economics.cibccm.com/api/search";
-  const CIBC_DOWNLOAD_BASE = "https://economics.cibccm.com/api/download?relativePath=";
-  const CIBC_SITE_BASE = "https://economics.cibccm.com/";
-  const CIBC_LOGO = "https://images.seeklogo.com/logo-png/49/1/cibc-bank-logo-png_seeklogo-490346.png";
-  const SEB_API_URL = "https://cors.eu.org/https://research.sebgroup.com/mapi/v2/reports?nbrows=100&language=English";
-  const SEB_BASE_URL = "https://research.sebgroup.com";
-  const SEB_LOGO = "https://pbs.twimg.com/profile_images/1968263186546597888/4XYqkNUN_400x400.png";
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div class="status-left">
+      <span class="status-pill" id="page-count">Page 1</span>
+      <span id="word-count">0 words</span>
+    </div>
+    <div class="status-right">
+      <span>
+        <span class="status-dot"></span>
+        <span id="save-status">Ready</span>
+      </span>
+    </div>
+  </div>
 
-  const viewport   = document.getElementById('viewport');
-  const wrapper    = document.getElementById('wrapper');
-  const canvas     = document.getElementById('pdfCanvas');
-  const ctx        = canvas.getContext('2d');
-  const pdfFrame   = document.getElementById('pdfFrame');
-  const sourceSel  = document.getElementById('sourceFilter');
-  const docListEl  = document.getElementById('docList');
-  const docCountEl = document.getElementById('docCount');
+  <script>
+    (function(){
+      const editor = document.getElementById("editor");
+      const wordCountEl = document.getElementById("word-count");
+      const saveStatusEl = document.getElementById("save-status");
+      const fontStyleSel = document.getElementById("font-style");
+      const fontFamilySel = document.getElementById("font-family");
 
-  const sidebar  = document.getElementById('sidebar');
-  const backdrop = document.getElementById('backdrop');
+      const STORAGE_KEY = "kuantara_doc_editor_dark_v1";
+      let saveTimer = null;
 
-  let docs = [];
-  let currentTool  = 'pan';
-  let isDrawing    = false;
-  let lastX = 0, lastY = 0;
-  let currentDocId = null;
-
-  // History untuk Undo
-  let historyStack = [];
-
-  // Rasio A4 kasar
-  const BASE_RATIO = 1200 / 900;
-
-  function makePdfUrl(path) {
-    if (!path) return null;
-    path = path.trim();
-    if (!path) return null;
-    if (path.startsWith("http://") || path.startsWith("https://")) {
-        return path;
-    }
-    if (!path.startsWith("/")) path = "/" + path;
-    return PDF_BASE + path;
-  }
-
-  function absolutize(url, base){
-    if(!url) return "";
-    if(url.startsWith("http://") || url.startsWith("https://")) return url;
-    if(url.startsWith("//")) return window.location.protocol + url;
-    if(!url.startsWith("/")) url = "/" + url;
-    return base.replace(/\/+$/,'') + url;
-  }
-
-  function extractExecutivePdfs(htmlStr) {
-    const list = [];
-    if (!htmlStr) return list;
-
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlStr, "text/html");
-    const links = doc.querySelectorAll("a[href$='.pdf']");
-
-    links.forEach(a => {
-        const hrefRaw = a.getAttribute("href") || "";
-        const pdfUrl  = makePdfUrl(hrefRaw);
-        const title   = a.innerText.trim();
-        list.push({
-            url: pdfUrl,
-            title: title
-        });
-    });
-
-    return list;
-  }
-
-  function pickPdf(article){
-    const summaryPdfs = extractExecutivePdfs(article.executiveSummary || article.articledescription || "");
-    if (article.fileReference && article.fileReference.endsWith(".pdf")) {
-      return makePdfUrl(article.fileReference);
-    }
-    if(summaryPdfs.length > 0) return summaryPdfs[0].url;
-    return null;
-  }
-
-  function extractPlainText(htmlStr){
-    if(!htmlStr) return '';
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlStr, "text/html");
-    return (doc.body.textContent || '').replace(/\s+/g,' ').trim();
-  }
-
-  function decodeHtml(str){
-    if(!str) return '';
-    const txt = document.createElement("textarea");
-    txt.innerHTML = str;
-    return txt.value;
-  }
-
-  function cleanTitle(val){
-    if(!val) return '(no title)';
-    return extractPlainText(decodeHtml(val)) || '(no title)';
-  }
-
-  function buildCibcPdf(path){
-    if(!path) return '';
-    if(/^https?:\/\//i.test(path)) return path;
-    const rel = path.replace(/^\/+/, '');
-    return CIBC_DOWNLOAD_BASE + rel;
-  }
-
-  function toPreview(text, len=160){
-    if(!text) return '';
-    if(text.length <= len) return text;
-    return text.slice(0, len).trim() + '…';
-  }
-
-  function formatDateOnly(d){
-    if(!(d instanceof Date) || Number.isNaN(d.getTime())) return '';
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth()+1).padStart(2,'0');
-    const dd = String(d.getDate()).padStart(2,'0');
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  function normalizeDate(value){
-    if(!value) return { display:'', ts:0 };
-    const tryDate = new Date(value);
-    if(!Number.isNaN(tryDate.getTime())){
-      return { display: formatDateOnly(tryDate), ts: tryDate.getTime() };
-    }
-    const m1 = value.match(/(20\d{2})[-\/](\d{1,2})[-\/](\d{1,2})/);
-    if(m1){
-      const iso = `${m1[1]}-${m1[2].padStart(2,'0')}-${m1[3].padStart(2,'0')}`;
-      const d = new Date(iso);
-      return { display: iso, ts: d.getTime() };
-    }
-    const m2 = value.match(/(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(20\d{2})/i);
-    if(m2){
-      const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-      const monthIndex = months.indexOf(m2[2].slice(0,3).toLowerCase());
-      const iso = `${m2[3]}-${String(monthIndex+1).padStart(2,'0')}-${m2[1].padStart(2,'0')}`;
-      const d = new Date(iso);
-      return { display: iso, ts: d.getTime() };
-    }
-    return { display:value, ts:0 };
-  }
-
-  // --- FILTER ---
-  function getFilteredDocs(){
-    const sourceVal = sourceSel.value;
-
-    return docs.filter(d => {
-      if(sourceVal !== 'all' && (d.source || '').toLowerCase() !== sourceVal) return false;
-      return true;
-    });
-  }
-
-  function renderList(){
-    const container    = docListEl;
-    const filteredDocs = getFilteredDocs().sort((a,b)=> (b.dateTs||0)-(a.dateTs||0));
-    container.innerHTML = '';
-
-    filteredDocs.forEach(d=>{
-      const el = document.createElement('div');
-      el.className = 'doc-item';
-      el.dataset.id = d.id;
-      el.innerHTML = `
-        <div class="doc-thumb">
-          <img src="${d.logo || 'https://images.seeklogo.com/logo-png/15/1/westpac-logo-png_seeklogo-152472.png'}" alt="logo">
-        </div>
-        <div class="doc-body">
-          <div class="doc-title">${d.title}</div>
-          <div class="doc-meta">
-            <span style="color:var(--accent);font-weight:600;">${d.displaySource || 'Source'}</span>
-            <span>|</span>
-            <span>${d.date || '-'}</span>
-            <span>|</span>
-            <span class="pill">${d.umbrella || 'Umbrella'}</span>
-          </div>
-          <div class="doc-desc">${d.preview || ''}</div>
-        </div>`;
-      el.onclick = () => loadDoc(d, el);
-      container.appendChild(el);
-    });
-
-    docCountEl.textContent = filteredDocs.length;
-
-    if(filteredDocs.length === 0){
-      container.innerHTML = `<div class="doc-meta" style="color:var(--text-muted);">Tidak ada dokumen yang bisa ditampilkan.</div>`;
-      return;
-    }
-
-    if(filteredDocs.length > 0){
-      const current = filteredDocs.find(d => d.id === currentDocId) || filteredDocs[0];
-      const el = container.querySelector(`.doc-item[data-id="${current.id}"]`) || container.querySelector('.doc-item');
-      if(el) loadDoc(current, el);
-    } else {
-      currentDocId = null;
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      historyStack = [];
-      pdfFrame.src = "";
-    }
-  }
-
-  // --- LOAD DOC ---
-  function loadDoc(doc, elBtn){
-    currentDocId = doc.id;
-    document.querySelectorAll('.doc-item').forEach(b=>b.classList.remove('active'));
-    if(elBtn) elBtn.classList.add('active');
-
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    historyStack = [];
-
-    let pdfUrl = doc.pdf || '';
-    if(doc.source === 'scotia'){
-      pdfUrl = absolutize(pdfUrl, SCOTIA_BASE_URL);
-    }else if(doc.source === 'cibc'){
-      pdfUrl = buildCibcPdf(pdfUrl);
-    }
-
-    if(pdfUrl){
-      // Some sources block iframe; use Google viewer for those
-      const needsProxy = doc.source === 'westpac' || doc.source === 'scotia' || doc.source === 'cibc' || doc.source === 'seb';
-      pdfFrame.src = needsProxy
-        ? `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(pdfUrl)}`
-        : `${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`;
-    } else {
-      pdfFrame.src = doc.fullUrl || '';
-    }
-
-    toggleSidebar(false);
-  }
-
-  // RESPONSIVE CANVAS & WRAPPER
-  function resizeCanvas(){
-    const padding = 32;
-    const available = Math.max(320, viewport.clientWidth - padding);
-    const width  = available;
-    const height = Math.round(width * BASE_RATIO);
-
-    wrapper.style.width  = width + 'px';
-    wrapper.style.height = height + 'px';
-
-    canvas.width  = width;
-    canvas.height = height;
-
-    wrapper.style.margin = '0 auto';
-
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-
-    // Ukuran berubah -> history harus direset
-    historyStack = [];
-  }
-
-  // TOOLS
-  const tools = { btnPan:'pan', btnPen:'pen', btnHigh:'high', btnErase:'erase' };
-
-  Object.keys(tools).forEach(id=>{
-    document.getElementById(id).onclick = () => setTool(tools[id]);
-  });
-
-  // UNDO
-  document.getElementById('btnUndo').onclick = () => {
-    if(historyStack.length > 0){
-      const imgData = historyStack.pop();
-      ctx.putImageData(imgData, 0, 0);
-    } else {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-    }
-  };
-
-  // CLEAR (masuk history supaya bisa di-undo)
-  document.getElementById('btnClear').onclick = () => {
-    if(confirm('Clear annotations?')){
-      if(canvas.width && canvas.height){
-        const snapshot = ctx.getImageData(0,0,canvas.width,canvas.height);
-        historyStack.push(snapshot);
+      function execCmd(command, value = null) {
+        document.execCommand(command, false, value);
+        editor.focus();
+        updateStats();
+        triggerAutosave();
+        updateToolbarState();
       }
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-    }
-  };
 
-  function setTool(t){
-    currentTool = t;
-    document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
-    const btnId = Object.keys(tools).find(key => tools[key] === t);
-    if(btnId) document.getElementById(btnId).classList.add('active');
-
-    viewport.className = 'viewer-viewport mode-' + (t === 'pan' ? 'pan' : 'draw');
-  }
-
-  // DRAWING
-  function getPos(e){
-    const rect = canvas.getBoundingClientRect();
-    let clientX = e.clientX;
-    let clientY = e.clientY;
-
-    if(e.touches && e.touches.length > 0){
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    }
-
-    const scaleX = canvas.width  / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    return {
-      x:(clientX - rect.left) * scaleX,
-      y:(clientY - rect.top)  * scaleY
-    };
-  }
-
-  function startDraw(e){
-    if(currentTool === 'pan') return;
-    if(e.type === 'mousedown' && e.button !== 0) return;
-
-    // Simpan snapshot sekali di awal stroke untuk Undo
-    if(canvas.width && canvas.height){
-      const snapshot = ctx.getImageData(0,0,canvas.width,canvas.height);
-      historyStack.push(snapshot);
-    }
-
-    if(e.type !== 'mousedown') isDrawing = true;
-    if(e.type === 'mousedown') isDrawing = true;
-
-    const pos = getPos(e);
-    lastX = pos.x;
-    lastY = pos.y;
-  }
-
-  function draw(e){
-    if(!isDrawing || currentTool === 'pan') return;
-    if(e.cancelable) e.preventDefault();
-
-    const pos = getPos(e);
-
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(pos.x, pos.y);
-
-    if(currentTool === 'pen'){
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = '#ffbf00';
-      ctx.lineWidth = 2;
-      ctx.globalAlpha = 1.0;
-    }else if(currentTool === 'high'){
-      ctx.globalCompositeOperation = 'multiply';
-      ctx.strokeStyle = '#ffeb3b';
-      ctx.lineWidth = 14;
-      ctx.globalAlpha = 0.4;
-    }else if(currentTool === 'erase'){
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = 24;
-      ctx.globalAlpha = 1.0;
-    }
-
-    ctx.stroke();
-    lastX = pos.x;
-    lastY = pos.y;
-  }
-
-  function endDraw(){
-    isDrawing = false;
-  }
-
-  canvas.addEventListener('mousedown', startDraw);
-  canvas.addEventListener('mousemove', draw);
-  canvas.addEventListener('mouseup', endDraw);
-  canvas.addEventListener('mouseout', endDraw);
-
-  canvas.addEventListener('touchstart', startDraw, { passive:false });
-  canvas.addEventListener('touchmove',  draw,      { passive:false });
-  canvas.addEventListener('touchend',   endDraw);
-
-  // FILTER EVENTS
-  sourceSel.addEventListener('change', renderList);
-
-  // MOBILE SIDEBAR
-  function toggleSidebar(show){
-    if(show){
-      sidebar.classList.add('open');
-      backdrop.classList.add('open');
-    }else{
-      sidebar.classList.remove('open');
-      backdrop.classList.remove('open');
-    }
-  }
-
-  document.getElementById('menuToggle').onclick = () => toggleSidebar(true);
-  backdrop.onclick = () => toggleSidebar(false);
-
-  async function loadWestpac() {
-    try {
-        const res = await fetch(PROXY + URL);
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const html = await res.text();
-
-        const match = html.match(/var JSONobject\s*=\s*'(.*?)';/s);
-        if (!match) throw new Error("JSONobject not found!");
-
-        const rawString = decodeHtml(match[1]);
-        const obj = JSON.parse(rawString);
-
-        const articles = obj.articleAggregator || [];
-        return articles.map((a, idx) => {
-          const pdfUrl = pickPdf(a);
-          const preview = toPreview(extractPlainText(a.executiveSummary || a.articledescription || ''), 180);
-          const dateInfo = normalizeDate((a.publishdate || '').split(' ')[0]);
-          return {
-            id: a.articleId || `westpac-${idx + 1}`,
-            title: cleanTitle(a.articleheadline || '(no title)'),
-            date: dateInfo.display,
-            dateTs: dateInfo.ts,
-            source: 'westpac',
-            displaySource: a.articleauthor || a.sourceName || 'Westpac',
-            umbrella: a.umbrella || '',
-            preview,
-            logo: WESTPAC_LOGO,
-            pdf: pdfUrl,
-            fullUrl: "https://www.westpaciq.com.au" + (a.articlePath || '')
-          };
+      // Toolbar buttons
+      document.querySelectorAll(".tb-btn[data-cmd]").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          execCmd(btn.dataset.cmd);
         });
-    } catch (e) {
-        console.error(e);
-        return [{ id:'westpac-error', title:'Error memuat Westpac', date:'', dateTs:0, source:'westpac', displaySource:'Westpac', umbrella:'', preview:e.message, logo:WESTPAC_LOGO, pdf:null, fullUrl:'' }];
-    }
-  }
-
-  function parseDateFromText(text){
-    const regex = /(20\d{2})[-/](\d{1,2})[-/](\d{1,2})/;
-    const m = text.match(regex);
-    if(m){
-      return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
-    }
-    const m2 = text.match(/(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(20\d{2})/i);
-    if(m2){
-      const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-      const idx = months.indexOf(m2[2].slice(0,3).toLowerCase());
-      return `${m2[3]}-${String(idx+1).padStart(2,'0')}-${m2[1].padStart(2,'0')}`;
-    }
-    return '';
-  }
-
-  function parseScotiaJson(data){
-    const items = Array.isArray(data) ? data : (data.jsonArticles || data.items || data.list || []);
-    if(!Array.isArray(items)) return [];
-    return items.map((it, idx) => {
-      const title = cleanTitle(it.title || it.fragment_title || it.headline || it.name || `Scotia Doc ${idx+1}`);
-      const dateRaw = it.publicationDate || it.publishDate || it.fragment_date || it.date || '';
-      const dateInfo = normalizeDate(dateRaw || parseDateFromText(title));
-      const pdfUrlRaw = it.file || it.pdf || it.fragment_pdf_path || it.assetPath || it.assetUrl || it.assetURL || it.path || it.url || it.href || '';
-      const pdfUrl = pdfUrlRaw ? absolutize(pdfUrlRaw, SCOTIA_BASE_URL) : '';
-      const fullUrl = absolutize(it.articleUrl || it.fragment_url || it.detailUrl || it.detailURL || pdfUrlRaw || '', SCOTIA_BASE_URL);
-      const desc = toPreview(it.description || it.fragment_description || it.summary || it.subtitle || '', 180);
-      const umbrella = (it.category || it.fragment_category_tag || it.topic || it.tag || [])[0] || '';
-      return {
-        id: it.id || `scotia-${idx+1}`,
-        title,
-        date: dateInfo.display,
-        dateTs: dateInfo.ts,
-        source: 'scotia',
-        displaySource: 'Scotiabank',
-        umbrella,
-        preview: desc,
-        logo: SCOTIA_LOGO,
-        pdf: pdfUrl && pdfUrl.toLowerCase().includes('.pdf') ? pdfUrl : null,
-        fullUrl: fullUrl
-      };
-    });
-  }
-
-  function parseScotiaHtml(text){
-    const list = [];
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, "text/html");
-    const anchors = Array.from(doc.querySelectorAll("a[href]"));
-    anchors.forEach((a, idx) => {
-      const href = a.getAttribute("href") || "";
-      const url = absolutize(href, SCOTIA_BASE_URL);
-      if(!url) return;
-      const isPdf = url.toLowerCase().includes(".pdf");
-      const title = (a.textContent || a.getAttribute("title") || "").trim() || `Scotia Doc ${idx+1}`;
-      const near = a.closest("div, li, article") || a.parentElement;
-      let dateRaw = a.getAttribute("data-publicationdate") || a.getAttribute("data-publication-date") || "";
-      if(!dateRaw && near){
-        const timeEl = near.querySelector("time");
-        if(timeEl) dateRaw = timeEl.getAttribute("datetime") || timeEl.textContent.trim();
-      }
-      if(!dateRaw) dateRaw = parseDateFromText(title);
-      const dateInfo = normalizeDate(dateRaw);
-      const desc = toPreview(extractPlainText(near ? near.textContent : title), 180);
-      list.push({
-        id: `scotia-${idx+1}`,
-        title,
-        date: dateInfo.display,
-        dateTs: dateInfo.ts,
-        source: 'scotia',
-        displaySource: 'Scotiabank',
-        umbrella: '',
-        preview: desc,
-        logo: SCOTIA_LOGO,
-        pdf: isPdf ? url : null,
-        fullUrl: url
       });
-    });
-    return list;
-  }
 
-  async function loadScotia(){
-    const all = [];
-    let offset = 0;
-    for(let i=0;i<SCOTIA_MAX_PAGES;i++){
-      const url = SCOTIA_DATA_URL.replace(/economicfilterservlet\.\d+\.english/, `economicfilterservlet.${offset}.english`);
-      try{
-        const res = await fetch(url);
-        if(!res.ok) throw new Error("HTTP " + res.status);
-        const text = await res.text();
-        let chunk = [];
-        try{
-          const json = JSON.parse(text);
-          chunk = parseScotiaJson(json);
-        }catch(_){
-          chunk = parseScotiaHtml(text);
+      // Dropdowns
+      fontStyleSel.addEventListener("change", () => execCmd("formatBlock", fontStyleSel.value));
+      fontFamilySel.addEventListener("change", () => execCmd("fontName", fontFamilySel.value));
+
+      // New document
+      document.getElementById("btn-clean").addEventListener("click", () => {
+        if(confirm("Hapus semua isi dan mulai dokumen baru?")) {
+          editor.innerHTML = "<h1>Laporan Market – Kuantara</h1><p>Mulai tulis laporanmu di sini...</p>";
+          updateStats();
+          triggerAutosave();
         }
-        all.push(...chunk);
-        if(chunk.length < SCOTIA_PAGE_SIZE) break; // no more items
-      }catch(e){
-        console.error(e);
-        all.push({ id:`scotia-error-${i}`, title:'Error memuat Scotiabank', date:'', dateTs:0, source:'scotia', displaySource:'Scotiabank', umbrella:'', preview:e.message, logo:SCOTIA_LOGO, pdf:null, fullUrl:'' });
-        break;
+      });
+
+      // Editor events
+      editor.addEventListener("input", () => {
+        updateStats();
+        triggerAutosave();
+      });
+
+      editor.addEventListener("keyup", () => {
+        updateToolbarState();
+      });
+
+      editor.addEventListener("click", () => {
+        updateToolbarState();
+      });
+
+      // Paste as plain text
+      editor.addEventListener("paste", (e) => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData("text");
+        document.execCommand("insertText", false, text);
+      });
+
+      function updateStats() {
+        const text = editor.innerText || "";
+        const words = text.trim().length ? text.trim().split(/\s+/).length : 0;
+        wordCountEl.textContent = words + " words";
       }
-      offset += SCOTIA_PAGE_SIZE;
-    }
-    return all;
-  }
 
-  async function loadCibc(){
-    try{
-      const payload = {
-        Title: null,
-        ReportGroup: "1,2,6,8,9,4,3,7",
-        FromDate: null,
-        ToDate: null
-      };
-      const headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
-        "Accept": "application/json, text/plain, */*",
-        "Content-Type": "application/json",
-        "sec-ch-ua-platform": "\"Windows\"",
-        "sec-ch-ua": "\"Chromium\";v=\"142\", \"Google Chrome\";v=\"142\", \"Not_A Brand\";v=\"99\"",
-        "sec-ch-ua-mobile": "?0",
-        "origin": "https://economics.cibccm.com",
-        "sec-fetch-site": "same-origin",
-        "priority": "u=1, i"
-      };
-      const res = await fetch(CIBC_API_URL, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(payload)
+      function updateToolbarState() {
+        const cmds = ["bold", "italic", "underline", "justifyLeft", "justifyCenter", "justifyRight"];
+        cmds.forEach(cmd => {
+          const btn = document.querySelector(`.tb-btn[data-cmd="${cmd}"]`);
+          if (!btn) return;
+          if (document.queryCommandState(cmd)) {
+            btn.classList.add("active");
+          } else {
+            btn.classList.remove("active");
+          }
+        });
+      }
+
+      function triggerAutosave() {
+        saveStatusEl.textContent = "Saving...";
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          try{
+            localStorage.setItem(STORAGE_KEY, editor.innerHTML);
+            saveStatusEl.textContent = "Saved (local)";
+          }catch(err){
+            saveStatusEl.textContent = "Save error";
+          }
+        }, 800);
+      }
+
+      function loadDoc() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          editor.innerHTML = saved;
+        }
+        updateStats();
+      }
+
+      // Ctrl+S
+      document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+          e.preventDefault();
+          triggerAutosave();
+        }
       });
-      if(!res.ok) throw new Error("HTTP " + res.status);
-      const json = await res.json();
-      const items = Array.isArray(json) ? json : (json.results || json.items || json.data || []);
-      return (items || []).map((it, idx) => {
-        const dateInfo = normalizeDate((it.PublishedDate || '').split('T')[0]);
-        const pdfUrlRaw = it.PdfPath || it.pdf || it.PDF || '';
-        const pdfUrl = pdfUrlRaw ? buildCibcPdf(pdfUrlRaw) : '';
-        const desc = toPreview(it.Description || it.TeaserText || '', 180);
-        return {
-          id: it.PublicationId || `cibc-${idx+1}`,
-          title: cleanTitle(it.Title || it.ReportType || `CIBC Doc ${idx+1}`),
-          date: dateInfo.display,
-          dateTs: dateInfo.ts,
-          source: 'cibc',
-          displaySource: 'CIBC',
-          umbrella: it.ReportType || '',
-          preview: desc,
-          logo: CIBC_LOGO,
-          pdf: pdfUrl && pdfUrl.toLowerCase().includes('.pdf') ? pdfUrl : null,
-          fullUrl: pdfUrl || CIBC_SITE_BASE
-        };
-      });
-    }catch(e){
-      console.error(e);
-      return [{ id:'cibc-error', title:'Error memuat CIBC', date:'', dateTs:0, source:'cibc', displaySource:'CIBC', umbrella:'', preview:e.message, logo:CIBC_LOGO, pdf:null, fullUrl:CIBC_SITE_BASE }];
-    }
-  }
 
-  async function loadSeb(){
-    try{
-      const res = await fetch(SEB_API_URL);
-      if(!res.ok) throw new Error("HTTP " + res.status);
-      const json = await res.json();
-      const items = (json && json.reports) || [];
-      return items.map((it, idx) => {
-        const dateInfo = normalizeDate((it.publishedDate || '').split('T')[0]);
-        const pdfUrl = it.attachment && it.attachment.fileName ? absolutize(it.attachment.fileName, SEB_BASE_URL) : '';
-        const fallbackPdf = `${SEB_BASE_URL}/api/puppeteer/mficc/${it.articleId}`;
-        const desc = toPreview(extractPlainText(it.text || it.heading || it.title || ''), 180);
-        const umbrella = (it.displayTags && it.displayTags[0] && it.displayTags[0].tags && it.displayTags[0].tags[0]) || it.reportType || '';
-        return {
-          id: it.articleId || `seb-${idx+1}`,
-          title: cleanTitle(it.title || it.heading || `SEB Doc ${idx+1}`),
-          date: dateInfo.display,
-          dateTs: dateInfo.ts,
-          source: 'seb',
-          displaySource: 'SEB',
-          umbrella,
-          preview: desc,
-          logo: SEB_LOGO,
-          pdf: pdfUrl || fallbackPdf,
-          fullUrl: pdfUrl || fallbackPdf
-        };
-      });
-    }catch(e){
-      console.error(e);
-      return [{ id:'seb-error', title:'Error memuat SEB', date:'', dateTs:0, source:'seb', displaySource:'SEB', umbrella:'', preview:e.message, logo:SEB_LOGO, pdf:null, fullUrl:SEB_BASE_URL }];
-    }
-  }
-
-  async function loadAll(){
-    try{
-      const [westpacDocs, scotiaDocs, cibcDocs, sebDocs] = await Promise.all([loadWestpac(), loadScotia(), loadCibc(), loadSeb()]);
-      docs = [...(westpacDocs || []), ...(scotiaDocs || []), ...(cibcDocs || []), ...(sebDocs || [])].sort((a,b) => (b.dateTs||0) - (a.dateTs||0));
-      renderList();
-      console.log("Loaded docs:", docs.length);
-    }catch(e){
-      console.error("loadAll error", e);
-      docs = [];
-      docListEl.innerHTML = `<div class="doc-meta" style="color:red;">Gagal memuat data: ${e.message}</div>`;
-      docCountEl.textContent = "0";
-    }
-  }
-
-  function init(){
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    loadAll();
-  }
-
-  init();
-</script>
+      // Init
+      loadDoc();
+      updateToolbarState();
+    })();
+  </script>
 </body>
 </html>
