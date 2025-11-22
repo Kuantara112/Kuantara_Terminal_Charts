@@ -1,143 +1,1098 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Kuantara – Resources & Trade Flows (ECharts)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
   <style>
-    :root {
-      --bg:#050505;
-      --card:#151515;
-      --accent:#ffbf00;
+    :root{
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
     }
 
     *{
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:"Fira Code",monospace!important;
+      scrollbar-width:thin;
+      scrollbar-color:#000000 transparent;
     }
 
-    body{
+    *::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track{
+      background:#000000;
+    }
+    *::-webkit-scrollbar-thumb{
+      background:#1c1c1c;
+      border-radius:999px;
+    }
+
+    html,body{
+      background:var(--bg-root);
+      color:var(--text-main);
       min-height:100vh;
+      width:100%;
+    }
+
+    main{
+      padding:12px;
+      min-height:100vh;
+      width:100%;
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    /* SINGLE PANEL WRAPPER */
+    .panel{
+      border:1px solid var(--border-soft);
+      background:var(--bg-main);
+      border-radius:6px;
+      padding:12px;
       display:flex;
-      align-items:center;
-      justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
+      flex-direction:column;
+      min-height:100vh;
+      gap:12px;
+    }
+
+    .panel-header{
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      padding-bottom:8px;
+      margin-bottom:4px;
+    }
+
+    .panel-title{
+      font-size:var(--fs-title);
+      letter-spacing:0.06em;
+      color:var(--accent);
+      text-transform:uppercase;
+    }
+
+    .panel-sub{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    .panel-body{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      flex:1;
+      min-height:0;
+    }
+
+    /* SECTION BLOCKS (mobile-first: full width, stacked) */
+    .section{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .section-label{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      text-transform:uppercase;
+      letter-spacing:0.11em;
+    }
+
+    .section-title{
+      font-size:var(--fs-subtitle);
       color:var(--text-main);
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
-      text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    /* GENERIC CHART CARD */
+    .chart-card{
+      border:1px solid var(--border-soft);
+      background:#0c0c0c;
+      border-radius:4px;
+      padding:8px;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
     }
 
-    .badge{
-      display:inline-flex;
-      align-items:center;
+    .chart-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:6px;
+      margin-bottom:4px;
+    }
+
+    .chart-title{
+      font-size:var(--fs-subtitle);
+      color:var(--text-main);
+      flex:1;
+      min-width:0;
+    }
+
+    .chart-meta{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      white-space:nowrap;
+      text-align:right;
+    }
+
+    .chart-body{
+      flex:1;
+      min-height:0;
+      position:relative;
+    }
+
+    .chart-box{
+      width:100%;
+      height:100%;
+      min-height:180px;
+    }
+
+    /* GRID LAYOUTS – mobile first */
+    .section-grid-1-1,
+    .section-grid-2-1,
+    .section-grid-map-heatmap{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    /* all charts stack nicely on mobile */
+    .chart-stack{
+      display:flex;
+      flex-direction:column;
       gap:8px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
+    }
+
+    /* MAP PANEL */
+    .sat-card{
+      border:1px solid var(--border-soft);
+      background:#0c0c0c;
+      border-radius:4px;
+      padding:8px;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+
+    .sat-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding-bottom:4px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      margin-bottom:4px;
+      gap:8px;
+    }
+
+    .sat-title{
+      font-size:10px;
+      letter-spacing:0.04em;
       color:var(--accent);
-      margin-bottom:18px;
+      text-transform:uppercase;
     }
 
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
-    }
-
-    h1{
-      font-size:22px;
-      margin-bottom:8px;
-    }
-
-    p{
-      font-size:14px;
-      line-height:1.6;
+    .sat-sub{
+      font-size:9.5px;
       color:var(--text-muted);
-      margin-bottom:18px;
     }
 
-    .time-estimate{
-      font-size:13px;
+    .sat-body{
+      flex:1;
+      min-height:0;
+      position:relative;
+      border-radius:4px;
+      overflow:hidden;
+      background:#000000;
+    }
+
+    .sat-body iframe{
+      border:none;
+      width:100%;
+      height:100%;
+      min-height:220px;
+      display:block;
+    }
+
+    .map-stack{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      height:40px;
+      background:#000000;
+      border-top:1px solid var(--border-soft);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 10px;
+      font-size:10px;
       color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
+      pointer-events:none;
     }
 
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
+    .map-stack span.left{
+      letter-spacing:0.08em;
+      text-transform:uppercase;
     }
 
-    .btn:hover{
-      background:var(--accent);
-      color:#000;
-      transform:translateY(-1px);
+    .map-stack span.right{
+      opacity:0.85;
     }
 
-    .footer-text{
-      margin-top:16px;
-      font-size:11px;
-      color:#666;
+    .heatmap-box{
+      width:100%;
+      height:100%;
+      min-height:220px;
+      background:#000000;
+    }
+
+    /* RESPONSIVE BREAKPOINTS */
+    @media (min-width:768px){
+      main{
+        padding:16px;
+      }
+      .panel{
+        padding:14px;
+      }
+      .chart-box{
+        min-height:220px;
+      }
+      .sat-body iframe,
+      .heatmap-box{
+        min-height:260px;
+      }
+    }
+
+    @media (min-width:960px){
+      /* overview: line (left) + bar (right) */
+      .section-grid-1-1{
+        display:grid;
+        grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+        align-items:stretch;
+      }
+
+      /* composition: donut + agri/fuels side by side */
+      .section-grid-2-1{
+        display:grid;
+        grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);
+        align-items:stretch;
+      }
+
+      /* satellite + big heatmap: 3:2 */
+      .section-grid-map-heatmap{
+        display:grid;
+        grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+        align-items:stretch;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
+<main>
+  <section class="panel">
+    <header class="panel-header">
+      <div class="panel-title">Resources &amp; Trade Flows · WTO Snapshot</div>
+      <div class="panel-sub">Global exports, product mix, and spatial view · 1995–2024 · dummy data for layout</div>
+    </header>
+
+    <div class="panel-body">
+      <!-- SECTION 1: GLOBAL OVERVIEW -->
+      <section class="section">
+        <div>
+          <div class="section-label">Section 1 · Global overview</div>
+          <div class="section-title">Long-run exports &amp; top exporters</div>
+        </div>
+
+        <div class="section-grid-1-1">
+          <!-- Global line -->
+          <article class="chart-card">
+            <div class="chart-head">
+              <div class="chart-title">Global merchandise exports (1995–2024)</div>
+              <div class="chart-meta">Million USD</div>
+            </div>
+            <div class="chart-body">
+              <div id="chartTotalLine" class="chart-box"></div>
+            </div>
+          </article>
+
+          <!-- Top exporters bar -->
+          <article class="chart-card">
+            <div class="chart-head">
+              <div class="chart-title">Top exporters – total merchandise (2024)</div>
+              <div class="chart-meta">Million USD</div>
+            </div>
+            <div class="chart-body">
+              <div id="chartTotalBar" class="chart-box"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- SECTION 2: COMPOSITION -->
+      <section class="section">
+        <div>
+          <div class="section-label">Section 2 · Composition</div>
+          <div class="section-title">World export composition &amp; agriculture vs fuels</div>
+        </div>
+
+        <div class="section-grid-2-1">
+          <!-- World donut -->
+          <article class="chart-card">
+            <div class="chart-head">
+              <div class="chart-title">World export composition (2024)</div>
+              <div class="chart-meta">Agri · fuels · manufactures · other</div>
+            </div>
+            <div class="chart-body">
+              <div id="chartWorldDonut" class="chart-box"></div>
+            </div>
+          </article>
+
+          <!-- Agri vs fuels bar -->
+          <article class="chart-card">
+            <div class="chart-head">
+              <div class="chart-title">Agriculture vs fuels &amp; mining (2024)</div>
+              <div class="chart-meta">Selected economies · million USD</div>
+            </div>
+            <div class="chart-body">
+              <div id="chartAgriFuelBar" class="chart-box"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- SECTION 3: PRODUCT MIX & PROFILES -->
+      <section class="section">
+        <div>
+          <div class="section-label">Section 3 · Product mix &amp; profiles</div>
+          <div class="section-title">Export structure, time trend, and country profiles</div>
+        </div>
+
+        <div class="chart-stack">
+          <!-- Stacked composition -->
+          <article class="chart-card">
+            <div class="chart-head">
+              <div class="chart-title">Export structure by product group (2024)</div>
+              <div class="chart-meta">Agriculture · fuels · manufactures · million USD</div>
+            </div>
+            <div class="chart-body">
+              <div id="chartStackedComp" class="chart-box"></div>
+            </div>
+          </article>
+
+          <!-- Area products -->
+          <article class="chart-card">
+            <div class="chart-head">
+              <div class="chart-title">Global exports by product group</div>
+              <div class="chart-meta">Stacked area · 1995–2024</div>
+            </div>
+            <div class="chart-body">
+              <div id="chartAreaProducts" class="chart-box"></div>
+            </div>
+          </article>
+
+          <!-- Radar -->
+          <article class="chart-card">
+            <div class="chart-head">
+              <div class="chart-title">Export profile – selected economies (2024)</div>
+              <div class="chart-meta">% share of export basket</div>
+            </div>
+            <div class="chart-body">
+              <div id="chartRadar" class="chart-box"></div>
+            </div>
+          </article>
+
+          <!-- Mini heatmap -->
+          <article class="chart-card">
+            <div class="chart-head">
+              <div class="chart-title">Mini resource intensity matrix</div>
+              <div class="chart-meta">Export share by product group · %</div>
+            </div>
+            <div class="chart-body">
+              <div id="chartHeatmapSmall" class="chart-box"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- SECTION 4: MAP & BIG HEATMAP -->
+      <section class="section">
+        <div>
+          <div class="section-label">Section 4 · Spatial &amp; intensity</div>
+          <div class="section-title">Satellite layer &amp; resource intensity matrix</div>
+        </div>
+
+        <div class="section-grid-map-heatmap">
+          <!-- Satellite map -->
+          <article class="sat-card">
+            <div class="sat-header">
+              <div class="sat-title">Satellite · MapTiler</div>
+              <div class="sat-sub">Overlay: shipping lanes, resource hubs, chokepoints (via backend)</div>
+            </div>
+            <div class="sat-body">
+              <iframe
+                allow="geolocation"
+                src="https://api.maptiler.com/maps/satellite/?key=HGwOl2A5O8Vhk307DJKR#1.0/0.00000/0.00000">
+              </iframe>
+              <div class="map-stack">
+                <span class="left">satellite · live layer</span>
+                <span class="right">Overlays: shipping routes · ports · risk zones (next)</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Big heatmap -->
+          <article class="chart-card">
+            <div class="chart-head">
+              <div class="chart-title">Resource intensity matrix</div>
+              <div class="chart-meta">Share of exports by product group · 2024 · partner = World</div>
+            </div>
+            <div class="chart-body">
+              <div id="chartHeatmap" class="heatmap-box"></div>
+            </div>
+          </article>
+        </div>
+      </section>
     </div>
+  </section>
+</main>
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
+<script>
+  // ===========================
+  // DATA – WTO (dummy)
+  // ===========================
 
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
-    </div>
+  const reporters = [
+    "United States of America",
+    "China",
+    "European Union",
+    "Russian Federation",
+    "Saudi Arabia, Kingdom of",
+    "Australia",
+    "Canada",
+    "India",
+    "Brazil",
+    "Indonesia"
+  ];
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
+  const totalVals = [
+    2065131,
+    3576653,
+    7150224,
+    433092,
+    305499,
+    340829,
+    568747,
+    442762,
+    337046,
+    264706
+  ];
 
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
-    </div>
-  </main>
+  const agriVals = [
+    199393,
+    107538,
+    861655,
+    0,
+    0,
+    47119,
+    87934,
+    52255,
+    155045,
+    61881
+  ];
 
-  <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+  const fuelsVals = [
+    375617,
+    107597,
+    621080,
+    263200,
+    242000,
+    229550,
+    183504,
+    0,
+    99766,
+    0
+  ];
+
+  const manufVals = [
+    1244162,
+    3251177,
+    5554530,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ];
+
+  const worldCompositionLabels = [
+    "Agricultural products",
+    "Fuels & mining",
+    "Manufactures",
+    "Other goods"
+  ];
+  const worldCompositionValues = [
+    2354510,
+    4043164,
+    15799279,
+    2259363
+  ];
+
+  const years = [
+    1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,
+    2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
+    2015,2016,2017,2018,2019,2020,2021,2022,2023,2024
+  ];
+
+  const totalSeries = [
+    31850830,33403604,34748006,33927487,35394989,48875555,
+    46902062,49167878,57465276,69894369,79989660,92463280,
+    106990965,123681778,96008553,117158169,140584056,142092740,
+    145286640,145742380,126624126,122382146,135404755,149557483,
+    145315453,134488905,170278943,190766686,182728645,187174093
+  ];
+
+  const fuelsSeries = [
+    1021017,1170770,1229617,974743,1134166,1822915,
+    1660409,1684408,2070504,2806483,3866284,4956148,
+    5699869,7554932,4855154,6411649,8603223,8825710,
+    8613126,7985277,5155099,4421063,5650414,7046828,
+    6657053,5011110,7872935,11210830,9211491,6592069
+  ];
+
+  const agriSeries = [
+    1164509,1199385,1183599,1130320,1090807,1311962,
+    1317394,1402983,1648630,1890911,2045536,2267384,
+    2719384,3218217,2819422,3196108,3877543,3889263,
+    4070718,4127319,3689172,3745571,4078653,4269819,
+    4215339,4273073,5045633,5453179,5438609,4037120
+  ];
+
+  const manufSeries = [
+    7555329,7830702,8199612,8368638,8650259,11302274,
+    10970664,11603997,13510353,16205090,17749516,20102323,
+    23272395,25491731,20248134,23755164,27354734,27163991,
+    27965360,28998889,26809238,26495691,28831844,31283278,
+    30649812,29148744,35496951,37426384,37200009,29234123
+  ];
+
+  const heatmapCategories = [
+    "Agricultural products",
+    "Fuels & mining",
+    "Manufactures"
+  ];
+
+  const heatmapValues = [
+    [9.66, 18.19, 60.25], // USA
+    [3.01, 3.01, 90.90],  // China
+    [12.05, 8.69, 77.68], // EU
+    [0.00, 60.77, 0.00],  // Russia
+    [0.00, 79.21, 0.00],  // Saudi
+    [13.82, 67.35, 0.00], // Australia
+    [15.46, 32.26, 0.00], // Canada
+    [11.80, 0.00, 0.00],  // India
+    [46.00, 29.60, 0.00], // Brazil
+    [23.38, 0.00, 0.00]   // Indonesia
+  ];
+
+  const radarAxes = ["Agriculture","Fuels/mining","Manufactures","Other"];
+
+  const radarData = {
+    "United States of America": [9.66, 18.19, 60.25, 11.91],
+    "China": [3.01, 3.01, 90.90, 3.09],
+    "European Union": [12.05, 8.69, 77.68, 1.58],
+    "Brazil": [46.00, 29.60, 0.00, 24.40]
+  };
+
+  const charts = {};
+
+  function baseTextStyle() {
+    return {
+      color:'#f5f5f5',
+      fontFamily:'"Fira Code", monospace',
+      fontSize:10
+    };
+  }
+
+  function baseGrid() {
+    return {
+      left:50,
+      right:10,
+      top:24,
+      bottom:40
+    };
+  }
+
+  function initCharts() {
+    // LINE – GLOBAL MERCHANDISE EXPORTS
+    {
+      const el = document.getElementById('chartTotalLine');
+      if(el){
+        const c = echarts.init(el);
+        c.setOption({
+          backgroundColor:'#000000',
+          textStyle: baseTextStyle(),
+          grid: baseGrid(),
+          xAxis:{
+            type:'category',
+            data:years,
+            axisLine:{lineStyle:{color:'#ffffff40'}},
+            axisLabel:{color:'#f5f5f5'}
+          },
+          yAxis:{
+            type:'value',
+            name:'Million USD',
+            axisLine:{lineStyle:{color:'#ffffff40'}},
+            splitLine:{lineStyle:{color:'#ffffff20'}},
+            axisLabel:{color:'#f5f5f5'}
+          },
+          series:[{
+            type:'line',
+            data:totalSeries,
+            smooth:true,
+            symbolSize:4,
+            lineStyle:{color:'#ffbf00',width:1.8},
+            itemStyle:{color:'#ffbf00'}
+          }],
+          tooltip:{
+            trigger:'axis',
+            valueFormatter:(v)=>v.toLocaleString()
+          }
+        });
+        charts.chartTotalLine = c;
+      }
+    }
+
+    // TOTAL EXPORTS BAR (horizontal)
+    {
+      const el = document.getElementById('chartTotalBar');
+      if(el){
+        const c = echarts.init(el);
+        c.setOption({
+          backgroundColor:'#000000',
+          textStyle: baseTextStyle(),
+          grid:{left:80,right:10,top:20,bottom:30},
+          xAxis:{
+            type:'value',
+            axisLine:{lineStyle:{color:'#ffffff40'}},
+            splitLine:{lineStyle:{color:'#ffffff20'}},
+            axisLabel:{color:'#f5f5f5'}
+          },
+          yAxis:{
+            type:'category',
+            data:reporters,
+            axisLine:{lineStyle:{color:'#ffffff40'}},
+            axisLabel:{color:'#f5f5f5'}
+          },
+          series:[{
+            type:'bar',
+            data:totalVals,
+            itemStyle:{color:'#ffbf00',opacity:0.85}
+          }],
+          tooltip:{
+            trigger:'axis',
+            axisPointer:{type:'shadow'},
+            valueFormatter:(v)=>v.toLocaleString()
+          }
+        });
+        charts.chartTotalBar = c;
+      }
+    }
+
+    // WORLD COMPOSITION DONUT
+    {
+      const el = document.getElementById('chartWorldDonut');
+      if(el){
+        const c = echarts.init(el);
+        c.setOption({
+          backgroundColor:'#000000',
+          textStyle: baseTextStyle(),
+          series:[{
+            type:'pie',
+            radius:['55%','75%'],
+            center:['50%','50%'],
+            data: worldCompositionLabels.map((label,idx)=>({
+              name:label,
+              value:worldCompositionValues[idx]
+            })),
+            label:{color:'#f5f5f5',fontSize:9},
+            itemStyle:{
+              color:(params)=>{
+                const colors = ['#ffbf00','#22c55e','#38bdf8','#6b7280'];
+                return colors[params.dataIndex % colors.length];
+              }
+            }
+          }],
+          tooltip:{
+            trigger:'item',
+            valueFormatter:(v)=>v.toLocaleString()
+          },
+          legend:{show:false}
+        });
+        charts.chartWorldDonut = c;
+      }
+    }
+
+    // AGRI VS FUELS GROUPED BAR
+    {
+      const el = document.getElementById('chartAgriFuelBar');
+      if(el){
+        const c = echarts.init(el);
+        c.setOption({
+          backgroundColor:'#000000',
+          textStyle: baseTextStyle(),
+          grid:{left:50,right:10,top:20,bottom:70},
+          xAxis:{
+            type:'category',
+            data:reporters,
+            axisLabel:{color:'#f5f5f5',rotate:-35},
+            axisLine:{lineStyle:{color:'#ffffff40'}}
+          },
+          yAxis:{
+            type:'value',
+            name:'Exports (million USD)',
+            axisLabel:{color:'#f5f5f5'},
+            axisLine:{lineStyle:{color:'#ffffff40'}},
+            splitLine:{lineStyle:{color:'#ffffff20'}}
+          },
+          series:[
+            {
+              name:'Agricultural products',
+              type:'bar',
+              data:agriVals,
+              itemStyle:{color:'#ffbf00'}
+            },
+            {
+              name:'Fuels & mining',
+              type:'bar',
+              data:fuelsVals,
+              itemStyle:{color:'#38bdf8'}
+            }
+          ],
+          legend:{
+            bottom:5,
+            left:'center',
+            textStyle:{color:'#f5f5f5',fontSize:9}
+          },
+          tooltip:{
+            trigger:'axis',
+            axisPointer:{type:'shadow'},
+            valueFormatter:(v)=>v.toLocaleString()
+          }
+        });
+        charts.chartAgriFuelBar = c;
+      }
+    }
+
+    // STACKED STRUCTURE – VALUE LEVEL
+    {
+      const el = document.getElementById('chartStackedComp');
+      if(el){
+        const c = echarts.init(el);
+        c.setOption({
+          backgroundColor:'#000000',
+          textStyle: baseTextStyle(),
+          grid:{left:50,right:10,top:20,bottom:70},
+          xAxis:{
+            type:'category',
+            data:reporters,
+            axisLabel:{color:'#f5f5f5',rotate:-35},
+            axisLine:{lineStyle:{color:'#ffffff40'}}
+          },
+          yAxis:{
+            type:'value',
+            name:'Exports (million USD)',
+            axisLabel:{color:'#f5f5f5'},
+            axisLine:{lineStyle:{color:'#ffffff40'}},
+            splitLine:{lineStyle:{color:'#ffffff20'}}
+          },
+          series:[
+            {
+              name:'Agriculture',
+              type:'bar',
+              stack:'total',
+              data:agriVals,
+              itemStyle:{color:'#ffbf00'}
+            },
+            {
+              name:'Fuels & mining',
+              type:'bar',
+              stack:'total',
+              data:fuelsVals,
+              itemStyle:{color:'#22c55e'}
+            },
+            {
+              name:'Manufactures',
+              type:'bar',
+              stack:'total',
+              data:manufVals,
+              itemStyle:{color:'#38bdf8'}
+            }
+          ],
+          legend:{
+            bottom:5,
+            left:'center',
+            textStyle:{color:'#f5f5f5',fontSize:9}
+          },
+          tooltip:{
+            trigger:'axis',
+            axisPointer:{type:'shadow'},
+            valueFormatter:(v)=>v.toLocaleString()
+          }
+        });
+        charts.chartStackedComp = c;
+      }
+    }
+
+    // AREA – BY PRODUCT GROUP
+    {
+      const el = document.getElementById('chartAreaProducts');
+      if(el){
+        const c = echarts.init(el);
+        c.setOption({
+          backgroundColor:'#000000',
+          textStyle: baseTextStyle(),
+          grid: baseGrid(),
+          xAxis:{
+            type:'category',
+            data:years,
+            axisLine:{lineStyle:{color:'#ffffff40'}},
+            axisLabel:{color:'#f5f5f5'}
+          },
+          yAxis:{
+            type:'value',
+            name:'Million USD',
+            axisLabel:{color:'#f5f5f5'},
+            axisLine:{lineStyle:{color:'#ffffff40'}},
+            splitLine:{lineStyle:{color:'#ffffff20'}}
+          },
+          series:[
+            {
+              name:'Fuels & mining',
+              type:'line',
+              stack:'total',
+              data:fuelsSeries,
+              areaStyle:{},
+              lineStyle:{width:0},
+              itemStyle:{color:'#22c55e'}
+            },
+            {
+              name:'Agriculture',
+              type:'line',
+              stack:'total',
+              data:agriSeries,
+              areaStyle:{},
+              lineStyle:{width:0},
+              itemStyle:{color:'#ffbf00'}
+            },
+            {
+              name:'Manufactures',
+              type:'line',
+              stack:'total',
+              data:manufSeries,
+              areaStyle:{},
+              lineStyle:{width:0},
+              itemStyle:{color:'#38bdf8'}
+            }
+          ],
+          legend:{
+            bottom:5,
+            left:'center',
+            textStyle:{color:'#f5f5f5',fontSize:9}
+          },
+          tooltip:{
+            trigger:'axis',
+            valueFormatter:(v)=>v.toLocaleString()
+          }
+        });
+        charts.chartAreaProducts = c;
+      }
+    }
+
+    // RADAR – PROFIL EKSPOR
+    {
+      const el = document.getElementById('chartRadar');
+      if(el){
+        const c = echarts.init(el);
+        const indicators = radarAxes.map(name=>({name,max:100}));
+        const seriesData = Object.keys(radarData).map(name=>({
+          name,
+          value:radarData[name]
+        }));
+        c.setOption({
+          backgroundColor:'#000000',
+          textStyle: baseTextStyle(),
+          tooltip:{},
+          legend:{
+            bottom:0,
+            left:'center',
+            textStyle:{color:'#f5f5f5',fontSize:9}
+          },
+          radar:{
+            indicator:indicators,
+            axisName:{color:'#f5f5f5',fontSize:9},
+            splitLine:{lineStyle:{color:'#ffffff20'}},
+            splitArea:{areaStyle:{color:['#000000','#020617']}},
+            axisLine:{lineStyle:{color:'#ffffff30'}}
+          },
+          series:[{
+            type:'radar',
+            data:seriesData,
+            areaStyle:{opacity:0.35}
+          }]
+        });
+        charts.chartRadar = c;
+      }
+    }
+
+    // HEATMAP DATA
+    const heatmapData = [];
+    for(let i=0;i<reporters.length;i++){
+      for(let j=0;j<heatmapCategories.length;j++){
+        heatmapData.push([j, i, heatmapValues[i][j]]);
+      }
+    }
+
+    // MINI HEATMAP
+    {
+      const el = document.getElementById('chartHeatmapSmall');
+      if(el){
+        const c = echarts.init(el);
+        c.setOption({
+          backgroundColor:'#000000',
+          textStyle: baseTextStyle(),
+          grid:{left:80,right:10,top:10,bottom:40},
+          xAxis:{
+            type:'category',
+            data:heatmapCategories,
+            axisLabel:{color:'#f5f5f5',rotate:-15},
+            axisLine:{lineStyle:{color:'#ffffff40'}}
+          },
+          yAxis:{
+            type:'category',
+            data:reporters,
+            axisLabel:{color:'#f5f5f5'},
+            axisLine:{lineStyle:{color:'#ffffff40'}}
+          },
+          visualMap:{
+            min:0,
+            max:100,
+            calculable:true,
+            orient:'vertical',
+            left:'right',
+            top:'center',
+            textStyle:{color:'#f5f5f5',fontSize:8},
+            inRange:{
+              color:['#020617','#1e293b','#0ea5e9','#22c55e','#ffbf00']
+            }
+          },
+          series:[{
+            type:'heatmap',
+            data:heatmapData,
+            label:{show:false},
+            emphasis:{itemStyle:{borderColor:'#fff',borderWidth:1}}
+          }],
+          tooltip:{
+            formatter:(params)=>{
+              const rep = reporters[params.data[1]];
+              const cat = heatmapCategories[params.data[0]];
+              const val = params.data[2].toFixed(1);
+              return `<b>${rep}</b><br>${cat}: ${val}%`;
+            }
+          }
+        });
+        charts.chartHeatmapSmall = c;
+      }
+    }
+
+    // BIG HEATMAP
+    {
+      const el = document.getElementById('chartHeatmap');
+      if(el){
+        const c = echarts.init(el);
+        c.setOption({
+          backgroundColor:'#000000',
+          textStyle: baseTextStyle(),
+          grid:{left:90,right:10,top:20,bottom:50},
+          xAxis:{
+            type:'category',
+            data:heatmapCategories,
+            axisLabel:{color:'#f5f5f5',rotate:-20},
+            axisLine:{lineStyle:{color:'#ffffff40'}}
+          },
+          yAxis:{
+            type:'category',
+            data:reporters,
+            axisLabel:{color:'#f5f5f5'},
+            axisLine:{lineStyle:{color:'#ffffff40'}}
+          },
+          visualMap:{
+            min:0,
+            max:100,
+            calculable:true,
+            orient:'vertical',
+            left:'right',
+            top:'center',
+            textStyle:{color:'#f5f5f5',fontSize:8},
+            inRange:{
+              color:['#020617','#1e293b','#0ea5e9','#22c55e','#ffbf00']
+            }
+          },
+          series:[{
+            type:'heatmap',
+            data:heatmapData,
+            label:{show:false},
+            emphasis:{itemStyle:{borderColor:'#fff',borderWidth:1}}
+          }],
+          tooltip:{
+            formatter:(params)=>{
+              const rep = reporters[params.data[1]];
+              const cat = heatmapCategories[params.data[0]];
+              const val = params.data[2].toFixed(1);
+              return `<b>${rep}</b><br>${cat}: ${val}%`;
+            }
+          }
+        });
+        charts.chartHeatmap = c;
+      }
+    }
+  }
+
+  function resizeCharts(){
+    Object.values(charts).forEach(c=>{
+      if(c && c.resize){
+        c.resize();
+      }
+    });
+  }
+
+  window.addEventListener('load', () => {
+    initCharts();
+    setTimeout(resizeCharts, 200);
+  });
+
+  window.addEventListener('resize', () => {
+    resizeCharts();
+  });
+</script>
 </body>
 </html>
