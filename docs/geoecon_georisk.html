@@ -46,11 +46,11 @@
       height:100%;
       background-color:var(--bg-root);
       color:var(--text-main);
+      overflow:hidden; /* batasi 1 page */
     }
 
     body{
       display:flex;
-      flex-direction:column;
       padding:16px;
     }
 
@@ -61,13 +61,15 @@
       display:flex;
       flex-direction:column;
       gap:12px;
-      height:100%;
+      flex:1 1 auto;
+      min-height:0; /* penting supaya tidak nambah tinggi */
     }
 
     .page-header{
       display:flex;
       flex-direction:column;
       gap:6px;
+      flex:0 0 auto;
     }
 
     .page-title{
@@ -83,7 +85,6 @@
       line-height:1.4;
     }
 
-    /* Tabs / segment control */
     .tab-bar{
       margin-top:4px;
       display:flex;
@@ -122,18 +123,18 @@
     }
 
     .content{
-      flex:1 1 auto;
       display:flex;
       flex-direction:column;
       gap:10px;
-      min-height:0;
+      flex:1 1 auto;
+      min-height:0; /* biar muat di viewport */
     }
 
     .panel{
       display:none;
       flex-direction:column;
       gap:10px;
-      height:100%;
+      flex:1 1 auto;
       min-height:0;
     }
     .panel.active{
@@ -146,6 +147,7 @@
       justify-content:space-between;
       gap:6px;
       align-items:flex-end;
+      flex:0 0 auto;
     }
 
     .panel-title{
@@ -169,18 +171,6 @@
       min-height:0;
     }
 
-    @media(min-width:900px){
-      .panel-grid{
-        display:grid;
-        grid-template-columns: minmax(0,1.6fr) minmax(0,1.4fr);
-        grid-auto-rows:minmax(0,1fr);
-        gap:10px;
-      }
-      .panel-grid-bottom{
-        grid-column:1 / -1;
-      }
-    }
-
     .card{
       background:var(--bg-main);
       border:1px solid var(--border-soft);
@@ -189,6 +179,7 @@
       display:flex;
       flex-direction:column;
       gap:8px;
+      flex:1 1 0;
       min-height:0;
     }
 
@@ -197,6 +188,7 @@
       justify-content:space-between;
       align-items:center;
       gap:6px;
+      flex:0 0 auto;
     }
     .card-title{
       font-size:var(--fs-body);
@@ -221,12 +213,14 @@
       color:var(--text-main);
       flex:1 1 auto;
       min-height:0;
-      overflow:auto;
+      overflow-x:auto;
+      overflow-y:auto; /* scroll internal */
     }
 
-    /* Tables */
+    /* Tables – horizontal scroll friendly */
     table{
       width:100%;
+      min-width:600px;
       border-collapse:collapse;
       font-size:var(--fs-small);
     }
@@ -266,17 +260,14 @@
       background:#151515;
       color:var(--text-muted);
     }
-
     .status-pill.ok{
       border-color:#166534;
       color:#22c55e;
     }
-
     .status-pill.warn{
       border-color:#92400e;
       color:#facc15;
     }
-
     .status-pill.risk{
       border-color:#7f1d1d;
       color:#f97373;
@@ -292,7 +283,6 @@
       color:#f97373;
     }
 
-    /* Events list */
     .event-item{
       border-bottom:1px solid #1b1b1b;
       padding:4px 0;
@@ -311,7 +301,6 @@
       gap:8px;
       flex-wrap:wrap;
     }
-
     .event-desc{
       margin-top:2px;
       font-size:var(--fs-small);
@@ -324,6 +313,28 @@
       margin-top:2px;
     }
 
+    /* Desktop layout: 2 kiri (atas/bawah) + 1 kanan setinggi 2x */
+    @media(min-width:900px){
+      .panel-grid{
+        display:grid;
+        grid-template-columns:minmax(0,1.05fr) minmax(0,1.3fr);
+        grid-template-rows:minmax(0,1fr) minmax(0,1fr);
+        grid-template-areas:
+          "snap news"
+          "prev news";
+        gap:10px;
+      }
+
+      .card-snapshot{
+        grid-area:snap;
+      }
+      .card-previous{
+        grid-area:prev;
+      }
+      .card-events{
+        grid-area:news;
+      }
+    }
   </style>
 <style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
   position: absolute;
@@ -852,7 +863,7 @@
       
 
       <div class="tab-bar">
-        <button class="tab-btn active" data-panel="geopolitics">
+        <button class="tab-btn" data-panel="geopolitics">
           <span class="label">Geopolitical Risk</span>
           <span class="badge">GEO</span>
         </button>
@@ -864,7 +875,7 @@
           <span class="label">Sanctions</span>
           <span class="badge">SAN</span>
         </button>
-        <button class="tab-btn" data-panel="wars">
+        <button class="tab-btn active" data-panel="wars">
           <span class="label">Wars &amp; Conflicts</span>
           <span class="badge">WAR</span>
         </button>
@@ -873,9 +884,9 @@
 
     <main class="content">
       <!-- GEOPOLITICS -->
-      <section class="panel active" id="panel-geopolitics">
+      <section class="panel" id="panel-geopolitics">
         <div class="panel-header">
-          <div class="panel-title">Geopolitical Risk – Country &amp; Region Focus</div>
+          <div class="panel-title">Geopolitical Risk</div>
           <div class="panel-meta">
             <span class="status-pill ok">Live feed</span>
             
@@ -883,8 +894,8 @@
         </div>
 
         <div class="panel-grid">
-          <!-- Snapshot -->
-          <div class="card">
+          <!-- Snapshot (left top) -->
+          <div class="card card-snapshot">
             <div class="card-header">
               <div>
                 <div class="card-title">Geo Risk Snapshot</div>
@@ -895,8 +906,20 @@
             <div class="card-body" id="geo-latest-table"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Palladium (NYMEX)">Palladium (NYMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="13">13</td></tr><tr><td title="Gold (COMEX)">Gold (COMEX)</td><td title="2.0">2.0</td><td title="98.0">98.0</td><td title="247">247</td></tr><tr><td title="US Treasury T-Note Bonds">US Treasury T-Note Bonds</td><td title="2.0">2.0</td><td title="98.0">98.0</td><td title="174">174</td></tr><tr><td title="Henry Hub Natural Gas (NYMEX)">Henry Hub Natural Gas (NYMEX)</td><td title="18.0">18.0</td><td title="82.0">82.0</td><td title="11">11</td></tr><tr><td title="Liquefied Natural Gas">Liquefied Natural Gas</td><td title="19.0">19.0</td><td title="81.0">81.0</td><td title="93">93</td></tr><tr><td title="Dutch TTF Natural Gas (ICE)">Dutch TTF Natural Gas (ICE)</td><td title="23.0">23.0</td><td title="77.0">77.0</td><td title="94">94</td></tr><tr><td title="tesla inc">tesla inc</td><td title="23.0">23.0</td><td title="77.0">77.0</td><td title="22">22</td></tr><tr><td title="Coffee ‘C’ (NYBOT)">Coffee ‘C’ (NYBOT)</td><td title="26.0">26.0</td><td title="74.0">74.0</td><td title="19">19</td></tr><tr><td title="Hot-Rolled Coil Steel (COMEX)">Hot-Rolled Coil Steel (COMEX)</td><td title="27.0">27.0</td><td title="73.0">73.0</td><td title="121">121</td></tr><tr><td title="Soybean (CBOT)">Soybean (CBOT)</td><td title="28.0">28.0</td><td title="72.0">72.0</td><td title="25">25</td></tr><tr><td title="European Hot-Rolled Coil Steel (ICE)">European Hot-Rolled Coil Steel (ICE)</td><td title="28.0">28.0</td><td title="72.0">72.0</td><td title="118">118</td></tr><tr><td title="Silver (COMEX)">Silver (COMEX)</td><td title="29.0">29.0</td><td title="71.0">71.0</td><td title="14">14</td></tr><tr><td title="Platinum (NYMEX)">Platinum (NYMEX)</td><td title="33.0">33.0</td><td title="67.0">67.0</td><td title="12">12</td></tr><tr><td title="nvidia corp">nvidia corp</td><td title="35.0">35.0</td><td title="65.0">65.0</td><td title="40">40</td></tr><tr><td title="Chicago SRW Wheat (CBOT)">Chicago SRW Wheat (CBOT)</td><td title="35.0">35.0</td><td title="65.0">65.0</td><td title="26">26</td></tr><tr><td title="Aluminum (COMEX)">Aluminum (COMEX)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="36">36</td></tr><tr><td title="RBOB Gasoline (NYMEX)">RBOB Gasoline (NYMEX)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="211">211</td></tr><tr><td title="Palm Oil">Palm Oil</td><td title="38.0">38.0</td><td title="63.0">63.0</td><td title="16">16</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="41.0">41.0</td><td title="59.0">59.0</td><td title="154">154</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="41.0">41.0</td><td title="59.0">59.0</td><td title="296">296</td></tr><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="41.0">41.0</td><td title="59.0">59.0</td><td title="193">193</td></tr><tr><td title="Live Cattle (CME)">Live Cattle (CME)</td><td title="41.0">41.0</td><td title="59.0">59.0</td><td title="27">27</td></tr><tr><td title="Corn (Yellow No. 2) (CBOT)">Corn (Yellow No. 2) (CBOT)</td><td title="43.0">43.0</td><td title="57.0">57.0</td><td title="28">28</td></tr><tr><td title="New York Harbor ULSD (NYMEX)">New York Harbor ULSD (NYMEX)</td><td title="43.0">43.0</td><td title="57.0">57.0</td><td title="119">119</td></tr><tr><td title="Iron Ore (COMEX)">Iron Ore (COMEX)</td><td title="50.0">50.0</td><td title="50.0">50.0</td><td title="26">26</td></tr><tr><td title="us dollar">us dollar</td><td title="57.0">57.0</td><td title="43.0">43.0</td><td title="86">86</td></tr><tr><td title="Lean Hogs (CME)">Lean Hogs (CME)</td><td title="62.0">62.0</td><td title="38.0">38.0</td><td title="13">13</td></tr><tr><td title="chinese yuan">chinese yuan</td><td title="71.0">71.0</td><td title="29.0">29.0</td><td title="52">52</td></tr><tr><td title="Euro">Euro</td><td title="74.0">74.0</td><td title="26.0">26.0</td><td title="107">107</td></tr><tr><td title="japanese yen">japanese yen</td><td title="94.0">94.0</td><td title="6.0">6.0</td><td title="34">34</td></tr></tbody></table></div>
           </div>
 
-          <!-- Events -->
-          <div class="card">
+          <!-- Previous Week (left bottom) -->
+          <div class="card card-previous">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Previous Week Change</div>
+                <div class="card-subtitle">Week-on-week movement by entity</div>
+              </div>
+              <span class="card-tag">PREVIOUS WEEK</span>
+            </div>
+            <div class="card-body" id="geo-previous-week"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Gold (COMEX)">Gold (COMEX)</td><td title="1.0">1.0</td><td title="99.0">99.0</td><td title="121">121</td></tr><tr><td title="Uranium (COMEX)">Uranium (COMEX)</td><td title="5.0">5.0</td><td title="95.0">95.0</td><td title="41">41</td></tr><tr><td title="US Treasury T-Note Bonds">US Treasury T-Note Bonds</td><td title="8.0">8.0</td><td title="92.0">92.0</td><td title="77">77</td></tr><tr><td title="New York Harbor ULSD (NYMEX)">New York Harbor ULSD (NYMEX)</td><td title="10.0">10.0</td><td title="90.0">90.0</td><td title="72">72</td></tr><tr><td title="Dutch TTF Natural Gas (ICE)">Dutch TTF Natural Gas (ICE)</td><td title="16.0">16.0</td><td title="84.0">84.0</td><td title="25">25</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="17.0">17.0</td><td title="83.0">83.0</td><td title="76">76</td></tr><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="19.0">19.0</td><td title="81.0">81.0</td><td title="115">115</td></tr><tr><td title="Liquefied Natural Gas">Liquefied Natural Gas</td><td title="20.0">20.0</td><td title="80.0">80.0</td><td title="40">40</td></tr><tr><td title="Palm Oil">Palm Oil</td><td title="21.0">21.0</td><td title="79.0">79.0</td><td title="14">14</td></tr><tr><td title="Live Cattle (CME)">Live Cattle (CME)</td><td title="22.0">22.0</td><td title="78.0">78.0</td><td title="18">18</td></tr><tr><td title="RBOB Gasoline (NYMEX)">RBOB Gasoline (NYMEX)</td><td title="25.0">25.0</td><td title="75.0">75.0</td><td title="110">110</td></tr><tr><td title="Hot-Rolled Coil Steel (COMEX)">Hot-Rolled Coil Steel (COMEX)</td><td title="27.0">27.0</td><td title="73.0">73.0</td><td title="56">56</td></tr><tr><td title="Aluminum (COMEX)">Aluminum (COMEX)</td><td title="30.0">30.0</td><td title="70.0">70.0</td><td title="23">23</td></tr><tr><td title="Sugar No. 11 (NYBOT)">Sugar No. 11 (NYBOT)</td><td title="30.0">30.0</td><td title="70.0">70.0</td><td title="23">23</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="34.0">34.0</td><td title="66.0">66.0</td><td title="135">135</td></tr><tr><td title="European Hot-Rolled Coil Steel (ICE)">European Hot-Rolled Coil Steel (ICE)</td><td title="35.0">35.0</td><td title="65.0">65.0</td><td title="55">55</td></tr><tr><td title="Silver (COMEX)">Silver (COMEX)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="11">11</td></tr><tr><td title="Corn (Yellow No. 2) (CBOT)">Corn (Yellow No. 2) (CBOT)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="22">22</td></tr><tr><td title="blackrock inc">blackrock inc</td><td title="40.0">40.0</td><td title="60.0">60.0</td><td title="15">15</td></tr><tr><td title="Chicago SRW Wheat (CBOT)">Chicago SRW Wheat (CBOT)</td><td title="42.0">42.0</td><td title="58.0">58.0</td><td title="26">26</td></tr><tr><td title="us dollar">us dollar</td><td title="43.0">43.0</td><td title="57.0">57.0</td><td title="44">44</td></tr><tr><td title="Soybean (CBOT)">Soybean (CBOT)</td><td title="50.0">50.0</td><td title="50.0">50.0</td><td title="18">18</td></tr><tr><td title="chinese yuan">chinese yuan</td><td title="72.0">72.0</td><td title="28.0">28.0</td><td title="32">32</td></tr><tr><td title="Euro">Euro</td><td title="79.0">79.0</td><td title="21.0">21.0</td><td title="47">47</td></tr></tbody></table></div>
+          </div>
+
+          <!-- Events / News (right, tall) -->
+          <div class="card card-events">
             <div class="card-header">
               <div>
                 <div class="card-title">Key Events</div>
@@ -1146,25 +1169,13 @@
           </div>
         </div>
           </div>
-
-          <!-- Previous week -->
-          <div class="card panel-grid-bottom">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Previous Week Change</div>
-                <div class="card-subtitle">Week-on-week movement by entity</div>
-              </div>
-              <span class="card-tag">PREVIOUS WEEK</span>
-            </div>
-            <div class="card-body" id="geo-previous-week"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Gold (COMEX)">Gold (COMEX)</td><td title="1.0">1.0</td><td title="99.0">99.0</td><td title="121">121</td></tr><tr><td title="Uranium (COMEX)">Uranium (COMEX)</td><td title="5.0">5.0</td><td title="95.0">95.0</td><td title="41">41</td></tr><tr><td title="US Treasury T-Note Bonds">US Treasury T-Note Bonds</td><td title="8.0">8.0</td><td title="92.0">92.0</td><td title="77">77</td></tr><tr><td title="New York Harbor ULSD (NYMEX)">New York Harbor ULSD (NYMEX)</td><td title="10.0">10.0</td><td title="90.0">90.0</td><td title="72">72</td></tr><tr><td title="Dutch TTF Natural Gas (ICE)">Dutch TTF Natural Gas (ICE)</td><td title="16.0">16.0</td><td title="84.0">84.0</td><td title="25">25</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="17.0">17.0</td><td title="83.0">83.0</td><td title="76">76</td></tr><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="19.0">19.0</td><td title="81.0">81.0</td><td title="115">115</td></tr><tr><td title="Liquefied Natural Gas">Liquefied Natural Gas</td><td title="20.0">20.0</td><td title="80.0">80.0</td><td title="40">40</td></tr><tr><td title="Palm Oil">Palm Oil</td><td title="21.0">21.0</td><td title="79.0">79.0</td><td title="14">14</td></tr><tr><td title="Live Cattle (CME)">Live Cattle (CME)</td><td title="22.0">22.0</td><td title="78.0">78.0</td><td title="18">18</td></tr><tr><td title="RBOB Gasoline (NYMEX)">RBOB Gasoline (NYMEX)</td><td title="25.0">25.0</td><td title="75.0">75.0</td><td title="110">110</td></tr><tr><td title="Hot-Rolled Coil Steel (COMEX)">Hot-Rolled Coil Steel (COMEX)</td><td title="27.0">27.0</td><td title="73.0">73.0</td><td title="56">56</td></tr><tr><td title="Aluminum (COMEX)">Aluminum (COMEX)</td><td title="30.0">30.0</td><td title="70.0">70.0</td><td title="23">23</td></tr><tr><td title="Sugar No. 11 (NYBOT)">Sugar No. 11 (NYBOT)</td><td title="30.0">30.0</td><td title="70.0">70.0</td><td title="23">23</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="34.0">34.0</td><td title="66.0">66.0</td><td title="135">135</td></tr><tr><td title="European Hot-Rolled Coil Steel (ICE)">European Hot-Rolled Coil Steel (ICE)</td><td title="35.0">35.0</td><td title="65.0">65.0</td><td title="55">55</td></tr><tr><td title="Silver (COMEX)">Silver (COMEX)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="11">11</td></tr><tr><td title="Corn (Yellow No. 2) (CBOT)">Corn (Yellow No. 2) (CBOT)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="22">22</td></tr><tr><td title="blackrock inc">blackrock inc</td><td title="40.0">40.0</td><td title="60.0">60.0</td><td title="15">15</td></tr><tr><td title="Chicago SRW Wheat (CBOT)">Chicago SRW Wheat (CBOT)</td><td title="42.0">42.0</td><td title="58.0">58.0</td><td title="26">26</td></tr><tr><td title="us dollar">us dollar</td><td title="43.0">43.0</td><td title="57.0">57.0</td><td title="44">44</td></tr><tr><td title="Soybean (CBOT)">Soybean (CBOT)</td><td title="50.0">50.0</td><td title="50.0">50.0</td><td title="18">18</td></tr><tr><td title="chinese yuan">chinese yuan</td><td title="72.0">72.0</td><td title="28.0">28.0</td><td title="32">32</td></tr><tr><td title="Euro">Euro</td><td title="79.0">79.0</td><td title="21.0">21.0</td><td title="47">47</td></tr></tbody></table></div>
-          </div>
         </div>
       </section>
 
       <!-- TARIFFS -->
       <section class="panel" id="panel-tariffs">
         <div class="panel-header">
-          <div class="panel-title">Tariffs &amp; Trade Barriers</div>
+          <div class="panel-title">Tariffs &amp; Trade</div>
           <div class="panel-meta">
             <span class="status-pill warn">Watch for trade disruptions</span>
             
@@ -1172,7 +1183,8 @@
         </div>
 
         <div class="panel-grid">
-          <div class="card">
+          <!-- Snapshot -->
+          <div class="card card-snapshot">
             <div class="card-header">
               <div>
                 <div class="card-title">Tariff Snapshot</div>
@@ -1183,7 +1195,20 @@
             <div class="card-body" id="tariff-latest-table"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Coffee ‘C’ (NYBOT)">Coffee ‘C’ (NYBOT)</td><td title="18.0">18.0</td><td title="82.0">82.0</td><td title="17">17</td></tr><tr><td title="Live Cattle (CME)">Live Cattle (CME)</td><td title="55.0">55.0</td><td title="45.0">45.0</td><td title="11">11</td></tr><tr><td title="us dollar">us dollar</td><td title="57.0">57.0</td><td title="43.0">43.0</td><td title="35">35</td></tr><tr><td title="Hot-Rolled Coil Steel (COMEX)">Hot-Rolled Coil Steel (COMEX)</td><td title="62.0">62.0</td><td title="38.0">38.0</td><td title="26">26</td></tr><tr><td title="European Hot-Rolled Coil Steel (ICE)">European Hot-Rolled Coil Steel (ICE)</td><td title="63.0">63.0</td><td title="38.0">38.0</td><td title="16">16</td></tr><tr><td title="Aluminum (COMEX)">Aluminum (COMEX)</td><td title="82.0">82.0</td><td title="18.0">18.0</td><td title="11">11</td></tr></tbody></table></div>
           </div>
 
-          <div class="card">
+          <!-- Previous Week -->
+          <div class="card card-previous">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Previous Week Change</div>
+                <div class="card-subtitle">Tariff risk week-on-week</div>
+              </div>
+              <span class="card-tag">PREVIOUS WEEK</span>
+            </div>
+            <div class="card-body" id="tariff-previous-week"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Hot-Rolled Coil Steel (COMEX)">Hot-Rolled Coil Steel (COMEX)</td><td title="24.0">24.0</td><td title="76.0">76.0</td><td title="17">17</td></tr><tr><td title="us dollar">us dollar</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="14">14</td></tr></tbody></table></div>
+          </div>
+
+          <!-- Events / News -->
+          <div class="card card-events">
             <div class="card-header">
               <div>
                 <div class="card-title">New / Escalating Tariffs</div>
@@ -1433,17 +1458,6 @@
           </div>
         </div>
           </div>
-
-          <div class="card panel-grid-bottom">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Previous Week Change</div>
-                <div class="card-subtitle">Tariff risk week-on-week</div>
-              </div>
-              <span class="card-tag">PREVIOUS WEEK</span>
-            </div>
-            <div class="card-body" id="tariff-previous-week"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Hot-Rolled Coil Steel (COMEX)">Hot-Rolled Coil Steel (COMEX)</td><td title="24.0">24.0</td><td title="76.0">76.0</td><td title="17">17</td></tr><tr><td title="us dollar">us dollar</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="14">14</td></tr></tbody></table></div>
-          </div>
         </div>
       </section>
 
@@ -1458,7 +1472,8 @@
         </div>
 
         <div class="panel-grid">
-          <div class="card">
+          <!-- Snapshot -->
+          <div class="card card-snapshot">
             <div class="card-header">
               <div>
                 <div class="card-title">Sanctions Snapshot</div>
@@ -1469,7 +1484,20 @@
             <div class="card-body" id="sanctions-latest-table"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="US Treasury T-Note Bonds">US Treasury T-Note Bonds</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="20">20</td></tr><tr><td title="Gold (COMEX)">Gold (COMEX)</td><td title="5.0">5.0</td><td title="95.0">95.0</td><td title="22">22</td></tr><tr><td title="Liquefied Natural Gas">Liquefied Natural Gas</td><td title="6.0">6.0</td><td title="94.0">94.0</td><td title="16">16</td></tr><tr><td title="Dutch TTF Natural Gas (ICE)">Dutch TTF Natural Gas (ICE)</td><td title="22.0">22.0</td><td title="78.0">78.0</td><td title="23">23</td></tr><tr><td title="New York Harbor ULSD (NYMEX)">New York Harbor ULSD (NYMEX)</td><td title="23.0">23.0</td><td title="77.0">77.0</td><td title="22">22</td></tr><tr><td title="RBOB Gasoline (NYMEX)">RBOB Gasoline (NYMEX)</td><td title="26.0">26.0</td><td title="74.0">74.0</td><td title="27">27</td></tr><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="29.0">29.0</td><td title="71.0">71.0</td><td title="28">28</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="32.0">32.0</td><td title="68.0">68.0</td><td title="31">31</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="34.0">34.0</td><td title="66.0">66.0</td><td title="38">38</td></tr><tr><td title="us dollar">us dollar</td><td title="41.0">41.0</td><td title="59.0">59.0</td><td title="17">17</td></tr><tr><td title="Euro">Euro</td><td title="78.0">78.0</td><td title="22.0">22.0</td><td title="18">18</td></tr></tbody></table></div>
           </div>
 
-          <div class="card">
+          <!-- Previous Week -->
+          <div class="card card-previous">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Previous Week Change</div>
+                <div class="card-subtitle">Sanctions landscape week-on-week</div>
+              </div>
+              <span class="card-tag">PREVIOUS WEEK</span>
+            </div>
+            <div class="card-body" id="sanctions-previous-week"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="14">14</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="21.0">21.0</td><td title="79.0">79.0</td><td title="14">14</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="11">11</td></tr></tbody></table></div>
+          </div>
+
+          <!-- Events / News -->
+          <div class="card card-events">
             <div class="card-header">
               <div>
                 <div class="card-title">New Sanctions Events</div>
@@ -1719,22 +1747,11 @@
           </div>
         </div>
           </div>
-
-          <div class="card panel-grid-bottom">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Previous Week Change</div>
-                <div class="card-subtitle">Sanctions landscape week-on-week</div>
-              </div>
-              <span class="card-tag">PREVIOUS WEEK</span>
-            </div>
-            <div class="card-body" id="sanctions-previous-week"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="14">14</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="21.0">21.0</td><td title="79.0">79.0</td><td title="14">14</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="11">11</td></tr></tbody></table></div>
-          </div>
         </div>
       </section>
 
       <!-- WARS -->
-      <section class="panel" id="panel-wars">
+      <section class="panel active" id="panel-wars">
         <div class="panel-header">
           <div class="panel-title">Wars &amp; Armed Conflicts</div>
           <div class="panel-meta">
@@ -1744,7 +1761,8 @@
         </div>
 
         <div class="panel-grid">
-          <div class="card">
+          <!-- Snapshot -->
+          <div class="card card-snapshot">
             <div class="card-header">
               <div>
                 <div class="card-title">Conflict Snapshot</div>
@@ -1755,7 +1773,20 @@
             <div class="card-body" id="wars-latest-table"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="US Treasury T-Note Bonds">US Treasury T-Note Bonds</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="77">77</td></tr><tr><td title="Gold (COMEX)">Gold (COMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="102">102</td></tr><tr><td title="Liquefied Natural Gas">Liquefied Natural Gas</td><td title="12.0">12.0</td><td title="88.0">88.0</td><td title="26">26</td></tr><tr><td title="Hot-Rolled Coil Steel (COMEX)">Hot-Rolled Coil Steel (COMEX)</td><td title="19.0">19.0</td><td title="81.0">81.0</td><td title="36">36</td></tr><tr><td title="RBOB Gasoline (NYMEX)">RBOB Gasoline (NYMEX)</td><td title="21.0">21.0</td><td title="79.0">79.0</td><td title="58">58</td></tr><tr><td title="European Hot-Rolled Coil Steel (ICE)">European Hot-Rolled Coil Steel (ICE)</td><td title="23.0">23.0</td><td title="78.0">78.0</td><td title="40">40</td></tr><tr><td title="Dutch TTF Natural Gas (ICE)">Dutch TTF Natural Gas (ICE)</td><td title="26.0">26.0</td><td title="74.0">74.0</td><td title="31">31</td></tr><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="27.0">27.0</td><td title="73.0">73.0</td><td title="51">51</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="28.0">28.0</td><td title="72.0">72.0</td><td title="99">99</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="32.0">32.0</td><td title="68.0">68.0</td><td title="47">47</td></tr><tr><td title="New York Harbor ULSD (NYMEX)">New York Harbor ULSD (NYMEX)</td><td title="50.0">50.0</td><td title="50.0">50.0</td><td title="20">20</td></tr><tr><td title="us dollar">us dollar</td><td title="56.0">56.0</td><td title="44.0">44.0</td><td title="27">27</td></tr><tr><td title="chinese yuan">chinese yuan</td><td title="83.0">83.0</td><td title="17.0">17.0</td><td title="23">23</td></tr><tr><td title="Euro">Euro</td><td title="92.0">92.0</td><td title="8.0">8.0</td><td title="37">37</td></tr><tr><td title="japanese yen">japanese yen</td><td title="100.0">100.0</td><td title="0.0">0.0</td><td title="17">17</td></tr></tbody></table></div>
           </div>
 
-          <div class="card">
+          <!-- Previous Week -->
+          <div class="card card-previous">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Previous Week Change</div>
+                <div class="card-subtitle">Conflict intensity week-on-week</div>
+              </div>
+              <span class="card-tag">PREVIOUS WEEK</span>
+            </div>
+            <div class="card-body" id="wars-previous-week"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Gold (COMEX)">Gold (COMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="52">52</td></tr><tr><td title="Uranium (COMEX)">Uranium (COMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="12">12</td></tr><tr><td title="Liquefied Natural Gas">Liquefied Natural Gas</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="13">13</td></tr><tr><td title="US Treasury T-Note Bonds">US Treasury T-Note Bonds</td><td title="5.0">5.0</td><td title="95.0">95.0</td><td title="40">40</td></tr><tr><td title="New York Harbor ULSD (NYMEX)">New York Harbor ULSD (NYMEX)</td><td title="9.0">9.0</td><td title="91.0">91.0</td><td title="11">11</td></tr><tr><td title="RBOB Gasoline (NYMEX)">RBOB Gasoline (NYMEX)</td><td title="10.0">10.0</td><td title="90.0">90.0</td><td title="20">20</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="11.0">11.0</td><td title="89.0">89.0</td><td title="18">18</td></tr><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="12.0">12.0</td><td title="88.0">88.0</td><td title="25">25</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="21.0">21.0</td><td title="79.0">79.0</td><td title="28">28</td></tr><tr><td title="European Hot-Rolled Coil Steel (ICE)">European Hot-Rolled Coil Steel (ICE)</td><td title="23.0">23.0</td><td title="77.0">77.0</td><td title="13">13</td></tr><tr><td title="Euro">Euro</td><td title="80.0">80.0</td><td title="20.0">20.0</td><td title="15">15</td></tr><tr><td title="chinese yuan">chinese yuan</td><td title="82.0">82.0</td><td title="18.0">18.0</td><td title="11">11</td></tr></tbody></table></div>
+          </div>
+
+          <!-- Events / News -->
+          <div class="card card-events">
             <div class="card-header">
               <div>
                 <div class="card-title">Conflict Events</div>
@@ -2005,24 +2036,12 @@
           </div>
         </div>
           </div>
-
-          <div class="card panel-grid-bottom">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Previous Week Change</div>
-                <div class="card-subtitle">Conflict intensity week-on-week</div>
-              </div>
-              <span class="card-tag">PREVIOUS WEEK</span>
-            </div>
-            <div class="card-body" id="wars-previous-week"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Gold (COMEX)">Gold (COMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="52">52</td></tr><tr><td title="Uranium (COMEX)">Uranium (COMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="12">12</td></tr><tr><td title="Liquefied Natural Gas">Liquefied Natural Gas</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="13">13</td></tr><tr><td title="US Treasury T-Note Bonds">US Treasury T-Note Bonds</td><td title="5.0">5.0</td><td title="95.0">95.0</td><td title="40">40</td></tr><tr><td title="New York Harbor ULSD (NYMEX)">New York Harbor ULSD (NYMEX)</td><td title="9.0">9.0</td><td title="91.0">91.0</td><td title="11">11</td></tr><tr><td title="RBOB Gasoline (NYMEX)">RBOB Gasoline (NYMEX)</td><td title="10.0">10.0</td><td title="90.0">90.0</td><td title="20">20</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="11.0">11.0</td><td title="89.0">89.0</td><td title="18">18</td></tr><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="12.0">12.0</td><td title="88.0">88.0</td><td title="25">25</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="21.0">21.0</td><td title="79.0">79.0</td><td title="28">28</td></tr><tr><td title="European Hot-Rolled Coil Steel (ICE)">European Hot-Rolled Coil Steel (ICE)</td><td title="23.0">23.0</td><td title="77.0">77.0</td><td title="13">13</td></tr><tr><td title="Euro">Euro</td><td title="80.0">80.0</td><td title="20.0">20.0</td><td title="15">15</td></tr><tr><td title="chinese yuan">chinese yuan</td><td title="82.0">82.0</td><td title="18.0">18.0</td><td title="11">11</td></tr></tbody></table></div>
-          </div>
         </div>
       </section>
     </main>
   </div>
 
   <script>
-    // === CONFIG: ENDPOINTS ===
     const DATA_CONFIG = {
       geopolitics: {
         latestTable: "https://permutable-public-web.s3.us-east-1.amazonaws.com/live-insights/geo-latest-table.csv",
@@ -2066,7 +2085,6 @@
       }
     };
 
-    // === SIMPLE CSV PARSER ===
     function parseCSV(text){
       const rows = [];
       const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
@@ -2092,7 +2110,6 @@
 
       for (let i = 0; i < line.length; i++){
         const ch = line[i];
-
         if (ch === '"'){
           if (inQuotes && line[i+1] === '"'){
             current += '"';
@@ -2118,23 +2135,19 @@
       return parseCSV(text);
     }
 
-    // === RENDER HELPERS ===
     function renderTable(containerId, data, maxRows = 50){
       const el = document.getElementById(containerId);
       if (!el) return;
-
       const { headers, rows } = data;
       if (!headers.length || !rows.length){
         el.innerHTML = '<div class="muted">No data available.</div>';
         return;
       }
-
       const limitedRows = rows.slice(0, maxRows);
       let thead = "<tr>" + headers.map(h => `<th>${escapeHtml(h)}</th>`).join("") + "</tr>";
       let tbody = limitedRows.map(row => {
         return "<tr>" + headers.map(h => `<td title="${escapeHtml(row[h] ?? "")}">${escapeHtml(row[h] ?? "")}</td>`).join("") + "</tr>";
       }).join("");
-
       el.innerHTML = `<table><thead>${thead}</thead><tbody>${tbody}</tbody></table>` +
                      (rows.length > maxRows
                       ? `<div class="hint-row">Showing ${maxRows} of ${rows.length} rows…</div>`
@@ -2144,13 +2157,11 @@
     function renderEvents(containerId, data, maxItems = 40){
       const el = document.getElementById(containerId);
       if (!el) return;
-
       const { headers, rows } = data;
       if (!headers.length || !rows.length){
         el.innerHTML = '<div class="muted">No events available.</div>';
         return;
       }
-
       const lower = headers.map(h => h.toLowerCase());
       const idxDate = lower.findIndex(h => h.includes("date"));
       const idxTime = lower.findIndex(h => h.includes("time"));
@@ -2161,14 +2172,12 @@
 
       const items = rows.slice(0, maxItems).map(row => {
         const get = (idx) => idx >= 0 ? row[headers[idx]] || "" : "";
-
         const title = get(idxTitle) || get(idxDesc) || get(idxRegion) || "Event";
         const date = get(idxDate);
         const time = get(idxTime);
         const region = get(idxRegion);
         const score = get(idxScore);
         const desc = get(idxDesc);
-
         let metaParts = [];
         if (date) metaParts.push(date);
         if (time) metaParts.push(time);
@@ -2199,7 +2208,6 @@
       const cfg = DATA_CONFIG[key];
       if (!cfg) return;
 
-      // latest table
       if (cfg.latestTable && cfg.dom.table){
         const el = document.getElementById(cfg.dom.table);
         if (el) el.innerHTML = '<div class="loader">Loading…</div>';
@@ -2211,7 +2219,6 @@
         }
       }
 
-      // latest events
       if (cfg.latestEvents && cfg.dom.events){
         const el = document.getElementById(cfg.dom.events);
         if (el) el.innerHTML = '<div class="loader">Loading…</div>';
@@ -2223,7 +2230,6 @@
         }
       }
 
-      // previous week (table style)
       if (cfg.previousWeek && cfg.dom.prev){
         const el = document.getElementById(cfg.dom.prev);
         if (el) el.innerHTML = '<div class="loader">Loading…</div>';
@@ -2264,7 +2270,6 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       initTabs();
-      // initial load
       loadBlock("geopolitics");
     });
   </script>
@@ -2308,4 +2313,4 @@
 </script>
 
 
-</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar></html>
+</body><chatgpt-sidebar data-gpts-theme="dark"></chatgpt-sidebar></html>
