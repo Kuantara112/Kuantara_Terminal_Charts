@@ -113,6 +113,42 @@
       background:#0b0b0b;  
       touch-action:auto;  
     }  
+
+    /* LOADING OVERLAY UNTUK IFRAME */  
+    .kt-iframe-loading{  
+      position:absolute;  
+      inset:0;  
+      display:flex;  
+      flex-direction:column;  
+      align-items:center;  
+      justify-content:center;  
+      background:radial-gradient(circle at top, rgba(255,191,0,0.08), rgba(0,0,0,0.9));  
+      font-size:11px;  
+      color:var(--text-muted);  
+      z-index:3;  
+      pointer-events:none;  
+      transition:opacity 0.25s ease;  
+    }  
+    .kt-iframe-loading-text{  
+      margin-top:6px;  
+      letter-spacing:.08em;  
+      text-transform:uppercase;  
+      font-size:10px;  
+    }  
+    .kt-iframe-spinner{  
+      width:26px;  
+      height:26px;  
+      border-radius:50%;  
+      border:2px solid rgba(255,255,255,0.12);  
+      border-top-color:var(--amber);  
+      animation:kt-spin 0.8s linear infinite;  
+    }  
+    .kt-iframe-loading-done{  
+      opacity:0;  
+    }  
+    @keyframes kt-spin{  
+      to{transform:rotate(360deg);}  
+    }  
   
     /* VIGNETTE ATAS & BAWAH DI IFRAME (LEBIH TIPIS) */  
     .kt-iframe-layer::before,  
@@ -675,6 +711,44 @@
     .kt-search-input{width:100%;padding:10px;border-radius:6px;border:1px solid var(--border-soft);background:#111;color:var(--text-main);outline:none}  
     .kt-close-btn{margin-top:10px;padding:6px 10px;font-size:11px;border-radius:4px;border:1px solid var(--border-soft);background:#181818;color:var(--text-muted);cursor:pointer}  
   
+    /* SEARCH SUGGESTIONS */  
+    .kt-search-suggestions{  
+      margin-top:8px;  
+      max-height:220px;  
+      overflow:auto;  
+      border-radius:6px;  
+      border:1px solid var(--border-soft);  
+      background:#050505;  
+      padding:4px 0;  
+      font-size:11px;  
+    }  
+    .kt-search-suggestions.hidden{  
+      display:none;  
+    }  
+    .kt-search-suggestion-item{  
+      padding:4px 8px;  
+      cursor:pointer;  
+      display:flex;  
+      justify-content:space-between;  
+      align-items:center;  
+      gap:6px;  
+    }  
+    .kt-search-suggestion-item:hover{  
+      background:#181818;  
+    }  
+    .kt-search-suggestion-main{  
+      color:var(--text-main);  
+      white-space:nowrap;  
+      overflow:hidden;  
+      text-overflow:ellipsis;  
+      max-width:240px;  
+    }  
+    .kt-search-suggestion-meta{  
+      color:var(--text-muted);  
+      font-size:9px;  
+      flex-shrink:0;  
+    }  
+  
     .kt-cheatsheet{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);background:#0e0e0e;border:1px solid var(--border-soft);border-radius:8px;padding:8px 10px;z-index:3500;display:none;font-size:10px;color:var(--text-muted)}  
     .kt-cheatsheet b{color:var(--amber)}  
   
@@ -781,17 +855,16 @@
 
     <div class="kt-submenu-group" data-menu-sub="2">  
       <button class="kt-submenu-btn" data-menu="2" data-sub-index="0">US Macro</button>  
-      <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">Major Country</button>  
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">G10+</button>  
       <button class="kt-submenu-btn" data-menu="2" data-sub-index="2">Central Bank</button>  
-      <button class="kt-submenu-btn" data-menu="2" data-sub-index="3">Details</button>  
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="3">All Countries</button>  
     </div>  
 
-    <!-- MENU 3: GEO-ECONOMIC (UPDATED) -->  
+    <!-- MENU 3: GEO-ECONOMIC (UPDATED, SUPPLY CHAIN REMOVED) -->  
     <div class="kt-submenu-group" data-menu-sub="3">  
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="0">Geo Risk</button>  
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="1">Trade &amp; Shipping</button>  
-      <button class="kt-submenu-btn" data-menu="3" data-sub-index="2">Supply Chain</button>  
-      <button class="kt-submenu-btn" data-menu="3" data-sub-index="3">Resources</button>  
+      <button class="kt-submenu-btn" data-menu="3" data-sub-index="2">Resources</button>  
     </div>  
 
     <div class="kt-submenu-group" data-menu-sub="4">  
@@ -807,8 +880,8 @@
     </div>  
 
     <div class="kt-submenu-group" data-menu-sub="5">  
-      <button class="kt-submenu-btn" data-menu="5" data-sub-index="0">United States</button>  
-      <button class="kt-submenu-btn" data-menu="5" data-sub-index="1">Indonesia</button>  
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="0">S&amp;P500</button>  
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="1">LQ45</button>  
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="2">Blockchain Projects</button>  
     </div>  
 
@@ -832,9 +905,9 @@
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Quantitative</button>  
     </div>  
 
-    <!-- MENU 9: TOOLS (Notes dihapus) -->  
+    <!-- MENU 9: TOOLS -->  
     <div class="kt-submenu-group" data-menu-sub="9">  
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Journal</button>  
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Trading Journal</button>  
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Education</button>  
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Calculator</button>  
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Others</button>  
@@ -936,6 +1009,7 @@
   <div class="kt-ai-fab" id="kt-ai-fab">≡</div>  
 
   <div class="kt-ai-menu" id="kt-ai-menu">  
+    <button class="kt-ai-menu-btn" data-pane="search"><span>SR</span><span>Search</span></button>  
     <button class="kt-ai-menu-btn" data-pane="ai"><span>AI</span><span>Kuantara AI</span></button>  
     <button class="kt-ai-menu-btn" data-pane="mini"><span>MC</span><span>Mini Chart</span></button>  
     <button class="kt-ai-menu-btn" data-pane="notes"><span>NT</span><span>Notes</span></button>  
@@ -959,6 +1033,7 @@
     <div class="kt-card">  
       <div class="kt-card-title">Search</div>  
       <input id="kt-search-input" class="kt-search-input" type="text" placeholder="Cari menu/sub… (Enter untuk lompat, Esc tutup)" />  
+      <div class="kt-search-suggestions hidden" id="kt-search-suggestions"></div>  
       <button class="kt-close-btn" id="kt-search-close">Close</button>  
     </div>  
   </div>  
@@ -992,6 +1067,7 @@
       const searchOvl   = document.getElementById("kt-search-ovl");  
       const searchInput = document.getElementById("kt-search-input");  
       const searchClose = document.getElementById("kt-search-close");  
+      const searchSuggestions = document.getElementById("kt-search-suggestions");  
   
       const iframeLayer   = document.getElementById("kt-iframe-layer");  
       const topbar        = document.getElementById("kt-topbar");  
@@ -1051,11 +1127,10 @@
         "2:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_centralbank.html",  
         "2:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_countries.html",  
   
-        // Geo-Economic  
+        // Geo-Economic (Supply Chain removed, Resources shifted to 3:2)  
         "3:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_georisk.html",  
         "3:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_tradeshipping.html",  
-        "3:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_supchain.html",  
-        "3:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_resources.html",  
+        "3:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_resources.html",  
   
         // Metrics  
         "4:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macro.html",  
@@ -1097,8 +1172,39 @@
       };  
   
       function injectIframe(url){  
-        if(!url){ iframeLayer.innerHTML=""; return; }  
-        iframeLayer.innerHTML = '<iframe title="embedded" loading="lazy" src="'+url+'"></iframe>';  
+        if(!url){  
+          iframeLayer.innerHTML="";  
+          return;  
+        }  
+
+        // tampilkan loader + iframe  
+        iframeLayer.innerHTML = `  
+          <div class="kt-iframe-loading" id="kt-iframe-loading">  
+            <div class="kt-iframe-spinner"></div>  
+            <div class="kt-iframe-loading-text">Loading view…</div>  
+          </div>  
+          <iframe title="embedded" loading="lazy" src="${url}"></iframe>  
+        `;  
+
+        const iframe = iframeLayer.querySelector("iframe");  
+        const loader = iframeLayer.querySelector(".kt-iframe-loading");  
+
+        if(iframe){  
+          iframe.addEventListener("load", ()=>{  
+            if(loader){  
+              loader.classList.add("kt-iframe-loading-done");  
+              setTimeout(()=>{  
+                if(loader && loader.parentNode){  
+                  loader.parentNode.removeChild(loader);  
+                }  
+              }, 250);  
+            }  
+            if(!isPinned){  
+              statusMsg.textContent = url ? "EMBED: "+url : "READY (No content)";  
+            }  
+          });  
+        }  
+
         updateIframeInteractivity();  
       }  
   
@@ -1109,14 +1215,15 @@
       function renderContent(menuIndex, subIndex){  
         const key = menuIndex+":"+subIndex;  
         const url = IFRAME_MAP[key] || "";  
+
+        if(!isPinned){  
+          statusMsg.textContent = url ? "LOADING: "+url : "READY (No content)";  
+        }  
+
         injectIframe(url);  
         currentViewUrl = url;  
         currentViewTitleMain = breadcrumbMain.textContent || "";  
         currentViewTitleSub  = breadcrumbSub.textContent || "";  
-          
-        if(!isPinned){  
-          statusMsg.textContent = url ? "EMBED: "+url : "READY (No content)";  
-        }  
       }  
   
       function setActiveMenu(menuIndex){  
@@ -1268,7 +1375,7 @@
         });  
       }  
   
-      /* SEARCH */  
+      /* SEARCH INDEX + FIND */  
       function buildSearchIndex(){  
         const idx=[];  
         document.querySelectorAll(".kt-mainmenu-btn").forEach(btn=>{  
@@ -1293,8 +1400,69 @@
       }  
   
       let searchIndex=buildSearchIndex();  
+  
       function openOverlay(el){ el.style.display="flex"; updateIframeInteractivity(); }  
       function closeOverlay(el){ el.style.display="none"; updateIframeInteractivity(); }  
+  
+      function clearSearchSuggestions(){  
+        if(!searchSuggestions) return;  
+        searchSuggestions.innerHTML = "";  
+        searchSuggestions.classList.add("hidden");  
+      }  
+  
+      function updateSearchSuggestions(qRaw){  
+        if(!searchSuggestions) return;  
+        const q = (qRaw || "").trim();  
+        if(!q){  
+          clearSearchSuggestions();  
+          return;  
+        }  
+        const qLower = q.toLowerCase();  
+        const matches = searchIndex  
+          .filter(it => it.label.toLowerCase().includes(qLower))  
+          .slice(0, 10);  
+  
+        if(matches.length===0){  
+          clearSearchSuggestions();  
+          return;  
+        }  
+  
+        searchSuggestions.innerHTML = "";  
+  
+        matches.forEach(match => {  
+          const item = document.createElement("div");  
+          item.className = "kt-search-suggestion-item";  
+  
+          const mainSpan = document.createElement("span");  
+          mainSpan.className = "kt-search-suggestion-main";  
+          mainSpan.textContent = match.label;  
+  
+          const metaSpan = document.createElement("span");  
+          metaSpan.className = "kt-search-suggestion-meta";  
+          metaSpan.textContent = match.type==="menu"  
+            ? `Menu ${match.menu}`  
+            : `Sub ${match.menu}:${match.sub}`;  
+  
+          item.appendChild(mainSpan);  
+          item.appendChild(metaSpan);  
+  
+          item.addEventListener("click", () => {  
+            if(activeBottom!=="home"){  
+              setBottomActive("home");  
+              hideProfilePage();  
+              hideWorkspacePage();  
+            }  
+            setActiveMenu(match.menu);  
+            if(match.sub!==null) setActiveSub(match.menu,match.sub);  
+            if(!isPinned) statusMsg.textContent=`SEARCH goto: ${match.label} (${match.type})`;  
+            closeSearch();  
+          });  
+  
+          searchSuggestions.appendChild(item);  
+        });  
+  
+        searchSuggestions.classList.remove("hidden");  
+      }  
   
       function openSearch(){  
         searchIndex=buildSearchIndex();  
@@ -1304,15 +1472,23 @@
         if(activeBottom==="home"){  
           showAllBars();  
         }  
+        updateSearchSuggestions(searchInput.value || "");  
       }  
       function closeSearch(){   
         closeOverlay(searchOvl);   
+        clearSearchSuggestions();  
         if(!isPinned) statusMsg.textContent="SEARCH: closed";   
         if(activeBottom==="home" && !isPinned) scheduleHide();   
       }  
   
       searchClose.addEventListener("click", closeSearch);  
       searchOvl.addEventListener("click",(e)=>{ if(e.target===searchOvl) closeSearch(); });  
+  
+      searchInput.addEventListener("input",(e)=>{  
+        const v = e.target.value || "";  
+        updateSearchSuggestions(v);  
+      });  
+  
       searchInput.addEventListener("keydown",(e)=>{  
         if(e.key==="Escape"){ e.preventDefault(); closeSearch(); return; }  
         if(e.key==="Enter"){  
@@ -1375,14 +1551,23 @@
       }  
   
       function showAllBars(){  
-        showTopBars();  
-        showBottomBars();  
+        if(activeBottom!=="home") return;  
+        mainmenuStrip.classList.remove("kt-hide-top");  
+        contentHeader.classList.remove("kt-hide-top");  
+        submenuStrip.classList.remove("kt-hide-bottom");  
+        statusbar.classList.remove("kt-hide-bottom");  
+        clearTimeout(graceTimer);  
+        graceTimer=setTimeout(()=>{},CLICK_GRACE);  
+        updateIframeInteractivity();  
       }  
   
       function hideAllBars(){  
         if(isPinned) return;  
-        hideTopBars();  
-        hideBottomBars();  
+        mainmenuStrip.classList.add("kt-hide-top");  
+        contentHeader.classList.add("kt-hide-top");  
+        submenuStrip.classList.add("kt-hide-bottom");  
+        statusbar.classList.add("kt-hide-bottom");  
+        updateIframeInteractivity();  
       }  
   
       function scheduleHide(){  
@@ -1532,6 +1717,10 @@
           e.stopPropagation();  
           const pane = btn.getAttribute("data-pane");  
           toggleAiMenu(false);  
+          if(pane==="search"){  
+            openSearch();  
+            return;  
+          }  
           openAiPane(pane);  
         });  
       });  
@@ -1821,37 +2010,6 @@
       setInterval(updateSessions,1000);  
   
       /* Init */  
-      function ensureWorkspacePlaceholder(){  
-        if(!workspaceBoard) return;  
-        if(!workspaceBoard.querySelector(".kt-workspace-window")){  
-          workspaceBoard.innerHTML =  
-            '<div class="kt-workspace-placeholder">' +  
-            'Belum ada window di Workspace.<br>' +  
-            'Pergi ke Home, pilih view yang kamu suka, lalu klik <b>Add current view</b>.' +  
-            '</div>';  
-        }  
-      }  
-  
-      function showAllBars(){  
-        if(activeBottom!=="home") return;  
-        mainmenuStrip.classList.remove("kt-hide-top");  
-        contentHeader.classList.remove("kt-hide-top");  
-        submenuStrip.classList.remove("kt-hide-bottom");  
-        statusbar.classList.remove("kt-hide-bottom");  
-        clearTimeout(graceTimer);  
-        graceTimer=setTimeout(()=>{},CLICK_GRACE);  
-        updateIframeInteractivity();  
-      }  
-  
-      function hideAllBars(){  
-        if(isPinned) return;  
-        mainmenuStrip.classList.add("kt-hide-top");  
-        contentHeader.classList.add("kt-hide-top");  
-        submenuStrip.classList.add("kt-hide-bottom");  
-        statusbar.classList.add("kt-hide-bottom");  
-        updateIframeInteractivity();  
-      }  
-  
       setupEventListeners();  
       setActiveMenu(0);  
       setBottomActive("home");  
