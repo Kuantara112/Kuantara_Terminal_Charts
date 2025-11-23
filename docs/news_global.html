@@ -137,6 +137,80 @@
       line-height:1.3;
     }
 
+    .core-card {
+      position:relative;
+      overflow:hidden;
+      cursor:default;
+      transition:border-color 0.12s ease, background-color 0.12s ease;
+    }
+
+    .core-card.clickable {
+      cursor:pointer;
+    }
+
+    .core-card.clickable:hover {
+      border-color:var(--accent);
+      background:#141414;
+    }
+
+    .core-body {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+
+    .core-thumb {
+      width:100%;
+      height:160px;
+      border-radius:4px;
+      overflow:hidden;
+      background:#0a0a0a;
+      border:1px solid var(--border-soft);
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .core-thumb img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .core-body-content {
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width:0;
+      flex:1;
+    }
+
+    /* Shimmer loading */
+    .shimmer {
+      position:relative;
+      overflow:hidden;
+      background:#0d0d0d;
+    }
+    .shimmer::after {
+      content:"";
+      position:absolute;
+      top:0;
+      left:-150%;
+      width:50%;
+      height:100%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      animation:shimmer 1.2s infinite;
+    }
+    @keyframes shimmer {
+      0% { left:-150%; }
+      50% { left:150%; }
+      100% { left:150%; }
+    }
+
     .core-meta {
       font-size:var(--fs-small);
       color:var(--text-muted);
@@ -169,6 +243,21 @@
       border-radius:999px;
       border:1px dashed var(--border-soft);
       opacity:0.85;
+    }
+
+    .pill-bull {
+      border-color:#22c55e;
+      color:#22c55e;
+    }
+
+    .pill-bear {
+      border-color:#ef4444;
+      color:#ef4444;
+    }
+
+    .pill-neutral {
+      border-color:var(--text-muted);
+      color:var(--text-muted);
     }
 
     .panel-title {
@@ -266,7 +355,18 @@
       background:#101010;
       display:flex;
       flex-direction:column;
-      gap:4px;
+      gap:6px;
+      cursor:default;
+      transition:border-color 0.12s ease, background-color 0.12s ease;
+    }
+
+    .news-item.clickable {
+      cursor:pointer;
+    }
+
+    .news-item.clickable:hover {
+      border-color:var(--accent);
+      background:#141414;
     }
 
     .news-item-header {
@@ -291,6 +391,40 @@
       font-weight:500;
     }
 
+    .news-body {
+      display:flex;
+      gap:8px;
+      align-items:flex-start;
+    }
+
+    .news-thumb {
+      width:72px;
+      height:56px;
+      border-radius:4px;
+      overflow:hidden;
+      background:#0a0a0a;
+      border:1px solid var(--border-soft);
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .news-thumb img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .news-body-content {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+      flex:1;
+    }
+
     .news-tags {
       display:flex;
       flex-wrap:wrap;
@@ -303,6 +437,21 @@
       padding:2px 5px;
       border-radius:999px;
       border:1px solid var(--border-soft);
+      color:var(--text-muted);
+    }
+
+    .news-tag-bull {
+      border-color:#22c55e;
+      color:#22c55e;
+    }
+
+    .news-tag-bear {
+      border-color:#ef4444;
+      color:#ef4444;
+    }
+
+    .news-tag-neutral {
+      border-color:var(--text-muted);
       color:var(--text-muted);
     }
 
@@ -404,15 +553,12 @@
     <!-- PAGE TITLE -->
     <div>
       <div class="page-title">Global News</div>
-      <div class="page-subtitle">
-        Core headlines &amp; cross-asset news stream · wired into your data backend.
-      </div>
     </div>
 
     <!-- TOP LAYOUT: CORE NEWS (LEFT) + NEWS UNIVERSE + HEADLINE STREAM (RIGHT) -->
     <div class="layout-top">
       <!-- CORE NEWS HEADER -->
-      <section class="card" id="coreNewsHeader">
+      <section class="card core-card" id="coreNewsHeader">
         <div class="card-header-row">
           <div>
             <div class="badge">
@@ -425,21 +571,26 @@
           </div>
         </div>
 
-        <div class="core-title">Global Macro Focus</div>
-        <div class="core-headline" id="coreHeadline">
-          Waiting for API&hellip; inject your top headline here.
-        </div>
+        <div class="core-body">
+          <div class="core-thumb" id="coreThumb"></div>
+          <div class="core-body-content">
+            <div class="core-title">Global Macro Focus</div>
+            <div class="core-headline" id="coreHeadline">
+              Waiting for API&hellip; inject your top headline here.
+            </div>
 
-        <p class="core-summary" id="coreSummary">
-          This block is for the single most important cross-asset story:
-          rate decisions, inflation surprises, geopolitical shocks,
-          or anything that defines the current risk-on / risk-off regime.
-        </p>
+            <p class="core-summary" id="coreSummary">
+              This block is for the single most important cross-asset story:
+              rate decisions, inflation surprises, geopolitical shocks,
+              or anything that defines the current risk-on / risk-off regime.
+            </p>
 
-        <div class="pill-row" id="coreTags">
-          <span class="pill">Macro</span>
-          <span class="pill">Cross-Asset</span>
-          <span class="pill">High Impact</span>
+            <div class="pill-row" id="coreTags">
+              <span class="pill">Macro</span>
+              <span class="pill">Cross-Asset</span>
+              <span class="pill">High Impact</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -449,9 +600,6 @@
         <div class="filter-header">
           <div>
             <div class="panel-title">News Universe &amp; Headline Stream</div>
-            <div class="panel-subtitle">
-              Slide categories to filter the global feed in real time.
-            </div>
           </div>
           <div class="active-filter-label">
             Active filter:<br>
@@ -461,11 +609,6 @@
 
         <!-- HORIZONTAL BUTTON ROW -->
         <div class="filter-grid" id="filterGrid">
-          <!-- Top-level navigation group -->
-          <button class="filter-btn" data-filter="asset-class-insight">Asset Class Insight</button>
-          <button class="filter-btn" data-filter="news">News</button>
-          <button class="filter-btn" data-filter="error-404">Error • HTTP 404</button>
-
           <!-- Main asset & topic filters -->
           <button class="filter-btn is-active" data-filter="all-assets">All Assets</button>
           <button class="filter-btn" data-filter="stocks">Stocks</button>
@@ -572,40 +715,508 @@
           </article>
         </div>
 
-        <div class="hint">
-          Suggested contract:
-          <code>onFilterChange(filterKey)</code> &rarr; call your API,
-          then feed into <code>updateNewsStream(payload)</code>.
-        </div>
       </section>
     </div>
   </div>
 
   <script>
-    // Basic filter behaviour + hook to backend
+    // CityFalcon integration (JS-only, no UI changes)
     (function() {
-      const filterButtons = Array.from(
-        document.querySelectorAll(".filter-btn")
+      const FRONT_SIGNAL_ASSET_CLASS = "163"; // Macro Topics
+      const FRONT_SIGNAL_ROTATE_MS = 12000;
+      const AUTO_REFRESH_INTERVAL = 15000;
+
+      // CORS proxy (override with ?cf_proxy=...)
+      const USER_PROXY = new URLSearchParams(location.search).get("cf_proxy");
+      const PROXY_CHAIN = [
+        USER_PROXY,
+        "https://cors-anywhere-proxy-six.vercel.app/",
+        "https://cors-anywhere.herokuapp.com/",
+        "https://cors.eu.org/",
+        "https://cors.isomorphic-git.org/",
+        "",
+      ].filter(Boolean);
+
+
+      const ASSET_CLASSES = [
+        { id: "all", label: "All Assets" },
+        { id: "1", label: "Stocks" },
+        { id: "61", label: "Commodities" },
+        { id: "73", label: "Foreign Exchange and Currencies" },
+        { id: "72", label: "Indices" },
+        { id: "68", label: "Private Companies and Brands" },
+        { id: "163", label: "Macro Topics" },
+        { id: "26", label: "Exchange Traded Funds (ETFs)" },
+        { id: "152", label: "Cryptocurrencies" },
+        { id: "156", label: "Organisations" },
+        { id: "158", label: "People" },
+        { id: "165", label: "State-Owned Companies" },
+        { id: "172", label: "Technical Analysis" },
+        { id: "155", label: "Closed-End Funds" },
+        { id: "162", label: "Other Topics" },
+        { id: "157", label: "Events" },
+        { id: "151", label: "Property" },
+        { id: "173", label: "Fundamental Analysis" },
+        { id: "167", label: "Financial Regulation and Related Topics" },
+        { id: "182", label: "Other Events" },
+        { id: "181", label: "Preferred Stocks" },
+        { id: "183", label: "Alternative Data" },
+        { id: "159", label: "Mutual Funds" },
+        { id: "153", label: "Financial Topics" },
+        { id: "166", label: "Corporate Bonds" },
+        { id: "169", label: "Products" },
+        { id: "168", label: "Ratings and Research Firms" },
+        { id: "65", label: "Sovereign and Government Bonds" },
+      ];
+
+      const CITYFALCON_BASE = "https://www.cityfalcon.com/webapi/v1/stories";
+      const CITYFALCON_LIMIT = Number(
+        new URLSearchParams(location.search).get("CITYFALCON_LIMIT") || "50"
       );
+      const SAMPLE_STORIES = [
+        {
+          id: 101444814,
+          title: "Airlines cut Venezuela flights after US warning",
+          description:
+            "Several international airlines have halted flights from Venezuela. This follows a warning from U.S. aviation authorities about potential dangers in the country's airspace.",
+          category: "mp",
+          url: "https://economictimes.indiatimes.com/industry/transportation/airlines-/-aviation/several-international-airlines-cancel-their-flights-in-venezuela-after-us-warning/articleshow/125514271.cms",
+          imageUrls: [
+            "https://img.etimg.com/thumb/msid-125514274,width-1200,height-630,imgsize-18302,overlay-economictimes/articleshow.jpg",
+          ],
+          publishTime: "2025-11-23T00:53:47.000Z",
+          domain_name: "Economic Times India",
+        },
+        {
+          id: 101436531,
+          title: "FAA warns pilots flying over Venezuela to 'exercise caution' amid military turmoil",
+          description:
+            "The FAA has warned pilots to exercise caution when operating in the region around Venezuela because of heightened military activity.",
+          category: "mp",
+          url: "https://thehill.com/regulation/transportation/5619121-faa-warns-venezuela-flights/",
+          imageUrls: [
+            "https://thehill.com/wp-content/uploads/sites/2/2025/11/dca_110725gn19_w.jpg?w=900",
+          ],
+          publishTime: "2025-11-22T23:27:52.000Z",
+          domain_name: "The Hill",
+        },
+        {
+          id: 101436495,
+          title: "Trump says 28-point Ukraine peace plan isn’t his ‘final offer’",
+          description:
+            "President Donald Trump said his 28-point Russia-Ukraine peace plan is not his final offer after giving a deadline to Ukraine.",
+          category: "mp",
+          url: "https://www.nbcnews.com/video/trump-says-28-point-ukraine-peace-plan-isn-t-his-final-offer-252686917955",
+          imageUrls: [
+            "https://media-cldnry.s-nbcnews.com/image/upload/t_fit_1500w/mpx/2704722219/2025_11/2247364506_Cropped-pc7ovc.jpg",
+          ],
+          publishTime: "2025-11-22T22:18:28.000Z",
+          domain_name: "NBC News",
+        },
+        {
+          id: 101424252,
+          title: "TAP cancela voos para a Venezuela por razões de segurança",
+          description:
+            "A TAP cancelou voos para a Venezuela após alerta das autoridades aeronáuticas dos EUA sobre segurança no espaço aéreo do país.",
+          category: "mp",
+          url: "https://www.noticiasaominuto.com/economia/2892952/tap-cancela-voos-para-a-venezuela-por-razoes-de-seguranca",
+          imageUrls: [
+            "https://media-manager.noticiasaominuto.com/960/naom_67f929a3246ba.webp",
+          ],
+          publishTime: "2025-11-22T21:26:33.000Z",
+          domain_name: "Notícias ao Minuto",
+        },
+      ];
+
+      const filterButtons = Array.from(document.querySelectorAll(".filter-btn"));
       const activeLabel = document.getElementById("activeFilterLabel");
+      const coreHeadline = document.getElementById("coreHeadline");
+      const coreSummary = document.getElementById("coreSummary");
+      const coreTags = document.getElementById("coreTags");
+      const coreUpdated = document.getElementById("coreUpdated");
+      const coreSource = document.getElementById("coreSource");
+      const coreThumb = document.getElementById("coreThumb");
+      const coreCard = document.getElementById("coreNewsHeader");
 
-      filterButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
-          filterButtons.forEach(b => b.classList.remove("is-active"));
-          btn.classList.add("is-active");
-          activeLabel.textContent = btn.textContent.trim();
+      const FILTER_TO_ASSET_CLASS = {
+        "all-assets": null,
+        stocks: "1",
+        commodities: "61",
+        fx: "73",
+        indices: "72",
+        "private-companies": "68",
+        "macro-topics": "163",
+        etfs: "26",
+        crypto: "152",
+        organisations: "156",
+        people: "158",
+        "state-owned": "165",
+        "technical-analysis": "172",
+        "closed-end-funds": "155",
+        "other-topics": "162",
+        events: "157",
+        property: "151",
+        "fundamental-analysis": "173",
+        "fin-regulation": "167",
+        "other-events": "182",
+        "preferred-stocks": "181",
+        "alternative-data": "183",
+        "mutual-funds": "159",
+        "financial-topics": "153",
+        "corporate-bonds": "166",
+        products: "169",
+        "ratings-research": "168",
+        "sovereign-bonds": "65",
+        "asset-class-insight": FRONT_SIGNAL_ASSET_CLASS,
+        news: null
+      };
 
-          // Backend hook:
-          // const filterKey = btn.dataset.filter;
-          // fetch(`/your-endpoint?filter=${encodeURIComponent(filterKey)}`)
-          //   .then(r => r.json())
-          //   .then(updateNewsStream);
+      let currentFilter = "all-assets";
+      let frontStories = [];
+      let frontIndex = 0;
+      let rotateTimer = null;
+      let refreshTimer = null;
+
+      const renderCoreShimmer = () => {
+        if (!coreHeadline || !coreSummary || !coreTags || !coreThumb) return;
+        coreHeadline.textContent = "";
+        coreSummary.textContent = "";
+        coreTags.innerHTML = "";
+        coreSource.textContent = "Source: –";
+        coreUpdated.textContent = "Updated: --:--";
+
+        coreThumb.innerHTML = "";
+        const thumb = document.createElement("div");
+        thumb.className = "shimmer";
+        thumb.style.width = "100%";
+        thumb.style.height = "160px";
+        coreThumb.appendChild(thumb);
+
+        const blocks = [
+          { width: "80%", height: "14px", marginBottom: "8px" },
+          { width: "100%", height: "12px", marginBottom: "6px" },
+          { width: "70%", height: "12px", marginBottom: "10px" },
+          { width: "40%", height: "10px", marginBottom: "0px" },
+        ];
+        coreSummary.innerHTML = "";
+        blocks.forEach(b => {
+          const div = document.createElement("div");
+          div.className = "shimmer";
+          div.style.width = b.width;
+          div.style.height = b.height;
+          div.style.marginBottom = b.marginBottom;
+          coreSummary.appendChild(div);
         });
-      });
+      };
+
+      const renderStreamShimmer = (count = 5) => {
+        const list = document.getElementById("newsList");
+        if (!list) return;
+        list.innerHTML = "";
+        for (let i = 0; i < count; i++) {
+          const article = document.createElement("article");
+          article.className = "news-item";
+          const header = document.createElement("div");
+          header.className = "news-item-header";
+
+          const t1 = document.createElement("div");
+          t1.className = "shimmer";
+          t1.style.width = "80px";
+          t1.style.height = "10px";
+          header.appendChild(t1);
+
+          const t2 = document.createElement("div");
+          t2.className = "shimmer";
+          t2.style.width = "50px";
+          t2.style.height = "10px";
+          header.appendChild(t2);
+
+          const body = document.createElement("div");
+          body.className = "news-body";
+
+          const thumb = document.createElement("div");
+          thumb.className = "news-thumb shimmer";
+          body.appendChild(thumb);
+
+          const bodyContent = document.createElement("div");
+          bodyContent.className = "news-body-content";
+
+          const hline = document.createElement("div");
+          hline.className = "shimmer";
+          hline.style.width = "90%";
+          hline.style.height = "12px";
+          hline.style.marginBottom = "6px";
+          bodyContent.appendChild(hline);
+
+          const tags = document.createElement("div");
+          tags.className = "news-tags";
+          for (let j = 0; j < 3; j++) {
+            const tag = document.createElement("span");
+            tag.className = "news-tag shimmer";
+            tag.style.width = "60px";
+            tag.style.height = "10px";
+            tag.style.border = "none";
+            tags.appendChild(tag);
+          }
+          bodyContent.appendChild(tags);
+
+          body.appendChild(bodyContent);
+
+          const footer = document.createElement("div");
+          footer.className = "news-footer";
+          const s1 = document.createElement("span");
+          s1.className = "news-source shimmer";
+          s1.style.width = "70px";
+          s1.style.height = "10px";
+          footer.appendChild(s1);
+
+          const s2wrap = document.createElement("div");
+          s2wrap.className = "news-sentiment";
+          const s2 = document.createElement("span");
+          s2.className = "sentiment-chip shimmer";
+          s2.style.width = "70px";
+          s2.style.height = "10px";
+          s2wrap.appendChild(s2);
+          footer.appendChild(s2wrap);
+
+          article.appendChild(header);
+          article.appendChild(body);
+          article.appendChild(footer);
+          list.appendChild(article);
+        }
+      };
+
+      const buildCityFalconUrl = (assetClassId, { limit = CITYFALCON_LIMIT, page } = {}) => {
+        const params = {
+          categories: "mp,op,r",
+          domains_filtering_mode: "all",
+          fold_similar_stories: "false",
+          languages: "en",
+          limit: String(limit),
+          min_score: "5",
+          order_by: "latest",
+          selected_time_filter: "predefined",
+          time_filter: "month1",
+          with_sentiments: "true",
+        };
+        if (assetClassId) params.asset_classes = String(assetClassId);
+        if (page && page > 1) params.page = String(page);
+        const query = new URLSearchParams(params);
+        return `${CITYFALCON_BASE}?${query.toString()}`;
+      };
+
+      const formatTime = (ts) => {
+        if (!ts) return "";
+        const d = new Date(ts);
+        if (Number.isNaN(d.getTime())) return "";
+        return d.toISOString().slice(11, 16) + " UTC";
+      };
+
+      const sentimentValue = (s) => {
+        if (s == null) return "";
+        if (Array.isArray(s)) return sentimentValue(s[0]);
+        if (typeof s === "object") return sentimentValue(s.label || s.text || s.name);
+        return String(s);
+      };
+
+      const extractScore = (story) => {
+        const raw =
+          story.score ??
+          (story.dynamic_cfscore && story.dynamic_cfscore.value) ??
+          story.dynamic_cfscore ??
+          story.old_score ??
+          null;
+        const num = Number(raw);
+        return Number.isFinite(num) ? num : null;
+      };
+
+      const sentimentLabel = (s) => {
+        const val = sentimentValue(s).toLowerCase();
+        if (val.includes("bull")) return "Bullish";
+        if (val.includes("bear")) return "Bearish";
+        return "Neutral";
+      };
+
+      const sentimentClass = (s) => {
+        const val = sentimentValue(s).toLowerCase();
+        if (val.includes("bull")) return "sentiment-chip sentiment-bull";
+        if (val.includes("bear")) return "sentiment-chip sentiment-bear";
+        return "sentiment-chip sentiment-neutral";
+      };
+
+      const scoreToClass = (score) => {
+        if (score == null) return "sentiment-chip sentiment-neutral";
+        if (score >= 60) return "sentiment-chip sentiment-bull";
+        if (score <= 40) return "sentiment-chip sentiment-bear";
+        return "sentiment-chip sentiment-neutral";
+      };
+
+      const scoreToTagClass = (score) => {
+        if (score == null) return "news-tag news-tag-neutral";
+        if (score >= 60) return "news-tag news-tag-bull";
+        if (score <= 40) return "news-tag news-tag-bear";
+        return "news-tag news-tag-neutral";
+      };
+
+      const scoreToLabel = (score) => {
+        if (score == null) return "Neutral";
+        if (score >= 60) return "Positive";
+        if (score <= 40) return "Negative";
+        return "Neutral";
+      };
+
+      const isTrustedSource = (story) => {
+        const src =
+          story.source_name ||
+          story.source ||
+          story.provider ||
+          story.publisher ||
+          story.domain_name ||
+          story.domain_host ||
+          "";
+        if (!src) return false;
+        return !/blog|wordpress|medium|substack|feedburner/i.test(String(src));
+      };
+
+      const pickImage = (story) => {
+        if (Array.isArray(story.imageUrls) && story.imageUrls.length) return story.imageUrls[0];
+        if (Array.isArray(story.images) && story.images.length) return story.images[0];
+        return (
+          story.image_url ||
+          story.lead_image_url ||
+          story.thumbnail ||
+          story.hero_image_url ||
+          story.main_image_url ||
+          ""
+        );
+      };
+
+      const normalizeStory = (story, fallbackTag) => {
+        const tags =
+          story.asset_class_names ||
+          story.asset_classes_names ||
+          story.asset_classes ||
+          story.asset_class_ids ||
+          [];
+        const tagList = Array.isArray(tags) && tags.length
+          ? tags.map(String)
+          : fallbackTag
+          ? [fallbackTag]
+          : story.category
+          ? [story.category]
+          : [];
+
+        const analyticsTags = Array.isArray(story.analytics)
+          ? story.analytics.map(a => ({
+              label: a.entity_name || a.name || a.entity || "Tag",
+              className: scoreToTagClass(a.sentiment != null ? Number(a.sentiment) : null),
+            }))
+          : [];
+
+        const sentiments = story.sentiments || story.sentiment || story.overall_sentiment_label;
+        const sentimentText = Array.isArray(sentiments)
+          ? sentiments[0]?.label || sentiments[0] || ""
+          : sentiments || "";
+        const scoreVal = extractScore(story);
+        const sentimentLabelText = scoreVal != null ? scoreToLabel(scoreVal) : sentimentLabel(sentimentText);
+        const sentimentClassName = scoreVal != null ? scoreToClass(scoreVal) : sentimentClass(sentimentText);
+
+        const sourceVal =
+          story.source_name ||
+          story.source ||
+          story.provider ||
+          story.publisher ||
+          story.domain_name ||
+          story.domain_host ||
+          "";
+
+        return {
+          headline: story.title || story.headline || "Untitled",
+          ticker:
+            (story.tickers && story.tickers[0]) ||
+            (story.symbols && story.symbols[0]) ||
+            (story.securities && story.securities[0]?.symbol) ||
+            "",
+          time: formatTime(
+            story.publishTime ||
+            story.published_at ||
+            story.time_published ||
+            story.time
+          ),
+          tags: tagList,
+          analyticsTags,
+          source: sourceVal && sourceVal !== "CityFalcon" ? sourceVal : "—",
+          sentiment: sentimentLabelText,
+          sentimentClass: sentimentClassName,
+          summary: story.summary || story.description || "",
+          url:
+            story.url ||
+            story.link ||
+            story.canonical_url ||
+            story.story_url ||
+            story.share_url ||
+            "",
+          image: pickImage(story),
+        };
+      };
+
+      const renderCoreStory = (story) => {
+        if (coreCard) {
+          coreCard.classList.remove("clickable");
+          coreCard.onclick = null;
+        }
+        if (!story) {
+          coreHeadline.textContent = "Waiting for API…";
+          coreSummary.textContent = "No macro headline available yet.";
+          coreTags.innerHTML = "<span class='pill'>Macro</span>";
+          coreSource.textContent = "Source: –";
+          if (coreThumb) coreThumb.innerHTML = "";
+          return;
+        }
+        coreHeadline.textContent = story.headline || "Untitled";
+        coreSummary.textContent =
+          story.summary ||
+          "Macro cross-asset headline pulled from CityFalcon feed.";
+        coreSource.textContent = "Source: " + (story.source || "—");
+
+        if (coreTags) {
+          coreTags.innerHTML = "";
+          const tagList = [];
+          (story.tags && story.tags.length ? story.tags : ["Macro Topics"]).forEach(t => {
+            tagList.push({ label: t, className: story.sentimentClass });
+          });
+          (story.analyticsTags || []).forEach(t => tagList.push(t));
+          tagList.forEach(t => {
+            const pill = document.createElement("span");
+            const cls = t.className || "";
+            const sentimentCls =
+              cls.includes("bull") ? "pill pill-bull" :
+              cls.includes("bear") ? "pill pill-bear" :
+              "pill pill-neutral";
+            pill.className = sentimentCls;
+            pill.textContent = t.label || t;
+            coreTags.appendChild(pill);
+          });
+        }
+
+        if (coreThumb) {
+          coreThumb.innerHTML = "";
+          if (story.image) {
+            const img = document.createElement("img");
+            img.src = story.image;
+            img.alt = story.headline || "thumbnail";
+            coreThumb.appendChild(img);
+          }
+        }
+
+        if (coreCard && story.url) {
+          coreCard.classList.add("clickable");
+          coreCard.onclick = () => window.open(story.url, "_blank", "noopener");
+        }
+      };
 
       // Update Headline Stream from API
       window.updateNewsStream = function(payload) {
-        // payload = [{headline, ticker, time, tags:[], source, sentiment}, ...]
         const list = document.getElementById("newsList");
         if (!list || !Array.isArray(payload)) return;
 
@@ -613,20 +1224,43 @@
         payload.forEach(item => {
           const article = document.createElement("article");
           article.className = "news-item";
+          if (item.url) {
+            article.classList.add("clickable");
+            article.addEventListener("click", () => {
+              window.open(item.url, "_blank", "noopener");
+            });
+          }
 
           const header = document.createElement("div");
           header.className = "news-item-header";
 
-          const ticker = document.createElement("div");
-          ticker.className = "news-ticker";
-          ticker.textContent = item.ticker || "—";
+          if (item.ticker && item.ticker !== "—") {
+            const ticker = document.createElement("div");
+            ticker.className = "news-ticker";
+            ticker.textContent = item.ticker;
+            header.appendChild(ticker);
+          }
 
           const time = document.createElement("div");
           time.className = "news-time";
           time.textContent = item.time || "";
-
-          header.appendChild(ticker);
           header.appendChild(time);
+
+          const body = document.createElement("div");
+          body.className = "news-body";
+
+          if (item.image) {
+            const thumb = document.createElement("div");
+            thumb.className = "news-thumb";
+            const img = document.createElement("img");
+            img.src = item.image;
+            img.alt = item.headline || "thumbnail";
+            thumb.appendChild(img);
+            body.appendChild(thumb);
+          }
+
+          const bodyContent = document.createElement("div");
+          bodyContent.className = "news-body-content";
 
           const headline = document.createElement("div");
           headline.className = "news-headline";
@@ -634,12 +1268,23 @@
 
           const tags = document.createElement("div");
           tags.className = "news-tags";
-          (item.tags || []).forEach(t => {
+          const tagList = [
+            ...(item.tags || []),
+            ...(item.analyticsTags || []),
+          ];
+
+          tagList.forEach(t => {
+            const label = typeof t === "object" ? t.label : t;
+            const cls = typeof t === "object" && t.className ? t.className : "news-tag news-tag-neutral";
             const tag = document.createElement("span");
-            tag.className = "news-tag";
-            tag.textContent = t;
+            tag.className = cls.includes("news-tag") ? cls : `news-tag ${cls}`;
+            tag.textContent = label;
             tags.appendChild(tag);
           });
+
+          bodyContent.appendChild(headline);
+          bodyContent.appendChild(tags);
+          body.appendChild(bodyContent);
 
           const footer = document.createElement("div");
           footer.className = "news-footer";
@@ -652,11 +1297,7 @@
           sentimentWrap.className = "news-sentiment";
 
           const sentChip = document.createElement("span");
-          sentChip.className = "sentiment-chip sentiment-neutral";
-          const s = (item.sentiment || "").toLowerCase();
-          if (s.includes("bull")) sentChip.className = "sentiment-chip sentiment-bull";
-          else if (s.includes("bear")) sentChip.className = "sentiment-chip sentiment-bear";
-
+          sentChip.className = item.sentimentClass || "sentiment-chip sentiment-neutral";
           sentChip.textContent = item.sentiment || "Neutral";
           sentimentWrap.appendChild(sentChip);
 
@@ -664,13 +1305,125 @@
           footer.appendChild(sentimentWrap);
 
           article.appendChild(header);
-          article.appendChild(headline);
-          article.appendChild(tags);
+          article.appendChild(body);
           article.appendChild(footer);
 
           list.appendChild(article);
         });
       };
+
+      const fetchStories = async (assetClassId) => {
+        const url = buildCityFalconUrl(assetClassId);
+        let lastError = null;
+
+        for (const proxy of PROXY_CHAIN) {
+          const cleanUrl = url.replace(/^https?:\/\//, "");
+          const target = proxy.endsWith("/")
+            ? `${proxy}${cleanUrl}`
+            : proxy
+            ? `${proxy}/${cleanUrl}`
+            : url;
+          try {
+            const res = await fetch(target);
+            if (!res.ok) {
+              lastError = new Error(`CityFalcon error ${res.status} via ${proxy || "direct"}`);
+              if (res.status >= 500) continue;
+              return { stories: null, error: lastError };
+            }
+            const data = await res.json();
+            return { stories: Array.isArray(data.stories) ? data.stories : [], error: null };
+          } catch (err) {
+            lastError = err;
+            continue;
+          }
+        }
+
+        return { stories: null, error: lastError || new Error("CityFalcon unreachable") };
+      };
+
+      const loadFrontSignal = async () => {
+        renderCoreShimmer();
+        const { stories, error } = await fetchStories(FRONT_SIGNAL_ASSET_CLASS);
+        if (error) console.warn("Front signal error", error);
+
+        const sourcePool = stories && stories.length ? stories : [];
+        const filtered = sourcePool.filter(s => {
+          const sc = extractScore(s);
+          return (sc == null || sc > 30) && isTrustedSource(s);
+        });
+
+        frontStories = (filtered.length ? filtered : sourcePool).map((s) =>
+          normalizeStory(s, "Macro Topics")
+        );
+        if (!frontStories.length) {
+          renderCoreStory(null);
+          return;
+        }
+
+        frontIndex = 0;
+        renderCoreStory(frontStories[frontIndex]);
+        coreUpdated.textContent = "Updated: " + formatTime(Date.now());
+        if (rotateTimer) {
+          clearInterval(rotateTimer);
+          rotateTimer = null;
+        }
+      };
+
+      const loadStream = async (filterKey) => {
+        const assetClassId = FILTER_TO_ASSET_CLASS[filterKey] || null;
+        activeLabel.textContent =
+          ASSET_CLASSES.find(a => a.id === String(assetClassId))?.label ||
+          ASSET_CLASSES.find(a => a.id === "all")?.label ||
+          "All Assets";
+        renderStreamShimmer();
+        const { stories, error } = await fetchStories(assetClassId);
+        if (error) console.warn("Stream error", error);
+
+        if (!stories || !stories.length) {
+          updateNewsStream([
+            {
+              headline: "Failed to load feed",
+              ticker: "",
+              time: formatTime(Date.now()),
+              tags: ["Error"],
+              source: "Client",
+              sentiment: "Neutral",
+              sentimentClass: "sentiment-chip sentiment-neutral",
+            },
+          ]);
+          return;
+        }
+
+        const payload = stories.slice(0, 50).map((s) => normalizeStory(s, activeLabel.textContent));
+        updateNewsStream(payload);
+        coreUpdated.textContent = "Updated: " + formatTime(Date.now());
+      };
+
+      const setFilter = (filterKey) => {
+        currentFilter = filterKey;
+        filterButtons.forEach(b => b.classList.toggle("is-active", b.dataset.filter === filterKey));
+        loadStream(filterKey);
+      };
+
+      filterButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const key = btn.dataset.filter;
+          setFilter(key);
+        });
+      });
+
+      const startAutoRefresh = () => {
+        refreshTimer && clearInterval(refreshTimer);
+        refreshTimer = setInterval(() => {
+          loadStream(currentFilter);
+          loadFrontSignal();
+        }, AUTO_REFRESH_INTERVAL);
+      };
+
+      // Init
+      setFilter("all-assets");
+      loadFrontSignal();
+      startAutoRefresh();
     })();
   </script>
 </body>
