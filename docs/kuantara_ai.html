@@ -28,8 +28,6 @@
       --fs-subtitle:12px;
       --fs-body:11px;
       --fs-small:10px;
-
-      --chat-h:60vh;
     }
 
     *{
@@ -63,6 +61,8 @@
       width:100%;
       height:100%;
       padding:16px;
+      display:flex;
+      flex-direction:column;
     }
 
     @media (max-width:820px){
@@ -86,21 +86,23 @@
       border-radius:4px;
       display:flex;
       flex-direction:column;
-      height:100%;
+      flex:1;
+      min-height:0;
       padding:0;
     }
 
     .chat{
       padding:16px;
       overflow:auto;
-      height:var(--chat-h);
+      flex:1;
+      min-height:0;
       scroll-behavior:smooth;
       -webkit-overflow-scrolling:touch;
     }
 
     .row{
       display:grid;
-      grid-template-columns:32px 1fr;
+      grid-template-columns:22px 1fr;
       gap:8px;
       margin-bottom:10px;
     }
@@ -153,47 +155,6 @@
       padding:4px 6px;
     }
 
-    .footer{
-      border-top:1px solid var(--border-soft);
-      padding:10px 12px;
-      display:flex;
-      gap:10px;
-      align-items:flex-end;
-      background:#0a0a0a;
-    }
-
-    textarea{
-      flex:1;
-      resize:none;
-      max-height:160px;
-      min-height:40px;
-      background:#000000;
-      color:var(--text-main);
-      border:1px solid #333333;
-      border-radius:4px;
-      padding:8px;
-      outline:none;
-      font-size:var(--fs-body);
-    }
-
-    textarea::placeholder{
-      color:var(--text-muted);
-      font-size:var(--fs-small);
-    }
-
-    button{
-      background:var(--accent);
-      color:#000000;
-      border:none;
-      border-radius:4px;
-      padding:10px 14px;
-      font-weight:600;
-      font-size:var(--fs-body);
-      cursor:pointer;
-    }
-
-    button:hover{filter:brightness(1.06)}
-
     .chips{
       display:flex;
       gap:8px;
@@ -219,6 +180,89 @@
       color:var(--accent);
     }
 
+    .footer{
+      border-top:1px solid var(--border-soft);
+      padding:8px 10px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      background:#0a0a0a;
+    }
+
+    .footer-tools{
+      display:flex;
+      align-items:center;
+      gap:4px;
+      flex-shrink:0;
+    }
+
+    .icon-btn{
+      width:26px;
+      height:26px;
+      min-width:26px;
+      min-height:26px;
+      border-radius:50%;
+      border:1px solid #333333;
+      background:#000000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:0;
+      cursor:pointer;
+    }
+
+    .icon-btn svg{
+      width:14px;
+      height:14px;
+    }
+
+    .icon-btn:hover{
+      border-color:var(--accent);
+    }
+
+    textarea{
+      flex:1;
+      resize:none;
+      max-height:140px;
+      min-height:34px;
+      background:#000000;
+      color:var(--text-main);
+      border:1px solid #333333;
+      border-radius:4px;
+      padding:6px 8px;
+      outline:none;
+      font-size:var(--fs-body);
+    }
+
+    textarea::placeholder{
+      color:var(--text-muted);
+      font-size:var(--fs-small);
+    }
+
+    #send{
+      width:30px;
+      height:30px;
+      min-width:30px;
+      min-height:30px;
+      border-radius:50%;
+      border:none;
+      background:var(--accent);
+      color:#000000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:0;
+      cursor:pointer;
+      flex-shrink:0;
+    }
+
+    #send svg{
+      width:14px;
+      height:14px;
+    }
+
+    #send:hover{filter:brightness(1.06)}
+
     .muted{
       color:var(--text-muted);
       font-size:var(--fs-small);
@@ -226,7 +270,7 @@
     }
 
     .row svg{
-      margin-top:2px;
+      margin-top:1px;
       flex:0 0 auto;
     }
 
@@ -246,6 +290,13 @@
       border-color:var(--accent);
       color:var(--accent);
     }
+
+    @media (max-width:600px){
+      .footer{
+        padding:8px;
+        gap:6px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -256,22 +307,36 @@
     <div class="chips" id="chips">
       <span
         class="chip"
-        data-prompt='Ringkas berita dan sentimen pasar global terbaru dalam maksimal 5 poin bullet, fokus pada suku bunga, inflasi, pergerakan besar di FX, saham, komoditas, dan kripto. Tutup dengan 1 paragraf singkat tentang implikasi utama untuk trader ritel hari ini.'
+        data-prompt='Ringkas berita, data, informasi, dan sentimen pasar global terbaru (informasi seputar financial market paling lambat kurang dari 5 hari) meliputi semua jenis aset: forex, komoditas, saham, kripto, dan indeks dalam minimal 5-10 poin bullet, fokus pada nada dovish/hawkish bank sentral, statement pemimpin dunia, keadaan geopolitik, suku bunga, inflasi, informasi earnings, pergerakan besar di FX, saham, komoditas, dan kripto. Tutup dengan 1 paragraf singkat tentang implikasi utama untuk trader ritel hari ini.'
       >
         Ringkas Berita
       </span>
 
       <span
         class="chip"
-        data-prompt='Bertindak sebagai macro strategist dan trader multi-aset. Berdasarkan kondisi global makro terbaru (suku bunga, inflasi, data ekonomi utama, sentimen risk-on/risk-off, kekuatan dolar AS, dan faktor geopolitik), buat ide trade hari ini untuk 4 kelompok aset: (1) Forex – 3–5 pasangan mayor/cross, (2) Komoditas utama – seperti emas, perak, minyak, dan lain-lain, (3) Indeks saham global utama, dan (4) Kripto besar. Untuk setiap aset, berikan: nama/ticker aset, bias arah dengan salah satu label: STRONG BUY, BUY, NEUTRAL, SELL, atau STRONG SELL, serta 1–2 kalimat alasan singkat yang jelas berbasis narasi makro (bukan teknikal). Aturan: jangan tampilkan harga terkini, level teknikal, atau timeframe spesifik; fokus hanya pada bias dan alasan makro. Tulis dalam format list yang rapi per kelompok aset.'
+        data-prompt='Bertindak sebagai macro strategist dan trader multi-aset. Berikan penjelasan kondisi global makro terbaru (headlines berita terkini, speech member bank sentral, infromasi suku bunga dan probabilitas hikes/cuts/hold, kondisi inflasi, data ekonomi utama, sentimen risk-on/risk-off, kekuatan dolar AS, atau faktor geopolitik terbaru, pilih mana yang informasinya terbaru saja) dalam satu paragraf, lalu buat ide trade hari ini untuk 4 kelompok aset: (1) Forex – 3–5 pasangan mayor/cross, (2) Komoditas utama – seperti emas, perak, minyak, dan lain-lain, (3) Indeks saham global utama, dan (4) Kripto besar. Untuk setiap aset, berikan: nama/ticker aset, bias arah dengan salah satu label: STRONG BUY, BUY, NEUTRAL, SELL, atau STRONG SELL (ditentukan dari seberapa Anda yakin terhadap setup-nya), serta 1–2 kalimat alasan singkat yang jelas berbasis narasi makro (bukan teknikal). Aturan: data dan informasi yang diambil harus terbaru tidak lebih dari 5 hari, jangan tampilkan harga aset, level teknikal, atau timeframe spesifik; fokus hanya pada bias dan alasan makro. Tulis dalam format list yang rapi per kelompok aset.'
       >
         Ide Trade Hari Ini
       </span>
     </div>
 
     <div class="footer">
+      <div class="footer-tools">
+        <button class="icon-btn" id="file-btn" title="Kirim file">
+          <!-- Paperclip minimalis -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+            <path d="M8 13.5L14 7.5C15.1 6.4 16.9 6.4 18 7.5C19.1 8.6 19.1 10.4 18 11.5L11 18.5C9.3 20.2 6.5 20.2 4.8 18.5C3.1 16.8 3.1 14 4.8 12.3L11.5 5.5" stroke="#ffbf00" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <input type="file" id="file-input" multiple accept="image/*,.pdf,.doc,.docx" style="display:none">
+      </div>
       <textarea id="input" placeholder="Tulis pesan…"></textarea>
-      <button id="send">Kirim</button>
+      <button id="send" aria-label="Kirim">
+        <!-- Paper plane minimalis -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+          <path d="M4.5 5.5L19.5 12L4.5 18.5L7 12L4.5 5.5Z" stroke="#000000" stroke-width="1.4" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
   </div>
 </div>
@@ -283,6 +348,13 @@
 const API_BASE = "https://sider.ai/api/chat/v1";
 const TIMEZONE = "Asia/Makassar";
 const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyMTgzNzM0NiwicmVnaXN0ZXJfdHlwZSI6Im9hdXRoMiIsImFwcF9uYW1lIjoiQ2hpdENoYXRfQ2hyb21lX0V4dCIsInRva2VuX2lkIjoiZTZlOGIwZGUtN2Q3Zi00NTZkLTkxNGQtNzUwNDQ0ZjkyZTNjIiwiaXNzIjoic2lkZXIuYWkiLCJhdWQiOlsiIl0sImV4cCI6MTc4ODY5NjUxMCwibmJmIjoxNzU3NTkyNTEwLCJpYXQiOjE3NTc1OTI1MTB9.mcq86TwFwPtql3S77_vhnJRGj08878Ej5WGkvY3OxWI";
+
+/** 🔐 INSTRUKSI IDENTITAS KUANTARA AI */
+const SYSTEM_INSTRUCTION = `Nama kamu adalah "Kuantara AI".
+Kamu adalah asisten riset dan partner trading pribadi pengguna.
+Jika pengguna menanyakan identitasmu, siapa kamu, kamu AI jenis apa, atau kamu pakai model apa, jawablah singkat dengan kalimat: "Aku Kuantara AI."
+Jangan pernah menyebut GPT, LLM, model bahasa besar, OpenAI, atau menjelaskan arsitektur teknis di balikmu.
+Tetap jawab seolah kamu satu entitas tunggal bernama Kuantara AI.`;
 
 let cid = null;
 let parentMessageId = null;
@@ -296,37 +368,23 @@ let thinkingIdx = 0;
 const chatEl = document.getElementById("chat");
 const inputEl = document.getElementById("input");
 const sendBtn = document.getElementById("send");
-
-/** =========================
- *  FLEX HEIGHT untuk Mobile & Embed
- *  ========================= */
-function setAdaptiveHeight(){
-  const vh = window.innerHeight || 0;
-  const isMobile = vh && window.matchMedia("(max-width: 820px)").matches;
-  const base = isMobile ? Math.round(vh * 0.66) : Math.round(vh * 0.60);
-  document.documentElement.style.setProperty("--chat-h", Math.max(260, base) + "px");
-}
-setAdaptiveHeight();
-window.addEventListener("resize", setAdaptiveHeight);
-
-const card = document.getElementById("card");
-if (window.ResizeObserver){
-  const ro = new ResizeObserver(() => {
-    chatEl.style.height = getComputedStyle(document.documentElement).getPropertyValue("--chat-h");
-  });
-  ro.observe(card);
-}
+const fileBtn = document.getElementById("file-btn");
+const fileInput = document.getElementById("file-input");
 
 /** =========================
  *  UTIL UI
  *  ========================= */
 function svgUser(){return `
-<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="#00aaff">
-  <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+  <circle cx="9" cy="6" r="3.2" fill="none" stroke="#00aaff" stroke-width="1.1"/>
+  <path d="M4 14.2C4.9 12.6 6.8 11.5 9 11.5C11.2 11.5 13.1 12.6 14 14.2" fill="none" stroke="#00aaff" stroke-width="1.1" stroke-linecap="round"/>
 </svg>`;}
 function svgBot(){return `
-<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="#ffbf00">
-  <path d="M720-360q25 0 42.5-17.5T780-420q0-25-17.5-42.5T720-480q-25 0-42.5 17.5T660-420q0 25 17.5 42.5T720-360Zm-480 0q25 0 42.5-17.5T300-420q0-25-17.5-42.5T240-480q-25 0-42.5 17.5T180-420q0 25 17.5 42.5T240-360Zm240 240q-25 0-42.5-17.5T420-180q0-25 17.5-42.5T480-240q25 0 42.5 17.5T540-180q0 25-17.5 42.5T480-120ZM160-120v-480q0-33 23.5-56.5T240-680h480q33 0 56.5 23.5T800-600v480q0 33-23.5 56.5T720-40H240q-33 0-56.5-23.5T160-120Zm80-80h480v-400H240v400Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+  <rect x="3.5" y="5" width="11" height="8" rx="2" ry="2" fill="none" stroke="#ffbf00" stroke-width="1.1"/>
+  <circle cx="7" cy="9" r="0.9" fill="#ffbf00"/>
+  <circle cx="11" cy="9" r="0.9" fill="#ffbf00"/>
+  <path d="M9 3.5V5" stroke="#ffbf00" stroke-width="1.1" stroke-linecap="round"/>
 </svg>`;}
 
 const messages = []; // {sender:'Anda'|'Kuantara', contentMD:'...'}
@@ -394,7 +452,7 @@ function stopThinking(){
  *  ========================= */
 function baseHeaders_chat(){
   return {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit(537.36) Chrome/140.0.0.0 Safari/537.36",
     "Content-Type": "application/json",
     "sec-ch-ua-platform": "\"Windows\"",
     "Accept": "text/event-stream",
@@ -416,7 +474,7 @@ function baseHeaders_chat(){
 
 function baseHeaders_list(){
   return {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit(537.36) Chrome/141.0.0.0 Safari/537.36",
     "Accept-Encoding": "gzip, deflate, br, zstd",
     "Content-Type": "application/json",
     "sec-ch-ua-platform": "\"Windows\"",
@@ -478,18 +536,21 @@ async function startStreaming(promptText){
   }
 
   addMessage("Anda", promptText);
-  addMessage("Kuantara", "");
+  addMessage("Kuantara AI", "");
   typingIndex = messages.length-1;
   startThinking();
   isStreaming = true;
   streamBuffer = "";
 
+  // 🔧 Gabungkan system instruction + input user
+  const finalPrompt = `${SYSTEM_INSTRUCTION}\n\nUser: ${promptText}`;
+
   const payload = {
-    model: "grok-4",
+    model: "gpt-5.1",
     from: "chat",
     client_prompt: {},
     multi_content: [
-      { type:"text", text: promptText, user_input_text: promptText }
+      { type:"text", text: finalPrompt, user_input_text: promptText }
     ],
     prompt_templates: [],
     tools: { auto: ["search"] },
@@ -639,7 +700,7 @@ inputEl.addEventListener("input", autoResize);
 
 function autoResize(){
   inputEl.style.height = "auto";
-  const h = Math.min(160, Math.max(40, inputEl.scrollHeight+2));
+  const h = Math.min(140, Math.max(34, inputEl.scrollHeight+2));
   inputEl.style.height = h + "px";
 }
 
@@ -698,9 +759,25 @@ chatEl.addEventListener("click", (e)=>{
 });
 
 /** =========================
+ *  FILE UPLOAD (LOCAL UX SAJA)
+ *  ========================= */
+fileBtn.addEventListener("click", ()=>{
+  fileInput.click();
+});
+
+fileInput.addEventListener("change", (e)=>{
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+
+  const list = files.map(f=>`- ${f.name}`).join("\n");
+  addMessage("Anda", `📎 Mengunggah file:\n${list}\n\n_(File hanya tersimpan di perangkat Anda. Integrasi upload ke AI belum diaktifkan di sisi backend.)_`);
+  fileInput.value = "";
+});
+
+/** =========================
  *  WELCOME
  *  ========================= */
-addMessage("Kuantara", "Halo! **Ada yang bisa saya bantu hari ini di market?**");
+addMessage("Kuantara AI", "Halo! **Ada yang bisa saya bantu hari ini di market?**");
 </script>
 </body>
 </html>
