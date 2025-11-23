@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
+<html lang="en"><head>
+  <meta charset="UTF-8">
   <title>Kuantara – Global News</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Fira Code (Kuantara Standard) -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
 
   <style>
     :root {
@@ -547,18 +545,535 @@
       }
     }
   </style>
-</head>
+<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.immersive-translate-attach-loading::after {
+  content: " ";
+
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-2000%, -50%);
+  z-index: 100;
+}
+
+.immersive-translate-loading-spinner {
+  vertical-align: middle !important;
+  width: 10px !important;
+  height: 10px !important;
+  display: inline-block !important;
+  margin: 0 4px !important;
+  border: 2px rgba(221, 244, 255, 0.6) solid !important;
+  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+}
+
+@-webkit-keyframes immersive-translate-loading-animation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@keyframes immersive-translate-loading-animation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.immersive-translate-input-loading {
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+}
+
+@keyframes immersiveTranslateShadowRolling {
+  0% {
+    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  12% {
+    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  25% {
+    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  36% {
+    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
+      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  50% {
+    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
+      110px 0 var(--loading-color), 100px 0 var(--loading-color);
+  }
+
+  62% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
+      120px 0 var(--loading-color), 110px 0 var(--loading-color);
+  }
+
+  75% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      130px 0 var(--loading-color), 120px 0 var(--loading-color);
+  }
+
+  87% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
+  }
+
+  100% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.immersive-translate-toast {
+  display: flex;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  right: 0;
+  top: 1%;
+  width: fit-content;
+  padding: 12px 20px;
+  margin: auto;
+  overflow: auto;
+  background: #fef6f9;
+  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
+  font-size: 15px;
+  border-radius: 8px;
+  color: #333;
+}
+
+.immersive-translate-toast-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.immersive-translate-toast-hidden {
+  margin: 0 20px 0 72px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.immersive-translate-toast-close {
+  color: #666666;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-toast {
+    top: 0;
+    padding: 12px 0px 0 10px;
+  }
+  .immersive-translate-toast-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .immersive-translate-toast-hidden {
+    margin: 10px auto;
+  }
+}
+
+.immersive-translate-dialog {
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  display: flex;
+  width: 300px;
+  flex-direction: column;
+  align-items: center;
+  font-size: 15px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: fit-content;
+  border-radius: 20px;
+  background-color: #fff;
+}
+
+.immersive-translate-modal {
+  display: none;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  font-size: 15px;
+}
+
+.immersive-translate-modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 40px 24px 24px;
+  border-radius: 12px;
+  width: 350px;
+  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
+    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  position: relative;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-content {
+    margin: 25% auto !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .immersive-translate-modal-content {
+    width: 80vw !important;
+    margin: 20vh auto !important;
+    padding: 20px 12px 12px !important;
+  }
+
+  .immersive-translate-modal-title {
+    font-size: 14px !important;
+  }
+
+  .immersive-translate-modal-body {
+    font-size: 13px !important;
+    max-height: 60vh !important;
+  }
+
+  .immersive-translate-btn {
+    font-size: 13px !important;
+    padding: 8px 16px !important;
+    margin: 0 4px !important;
+  }
+
+  .immersive-translate-modal-footer {
+    gap: 6px !important;
+    margin-top: 16px !important;
+  }
+}
+
+.immersive-translate-modal .immersive-translate-modal-content-in-input {
+  max-width: 500px;
+}
+.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
+  text-align: left;
+  max-height: unset;
+}
+
+.immersive-translate-modal-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.immersive-translate-modal-body {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+  margin-top: 24px;
+  word-break: break-all;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-body {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+}
+
+.immersive-translate-close {
+  color: #666666;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.immersive-translate-close:hover,
+.immersive-translate-close:focus {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.immersive-translate-modal-footer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.immersive-translate-btn {
+  width: fit-content;
+  color: #fff;
+  background-color: #ea4c89;
+  border: none;
+  font-size: 14px;
+  margin: 0 8px;
+  padding: 9px 30px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.immersive-translate-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.immersive-translate-btn:hover {
+  background-color: #f082ac;
+}
+.immersive-translate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.immersive-translate-btn:disabled:hover {
+  background-color: #ea4c89;
+}
+
+.immersive-translate-link-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: none;
+  cursor: pointer;
+  height: 30px;
+  line-height: 30px;
+}
+
+.immersive-translate-cancel-btn {
+  /* gray color */
+  background-color: rgb(89, 107, 120);
+}
+
+.immersive-translate-cancel-btn:hover {
+  background-color: hsl(205, 20%, 32%);
+}
+
+.immersive-translate-action-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: 1px solid #ea4c89;
+}
+
+.immersive-translate-btn svg {
+  margin-right: 5px;
+}
+
+.immersive-translate-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-primary-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-modal input[type="radio"] {
+  margin: 0 6px;
+  cursor: pointer;
+}
+
+.immersive-translate-modal label {
+  cursor: pointer;
+}
+
+.immersive-translate-close-action {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  cursor: pointer;
+}
+
+.imt-image-status {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 16px !important;
+}
+.imt-image-status img,
+.imt-image-status svg,
+.imt-img-loading {
+  width: 28px !important;
+  height: 28px !important;
+  margin: 0 0 8px 0 !important;
+  min-height: 28px !important;
+  min-width: 28px !important;
+  position: relative !important;
+}
+.imt-img-loading {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
+  background-size: 28px 28px;
+  animation: image-loading-rotate 1s linear infinite !important;
+}
+
+.imt-image-status span {
+  color: var(--bg-2, #fff) !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+  font-weight: 500 !important;
+  font-family: "PingFang SC", Arial, sans-serif !important;
+}
+
+.imt-primary-button {
+  display: flex;
+  padding: 12px 80px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: #ea4c89;
+  color: #fff;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  border: none;
+  cursor: pointer;
+}
+
+.imt-retry-text {
+  color: #999;
+  text-align: center;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px;
+  cursor: pointer;
+}
+
+.imt-action-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.imt-modal-content-text {
+  text-align: left;
+  color: #333;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+@keyframes image-loading-rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.imt-linear-gradient-text {
+  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.imt-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imt-linear-black-btn {
+  border-radius: 50px;
+  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
+  height: 48px;
+  width: 100%;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: center;
+}
+</style></head>
 <body>
   <div class="page">
     <!-- PAGE TITLE -->
-    <div>
-      <div class="page-title">Global News</div>
-    </div>
+    
 
     <!-- TOP LAYOUT: CORE NEWS (LEFT) + NEWS UNIVERSE + HEADLINE STREAM (RIGHT) -->
     <div class="layout-top">
       <!-- CORE NEWS HEADER -->
-      <section class="card core-card" id="coreNewsHeader">
+      <section class="card core-card clickable" id="coreNewsHeader">
         <div class="card-header-row">
           <div>
             <div class="badge">
@@ -566,30 +1081,20 @@
             </div>
           </div>
           <div class="core-meta">
-            <span id="coreUpdated">Updated: --:--</span>
-            <span id="coreSource">Source: &ndash;</span>
+            <span id="coreUpdated">Updated: 11:15 UTC</span>
+            <span id="coreSource">Source: Economic Times India</span>
           </div>
         </div>
 
         <div class="core-body">
-          <div class="core-thumb" id="coreThumb"></div>
+          <div class="core-thumb" id="coreThumb"><img src="https://img.etimg.com/thumb/msid-125518143,width-1200,height-630,imgsize-133172,overlay-economictimes/articleshow.jpg" alt="PM Modi holds talks with S African President Ramaphosa, discusses cooperation in trade, critical minerals"></div>
           <div class="core-body-content">
             <div class="core-title">Global Macro Focus</div>
-            <div class="core-headline" id="coreHeadline">
-              Waiting for API&hellip; inject your top headline here.
-            </div>
+            <div class="core-headline" id="coreHeadline">PM Modi holds talks with S African President Ramaphosa, discusses cooperation in trade, critical minerals</div>
 
-            <p class="core-summary" id="coreSummary">
-              This block is for the single most important cross-asset story:
-              rate decisions, inflation surprises, geopolitical shocks,
-              or anything that defines the current risk-on / risk-off regime.
-            </p>
+            <p class="core-summary" id="coreSummary">At the G20 Summit, Prime Minister Narendra Modi engaged in a fruitful dialogue with South African President Cyril Ramaphosa. Their agenda revolved around enhancing trade and investment opportunities while also diving deep into the realms of techno...</p>
 
-            <div class="pill-row" id="coreTags">
-              <span class="pill">Macro</span>
-              <span class="pill">Cross-Asset</span>
-              <span class="pill">High Impact</span>
-            </div>
+            <div class="pill-row" id="coreTags"><span class="pill pill-bear">Macro Topics</span><span class="pill pill-bear">President</span><span class="pill pill-bear">Prime Minister</span><span class="pill pill-bull">Cyril Ramaphosa</span><span class="pill pill-bull">Other Events</span><span class="pill pill-bear">Africa</span><span class="pill pill-bear">Southern Africa</span><span class="pill pill-bear">Trade</span><span class="pill pill-bull">South Africa</span><span class="pill pill-bear">Intelligent Technologies</span><span class="pill pill-bear">Artificial Intelligence</span><span class="pill pill-bear">Technology</span><span class="pill pill-bear">Financial Topics</span><span class="pill pill-bear">Events</span><span class="pill pill-bull">People</span><span class="pill pill-bear">Macro Topics</span><span class="pill pill-bull">Summits</span><span class="pill pill-bear">Partnerships</span><span class="pill pill-bull">Narendra Modi</span><span class="pill pill-bear">Technology</span><span class="pill pill-bear">Internet Services &amp; Infrastructure</span><span class="pill pill-bear">IT Services</span><span class="pill pill-bear">IT Consulting &amp; Other Services</span><span class="pill pill-bear">Technology</span><span class="pill pill-bear">Artificial Intelligence</span></div>
           </div>
         </div>
       </section>
@@ -673,47 +1178,7 @@
         </div>
 
         <!-- HEADLINE STREAM -->
-        <div class="news-list" id="newsList">
-          <article class="news-item">
-            <div class="news-item-header">
-              <div class="news-ticker">SPX · Global Indices</div>
-              <div class="news-time">Just now</div>
-            </div>
-            <div class="news-headline">
-              Waiting for API: push your first headline into this stream.
-            </div>
-            <div class="news-tags">
-              <span class="news-tag">All Assets</span>
-              <span class="news-tag">Macro Topics</span>
-            </div>
-            <div class="news-footer">
-              <span class="news-source">Source: &ndash;</span>
-              <div class="news-sentiment">
-                <span class="sentiment-chip sentiment-neutral">Sentiment: Neutral</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="news-item">
-            <div class="news-item-header">
-              <div class="news-ticker">XAUUSD · Commodities</div>
-              <div class="news-time">00:00 UTC</div>
-            </div>
-            <div class="news-headline">
-              Example row: when a filter is active, only matching items should be shown.
-            </div>
-            <div class="news-tags">
-              <span class="news-tag">Commodities</span>
-              <span class="news-tag">Macro Topics</span>
-            </div>
-            <div class="news-footer">
-              <span class="news-source">Source: Demo</span>
-              <div class="news-sentiment">
-                <span class="sentiment-chip sentiment-bull">Mildly Bullish</span>
-              </div>
-            </div>
-          </article>
-        </div>
+        <div class="news-list" id="newsList"><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:03 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.malaymail.com/malaymail/uploads/images/2025/11/23/311156.jpg" alt="Stormy skies with low chance of cyclone: MetMalaysia warns strong winds and heavy rains to continue till Tuesday"></div><div class="news-body-content"><div class="news-headline">Stormy skies with low chance of cyclone: MetMalaysia warns strong winds and heavy rains to continue till Tuesday</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Asia</span><span class="news-tag news-tag-bear">South Eastern Asia</span><span class="news-tag news-tag-bear">Malaysia</span><span class="news-tag news-tag-bear">Kuala Lumpur</span><span class="news-tag news-tag-bear">Kuala Lumpur</span></div></div></div><div class="news-footer"><span class="news-source">Source: Malay Mail</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:03 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://s.france24.com/media/display/40c026d8-c859-11f0-a890-005056bf30b7/w:1024/p:16x9/EN-20251123-110739-110946-CS.jpg" alt="Bosnia’s autonomous Serb Republic votes for new president after Dodik's removal"></div><div class="news-body-content"><div class="news-headline">Bosnia’s autonomous Serb Republic votes for new president after Dodik's removal</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">President</span><span class="news-tag news-tag-bear">Voters</span><span class="news-tag news-tag-bull">Europe</span><span class="news-tag news-tag-bull">Southern Europe</span><span class="news-tag news-tag-bull">Bosnia and Herzegovina</span><span class="news-tag news-tag-bull">Financial Topics</span><span class="news-tag news-tag-bear">Events</span><span class="news-tag news-tag-bear">Elections</span></div></div></div><div class="news-footer"><span class="news-source">Source: FRANCE 24</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:03 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://mlavawteztbj.i.optimole.com/w:1280/h:295/q:mauto/f:best/https://antiguanewsroom.com/wp-content/uploads/2024/12/backyard.jpeg" alt="Diamonds to Become Agro-Industrial Hub; Christian Valley Chosen for Eco-Park, Cabinet Spokesman Says"></div><div class="news-body-content"><div class="news-headline">Diamonds to Become Agro-Industrial Hub; Christian Valley Chosen for Eco-Park, Cabinet Spokesman Says</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Financial Topics</span><span class="news-tag news-tag-bull">Government</span><span class="news-tag news-tag-bull">Consumer Goods &amp; Services</span><span class="news-tag news-tag-bull">Technologies in Consumer Good &amp; Services</span><span class="news-tag news-tag-bull">Technologies in Consumer Good &amp; Services</span><span class="news-tag news-tag-bull">Food Safety &amp; Quality Control Technology</span><span class="news-tag news-tag-bull">Diamonds</span><span class="news-tag news-tag-bull">Commodities</span></div></div></div><div class="news-footer"><span class="news-source">Source: Antigua News Room</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:02 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://globalnews.ca/wp-content/uploads/2025/11/bf3d0c28e977aff6be91a8835367057ce671fba2a36bb3970bf68c11203b9d88.jpg?quality=65&amp;strip=all" alt="Berube laments ‘inexcusable’ Leafs performance"></div><div class="news-body-content"><div class="news-headline">Berube laments ‘inexcusable’ Leafs performance</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: Global News Canada</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:02 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i2-prod.gazettelive.co.uk/incoming/article32927799.ece/ALTERNATES/s615/0_imagemaker-2025-11-23T104118319.jpg" alt="'Mansion massacre' killer dies in Yorkshire prison after 37 years behind bars"></div><div class="news-body-content"><div class="news-headline">'Mansion massacre' killer dies in Yorkshire prison after 37 years behind bars</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: Teesside Live</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.iomtoday.co.im/tindle-static/image/2025/11/18/12/33/Jordan-Kirk-with-fellow-band-member-Kieran-Brown-presenting-the-cheque-to-Hospice.jpeg?width=1200&amp;auto=webp&amp;trim=175%2C0%2C177%2C0" alt="Guitarist's charity gig in honor of late father raises over £1,000 for Hospice Isle of Man"></div><div class="news-body-content"><div class="news-headline">Guitarist's charity gig in honor of late father raises over £1,000 for Hospice Isle of Man</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: Isle of Man Today</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://theshillongtimes.com/wp-content/uploads/2023/08/Tst-logo.png" alt="New Labour Code on Wages aims to safeguard workers, boost growth and jobs"></div><div class="news-body-content"><div class="news-headline">New Labour Code on Wages aims to safeguard workers, boost growth and jobs</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Economic Growth</span><span class="news-tag news-tag-bear">Consumer Discretionary</span><span class="news-tag news-tag-bear">Industrials</span><span class="news-tag news-tag-bear">Diversified Consumer Services</span><span class="news-tag news-tag-bear">Specialized Consumer Services</span><span class="news-tag news-tag-bear">Commercial Services &amp; Supplies</span><span class="news-tag news-tag-bear">Diversified Support Services</span><span class="news-tag news-tag-bull">Jobs</span><span class="news-tag news-tag-bear">Asia</span><span class="news-tag news-tag-bear">Southern Asia</span><span class="news-tag news-tag-bear">India</span><span class="news-tag news-tag-bear">Labour Market</span><span class="news-tag news-tag-bear">Social Security</span><span class="news-tag news-tag-bull">Workers</span><span class="news-tag news-tag-bear">Employee</span><span class="news-tag news-tag-bear">Stocks</span><span class="news-tag news-tag-bull">Financial Topics</span><span class="news-tag news-tag-bull">Macro Topics</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Shillong Times</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.donegallive.ie/resizer/300/200/true/2025_11_21/INDD_-_27-11-25_Drumhalla_House_Cropped-1763726578824.jpg--donegal_wedding_venue_granted_permission_to_remove_limited_season_for_business.jpg?1763726578865" alt="Donegal wedding venue granted permission to remove limited season for business"></div><div class="news-body-content"><div class="news-headline">Donegal wedding venue granted permission to remove limited season for business</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Specialized Consumer Services</span><span class="news-tag news-tag-bull">Weddings</span><span class="news-tag news-tag-bull">Europe</span><span class="news-tag news-tag-bull">Consumer Discretionary</span><span class="news-tag news-tag-bull">Ireland</span><span class="news-tag news-tag-bull">Donegal</span><span class="news-tag news-tag-bull">Northern Europe</span><span class="news-tag news-tag-bull">Diversified Consumer Services</span></div></div></div><div class="news-footer"><span class="news-source">Source: Donegal Live</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://assets.finbold.com/uploads/2025/11/Find-Out-Why-XRP-Tundras-Dual-Chain-Protocol-Is-Attracting-Former-Solana-Investors.jpeg" alt="Find Out Why XRP Tundra’s Dual-Chain Protocol Is Attracting Former Solana Investors"></div><div class="news-body-content"><div class="news-headline">Find Out Why XRP Tundra’s Dual-Chain Protocol Is Attracting Former Solana Investors</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Solana</span><span class="news-tag news-tag-bear">Investors</span><span class="news-tag news-tag-bear">Cryptocurrencies</span><span class="news-tag news-tag-bear">Financial Topics</span></div></div></div><div class="news-footer"><span class="news-source">Source: Finbold</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://ml.globenewswire.com/Resource/Download/46758e47-4e5d-4da5-945c-e049069b7ade" alt="New DeFi Crypto Mutuum Finance (MUTM) Moves Into Phase 2 Development as Phase 6 Passes 90%"></div><div class="news-body-content"><div class="news-headline">New DeFi Crypto Mutuum Finance (MUTM) Moves Into Phase 2 Development as Phase 6 Passes 90%</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Mutuum Finance</span><span class="news-tag news-tag-bull">Asia</span><span class="news-tag news-tag-bull">Cryptocurrencies</span><span class="news-tag news-tag-bull">United Arab Emirates</span><span class="news-tag news-tag-bull">Dubai</span><span class="news-tag news-tag-bull">Dubai</span><span class="news-tag news-tag-bull">Western Asia</span><span class="news-tag news-tag-bear">Events</span><span class="news-tag news-tag-bear">Products &amp; Projects Launches</span></div></div></div><div class="news-footer"><span class="news-source">Source: GlobeNewswire</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.stratford-herald.com/_media/img/330x0/Q5MP78RF1NF7MHWZUH7P.jpg" alt="King’s Award for Tysoe dementia support charity"></div><div class="news-body-content"><div class="news-headline">King’s Award for Tysoe dementia support charity</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Heather Morgan</span><span class="news-tag news-tag-bear">People</span></div></div></div><div class="news-footer"><span class="news-source">Source: Stratford Herald</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i2-prod.mirror.co.uk/incoming/article36271233.ece/ALTERNATES/s615/0_-jpeg.jpg" alt="Boy, 6, hangs out of sunroof then bashes head on barrier in appalling video"></div><div class="news-body-content"><div class="news-headline">Boy, 6, hangs out of sunroof then bashes head on barrier in appalling video</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Mirror</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-body-content"><div class="news-headline">Pit bulls welcomed back to this Maryland county after 29-year ban</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">British Royal Family</span><span class="news-tag news-tag-bear">People</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Washington Post</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.al.com/resizer/v2/WE6KVBNVFZDDJBYYYFEHYBSVEQ.jpg?auth=e33bda937c3cf74d7d31b9d411c6017ee35993bffdcec3caf12a8630de1fab27&amp;smart=true&amp;height=1200" alt="Extra thoughts and notes from Alabama’s dominant win over EIU"></div><div class="news-body-content"><div class="news-headline">Extra thoughts and notes from Alabama’s dominant win over EIU</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-neutral">North America</span><span class="news-tag news-tag-neutral">Northern America</span><span class="news-tag news-tag-bear">Illinois</span><span class="news-tag news-tag-bull">Alabama</span><span class="news-tag news-tag-neutral">United States of America</span></div></div></div><div class="news-footer"><span class="news-source">Source: Alabama Local News</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:59 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i.dailymail.co.uk/1s/2025/11/23/09/104116531-0-image-a-2_1763889909771.jpg" alt="Vinnie Jones clashes with bird lovers over plans to build luxury shooting retreat on his 2,000-acre farm"></div><div class="news-body-content"><div class="news-headline">Vinnie Jones clashes with bird lovers over plans to build luxury shooting retreat on his 2,000-acre farm</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">United Kingdom of Great Britain</span><span class="news-tag news-tag-bear">England</span><span class="news-tag news-tag-bear">Europe</span><span class="news-tag news-tag-bear">Northern Europe</span><span class="news-tag news-tag-bear">Greater London</span><span class="news-tag news-tag-bear">Wimbledon</span><span class="news-tag news-tag-bear">Farming</span><span class="news-tag news-tag-bear">Agriculture &amp; Farming</span></div></div></div><div class="news-footer"><span class="news-source">Source: Daily Mail Online</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:59 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.qatar-tribune.com/watanqatartribune/uploads/images/2025/11/23/320079.jpg" alt="Qatar, Kazakhstan sign agreements on transfer of sentenced persons and public prosecution cooperation"></div><div class="news-body-content"><div class="news-headline">Qatar, Kazakhstan sign agreements on transfer of sentenced persons and public prosecution cooperation</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Asia</span><span class="news-tag news-tag-bull">Central Asia</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bull">Kazakhstan</span><span class="news-tag news-tag-bull">Qatar</span><span class="news-tag news-tag-bear">Doha</span><span class="news-tag news-tag-bull">Western Asia</span><span class="news-tag news-tag-bull">Events</span><span class="news-tag news-tag-bull">Partnerships</span><span class="news-tag news-tag-bear">Attorney General</span></div></div></div><div class="news-footer"><span class="news-source">Source: Qatar Tribune</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:58 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.thearabianstories.com/wp-content/uploads/2021/09/expats-websize.jpg" alt="Oman launches new body to regulate expatriate recruitment sector"></div><div class="news-body-content"><div class="news-headline">Oman launches new body to regulate expatriate recruitment sector</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Asia</span><span class="news-tag news-tag-bull">Western Asia</span><span class="news-tag news-tag-bull">Oman</span><span class="news-tag news-tag-bull">Events</span><span class="news-tag news-tag-bull">Products &amp; Projects Launches</span><span class="news-tag news-tag-bull">Regulatory Changes and Issues</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Arabian Stories</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:57 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://softpower.ug/wp-content/uploads/2025/11/Amb-Fred-Mwesigye-delivering-his-remarks-at-the-first-Uganda-Malawi-business-forum-2-300x200.jpeg" alt="Uganda, Malawi Deepen Economic Ties at Second Trade and Business Forum"></div><div class="news-body-content"><div class="news-headline">Uganda, Malawi Deepen Economic Ties at Second Trade and Business Forum</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Africa</span><span class="news-tag news-tag-bull">Eastern Africa</span><span class="news-tag news-tag-bull">Malawi</span><span class="news-tag news-tag-bull">Uganda</span><span class="news-tag news-tag-bull">Financial Topics</span><span class="news-tag news-tag-bull">Lilongwe</span><span class="news-tag news-tag-bull">Dar es Salaam</span><span class="news-tag news-tag-bull">Tanzania</span><span class="news-tag news-tag-bull">Government</span></div></div></div><div class="news-footer"><span class="news-source">Source: SoftPower News</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:56 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://cdn.dimsumdaily.hk/wp-content/uploads/2025/11/23185405/Wong-Chuk-Street-1-1-1.webp" alt="Burglars target Sham Shui Po flat, steal over HK$100,000 in valuables"></div><div class="news-body-content"><div class="news-headline">Burglars target Sham Shui Po flat, steal over HK$100,000 in valuables</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Residential REITs</span><span class="news-tag news-tag-bear">Equity Real Estate Investment Trusts</span><span class="news-tag news-tag-bear">Residential Real Estate</span><span class="news-tag news-tag-bear">Asia</span><span class="news-tag news-tag-bear">Eastern Asia</span><span class="news-tag news-tag-bear">Hong Kong</span><span class="news-tag news-tag-bear">Property</span><span class="news-tag news-tag-bear">Wan Chai</span><span class="news-tag news-tag-bear">Hong Kong</span><span class="news-tag news-tag-bear">Sham Shui Po</span><span class="news-tag news-tag-bear">Sweden Property Market</span><span class="news-tag news-tag-bear">Real Estate</span></div></div></div><div class="news-footer"><span class="news-source">Source: Dimsumdaily Hong Kong</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:55 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i2.wp.com/see.news/images/2023/06/sudan-war-1687033865-0.jpg?w=750" alt="UN Warns of Escalating Humanitarian Catastrophe as Displacement from El Fasher Exceeds 100,000"></div><div class="news-body-content"><div class="news-headline">UN Warns of Escalating Humanitarian Catastrophe as Displacement from El Fasher Exceeds 100,000</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">United Nations (UN)</span><span class="news-tag news-tag-bear">Northern Africa</span><span class="news-tag news-tag-bear">Sudan</span><span class="news-tag news-tag-bear">El Fasher</span><span class="news-tag news-tag-bear">North Darfur</span><span class="news-tag news-tag-bear">Africa</span><span class="news-tag news-tag-bear">Organisations</span></div></div></div><div class="news-footer"><span class="news-source">Source: Sada ElBalad English</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:55 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i0.wp.com/www.webpronews.com/wp-content/uploads/2025/11/article-2205-1763895656.jpeg?fit=300%2C300&amp;#038;ssl=1" alt="Penn Medicine’s AI Fax Killer: Tripling Speed, Slashing Onboarding Delays in Healthcare’s Analog Holdout"></div><div class="news-body-content"><div class="news-headline">Penn Medicine’s AI Fax Killer: Tripling Speed, Slashing Onboarding Delays in Healthcare’s Analog Holdout</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Health Care</span><span class="news-tag news-tag-bull">IT Services</span><span class="news-tag news-tag-bull">Health Care Services</span><span class="news-tag news-tag-bull">Health Care Providers &amp; Services</span><span class="news-tag news-tag-bull">Artificial Intelligence</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Health Care</span><span class="news-tag news-tag-bull">Intelligent Technologies</span><span class="news-tag news-tag-bull">Artificial Intelligence</span><span class="news-tag news-tag-bull">Healthcare &amp; Pharmaceuticals</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Internet Services &amp; Infrastructure</span></div></div></div><div class="news-footer"><span class="news-source">Source: WebProNews</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:55 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://static.gurufocus.com/logos/0C00004EP4.png?20" alt="Tesla (TSLA) Aims for AI Chip Dominance with Annual Design Cycle"></div><div class="news-body-content"><div class="news-headline">Tesla (TSLA) Aims for AI Chip Dominance with Annual Design Cycle</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Consumer Discretionary</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Materials</span><span class="news-tag news-tag-bull">Metals &amp; Mining</span><span class="news-tag news-tag-bull">Utilities</span><span class="news-tag news-tag-bull">Diversified Metals &amp; Mining</span><span class="news-tag news-tag-bull">Clean Energy</span><span class="news-tag news-tag-bull">Automobile Manufacturers</span><span class="news-tag news-tag-bull">Technology Distributors</span><span class="news-tag news-tag-bull">Renewable Electricity</span><span class="news-tag news-tag-bull">Automobiles</span><span class="news-tag news-tag-bull">Electronic Equipment, Instruments &amp; Components</span><span class="news-tag news-tag-bull">Independent Power and Renewable Electricity Producers</span><span class="news-tag news-tag-bull">Big Tech</span><span class="news-tag news-tag-bull">Lithium Industry</span><span class="news-tag news-tag-bull">Autonomous Vehicles</span><span class="news-tag news-tag-bull">Electronics Instruments &amp; Components</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Semiconductors</span><span class="news-tag news-tag-bull">Electric Vehicles</span><span class="news-tag news-tag-bull">Integrated Circuits</span><span class="news-tag news-tag-bull">Stocks</span><span class="news-tag news-tag-bull">Tesla Inc</span></div></div></div><div class="news-footer"><span class="news-source">Source: GuruFocus</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:55 UTC</div></div><div class="news-body"><div class="news-body-content"><div class="news-headline">NAIMOS officials injured in crash fully recovered</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: Ghana MMA</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:54 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://images.jpost.com/image/upload/f_auto,fl_lossy/q_auto/c_fill,g_faces:center,h_720,w_1280/691370" alt="Azerbaijan’s economy minister visits Israel to deepen bilateral cooperation"></div><div class="news-body-content"><div class="news-headline">Azerbaijan’s economy minister visits Israel to deepen bilateral cooperation</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Energy &amp; Resources</span><span class="news-tag news-tag-bull">Economies</span><span class="news-tag news-tag-bull">Energy</span><span class="news-tag news-tag-bull">Asia</span><span class="news-tag news-tag-bull">Western Asia</span><span class="news-tag news-tag-bull">Azerbaijan</span><span class="news-tag news-tag-bull">Israel</span><span class="news-tag news-tag-bull">Jerusalem</span><span class="news-tag news-tag-bull">Events</span><span class="news-tag news-tag-bull">Macro Topics</span><span class="news-tag news-tag-bull">Partnerships</span><span class="news-tag news-tag-bull">Energy</span><span class="news-tag news-tag-bull">Energy Equipment &amp; Services</span><span class="news-tag news-tag-bull">Oil &amp; Gas Equipment &amp; Services</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Jerusalem Post</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:54 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i2-prod.mirror.co.uk/incoming/article36292532.ece/ALTERNATES/s615/1_Two-child-benefit-cap.jpg" alt="Two-child benefit limit 'set to be scrapped' at Budget - fighting poverty in 'Labour's DNA'"></div><div class="news-body-content"><div class="news-headline">Two-child benefit limit 'set to be scrapped' at Budget - fighting poverty in 'Labour's DNA'</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Government</span><span class="news-tag news-tag-bull">Labour Party</span><span class="news-tag news-tag-bull">Budget</span><span class="news-tag news-tag-bear">Chancellor</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bull">Organisations</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Mirror</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:54 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://s.w.org/images/core/emoji/16.0.1/72x72/1f91d.png" alt="Cache Wallet and Funton.ai Partner to Boost Secure Web3 Gaming"></div><div class="news-body-content"><div class="news-headline">Cache Wallet and Funton.ai Partner to Boost Secure Web3 Gaming</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Web 3.0</span><span class="news-tag news-tag-bull">Events</span><span class="news-tag news-tag-bull">Partnerships</span></div></div></div><div class="news-footer"><span class="news-source">Source: CoinTrust.com</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:54 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.theborneopost.com/newsimages/2025/11/Zaini-Tiksun.jpg" alt="Gagasan Rakyat Youth backs BN candidate in Sungai Manila"></div><div class="news-body-content"><div class="news-headline">Gagasan Rakyat Youth backs BN candidate in Sungai Manila</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-neutral">Stocks</span><span class="news-tag news-tag-neutral">Consumer Discretionary</span><span class="news-tag news-tag-neutral">Diversified Consumer Services</span><span class="news-tag news-tag-neutral">Specialized Consumer Services</span><span class="news-tag news-tag-neutral">Consumer Staples</span><span class="news-tag news-tag-neutral">Danone</span><span class="news-tag news-tag-neutral">Food &amp; Staples Retailing</span><span class="news-tag news-tag-neutral">Food Retail</span><span class="news-tag news-tag-neutral">Food Products</span><span class="news-tag news-tag-neutral">Agricultural Products</span><span class="news-tag news-tag-neutral">Packaged Foods &amp; Meats</span><span class="news-tag news-tag-neutral">Consumer Goods</span><span class="news-tag news-tag-neutral">FoodTech</span><span class="news-tag news-tag-neutral">Packaged &amp; Canned Food</span><span class="news-tag news-tag-neutral">Asia</span><span class="news-tag news-tag-neutral">South Eastern Asia</span><span class="news-tag news-tag-neutral">Malaysia</span><span class="news-tag news-tag-neutral">Staples</span><span class="news-tag news-tag-neutral">Sabah</span><span class="news-tag news-tag-neutral">Sandakan</span><span class="news-tag news-tag-neutral">Food and Beverages</span><span class="news-tag news-tag-neutral">Food Products</span></div></div></div><div class="news-footer"><span class="news-source">Source: BorneoPost Online</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:54 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://dailynewshungary.b-cdn.net/wp-content/uploads/2025/11/eindhoven-airport-shut-down-drone.webp" alt="Traffic halted at major European airport after multiple drone sightings"></div><div class="news-body-content"><div class="news-headline">Traffic halted at major European airport after multiple drone sightings</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Specialized Consumer Services</span><span class="news-tag news-tag-bear">Drones</span><span class="news-tag news-tag-bear">Airlines</span><span class="news-tag news-tag-bear">Transportation Infrastructure</span><span class="news-tag news-tag-bear">Airport Services</span><span class="news-tag news-tag-bear">Airlines</span><span class="news-tag news-tag-bear">Airlines &amp; Aviation</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bear">Airports</span><span class="news-tag news-tag-bear">Military Drones</span><span class="news-tag news-tag-bear">Air Transportation</span><span class="news-tag news-tag-bear">Aviation</span><span class="news-tag news-tag-bear">Consumer Goods &amp; Services</span><span class="news-tag news-tag-bear">Consumer Durables</span><span class="news-tag news-tag-bear">Transportation &amp; Logistics</span><span class="news-tag news-tag-bear">Consumer Electronics</span><span class="news-tag news-tag-bear">Drones</span><span class="news-tag news-tag-bear">US Government Shutdown</span><span class="news-tag news-tag-bear">Consumer Discretionary</span><span class="news-tag news-tag-bear">Industrials</span><span class="news-tag news-tag-bear">Diversified Consumer Services</span></div></div></div><div class="news-footer"><span class="news-source">Source: Daily News Hungary</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:53 UTC</div></div><div class="news-body"><div class="news-body-content"><div class="news-headline">29 NPP youth organizers endorse Bawumia as party’s next presidential candidate</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: Ghana MMA</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:53 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i0.wp.com/www.webpronews.com/wp-content/uploads/2025/11/article-2204-1763895695.jpeg?fit=300%2C300&amp;#038;ssl=1" alt="Lumen’s AI Gambit: Sentinel Security and Networking Alliances Reshape Enterprise Battleground"></div><div class="news-body-content"><div class="news-headline">Lumen’s AI Gambit: Sentinel Security and Networking Alliances Reshape Enterprise Battleground</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Internet Services &amp; Infrastructure</span><span class="news-tag news-tag-bull">Industrials</span><span class="news-tag news-tag-bull">Diversified Telecommunication Services</span><span class="news-tag news-tag-bull">Integrated Telecommunication Services</span><span class="news-tag news-tag-bull">Infrastructure</span><span class="news-tag news-tag-bull">IT Services</span><span class="news-tag news-tag-bull">IT Consulting &amp; Other Services</span><span class="news-tag news-tag-bull">Construction &amp; Engineering</span><span class="news-tag news-tag-bull">Construction &amp; Engineering</span><span class="news-tag news-tag-bull">Cybersecurity</span><span class="news-tag news-tag-bull">Internet Security</span><span class="news-tag news-tag-bull">Artificial Intelligence</span><span class="news-tag news-tag-bull">Black Lotus</span><span class="news-tag news-tag-bull">Lumen Technologies Inc</span><span class="news-tag news-tag-bull">Intelligent Technologies</span><span class="news-tag news-tag-bull">Artificial Intelligence</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Stocks</span><span class="news-tag news-tag-bull">Private Companies and Brands</span><span class="news-tag news-tag-bull">Communications</span><span class="news-tag news-tag-bull">Technology</span></div></div></div><div class="news-footer"><span class="news-source">Source: WebProNews</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:53 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.winnipegfreepress.com/wp-content/uploads/sites/2/2025/11/93c4791d216e2045691383c278fcbb2b995298bc8fef0e3e89921fd1fea26e43.jpg" alt="Hamilton: ‘Terrible’ season continues with eighth-place finish in Las Vegas"></div><div class="news-body-content"><div class="news-headline">Hamilton: ‘Terrible’ season continues with eighth-place finish in Las Vegas</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">North America</span><span class="news-tag news-tag-bear">Northern America</span><span class="news-tag news-tag-bear">Central America</span><span class="news-tag news-tag-bear">Canada</span><span class="news-tag news-tag-bear">Honduras</span><span class="news-tag news-tag-bear">Santa Barbara</span><span class="news-tag news-tag-bear">Las Vegas</span></div></div></div><div class="news-footer"><span class="news-source">Source: Winnipeg Free Press</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:53 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://images.news9live.com/wp-content/uploads/2025/11/Paul-Pogba.jpg" alt="‘Football Isn’t Over For Me’: Paul Pogba makes his long-awaited comeback after two years"></div><div class="news-body-content"><div class="news-headline">‘Football Isn’t Over For Me’: Paul Pogba makes his long-awaited comeback after two years</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Western Europe</span><span class="news-tag news-tag-bear">Monaco</span><span class="news-tag news-tag-bull">Sports</span><span class="news-tag news-tag-bull">Football &amp; Soccer</span><span class="news-tag news-tag-bear">Europe</span></div></div></div><div class="news-footer"><span class="news-source">Source: News9</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:52 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://iol-prod.appspot.com/image/a13771292d2e0fcabd857de1f682b171e959b6bb/1000/jpeg" alt="The Zumas: Nkosazana lays charges against sister Duduzile over South Africans stranded in Ukraine"></div><div class="news-body-content"><div class="news-headline">The Zumas: Nkosazana lays charges against sister Duduzile over South Africans stranded in Ukraine</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Allegations</span><span class="news-tag news-tag-bear">Other Events</span><span class="news-tag news-tag-bear">Europe</span><span class="news-tag news-tag-bear">Eastern Europe</span><span class="news-tag news-tag-bear">Africa</span><span class="news-tag news-tag-bear">Southern Africa</span><span class="news-tag news-tag-bear">South Africa</span><span class="news-tag news-tag-bear">Ukraine</span><span class="news-tag news-tag-bear">Events</span><span class="news-tag news-tag-bear">Criminal Activity</span></div></div></div><div class="news-footer"><span class="news-source">Source: Independent on Saturday</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:52 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://miro.medium.com/v2/da:true/resize:fit:1200/0*nyjBX8OdCSpged1I" alt="Don’t Let Their Noise Drag You Into Trouble"></div><div class="news-body-content"><div class="news-headline">Don’t Let Their Noise Drag You Into Trouble</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: Medium</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:52 UTC</div></div><div class="news-body"><div class="news-body-content"><div class="news-headline">War in Ukraine: Europe's race against time to try to rewrite Trump's plan</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">United States of America</span><span class="news-tag news-tag-bear">Europe</span><span class="news-tag news-tag-bear">Northern Europe</span><span class="news-tag news-tag-bear">Eastern Europe</span><span class="news-tag news-tag-bear">Western Europe</span><span class="news-tag news-tag-bear">Africa</span><span class="news-tag news-tag-bear">Southern Africa</span><span class="news-tag news-tag-bear">North America</span><span class="news-tag news-tag-bear">Northern America</span><span class="news-tag news-tag-bear">South Africa</span><span class="news-tag news-tag-bear">France</span><span class="news-tag news-tag-bear">Germany</span><span class="news-tag news-tag-bear">Isle of Man</span><span class="news-tag news-tag-bear">Russian Federation</span><span class="news-tag news-tag-bear">Ukraine</span><span class="news-tag news-tag-bear">German</span><span class="news-tag news-tag-bear">Military Conflicts</span><span class="news-tag news-tag-bear">Glenfaba</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bear">People</span><span class="news-tag news-tag-bear">Trump Family</span><span class="news-tag news-tag-bear">President</span><span class="news-tag news-tag-bear">Other Events</span><span class="news-tag news-tag-bear">United Kingdom of Great Britain</span></div></div></div><div class="news-footer"><span class="news-source">Source: EIN News World</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:52 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://cassette.sphdigital.com.sg/image/straitstimes/b131577443f4658cd6f1d485591b1e8024991bc7a34249f9c171a8407dbfb02e" alt="Trump’s Ukraine ‘deal’ deserves the Chamberlain Peace Prize"></div><div class="news-body-content"><div class="news-headline">Trump’s Ukraine ‘deal’ deserves the Chamberlain Peace Prize</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Trump Family</span><span class="news-tag news-tag-bull">Europe</span><span class="news-tag news-tag-bull">Eastern Europe</span><span class="news-tag news-tag-bull">Ukraine</span><span class="news-tag news-tag-bear">Values</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bull">People</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Straits Times</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.nationalaccordnewspaper.com/wp-content/uploads/2025/11/Borno-Governor-Babagana-Zulum.jpg" alt="Borno Govt raises alarm over fake Facebook account impersonating Governor Zulum"></div><div class="news-body-content"><div class="news-headline">Borno Govt raises alarm over fake Facebook account impersonating Governor Zulum</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Governor</span><span class="news-tag news-tag-bear">Western Africa</span><span class="news-tag news-tag-bear">Nigeria</span><span class="news-tag news-tag-bear">Borno</span><span class="news-tag news-tag-bear">Africa</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bear">Events</span><span class="news-tag news-tag-bear">Fraud</span><span class="news-tag news-tag-bear">Government</span></div></div></div><div class="news-footer"><span class="news-source">Source: National Accord Newspaper</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-body-content"><div class="news-headline">Trump says Ukraine plan ‘not my final offer’ after EU leaders warn deal needs work</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Washington D.C.</span><span class="news-tag news-tag-bear">United States of America</span><span class="news-tag news-tag-bear">Europe</span><span class="news-tag news-tag-bear">Eastern Europe</span><span class="news-tag news-tag-bear">North America</span><span class="news-tag news-tag-bear">Northern America</span><span class="news-tag news-tag-bear">Ukraine</span><span class="news-tag news-tag-bear">European Union</span><span class="news-tag news-tag-bear">People</span><span class="news-tag news-tag-bear">Kiev</span><span class="news-tag news-tag-bear">Trump Family</span></div></div></div><div class="news-footer"><span class="news-source">Source: POLITICO Europe</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.livemint.com/lm-img/img/2025/11/23/1600x900/logo/The-Ministry-of-Home-Affairs-issued-the-public-not_1763887554580_1763887560993.jpg" alt="MHA reacts to proposal to ‘simplify law-making’ in Chandigarh, says ‘no final decision’"></div><div class="news-body-content"><div class="news-headline">MHA reacts to proposal to ‘simplify law-making’ in Chandigarh, says ‘no final decision’</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Asia</span><span class="news-tag news-tag-bear">Southern Asia</span><span class="news-tag news-tag-bear">Chandigarh</span><span class="news-tag news-tag-bear">Chandigarh</span><span class="news-tag news-tag-bear">India</span></div></div></div><div class="news-footer"><span class="news-source">Source: Livemint</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://images.euronews.com/articles/stories/09/55/82/16/1200x675_cmsv2_c6d3ec71-896a-5b4c-9209-93e276bc4ac8-9558216.jpg" alt="Hawaii’s Kilauea volcano has been erupting since last year as lava fountains rise hundreds of metres"></div><div class="news-body-content"><div class="news-headline">Hawaii’s Kilauea volcano has been erupting since last year as lava fountains rise hundreds of metres</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">United States of America</span><span class="news-tag news-tag-bear">North America</span><span class="news-tag news-tag-bear">Northern America</span><span class="news-tag news-tag-bear">Hawaii</span><span class="news-tag news-tag-bear">Hawaii</span></div></div></div><div class="news-footer"><span class="news-source">Source: Euronews</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i0.wp.com/www.webpronews.com/wp-content/uploads/2025/11/article-2203-1763895085.jpeg?fit=300%2C300&amp;#038;ssl=1" alt="UAE’s $1 Billion AI Push into Africa: Betting Big on the Continent’s Tech Frontier"></div><div class="news-body-content"><div class="news-headline">UAE’s $1 Billion AI Push into Africa: Betting Big on the Continent’s Tech Frontier</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bear">Education Services</span><span class="news-tag news-tag-bear">Education</span><span class="news-tag news-tag-bull">Artificial Intelligence</span><span class="news-tag news-tag-bull">United States of America</span><span class="news-tag news-tag-bull">Asia</span><span class="news-tag news-tag-bull">Western Asia</span><span class="news-tag news-tag-bull">Oceania/Australia</span><span class="news-tag news-tag-bull">Melanesia</span><span class="news-tag news-tag-bull">North America</span><span class="news-tag news-tag-bull">Northern America</span><span class="news-tag news-tag-bull">Papua New Guinea</span><span class="news-tag news-tag-bull">United Arab Emirates</span><span class="news-tag news-tag-bull">Gulf</span><span class="news-tag news-tag-bull">Florida</span><span class="news-tag news-tag-bull">Gulf</span><span class="news-tag news-tag-bear">Education</span><span class="news-tag news-tag-bear">Education</span><span class="news-tag news-tag-bull">Artificial Intelligence</span><span class="news-tag news-tag-bear">Healthcare &amp; Pharmaceuticals</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Intelligent Technologies</span><span class="news-tag news-tag-bull">Events</span><span class="news-tag news-tag-bull">Partnerships</span><span class="news-tag news-tag-bear">Consumer Discretionary</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Internet Services &amp; Infrastructure</span><span class="news-tag news-tag-bear">Diversified Consumer Services</span><span class="news-tag news-tag-bull">IT Services</span><span class="news-tag news-tag-bull">IT Consulting &amp; Other Services</span></div></div></div><div class="news-footer"><span class="news-source">Source: WebProNews</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://greaterkashmir.imagibyte.sortdcdn.net/wp-content/uploads/2025/11/Modi-.jpg" alt="‘No place for any double standards in fight against terrorism’: PM Modi at IBSA meet"></div><div class="news-body-content"><div class="news-headline">‘No place for any double standards in fight against terrorism’: PM Modi at IBSA meet</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">IT Consulting &amp; Other Services</span><span class="news-tag news-tag-bear">Technology</span><span class="news-tag news-tag-bear">Prime Minister</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bear">Southern Asia</span><span class="news-tag news-tag-bear">India</span><span class="news-tag news-tag-bear">Jammu and Kashmir</span><span class="news-tag news-tag-bear">Technology</span><span class="news-tag news-tag-bear">Asia</span><span class="news-tag news-tag-bear">Technology</span><span class="news-tag news-tag-bear">IT Services</span></div></div></div><div class="news-footer"><span class="news-source">Source: Greater Kashmir</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://akm-img-a-in.tosshub.com/indiatoday/images/breaking_story_image/202511/smritipalash13.jpeg%3FVersionId%3Da1rBeB_6uhw_U13dbccWqPo0ivBPTyBG?VersionId=nfmxSpsGeJarNAEKMLgsjVJ8PZo6Qoyv" alt="Smriti Mandhana's wedding postponed indefinitely after her father falls ill, says manager"></div><div class="news-body-content"><div class="news-headline">Smriti Mandhana's wedding postponed indefinitely after her father falls ill, says manager</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: India Today</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://cdn.dimsumdaily.hk/wp-content/uploads/2025/11/23184928/Ariana-Grande-in-SIngapore2-2-1.webp" alt="Australian man deported and banned from Singapore after Ariana Grande premiere incident"></div><div class="news-body-content"><div class="news-headline">Australian man deported and banned from Singapore after Ariana Grande premiere incident</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Asia</span><span class="news-tag news-tag-bear">South Eastern Asia</span><span class="news-tag news-tag-bear">Oceania/Australia</span><span class="news-tag news-tag-bear">Australasia</span><span class="news-tag news-tag-bear">Australia</span><span class="news-tag news-tag-bear">Singapore</span><span class="news-tag news-tag-bear">Central Region</span><span class="news-tag news-tag-bear">Singapore</span></div></div></div><div class="news-footer"><span class="news-source">Source: Dimsumdaily Hong Kong</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.capitalfm.co.ke/news/files/2025/06/Maraga-says-buck-stops-with-President-Ruto-in-Albert-Ojwang-murder.jpg" alt="Maraga calls Ruto’s bluff as he releases five point economy revamp plan"></div><div class="news-body-content"><div class="news-headline">Maraga calls Ruto’s bluff as he releases five point economy revamp plan</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Macro Topics</span><span class="news-tag news-tag-bull">Economies</span></div></div></div><div class="news-footer"><span class="news-source">Source: Capital FM Kenya</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://static.seekingalpha.com/cdn/s3/uploads/getty_images/2196897625/image_2196897625.jpg?io=getty-c-w1536" alt="Mayville Engineering's Surge Has Been Well Justified"></div><div class="news-body-content"><div class="news-headline">Mayville Engineering's Surge Has Been Well Justified</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Data</span><span class="news-tag news-tag-bull">Industrial Conglomerates</span><span class="news-tag news-tag-bull">Industrial Conglomerates</span><span class="news-tag news-tag-bull">Valuation</span><span class="news-tag news-tag-bull">Industrials</span><span class="news-tag news-tag-bull">Analyst Strong Buy Rating</span><span class="news-tag news-tag-bull">Price Movement</span><span class="news-tag news-tag-bull">Mayville Engineering</span><span class="news-tag news-tag-bull">IT Services</span><span class="news-tag news-tag-bull">IT Services</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Data Centre</span><span class="news-tag news-tag-bull">Technical Analysis</span><span class="news-tag news-tag-bull">Stocks</span><span class="news-tag news-tag-bull">Financial Topics</span><span class="news-tag news-tag-bull">Events</span><span class="news-tag news-tag-bull">Analyst Ratings</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Industrials</span><span class="news-tag news-tag-bull">IT Services</span><span class="news-tag news-tag-bull">Data Processing &amp; Outsourced Services</span></div></div></div><div class="news-footer"><span class="news-source">Source: Seeking Alpha</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i0.wp.com/www.webpronews.com/wp-content/uploads/2025/11/article-2202-1763895033.jpeg?fit=300%2C300&amp;#038;ssl=1" alt="Deutsche Bank’s AI Warning: Boom or Bust for the U.S. Economy?"></div><div class="news-body-content"><div class="news-headline">Deutsche Bank’s AI Warning: Boom or Bust for the U.S. Economy?</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Internet Services &amp; Infrastructure</span><span class="news-tag news-tag-bear">Diversified Financial Services</span><span class="news-tag news-tag-bear">Diversified Capital Markets</span><span class="news-tag news-tag-bear">Financials</span><span class="news-tag news-tag-bear">IT Services</span><span class="news-tag news-tag-bear">IT Consulting &amp; Other Services</span><span class="news-tag news-tag-bear">Other Diversified Financial Services</span><span class="news-tag news-tag-bear">Financials</span><span class="news-tag news-tag-bear">Banks &amp; Banking</span><span class="news-tag news-tag-bear">Data Processing &amp; Outsourced Services</span><span class="news-tag news-tag-bear">Technology</span><span class="news-tag news-tag-bear">Data</span><span class="news-tag news-tag-bear">Artificial Intelligence</span><span class="news-tag news-tag-bear">Capital Markets</span><span class="news-tag news-tag-bear">Economies</span><span class="news-tag news-tag-bear">United States of America</span><span class="news-tag news-tag-bear">North America</span><span class="news-tag news-tag-bear">Northern America</span><span class="news-tag news-tag-bear">Data &amp; Analytics</span><span class="news-tag news-tag-bear">Intelligent Technologies</span><span class="news-tag news-tag-bear">Analysis</span><span class="news-tag news-tag-bear">Data &amp; Analytics</span><span class="news-tag news-tag-bear">Technology</span><span class="news-tag news-tag-bear">Equity &amp; Debt Capital Markets</span><span class="news-tag news-tag-bear">Artificial Intelligence</span><span class="news-tag news-tag-bear">Stocks</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bear">Macro Topics</span><span class="news-tag news-tag-bear">Ratings and Research Firms</span><span class="news-tag news-tag-bear">Deutsche Bank Group</span><span class="news-tag news-tag-bear">Deutsche Bank Research</span><span class="news-tag news-tag-bear">Technology</span></div></div></div><div class="news-footer"><span class="news-source">Source: WebProNews</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i2-prod.belfastlive.co.uk/incoming/article32924746.ece/ALTERNATES/s615/0_IMG_4590jpeg.jpg" alt="Meet the Northern Ireland nanny paving the way for wedding childcare"></div><div class="news-body-content"><div class="news-headline">Meet the Northern Ireland nanny paving the way for wedding childcare</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">United Kingdom of Great Britain</span><span class="news-tag news-tag-bull">Northern Ireland</span><span class="news-tag news-tag-bull">Europe</span><span class="news-tag news-tag-bull">Northern Europe</span></div></div></div><div class="news-footer"><span class="news-source">Source: Belfast Live</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://blog.tipranks.com/wp-content/uploads/2025/11/shutterstock_2637727779-1-192x192.jpg" alt="‘A Tool to Leverage,’ Says Top Investor About Microsoft Stock"></div><div class="news-body-content"><div class="news-headline">‘A Tool to Leverage,’ Says Top Investor About Microsoft Stock</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-neutral">Technology</span><span class="news-tag news-tag-neutral">Internet Services &amp; Infrastructure</span><span class="news-tag news-tag-neutral">Casinos &amp; Gaming</span><span class="news-tag news-tag-neutral">Media</span><span class="news-tag news-tag-neutral">Advertising</span><span class="news-tag news-tag-neutral">IT Services</span><span class="news-tag news-tag-neutral">IT Consulting &amp; Other Services</span><span class="news-tag news-tag-neutral">Web Services</span><span class="news-tag news-tag-neutral">Software</span><span class="news-tag news-tag-neutral">Application Software</span><span class="news-tag news-tag-neutral">Technology</span><span class="news-tag news-tag-neutral">Systems Software</span><span class="news-tag news-tag-neutral">Cybersecurity</span><span class="news-tag news-tag-neutral">Network Security</span><span class="news-tag news-tag-neutral">Technology Distributors</span><span class="news-tag news-tag-neutral">Hotels, Restaurants &amp; Leisure</span><span class="news-tag news-tag-neutral">Electronic Equipment, Instruments &amp; Components</span><span class="news-tag news-tag-neutral">Software as a Service</span><span class="news-tag news-tag-neutral">Big Tech</span><span class="news-tag news-tag-neutral">Software</span><span class="news-tag news-tag-neutral">DroneTech</span><span class="news-tag news-tag-neutral">Online Gaming</span><span class="news-tag news-tag-neutral">Mobile Gaming</span><span class="news-tag news-tag-neutral">Systems Software</span><span class="news-tag news-tag-neutral">Cloud Computing</span><span class="news-tag news-tag-bear">Stocks</span><span class="news-tag news-tag-neutral">AdTech</span><span class="news-tag news-tag-neutral">Microsoft Corp</span><span class="news-tag news-tag-neutral">Communications</span><span class="news-tag news-tag-neutral">Consumer Discretionary</span></div></div></div><div class="news-footer"><span class="news-source">Source: TipRanks</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/7456/live/343fe270-c856-11f0-8c06-f5d460985095.jpg" alt="I'd be licking my lips bowling to England - McGrath"></div><div class="news-body-content"><div class="news-headline">I'd be licking my lips bowling to England - McGrath</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">United Kingdom of Great Britain</span><span class="news-tag news-tag-bear">England</span><span class="news-tag news-tag-bear">Europe</span><span class="news-tag news-tag-bear">Northern Europe</span><span class="news-tag news-tag-bear">Oceania/Australia</span><span class="news-tag news-tag-bear">Australasia</span><span class="news-tag news-tag-bear">Australia</span></div></div></div><div class="news-footer"><span class="news-source">Source: BBC</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article></div>
 
       </section>
     </div>
