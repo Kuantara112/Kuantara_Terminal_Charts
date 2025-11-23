@@ -731,12 +731,10 @@
       const PROXY_CHAIN = [
         USER_PROXY,
         "https://cors-anywhere-proxy-six.vercel.app/",
-        "https://cors-anywhere.herokuapp.com/",
         "https://cors.eu.org/",
         "https://cors.isomorphic-git.org/",
-        "",
+        "", // direct
       ].filter(Boolean);
-
 
       const ASSET_CLASSES = [
         { id: "all", label: "All Assets" },
@@ -771,8 +769,10 @@
 
       const CITYFALCON_BASE = "https://www.cityfalcon.com/webapi/v1/stories";
       const CITYFALCON_LIMIT = Number(
-        new URLSearchParams(location.search).get("CITYFALCON_LIMIT") || "50"
+        new URLSearchParams(location.search).get("CITYFALCON_LIMIT") || "30"
       );
+
+      // --- SAMPLE STORIES (fallback jika semua fetch gagal) ---
       const SAMPLE_STORIES = [
         {
           id: 101444814,
@@ -876,6 +876,7 @@
       let frontIndex = 0;
       let rotateTimer = null;
       let refreshTimer = null;
+      let lastStreamPayload = []; // cache payload terakhir yang berhasil
 
       const renderCoreShimmer = () => {
         if (!coreHeadline || !coreSummary || !coreTags || !coreThumb) return;
@@ -1312,6 +1313,7 @@
         });
       };
 
+      // --- FETCH STORIES dgn fallback ke SAMPLE_STORIES ---
       const fetchStories = async (assetClassId) => {
         const url = buildCityFalconUrl(assetClassId);
         let lastError = null;
@@ -1323,28 +1325,46 @@
             : proxy
             ? `${proxy}/${cleanUrl}`
             : url;
+
           try {
             const res = await fetch(target);
             if (!res.ok) {
               lastError = new Error(`CityFalcon error ${res.status} via ${proxy || "direct"}`);
+              // Kalau error server (5xx), coba proxy berikutnya.
               if (res.status >= 500) continue;
-              return { stories: null, error: lastError };
+
+              // Kalau 4xx (auth/CORS/dll), langsung fallback ke SAMPLE.
+              console.warn("CityFalcon 4xx, fallback to SAMPLE_STORIES", lastError);
+              return { stories: SAMPLE_STORIES.slice(), error: lastError };
             }
+
             const data = await res.json();
-            return { stories: Array.isArray(data.stories) ? data.stories : [], error: null };
+            const stories = Array.isArray(data.stories) ? data.stories : [];
+            if (!stories.length) {
+              // Kalau respon kosong, fallback ke SAMPLE.
+              console.warn("CityFalcon returned empty stories, fallback to SAMPLE_STORIES");
+              return { stories: SAMPLE_STORIES.slice(), error: null };
+            }
+            return { stories, error: null };
           } catch (err) {
             lastError = err;
+            // lanjut ke proxy berikutnya
             continue;
           }
         }
 
-        return { stories: null, error: lastError || new Error("CityFalcon unreachable") };
+        // Semua proxy gagal: pakai SAMPLE_STORIES sebagai fallback
+        console.warn("All CityFalcon proxies failed, fallback to SAMPLE_STORIES", lastError);
+        return {
+          stories: SAMPLE_STORIES.slice(),
+          error: lastError || new Error("CityFalcon unreachable"),
+        };
       };
 
       const loadFrontSignal = async () => {
         renderCoreShimmer();
         const { stories, error } = await fetchStories(FRONT_SIGNAL_ASSET_CLASS);
-        if (error) console.warn("Front signal error", error);
+        if (error) console.warn("Front signal error (using fallback if needed)", error);
 
         const sourcePool = stories && stories.length ? stories : [];
         const filtered = sourcePool.filter(s => {
@@ -1375,11 +1395,19 @@
           ASSET_CLASSES.find(a => a.id === String(assetClassId))?.label ||
           ASSET_CLASSES.find(a => a.id === "all")?.label ||
           "All Assets";
+
         renderStreamShimmer();
+
         const { stories, error } = await fetchStories(assetClassId);
-        if (error) console.warn("Stream error", error);
+        if (error) console.warn("Stream error (fallback may be used)", error);
 
         if (!stories || !stories.length) {
+          // Kalau tidak ada story sama sekali:
+          if (lastStreamPayload.length) {
+            // Pakai payload terakhir yang valid
+            updateNewsStream(lastStreamPayload);
+            return;
+          }
           updateNewsStream([
             {
               headline: "Failed to load feed",
@@ -1394,7 +1422,10 @@
           return;
         }
 
-        const payload = stories.slice(0, 50).map((s) => normalizeStory(s, activeLabel.textContent));
+        const payload = stories.slice(0, 50).map((s) =>
+          normalizeStory(s, activeLabel.textContent)
+        );
+        lastStreamPayload = payload; // cache hasil terbaru
         updateNewsStream(payload);
         coreUpdated.textContent = "Updated: " + formatTime(Date.now());
       };
