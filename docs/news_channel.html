@@ -228,9 +228,14 @@
 
   <script>
     // =========================
-    // Channel Map (15 feeds, CNBC pertama, BBC dihapus)
+    // Channel Map (Yahoo pertama)
     // =========================
     const CHANNELS = [
+      {
+        key: "yahoo",
+        name: "Yahoo Finance Live",
+        url: "https://www.youtube.com/embed/KQp-e_XQnDE?si=ldjAF1YlBY7bg5wG"
+      },
       {
         key: "cnbc",
         name: "CNBC Television",
@@ -240,11 +245,6 @@
         key: "bloomberg",
         name: "Bloomberg Global News",
         url: "https://www.youtube.com/embed/f39oHo6vFLg?si=7twwBXGse3R3Xqvh"
-      },
-      {
-        key: "yahoo",
-        name: "Yahoo Finance Live",
-        url: "https://www.youtube.com/embed/KQp-e_XQnDE?si=ldjAF1YlBY7bg5wG"
       },
       {
         key: "cna",
@@ -338,8 +338,8 @@
       setChannel(e.target.value);
     });
 
-    // Default ke CNBC (urutan pertama)
-    setChannel("cnbc");
+    // Default ke Yahoo (urutan pertama)
+    setChannel("yahoo");
   </script>
 </body>
 </html>
