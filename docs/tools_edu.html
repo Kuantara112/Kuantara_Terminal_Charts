@@ -1,143 +1,1604 @@
-<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Kuantara – Learning Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code (Kuantara Standard) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
+
+  <!-- Supabase (disiapkan kalau nanti mau dipakai) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
-      --bg:#050505;
-      --card:#151515;
-      --accent:#ffbf00;
+      /* Kuantara Terminal Palette */
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      /* Font sizes (9–14px) */
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+
+      /* Radius (terminal style: kecil, tajam) */
+      --radius-sm:4px;
+      --radius-md:4px;
+      --radius-lg:4px;
     }
 
-    *{
+    /* RESET & BASE */
+    * {
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      outline:none;
+      font-family:"Fira Code",monospace!important;
     }
 
-    body{
+    html, body {
+      width:100%;
+      min-height:100%;
+    }
+
+    body {
+      background-color:var(--bg-root);
+      color:var(--text-main);
+      -webkit-font-smoothing:antialiased;
+      line-height:1.4;
       min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    /* Scrollbar */
+    *::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track{
+      background:#000000;
+    }
+    *::-webkit-scrollbar-thumb{
+      background:#2b2b2b;
+    }
+    *::-webkit-scrollbar-thumb:hover{
+      background:#3b3b3b;
+    }
+
+    #app{
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      width:100%;
+      max-width:1600px;
+      margin:0 auto;
+    }
+
+    /* HEADER (opsional, bisa dipakai kalau mau) */
+    .app-header{
+      padding:12px 16px;
+      border-bottom:1px solid var(--border-soft);
       display:flex;
       align-items:center;
-      justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
+      justify-content:space-between;
+      background:var(--bg-main);
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .brand-logo{
+      font-weight:600;
+      font-size:var(--fs-title);
+      letter-spacing:-0.02em;
       color:var(--text-main);
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .brand-logo .mono-mark{
+      color:var(--accent);
+      font-size:var(--fs-body);
+    }
+
+    .brand-sub{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .main-content{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      padding:16px;
+      gap:20px;
+      background:var(--bg-root);
+    }
+
+    .section-block{
+      border:1px solid var(--border-soft);
+      border-radius:var(--radius-md);
+      background:#080808;
+      padding:12px 12px 16px 12px;
+    }
+
+    .section-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      margin-bottom:10px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      padding-bottom:6px;
+    }
+
+    .section-title{
+      font-size:var(--fs-subtitle);
+      font-weight:500;
+      letter-spacing:0.04em;
+      text-transform:uppercase;
+      color:var(--accent);
+    }
+
+    .section-subtitle{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .course-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+      gap:14px;
+      padding-top:8px;
     }
 
     .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
-      text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:var(--radius-md);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;
+      cursor:pointer;
+      position:relative;
+      height:100%;
     }
 
-    .badge{
-      display:inline-flex;
+    .card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 8px 20px rgba(0,0,0,0.7);
+      border-color:var(--accent);
+    }
+
+    .card-thumb{
+      height:110px;
+      background:radial-gradient(circle at top,var(--accent) 0,transparent 55%),
+                 radial-gradient(circle at bottom,#333 0,transparent 55%),
+                 #000000;
+      display:flex;
       align-items:center;
-      gap:8px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
-      color:var(--accent);
-      margin-bottom:18px;
+      justify-content:center;
     }
 
-    .dot{
-      width:8px;
-      height:8px;
+    .play-overlay{
+      width:38px;
+      height:38px;
+      background:rgba(0,0,0,0.7);
       border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(255,255,255,0.25);
     }
 
-    h1{
-      font-size:22px;
-      margin-bottom:8px;
+    .card-body{
+      padding:10px 11px 11px 11px;
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
 
-    p{
-      font-size:14px;
-      line-height:1.6;
-      color:var(--text-muted);
-      margin-bottom:18px;
-    }
-
-    .time-estimate{
-      font-size:13px;
-      color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
-    }
-
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      border:1px solid var(--accent);
+    .badge-cat{
+      align-self:flex-start;
+      font-size:var(--fs-small);
+      text-transform:uppercase;
+      letter-spacing:0.05em;
       color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
+      background:rgba(255,191,0,0.08);
+      padding:2px 6px;
+      border-radius:3px;
+      border:1px solid rgba(255,191,0,0.2);
+      font-weight:500;
     }
 
-    .btn:hover{
-      background:var(--accent);
-      color:#000;
-      transform:translateY(-1px);
+    .card-title{
+      font-size:var(--fs-body);
+      font-weight:500;
+      color:var(--text-main);
+      line-height:1.3;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
     }
 
-    .footer-text{
-      margin-top:16px;
-      font-size:11px;
-      color:#666;
+    .card-desc{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      line-height:1.4;
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      margin-top:2px;
+      margin-bottom:auto;
+    }
+
+    .card-footer{
+      margin-top:8px;
+      padding-top:7px;
+      border-top:1px solid rgba(255,255,255,0.04);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .stage-count{
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
+
+    .card-footer span:last-child{
+      color:var(--accent);
+    }
+
+    @media(max-width:640px){
+      .main-content{
+        padding:12px;
+      }
+      .section-block{
+        padding:10px 10px 14px 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
+
+<div id="app">
+  <!-- HEADER (bisa diaktifkan kalau mau) -->
+  <!--
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-logo">
+        <span class="mono-mark">KA•LP</span>
+        <span>Kuantara Learning Platform</span>
+      </div>
+      <span class="brand-sub">Modul belajar global macro & terminal untuk trader ritel</span>
     </div>
+  </header>
+  -->
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
+  <main class="main-content">
+    <!-- 1. KUANTARA TERMINAL -->
+    <section class="section-block">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Kuantara Terminal</div>
+          <div class="section-subtitle">Belajar pakai terminal seperti pro sebelum main strategi makro yang serius.</div>
+        </div>
+      </div>
+      <div class="course-grid">
+        <!-- Terminal 1.0 -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Terminal</div>
+            <h3 class="card-title">Terminal 1.0 – Pengenalan Dasar</h3>
+            <p class="card-desc">Pengenalan Kuantara Terminal 1.0, struktur layout, menu utama, dan cara berpindah antar modul dengan efisien.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>15 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
 
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
-    </div>
+        <!-- Terminal 2.1 -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Terminal</div>
+            <h3 class="card-title">Pengenalan Terminal 2.1</h3>
+            <p class="card-desc">Walkthrough Kuantara Terminal 2.1: layout baru, panel global news, geo-risk, dan cara menyusun workspace makro full.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>10 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
+        <!-- Workspace Setup -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Terminal</div>
+            <h3 class="card-title">Workspace Setup untuk Macro Trader</h3>
+            <p class="card-desc">Cara menyusun panel chart, news, geo-risk, dan dashboard ekonomi sehingga kamu punya “satu layar” untuk semua keputusan.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>8 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
 
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
-    </div>
+        <!-- Market Dashboard -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Terminal</div>
+            <h3 class="card-title">Cara Membaca Market Dashboard</h3>
+            <p class="card-desc">Interpretasi cepat heatmap, index global, sektor, dan risk-on/risk-off gauge sebelum kamu buka posisi apapun.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>7 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 2. GLOBAL MACRO ESSENTIALS -->
+    <section class="section-block">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Global Macro Essentials</div>
+          <div class="section-subtitle">Fondasi makro supaya kamu paham “cerita besar” di balik pergerakan harga.</div>
+        </div>
+      </div>
+      <div class="course-grid">
+        <!-- Global Makro 101 -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Global Macro</div>
+            <h3 class="card-title">Global Makro 101</h3>
+            <p class="card-desc">Dasar-dasar global macro: pertumbuhan ekonomi, inflasi, suku bunga, dan kenapa semua itu menggerakkan harga aset.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>18 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Global Makro Advanced -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Global Macro</div>
+            <h3 class="card-title">Global Makro Advanced</h3>
+            <p class="card-desc">Pendalaman flow lintas aset: yield curve, basis poin, real yield, cross-currency, hingga bagaimana big players memposisikan diri.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>20 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Inflation & CPI -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Macro</div>
+            <h3 class="card-title">Inflasi & Dinamika CPI</h3>
+            <p class="card-desc">Apa itu CPI, core vs headline, PCE, dan bagaimana angka inflasi di-price oleh pasar obligasi, FX, dan ekuitas.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>10 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Employment -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Macro</div>
+            <h3 class="card-title">Data Tenaga Kerja & Labor Tightness</h3>
+            <p class="card-desc">NFP, jobless claims, unemployment rate, dan kenapa pasar reaksi keras terhadap data tenaga kerja tertentu.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>9 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Growth & GDP -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Macro</div>
+            <h3 class="card-title">GDP, Siklus Pertumbuhan & Hard vs Soft Landing</h3>
+            <p class="card-desc">Bagaimana data GDP, PMI, dan leading indicators dipakai untuk membaca risiko resesi dan skenario pendaratan ekonomi.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>11 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Yield & Rates Macro -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Macro</div>
+            <h3 class="card-title">Yield Curve & Suku Bunga Global</h3>
+            <p class="card-desc">Peran yield curve, selisih tenor pendek vs panjang, dan bagaimana ekspektasi suku bunga The Fed menyebar ke pasar lain.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>10 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Money Supply -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Macro</div>
+            <h3 class="card-title">Money Supply & Liquidity Cycle</h3>
+            <p class="card-desc">M2, likuiditas global, QT vs QE, dan kaitannya dengan bull/bear market di ekuitas, FX, komoditas, dan crypto.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>8 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 3. FOREX FUNDAMENTALS -->
+    <section class="section-block">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Forex Fundamentals</div>
+          <div class="section-subtitle">Untuk yang fokus di FX: dari driver mata uang sampai carry trade.</div>
+        </div>
+      </div>
+      <div class="course-grid">
+        <!-- Fundamental Forex -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Forex</div>
+            <h3 class="card-title">Fundamental Forex</h3>
+            <p class="card-desc">Bagaimana suku bunga, neraca perdagangan, current account, dan data ekonomi lain membentuk tren jangka panjang di FX.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>14 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- USD EUR JPY -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Forex</div>
+            <h3 class="card-title">Macro Drivers: USD, EUR, JPY</h3>
+            <p class="card-desc">Apa yang menggerakkan USD, EUR, JPY: kebijakan bank sentral, neraca transaksi berjalan, dan peran mereka di sistem finansial global.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>10 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Rate Differential -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Forex</div>
+            <h3 class="card-title">Interest Rate Differential & FX Flow</h3>
+            <p class="card-desc">Kenapa beda suku bunga antar negara membentuk tren FX dan bagaimana pasar mem-price forward expectation.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>9 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Carry Trade -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Forex</div>
+            <h3 class="card-title">Carry Trade Strategy</h3>
+            <p class="card-desc">Konsep carry trade, risiko saat regime berubah, dan bagaimana membaca kapan carry masih aman atau sudah berbahaya.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>8 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 4. EQUITIES & CORPORATE FUNDAMENTALS -->
+    <section class="section-block">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Equities & Corporate Fundamentals</div>
+          <div class="section-subtitle">Untuk yang ingin hubungan makro, sektor, dan saham individual nyambung semua.</div>
+        </div>
+      </div>
+      <div class="course-grid">
+        <!-- Fundamental Saham -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Equities</div>
+            <h3 class="card-title">Fundamental Saham</h3>
+            <p class="card-desc">Membedah laporan keuangan, kualitas bisnis, dan faktor sektor yang penting sebelum kamu pegang suatu saham.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>16 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Equities 101 -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Equities</div>
+            <h3 class="card-title">Equities 101</h3>
+            <p class="card-desc">Mengenal indeks global, ETF, sektor, dan bagaimana rotasi antar sektor mencerminkan siklus ekonomi dan risk-on/risk-off.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>15 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Earnings & Guidance -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Equities</div>
+            <h3 class="card-title">Earnings, EPS & Forward Guidance</h3>
+            <p class="card-desc">Bagaimana laporan earnings, revisi EPS, dan guidance manajemen memicu re-rating saham dan pergeseran sentimen sektor.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>12 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Sector Rotation -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Equities</div>
+            <h3 class="card-title">Sektor-Sektor Utama & Rotasi Sektor</h3>
+            <p class="card-desc">Defensif vs siklikal, growth vs value, dan bagaimana macro regime menggeser minat investor antar sektor.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>10 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Valuasi Dasar -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Equities</div>
+            <h3 class="card-title">Valuasi Dasar: PER, PBV & DCF Intro</h3>
+            <p class="card-desc">Konsep PER, PBV, yield earnings, dan gambaran awal DCF supaya kamu tidak cuma ikut-ikutan hype saham.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>11 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 5. COMMODITIES & ENERGY -->
+    <section class="section-block">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Commodities & Energy</div>
+          <div class="section-subtitle">Emas, minyak, dan komoditas lain yang jadi “denyut nadi” ekonomi global.</div>
+        </div>
+      </div>
+      <div class="course-grid">
+        <!-- Trading Komoditas -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Komoditas</div>
+            <h3 class="card-title">Trading Komoditas</h3>
+            <p class="card-desc">Karakter emas, minyak, dan komoditas lain; apa pemicu pergerakannya dan bagaimana menggabungkan teknikal + makro saat trading.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>11 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Oil Market -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Energy</div>
+            <h3 class="card-title">Oil Market Structure: WTI & Brent</h3>
+            <p class="card-desc">Struktur pasar minyak, peran OPEC+, inventory data, dan kenapa minyak bisa jadi proxy growth & risiko geopolitik.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>9 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Gold -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Komoditas</div>
+            <h3 class="card-title">Gold Macro Drivers</h3>
+            <p class="card-desc">Real yield, dolar, risiko geopolitik, dan kenapa emas bisa jadi hedge tapi juga kadang tidak perform seperti yang dibayangkan.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>8 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Supply-Demand Metals/Energy -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Komoditas</div>
+            <h3 class="card-title">Supply-Demand Cycle: Metals & Energy</h3>
+            <p class="card-desc">Siklus investasi tambang/energi, under/over-capacity, dan dampaknya ke harga komoditas di jangka menengah-panjang.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>9 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 6. BONDS, RATES & FIXED INCOME -->
+    <section class="section-block">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Bonds & Rates</div>
+          <div class="section-subtitle">Untuk paham cara pasar mem-price risiko dan suku bunga di level yang lebih dalam.</div>
+        </div>
+      </div>
+      <div class="course-grid">
+        <!-- Bonds & Rates -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Fixed Income</div>
+            <h3 class="card-title">Bonds &amp; Rates</h3>
+            <p class="card-desc">Dasar obligasi pemerintah &amp; korporasi, kupon, yield, dan bagaimana harga bond bergerak saat suku bunga berubah.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>13 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Yield Curve Inversion -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Fixed Income</div>
+            <h3 class="card-title">Yield Curve Inversion Deep Dive</h3>
+            <p class="card-desc">Kenapa kurva yield terbalik sering jadi sinyal resesi dan bagaimana membaca “false signal” vs sinyal serius.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>9 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dovish vs Hawkish -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Macro Regime</div>
+            <h3 class="card-title">Dovish vs Hawkish Macro Regimes</h3>
+            <p class="card-desc">Membedakan periode dovish/hawkish, implikasinya ke bond, ekuitas, FX dan bagaimana menyesuaikan posisi portofolio.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>8 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Bond Futures & Duration -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Fixed Income</div>
+            <h3 class="card-title">Bond Futures & Duration Risk</h3>
+            <p class="card-desc">Konsep duration, convexity, dan bagaimana bond futures digunakan untuk hedging atau spekulasi perubahan suku bunga.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>9 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 7. TECHNICAL ANALYSIS -->
+    <section class="section-block">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Technical Analysis</div>
+          <div class="section-subtitle">Teknikal versi trader makro: fokus ke struktur, bukan sekadar indikator ramai.</div>
+        </div>
+      </div>
+      <div class="course-grid">
+        <!-- Analisa Teknikal 101 -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Teknikal</div>
+            <h3 class="card-title">Analisa Teknikal 101</h3>
+            <p class="card-desc">Dasar candlestick, support–resistance, trendline, serta indikator populer yang cukup untuk bikin trading plan yang terukur.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>12 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Price Action -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Teknikal</div>
+            <h3 class="card-title">Price Action untuk Macro Trader</h3>
+            <p class="card-desc">Membaca swing high/low, rejection level, dan pola price action yang sinkron dengan narasi makro yang sedang berjalan.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>10 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Multi-Timeframe Trend -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Teknikal</div>
+            <h3 class="card-title">Multi-Timeframe Trend Model</h3>
+            <p class="card-desc">Cara menyelaraskan trend di timeframe besar dengan entry timeframe kecil tanpa kehilangan konteks makro utama.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>9 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Moving Average Playbook -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Teknikal</div>
+            <h3 class="card-title">Moving Average Playbook</h3>
+            <p class="card-desc">MA sebagai struktur trend, dynamic support/resistance, dan kombinasi MA yang relevan untuk swing vs position trading.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>8 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Market Structure & Liquidity Zones -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Teknikal</div>
+            <h3 class="card-title">Market Structure & Liquidity Zones</h3>
+            <p class="card-desc">Cara membaca higher high/lower low, area likuiditas, dan kenapa harga sering “mampir dulu” ke level tertentu sebelum jalan jauh.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>9 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 8. MARKET CATALYSTS & NARRATIVE READING -->
+    <section class="section-block">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Market Catalysts & Narrative</div>
+          <div class="section-subtitle">Latihan membaca “cerita pasar” dari news, data, dan sentimen.</div>
+        </div>
+      </div>
+      <div class="course-grid">
+        <!-- Tips Katalis -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Market Insight</div>
+            <h3 class="card-title">Tips Memahami Katalis di Market</h3>
+            <p class="card-desc">Panduan membaca news, kalender ekonomi, earning, hingga headline politik supaya kamu bisa bedakan noise vs katalis penting.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>9 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Headline News Makro -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">News</div>
+            <h3 class="card-title">Cara Membaca Headline News Secara Makro</h3>
+            <p class="card-desc">Apa yang harus langsung kamu cari ketika baca headline: siapa terdampak, di aset mana, dan horizon waktunya berapa lama.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>8 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Sentimen Pasar -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Sentimen</div>
+            <h3 class="card-title">Membaca Sentimen Pasar (VIX, Fear & Greed, dsb.)</h3>
+            <p class="card-desc">Indikator sentimen utama dan bagaimana menggunakannya untuk mengukur apakah pasar sedang panik, euforia, atau biasa saja.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>9 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Event Guide -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Events</div>
+            <h3 class="card-title">Event Guide: FOMC, NFP, CPI, PCE, PMI</h3>
+            <p class="card-desc">Checklist sebelum, saat, dan setelah event besar rilis supaya kamu tidak FOMO dan tahu skenario utama vs alternatif.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>12 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Geopolitical Risk -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Geo-Risk</div>
+            <h3 class="card-title">Geopolitical Risk 101</h3>
+            <p class="card-desc">Bagaimana konflik, sanksi, tarif, dan perang dagang diterjemahkan pasar menjadi risiko di FX, komoditas, dan suku bunga.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>10 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 9. MACRO TRADING STRATEGY -->
+    <section class="section-block">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Macro Trading Strategy</div>
+          <div class="section-subtitle">Mengubah insight makro jadi posisi nyata dengan risk management yang waras.</div>
+        </div>
+      </div>
+      <div class="course-grid">
+        <!-- Trading Plan Makro -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Strategi</div>
+            <h3 class="card-title">Membuat Trading Plan Makro</h3>
+            <p class="card-desc">Template menyusun thesis makro, level teknikal kunci, dan rencana eksekusi dari sebelum entry sampai exit.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>10 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Gabung TA + FA + Macro -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Strategi</div>
+            <h3 class="card-title">Menggabungkan TA + FA + Macro Flow</h3>
+            <p class="card-desc">Framework bagaimana teknikal, fundamental, dan narasi makro saling mengkonfirmasi sebelum kamu eksekusi trade besar.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>11 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Risk Management -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Risk</div>
+            <h3 class="card-title">Risk Management Framework</h3>
+            <p class="card-desc">Menentukan risk per trade, max risk per hari/minggu, dan cara menjaga akun tetap hidup melewati fase drawdown.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>12 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Position Sizing & Allocation -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Risk</div>
+            <h3 class="card-title">Position Sizing & Portfolio Allocation</h3>
+            <p class="card-desc">Cara membagi ukuran posisi antar aset, menentukan konsentrasi vs diversifikasi, dan kapan men-scale in/out.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>10 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 10. BONUS: QUANT & DATA + PSYCHOLOGY (OPSIONAL DI PAKAI NANTI) -->
+    <section class="section-block">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Bonus: Quant & Psychology</div>
+          <div class="section-subtitle">Untuk yang mau naik level ke arah data-driven dan pengelolaan diri.</div>
+        </div>
+      </div>
+      <div class="course-grid">
+        <!-- COT Report -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Quant</div>
+            <h3 class="card-title">Membaca Commitment of Traders (COT)</h3>
+            <p class="card-desc">Mengenal posisi non-commercial, hedgers, dan bagaimana COT digunakan sebagai konfirmasi positioning big players.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>8 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Volatility Index -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Quant</div>
+            <h3 class="card-title">Volatility Index: VIX, MOVE, OVX</h3>
+            <p class="card-desc">Cara membaca indeks volatilitas ekuitas, obligasi, dan minyak sebagai “termometer” kecemasan pasar.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>9 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Trading Psychology 101 -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Psychology</div>
+            <h3 class="card-title">Trading Psychology 101</h3>
+            <p class="card-desc">Dasar emosi dalam trading: fear, greed, FOMO, dan bagaimana membangun rutinitas yang menjaga eksekusi tetap konsisten.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>10 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Konsistensi & Eksekusi -->
+        <article class="card">
+          <div class="card-thumb">
+            <div class="play-overlay">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="badge-cat">Psychology</div>
+            <h3 class="card-title">Menjaga Konsistensi & Eksekusi</h3>
+            <p class="card-desc">Cara meminimalkan “nyeleneh” dari trading plan, journaling yang efektif, dan membangun disiplin jangka panjang.</p>
+            <div class="card-footer">
+              <div class="stage-count">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>9 Materi</span>
+              </div>
+              <span>Akses Gratis →</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
   </main>
+</div>
 
-  <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
 </body>
 </html>
