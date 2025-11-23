@@ -1,3563 +1,677 @@
-<html lang="id"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PulseWire Overview</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton-screen-css/1.1.0/skeleton-screen.min.css" referrerpolicy="no-referrer">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://s3.tradingview.com/tv.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
-            },
-            colors: {
-              ink: "#050505",
-              slate: "#111215",
-              frame: "#1c1c1c",
-              ember: "#FFBF00",
-              flare: "#FFBF00",
-            },
-          },
-        },
-      };
-    </script>
-    <style>
-      body {
-        font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-        background: radial-gradient(circle at 18% 20%, rgba(255, 145, 0, 0.16), transparent 40%),
-          radial-gradient(circle at 82% 0%, rgba(255, 195, 0, 0.12), transparent 35%), linear-gradient(115deg, #040404, #0b0b0b 45%, #050505);
-      }
-      .insight-scroll {
-        max-height: 320px;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: #0d0d0d transparent;
-      }
-      .insight-scroll::-webkit-scrollbar {
-        width: 6px;
-      }
-      .insight-scroll::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      .insight-scroll::-webkit-scrollbar-thumb {
-        background: #0d0d0d;
-        border-radius: 999px;
-      }
-      .shimmer-line {
-        position: relative;
-        overflow: hidden;
-        background: #1c1c1c;
-        border-radius: 4px;
-      }
-      .shimmer-line::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        transform: translateX(-100%);
-        background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-        animation: shimmer-slide 1.5s infinite;
-      }
-      .skeleton-card {
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        background: rgba(255, 255, 255, 0.02);
-      }
-      .asset-card img {
-        width: 100%;
-        height: 140px;
-        object-fit: cover;
-      }
-      .front-nav {
-        width: 26px;
-        height: 26px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 999px;
-        color: #ffbf00;
-        background: transparent;
-      }
-      .front-nav:hover {
-        background: rgba(255, 191, 0, 0.12);
-      }
-      .front-nav:disabled {
-        opacity: 0.3;
-        cursor: not-allowed;
-      }
-      #frontSignalControls.disabled {
-        opacity: 0.25;
-        pointer-events: none;
-      }
-      #frontSignalDots {
-        justify-content: flex-end;
-      }
-      .front-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 999px;
-        border: none;
-        background: rgba(255, 255, 255, 0.25);
-      }
-      .front-dot.active {
-        background: #ffbf00;
-      }
-      .latest-widget,
-      .catalyst-widget {
-        border: 1px solid #1f1f1f;
-        background: rgba(15, 15, 17, 0.95);
-        padding: 1.5rem;
-        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
-      }
-      .latest-widget .widget-header,
-      .catalyst-widget .widget-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-      }
-      .latest-widget .live-indicator,
-      .catalyst-widget .live-indicator,
-      .x-feed-widget .live-indicator {
-        width: 28px;
-        height: 10px;
-        border-radius: 999px;
-        background: linear-gradient(90deg, rgba(255, 191, 0, 0.2), #ffbf00, rgba(255, 191, 0, 0.2));
-        background-size: 200% 100%;
-        box-shadow: 0 0 12px rgba(255, 191, 0, 0.5);
-        position: relative;
-        overflow: hidden;
-        animation: chartWave 1.6s linear infinite;
-      }
-      .latest-widget .live-indicator::after {
-        content: "";
-        position: absolute;
-        inset: 2px;
-        border-radius: 999px;
-        background: rgba(255, 191, 0, 0.35);
-        animation: chartPulse 2s ease-in-out infinite;
-      }
-      .catalyst-widget .live-indicator {
-        width: 18px;
-        height: 18px;
-        border-radius: 999px;
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.7));
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
-        display: grid;
-        place-items: center;
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #e0f2ff;
-        animation: catalystPulse 1.3s ease-in-out infinite;
-      }
-      .catalyst-widget .live-indicator::after {
-        content: "!";
-        position: static;
-        inset: auto;
-        border-radius: 0;
-        background: transparent;
-        animation: none;
-      }
-      .latest-widget .dropdown-wrapper,
-      .catalyst-widget .dropdown-wrapper,
-      .x-feed-widget .dropdown-wrapper {
-        margin-top: 1rem;
-      }
-      .latest-widget .category-select,
-      .catalyst-widget .category-select {
-        width: 100%;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        color: #fff;
-        background: rgba(5, 5, 5, 0.9);
-        padding: 0.45rem 0.75rem;
-        font-size: 0.8rem;
-        border-radius: 0;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-      }
-      .latest-ticker-container,
-      .catalyst-ticker-container,
-      .x-feed-ticker-container {
-        margin-top: 1rem;
-        max-height: 420px;
-        overflow-y: auto;
-        scrollbar-width: none;
-      }
-      .latest-ticker-container::-webkit-scrollbar,
-      .catalyst-ticker-container::-webkit-scrollbar,
-      .x-feed-ticker-container::-webkit-scrollbar {
-        width: 0;
-        height: 0;
-      }
-      .latest-card,
-      .catalyst-card {
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(4, 4, 5, 0.7);
-        padding: 1rem;
-      }
-      .latest-card.important {
-        border-color: rgba(14, 165, 233, 0.8);
-        background: linear-gradient(140deg, rgba(5, 10, 20, 0.95), rgba(8, 47, 73, 0.85));
-        box-shadow: 0 0 30px rgba(14, 165, 233, 0.25), inset 0 0 20px rgba(14, 165, 233, 0.2);
-      }
-      .catalyst-card.high-impact-card {
-        border-color: rgba(59, 130, 246, 0.65);
-        background: linear-gradient(135deg, rgba(30, 64, 175, 0.85), rgba(15, 23, 42, 0.6));
-        box-shadow: 0 0 32px rgba(59, 130, 246, 0.35);
-      }
-      .catalyst-card.impact-medium-card {
-        border-color: rgba(59, 130, 246, 0.25);
-        background: linear-gradient(140deg, rgba(37, 99, 235, 0.2), rgba(4, 4, 5, 0.85));
-      }
-      .latest-ticker,
-      .catalyst-ticker {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.9rem;
-      }
-      .x-feed-widget {
-        border: 1px solid #1f1f1f;
-        background: rgba(15, 15, 17, 0.95);
-        padding: 1.5rem;
-        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
-      }
-      .x-feed-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-      .x-feed-card {
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(4, 4, 5, 0.85);
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-      .x-feed-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
-      .x-feed-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        object-fit: cover;
-      }
-      .x-feed-author {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.1;
-      }
-      .x-feed-name {
-        font-weight: 600;
-        color: #fff;
-      }
-      .x-feed-handle {
-        font-size: 0.75rem;
-        color: #9ca3af;
-      }
-      .x-feed-time {
-        margin-left: auto;
-        font-size: 0.75rem;
-        color: #9ca3af;
-        text-transform: uppercase;
-      }
-      .x-feed-text {
-        font-size: 0.95rem;
-        color: #e5e7eb;
-        white-space: pre-line;
-      }
-      .x-feed-media {
-        border-radius: 0.75rem;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: #090909;
-      }
-      .x-feed-media img {
-        width: 100%;
-        height: auto;
-        display: block;
-      }
-      .x-feed-preview {
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 0.75rem;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        text-decoration: none;
-        background: rgba(15, 15, 17, 0.9);
-      }
-      .x-feed-preview img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-      }
-      .x-feed-preview-body {
-        padding: 0.75rem;
-      }
-      .x-feed-preview-source {
-        font-size: 0.65rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: #9ca3af;
-      }
-      .x-feed-preview-title {
-        font-weight: 600;
-        color: #fff;
-      }
-      .x-feed-preview-desc {
-        font-size: 0.8rem;
-        color: #cbd5f5;
-        margin-top: 0.25rem;
-      }
-      .x-feed-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        font-size: 0.75rem;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
-      }
-      .x-feed-action {
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: rgba(15, 15, 15, 0.7);
-        padding: 0.4rem 0.9rem;
-        color: #f3f4f6;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-      }
-      .x-feed-action svg {
-        width: 14px;
-        height: 14px;
-      }
-      .x-feed-action:not(.disabled):hover {
-        border-color: rgba(255, 191, 0, 0.5);
-        color: #ffbf00;
-      }
-      .x-feed-action.disabled {
-        opacity: 0.35;
-        cursor: not-allowed;
-      }
-      .reader-body {
-        margin-top: 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        padding: 1rem;
-        max-height: 70vh;
-        overflow-y: auto;
-        background: rgba(0, 0, 0, 0.35);
-      }
-      .reader-loading {
-        margin-top: 1rem;
-        font-size: 0.8rem;
-        color: #9ca3af;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-      }
-      .latest-card .headline,
-      .catalyst-card .headline {
-        font-size: 0.95rem;
-        color: #fff;
-        margin: 0;
-        font-weight: 400;
-        transition: color 0.2s ease;
-        cursor: pointer;
-      }
-      .latest-card .headline:hover,
-      .catalyst-card .headline:hover {
-        color: #ffbf00;
-      }
-      .latest-card .headline-container,
-      .catalyst-card .headline-container {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.35rem;
-      }
-      .latest-card .latest-meta,
-      .catalyst-card .latest-meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.7rem;
-        color: rgba(255, 255, 255, 0.5);
-      }
-      .latest-card .important-dot,
-      .catalyst-card .important-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 999px;
-        background: #38bdf8;
-        flex-shrink: 0;
-        margin-top: 0.35rem;
-      }
-      .latest-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.35rem;
-        margin-top: 0.75rem;
-      }
-      .latest-tags .label-tag {
-        font-size: 0.65rem;
-        border-radius: 999px;
-        padding: 0.15rem 0.6rem;
-        color: #ffea9a;
-        border: 1px solid rgba(255, 191, 0, 0.5);
-        background: rgba(255, 191, 0, 0.18);
-      }
-      .latest-tags .label-tag.important {
-        background: #ffc107;
-        color: #050505;
-      }
-      .catalyst-recap-btn {
-        width: 100%;
-        border: 1px solid rgba(255, 94, 0, 0.6);
-        background: linear-gradient(120deg, rgba(255, 94, 0, 0.9), rgba(255, 174, 0, 0.8));
-        color: #1a0f00;
-        text-transform: uppercase;
-        font-size: 0.7rem;
-        letter-spacing: 0.15em;
-        padding: 0.6rem 0.75rem;
-        margin-top: 0.75rem;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-      }
-      .catalyst-recap-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 15px 40px rgba(255, 94, 0, 0.35);
-      }
-      .catalyst-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.35rem;
-        margin-top: 0.65rem;
-      }
-      .catalyst-tags .chip {
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        border-radius: 999px;
-        padding: 0.15rem 0.6rem;
-        color: #d1fae5;
-        border: 1px solid rgba(16, 185, 129, 0.4);
-        background: rgba(6, 95, 70, 0.4);
-      }
-      .impact-row {
-        margin-top: 0.6rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.72rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-      .impact-badge {
-        padding: 0.2rem 0.6rem;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      .impact-medium {
-        background: rgba(59, 130, 246, 0.15);
-        border-color: rgba(59, 130, 246, 0.35);
-        color: #bfdbfe;
-      }
-      .impact-high {
-        background: linear-gradient(120deg, rgba(37, 99, 235, 0.3), rgba(15, 23, 42, 0.05));
-        border-color: rgba(59, 130, 246, 0.5);
-        color: #dbeafe;
-        box-shadow: 0 0 25px rgba(59, 130, 246, 0.25);
-      }
-      .copy-btn {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        padding: 0.25rem;
-        border-radius: 0.35rem;
-      }
-      .copy-btn svg {
-        width: 16px;
-        height: 16px;
-        stroke: #8a8a8a;
-      }
-      .copy-btn:hover {
-        background: rgba(255, 255, 255, 0.08);
-      }
-      .copy-btn.copied svg {
-        stroke: #ffc107;
-      }
-      .latest-recap-btn,
-      .catalyst-recap-btn {
-        width: 100%;
-        text-transform: uppercase;
-        font-size: 0.7rem;
-        letter-spacing: 0.15em;
-        padding: 0.65rem 0.75rem;
-        margin-top: 0.75rem;
-        border-radius: 0;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        background: linear-gradient(120deg, rgba(255, 191, 0, 0.12), rgba(255, 191, 0, 0.02));
-        color: #ffbf00;
-        box-shadow: 0 0 25px rgba(255, 191, 0, 0.15);
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-      }
-      .latest-recap-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 0 35px rgba(255, 191, 0, 0.25);
-      }
-      .catalyst-recap-btn {
-        border-color: rgba(59, 130, 246, 0.25);
-        background: linear-gradient(120deg, rgba(59, 130, 246, 0.12), rgba(14, 165, 233, 0.05));
-        color: #c7e4ff;
-        box-shadow: 0 0 25px rgba(59, 130, 246, 0.18);
-      }
-      .catalyst-recap-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 0 35px rgba(59, 130, 246, 0.28);
-      }
-      .live-tv-card {
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: linear-gradient(135deg, rgba(7, 7, 10, 0.95), rgba(4, 4, 6, 0.85));
-        padding: 1.25rem;
-        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
-      }
-      .live-tv-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.8rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.6);
-      }
-      .live-video-shell {
-        position: relative;
-        width: 100%;
-        padding-top: 56.25%;
-        margin-top: 0.75rem;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: #000;
-      }
-      .live-video-shell video {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        background: #000;
-      }
-      .live-cc-controls {
-        margin-top: 0.85rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-        font-size: 0.72rem;
-        color: rgba(255, 255, 255, 0.65);
-        letter-spacing: 0.08em;
-      }
-      .live-control-group {
-        display: flex;
-        gap: 0.6rem;
-      }
-      .live-control-btn {
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        background: linear-gradient(120deg, rgba(255, 255, 255, 0.08), rgba(15, 15, 17, 0.6));
-        padding: 0.4rem 0.9rem;
-        font-size: 0.7rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.7);
-        transition: box-shadow 0.15s ease, color 0.15s ease;
-      }
-      .live-control-btn[data-active="true"] {
-        border-color: rgba(255, 191, 0, 0.6);
-        color: #ffbf00;
-        box-shadow: 0 0 20px rgba(255, 191, 0, 0.25);
-      }
-      .live-control-btn[data-variant="blue"][data-active="true"] {
-        border-color: rgba(59, 130, 246, 0.6);
-        color: #93c5fd;
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
-      }
-      .ai-summary-feed {
-        margin-top: 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(6, 6, 8, 0.8);
-        padding: 1rem;
-        max-height: 320px;
-        overflow-y: auto;
-        scrollbar-width: none;
-      }
-      .ai-summary-feed::-webkit-scrollbar {
-        width: 0;
-        height: 0;
-      }
-      .summary-card {
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(15, 23, 42, 0.65);
-        padding: 0.85rem 1rem;
-        margin-bottom: 0.75rem;
-      }
-      .summary-card:last-child {
-        margin-bottom: 0;
-      }
-      .summary-card h4 {
-        font-size: 0.75rem;
-        letter-spacing: 0.14em;
-        color: #60a5fa;
-        text-transform: uppercase;
-      }
-      .summary-card .md p {
-        margin: 0.35rem 0;
-      }
-      :root {
-        --chat-h: 360px;
-      }
-      .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.75);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1.5rem;
-        z-index: 999;
-      }
-      .modal-card {
-        width: min(960px, 100%);
-        background: rgba(8, 8, 10, 0.98);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 40px 160px rgba(0, 0, 0, 0.65);
-        padding: 1.5rem;
-        position: relative;
-        overflow-y: auto;
-      }
-      .modal-close {
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        background: transparent;
-        color: #ffbf00;
-        width: 36px;
-        height: 36px;
-        border-radius: 999px;
-        font-size: 1rem;
-      }
-      .modal-close:hover {
-        background: rgba(255, 255, 255, 0.05);
-      }
-      .kuantara-chat {
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(0, 0, 0, 0.45);
-        padding: 1.25rem;
-        min-height: 240px;
-        max-height: calc(var(--chat-h) - 40px);
-        overflow-y: auto;
-        font-size: 0.92rem;
-        line-height: 1.6;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-      }
-      .kuantara-chat::-webkit-scrollbar {
-        width: 0;
-        height: 0;
-      }
-      .kuantara-chat .placeholder {
-        font-size: 0.8rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.35);
-      }
-      .kuantara-message {
-        margin-bottom: 1.1rem;
-      }
-      .kuantara-label {
-        font-size: 0.65rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.45);
-      }
-      .kuantara-message.user .kuantara-label {
-        color: #7dd3fc;
-      }
-      .kuantara-message.ai .kuantara-label {
-        color: #ffbf00;
-      }
-      .kuantara-block {
-        margin-top: 0.4rem;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 1rem;
-        padding: 0.85rem 1rem;
-        background: rgba(15, 23, 42, 0.85);
-      }
-      .kuantara-message.ai .kuantara-block {
-        border: none;
-        border-radius: 0;
-        padding: 0.6rem 0;
-        background: transparent;
-      }
-      .kuantara-block .md p {
-        margin: 0.45rem 0;
-      }
-      .kuantara-block .md ul,
-      .kuantara-block .md ol {
-        padding-left: 1.25rem;
-        margin: 0.4rem 0;
-      }
-      .kuantara-block .md code {
-        background: rgba(255, 255, 255, 0.08);
-        padding: 0.15rem 0.35rem;
-        border-radius: 0.35rem;
-        font-size: 0.85em;
-      }
-      .kuantara-input {
-        margin-top: 1rem;
-        display: flex;
-        gap: 0.75rem;
-      }
-      .kuantara-input textarea {
-        flex: 1;
-        min-height: 48px;
-        max-height: 220px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(0, 0, 0, 0.35);
-        color: #fff;
-        padding: 0.6rem 0.75rem;
-        resize: none;
-      }
-      .kuantara-send-btn {
-        width: 56px;
-        border: none;
-        border-radius: 0.75rem;
-        background: #ffffff;
-        display: grid;
-        place-items: center;
-        color: #050505;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-      }
-      .kuantara-send-btn svg {
-        width: 20px;
-        height: 20px;
-      }
-      .kuantara-send-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 25px rgba(255, 255, 255, 0.12);
-      }
-      .kuantara-send-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        box-shadow: none;
-      }
-      @keyframes shimmer-slide {
-        100% {
-          transform: translateX(100%);
-        }
-      }
-      @keyframes chartWave {
-        0% {
-          background-position: 0% 50%;
-        }
-        100% {
-          background-position: 200% 50%;
-        }
-      }
-      @keyframes chartPulse {
-        0%,
-        100% {
-          opacity: 0.3;
-        }
-        50% {
-          opacity: 0.8;
-        }
-      }
-      @keyframes catalystPulse {
-        0%,
-        100% {
-          transform: scale(0.95);
-          box-shadow: 0 0 12px rgba(59, 130, 246, 0.35);
-        }
-        50% {
-          transform: scale(1.08);
-          box-shadow: 0 0 24px rgba(59, 130, 246, 0.65);
-        }
-      }
-      @media (max-width: 1023px) {
-        .overview-layout {
-          grid-template-columns: 1fr;
-        }
-        .overview-layout .main-column,
-        .overview-layout .overview-sidebar {
-          display: contents;
-        }
-        #frontSignalCard {
-          order: 1;
-        }
-        #analysisInsightCard {
-          order: 2;
-        }
-        #headlineCatalystCard {
-          order: 3;
-        }
-        #xFeedCard {
-          order: 4;
-        }
-        #assetInsightCard {
-          order: 5;
-        }
-        .modal-overlay {
-          padding: 0;
-          align-items: stretch;
-          justify-content: center;
-        }
-        .modal-card {
-          width: 100%;
-          min-height: 100vh;
-          border-radius: 0;
-          padding: 1.25rem;
-        }
-      }
-    </style>
-  </head>
-  <body class="text-neutral-100 antialiased">
-      <main class="overview-layout mt-6 grid gap-6 lg:grid-cols-[2.4fr,1fr]">
-        <section class="space-y-5 main-column">
-          <article id="frontSignalCard" class="border border-frame bg-slate/90 px-6 py-5 shadow-[0_35px_120px_rgba(0,0,0,0.55)]">
-            <div class="flex flex-wrap items-center justify-between gap-2 text-[10px] uppercase text-neutral-500">
-              <div class="flex items-center gap-2">
-                <p>Catalyst Global Macro</p>
-                <div id="frontSignalControls" class="flex items-center gap-2">
-                  <button class="front-nav" data-dir="prev" aria-label="Previous catalyst">&#8249;</button>
-                  <button class="front-nav" data-dir="next" aria-label="Next catalyst">&#8250;</button>
-                </div>
-              </div>
-              <span id="analysisStatus" class="text-neutral-400">Memuat front signal…</span>
-            </div>
-            <div id="frontSignalSkeleton" class="mt-4 grid gap-6 lg:grid-cols-[1.7fr,1fr]">
-              <div class="space-y-4">
-                <div class="h-3 w-24 skeleton-line shimmer-line"></div>
-                <div class="h-10 w-full skeleton-line shimmer-line"></div>
-                <div class="h-3 w-48 skeleton-line shimmer-line"></div>
-                <div class="space-y-2">
-                  <div class="h-3 w-full skeleton-line shimmer-line"></div>
-                  <div class="h-3 w-4/5 skeleton-line shimmer-line"></div>
-                  <div class="h-3 w-3/5 skeleton-line shimmer-line"></div>
-                </div>
-                <div class="space-y-2 border-l-2 border-[#FFBF00]/50 pl-5">
-                  <div class="h-3 w-2/3 skeleton-line shimmer-line"></div>
-                  <div class="h-3 w-1/2 skeleton-line shimmer-line"></div>
-                  <div class="h-3 w-3/4 skeleton-line shimmer-line"></div>
-                </div>
-                <div class="h-3 w-1/2 skeleton-line shimmer-line"></div>
-              </div>
-              <div class="space-y-3">
-                <div class="h-48 skeleton-line shimmer-line"></div>
-                <div class="h-12 skeleton-line shimmer-line"></div>
-              </div>
-            </div>
-            <div id="frontSignalContent" class="mt-4 hidden grid gap-6 lg:grid-cols-[1.7fr,1fr]">
-              <div class="front-content-body">
-                <div class="flex flex-wrap items-center gap-3 text-xs uppercase tracking-wider text-neutral-400">
-                  <span id="analysisSourceLabel" class="text-[#FFBF00]">Feed</span>
-                  <span id="analysisMeta" class="text-neutral-500">Menunggu data…</span>
-                </div>
-                <a id="analysisLink" href="#" target="_blank" rel="noopener">
-                  <h1 id="analysisTitle" class="mt-2 text-3xl font-semibold text-white">
-                    Memuat insight terbaru…
-                  </h1>
-                </a>
-                <p id="analysisSummary" class="mt-4 text-sm text-neutral-200 front-summary-text">
-                  Hubungkan server PIQ Insights untuk menampilkan headline terkini secara otomatis.
-                </p>
-                <div id="analysisChips" class="mt-4 flex flex-wrap gap-2 text-[11px] front-chips-area"></div>
-                <p id="analysisStats" class="mt-5 text-xs text-neutral-400">Sentiment —</p>
-              </div>
-              <div class="space-y-3">
-                <div class="relative h-48 border border-frame">
-                  <img id="analysisImage" src="https://images.unsplash.com/photo-1505843513577-22bb7d21e455?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" class="h-full w-full object-cover" alt="headline visual">
-                  <span id="analysisBadge" class="absolute left-3 top-3 bg-[#FFBF00] px-3 py-1 text-[10px] font-semibold uppercase text-black">LIVE</span>
-                </div>
-                <div id="analysisIndicators" class="bg-gradient-to-b from-[#1f1f1f] to-[#0a0a0a] px-4 py-3 text-xs text-neutral-300">
-                  Menunggu data feed…
-                </div>
-                <div id="frontSignalDots" class="flex gap-1"></div>
-              </div>
-            </div>
-          </article>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuantara – Global News</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-          
+  <!-- Fira Code (Kuantara Standard) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
-          <article id="assetInsightCard" class="border border-frame bg-slate/90 px-6 py-5 shadow-[0_30px_110px_rgba(0,0,0,0.55)]">
-            <div class="flex flex-wrap items-center justify-between gap-3 text-xs uppercase text-neutral-400">
-              <div class="flex items-center gap-2">
-                <p class="tracking-wider">Asset Class Insight</p>
-                <span class="rounded-full bg-[#FFBF00]/10 px-2 py-0.5 text-[10px] text-[#FFBF00]">News</span>
-              </div>
-              <span id="assetStatus" class="text-[10px] tracking-wide text-neutral-500">Loading feed…</span>
-            </div>
-            <div id="assetTabs" class="mt-4 flex flex-wrap gap-2 text-[11px] font-semibold uppercase text-neutral-500"></div>
-            <div id="assetStories" class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3" style="align-items:start;">
-              <div class="border border-frame bg-ink/40 p-4">
-                <div class="mb-2 h-3 w-32 shimmer-line"></div>
-                <div class="mb-2 h-4 w-full shimmer-line"></div>
-                <div class="mb-2 h-3 w-2/3 shimmer-line"></div>
-                <div class="h-3 w-1/2 shimmer-line"></div>
-              </div>
-              <div class="border border-frame bg-ink/40 p-4">
-                <div class="mb-2 h-3 w-40 shimmer-line"></div>
-                <div class="mb-2 h-4 w-full shimmer-line"></div>
-                <div class="mb-2 h-3 w-3/4 shimmer-line"></div>
-                <div class="h-3 w-2/5 shimmer-line"></div>
-              </div>
-            </div>
-            <div id="assetSentinel" class="h-6 w-full"></div>
-          </article>
+  <style>
+    :root {
+      /* Kuantara Terminal Palette */
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
 
-        </section>
+      /* Font sizes (9–14px spec) */
+      --fs-title:14px;     /* Page title / key labels */
+      --fs-subtitle:12px;  /* Section title */
+      --fs-body:10.5px;    /* Body text */
+      --fs-small:9.5px;    /* Meta / hints */
+    }
 
-        <aside class="space-y-5 overview-sidebar">
-          <article id="analysisInsightCard" class="border border-frame bg-slate/90 p-4 shadow-[0_30px_110px_rgba(0,0,0,0.55)]">
-            <div class="flex items-center justify-between text-xs text-neutral-400">
-              <div class="flex items-center gap-3">
-                <button class="insight-tab px-3 py-1 bg-[#FFBF00] text-black" data-pane="insight">Analysis &amp; Insight</button>
-                <button class="insight-tab border border-frame px-3 py-1 text-neutral-400" data-pane="tv">TV Bloomberg News</button>
-              </div>
-            </div>
-            <div id="insightPane" class="mt-4 space-y-4 text-sm text-neutral-200">
-              <div class="flex flex-wrap items-center gap-3 text-xs text-neutral-400">
-                <label class="flex items-center gap-2">
-                  Source
-                  <select id="insightSource" class="border border-frame bg-ink px-2 py-1 text-xs text-neutral-200">
-                    <option value="all">All Sources</option>
-                  </select>
-                </label>
-                <span id="insightStatus" class="text-[10px] uppercase tracking-wide text-neutral-500">Awaiting feed…</span>
-              </div>
-              <ul id="insightList" class="insight-scroll space-y-3 text-sm text-neutral-200"></ul>
-            </div>
-            <div id="tvPane" class="mt-4 hidden">
-              <div class="live-tv-card">
-                <div class="live-tv-header">
-                  <span>Live Newswire</span>
-                </div>
-                <div class="live-video-shell">
-                  <video id="livePlayer" controls muted playsinline crossorigin="anonymous"></video>
-                </div>
-                <div class="live-cc-controls">
-                  <div class="live-control-group">
-                    <button id="aiSummaryToggle" class="live-control-btn" data-active="false">
-                      AI Summary
-                    </button>
-                  </div>
-                  <span id="ccWordCount">0 / 500 kata</span>
-                </div>
-              </div>
-              <div class="ai-summary-feed mt-4 hidden" id="aiSummaryFeed" data-empty="true">
-                <p class="text-xs text-neutral-500 uppercase tracking-[0.25em]">AI SUMMARY FEED</p>
-                <p class="mt-2 text-sm text-neutral-400">Belum ada ringkasan. Aktifkan AI auto-summary untuk mulai mengumpulkan insight.</p>
-              </div>
-            </div>
-          </article>
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+    }
 
-          <article id="headlineCatalystCard" class="border border-frame bg-slate/90 p-4 shadow-[0_25px_90px_rgba(0,0,0,0.55)]">
-            <div class="flex items-center gap-4 text-xs uppercase text-neutral-500">
-              <button class="recap-tab border border-frame px-3 py-1 bg-[#FFBF00] text-black" data-panel="latest">Latest 24/7</button>
-              <button class="recap-tab px-3 py-1 text-neutral-400" data-panel="catalyst">Catalyst</button>
-            </div>
-            <div class="mt-3 text-sm text-neutral-200" id="latestPanel">
-              <div class="latest-widget">
-                <div class="widget-header">
-                  <div class="flex items-center gap-2 tracking-[0.2em] text-neutral-400">
-                    <div class="live-indicator"></div>
-                    <span class="text-xs">HEADLINE 24/7</span>
-                  </div>
-                </div>
-                <div class="dropdown-wrapper">
-                  <select id="latestCategoryDropdown" class="category-select">
-                    <option value="-1">Semua</option>
-                    <option value="100,126,124,123,121,120,118,116,115,114">Central Banks</option>
-                    <option value="166,164,162,160,159,157,155,137,134">Cryptocurrencies</option>
-                    <option value="174,173,171,170,169,168,167,165,163,161,158,156,154,152,150,149,145">Stocks</option>
-                    <option value="94,95,96,97,98,105,178,144,143,142,140,136,135,133,132,129,127,125,122,119,117,112,111,110,109">Macroeconomics</option>
-                    <option value="108,177,176">Topics</option>
-                  </select>
-                  <button id="latestRecapBtn" type="button" class="latest-recap-btn mt-2">
-                    Recap Semua Catalyst By Kuantara AI
-                  </button>
-                </div>
-                <div class="latest-ticker-container">
-                  <ul id="latestTicker" class="latest-ticker">
-                    <li class="latest-card">
-                      <div class="space-y-2">
-                        <p class="text-xs text-neutral-500">Menyiapkan feed…</p>
-                        <p class="headline shimmer-line h-4 w-full"></p>
-                        <div class="latest-tags">
-                          <span class="label-tag shimmer-line h-4 w-16"></span>
-                          <span class="label-tag shimmer-line h-4 w-12"></span>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="mt-3 hidden text-sm text-neutral-200" id="catalystPanel">
-              <div class="catalyst-widget">
-                <div class="widget-header">
-                  <div class="flex items-center gap-2 tracking-[0.2em] text-neutral-400">
-                    <div class="live-indicator"></div>
-                    <span class="text-xs">Catalyst Feed</span>
-                  </div>
-                  <span id="catalystStatus" class="text-[10px] uppercase text-neutral-500">Loading…</span>
-                </div>
-                <div class="dropdown-wrapper">
-                  <select id="catalystCategoryDropdown" class="category-select">
-                    <option value="all">Semua</option>
-                  </select>
-                  <button id="catalystRecapBtn" type="button" class="catalyst-recap-btn mt-2">
-                    Recap Semua Catalyst By Kuantara AI
-                  </button>
-                </div>
-                <div class="catalyst-ticker-container">
-                  <ul id="catalystList" class="catalyst-ticker">
-                    <li class="catalyst-card">
-                      <div class="space-y-2">
-                        <p class="text-xs text-neutral-500">Menyiapkan feed…</p>
-                        <p class="headline shimmer-line h-4 w-full"></p>
-                        <p class="shimmer-line h-3 w-3/4"></p>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </article>
+    /* Global scrollbar – Kuantara style */
+    * {
+      scrollbar-width:thin;
+      scrollbar-color:#2b2b2b #000000;
+    }
+    *::-webkit-scrollbar {
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track {
+      background:#000000;
+    }
+    *::-webkit-scrollbar-thumb {
+      background:#2b2b2b;
+      border-radius:999px;
+    }
 
-          <article id="xFeedCard" class="border border-frame bg-slate/90 p-4 shadow-[0_25px_90px_rgba(0,0,0,0.55)]">
-            <div class="x-feed-widget">
-              <div class="widget-header">
-                <div class="flex items-center gap-2 tracking-[0.2em] text-neutral-400">
-                  <div class="live-indicator"></div>
-                  <span class="text-xs">X FEED</span>
-                </div>
-                <span id="xFeedStatus" class="text-[10px] uppercase text-neutral-500">Loading…</span>
-              </div>
-              <div class="dropdown-wrapper">
-                <button id="xFeedRecapBtn" type="button" class="latest-recap-btn mt-2">
-                  Recap X Feed By Kuantara AI
-                </button>
-              </div>
-              <div class="x-feed-ticker-container">
-                <ul id="xFeedList" class="x-feed-list">
-                  <li class="x-feed-card">
-                    <div class="space-y-3">
-                      <div class="shimmer-line h-4 w-1/3"></div>
-                      <div class="shimmer-line h-5 w-3/4"></div>
-                      <div class="shimmer-line h-48 w-full"></div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </article>
-        </aside>
-      </main>
+    html, body {
+      width:100%;
+      height:100%;
+      background-color:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    body {
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      align-items:stretch;
+    }
+
+    .page {
+      width:100%;
+      max-width:1200px;
+      margin:0 auto;
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:100%;
+    }
+
+    .page-title {
+      font-size:var(--fs-title);
+      font-weight:600;
+      letter-spacing:0.04em;
+      text-transform:uppercase;
+      color:var(--text-main);
+    }
+
+    .page-subtitle {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    .card {
+      background-color:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .card-header-row {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+    }
+
+    .badge {
+      display:inline-flex;
+      align-items:center;
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      font-size:var(--fs-small);
+      color:var(--accent);
+      background:rgba(255,191,0,0.06);
+    }
+
+    .dot-live {
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:var(--accent);
+      margin-right:6px;
+      box-shadow:0 0 8px rgba(255,191,0,0.8);
+    }
+
+    .core-title {
+      font-size:var(--fs-subtitle);
+      font-weight:500;
+    }
+
+    .core-headline {
+      font-size:var(--fs-title);
+      font-weight:600;
+      line-height:1.3;
+    }
+
+    .core-meta {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .core-meta span {
+      opacity:0.9;
+    }
+
+    .core-summary {
+      font-size:var(--fs-body);
+      color:var(--text-main);
+      line-height:1.45;
+    }
+
+    .pill-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:2px;
+    }
+
+    .pill {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px dashed var(--border-soft);
+      opacity:0.85;
+    }
+
+    .panel-title {
+      font-size:var(--fs-subtitle);
+      font-weight:500;
+    }
+
+    .panel-subtitle {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:2px;
+    }
+
+    .filter-panel {
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .filter-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+    }
+
+    .active-filter-label {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      text-align:right;
+    }
+
+    .active-filter-label span {
+      color:var(--accent);
+    }
+
+    /* Horizontal filter row (terminal chip rail) */
+    .filter-grid {
+      display:flex;
+      flex-wrap:nowrap;
+      gap:6px;
+      overflow-x:auto;
+      overflow-y:hidden;
+      padding-top:2px;
+      padding-bottom:4px;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .filter-grid::-webkit-scrollbar {
+      height:4px;
+    }
+
+    .filter-btn {
+      font-size:var(--fs-small);
+      padding:5px 9px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#111111;
+      color:var(--text-muted);
+      cursor:pointer;
+      white-space:nowrap;
+      flex:0 0 auto;
+      transition:
+        background-color 0.12s ease,
+        border-color 0.12s ease,
+        color 0.12s ease,
+        transform 0.05s ease;
+    }
+
+    .filter-btn:hover {
+      border-color:var(--accent);
+      color:var(--text-main);
+      transform:translateY(-0.5px);
+    }
+
+    .filter-btn.is-active {
+      background:rgba(255,191,0,0.14);
+      border-color:var(--accent);
+      color:var(--text-main);
+    }
+
+    .news-list {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height:260px;
+      overflow-y:auto;
+      padding-right:4px;
+      margin-top:4px;
+    }
+
+    .news-item {
+      padding:8px 8px;
+      border-radius:4px;
+      border:1px solid rgba(43,43,43,0.9);
+      background:#101010;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .news-item-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
+
+    .news-ticker {
+      font-size:var(--fs-small);
+      color:var(--accent);
+    }
+
+    .news-time {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .news-headline {
+      font-size:var(--fs-body);
+      font-weight:500;
+    }
+
+    .news-tags {
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+      margin-top:2px;
+    }
+
+    .news-tag {
+      font-size:var(--fs-small);
+      padding:2px 5px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      color:var(--text-muted);
+    }
+
+    .news-footer {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-top:2px;
+    }
+
+    .news-source {
+      opacity:0.85;
+    }
+
+    .news-sentiment {
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
+
+    .sentiment-chip {
+      font-size:var(--fs-small);
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      color:var(--text-main);
+    }
+
+    .sentiment-bull {
+      border-color:#22c55e;
+      color:#22c55e;
+    }
+
+    .sentiment-bear {
+      border-color:#ef4444;
+      color:#ef4444;
+    }
+
+    .sentiment-neutral {
+      border-color:var(--text-muted);
+      color:var(--text-muted);
+    }
+
+    .hint {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:2px;
+    }
+
+    .hint code {
+      font-size:var(--fs-small);
+      color:var(--accent);
+      background:#000000;
+      padding:1px 4px;
+      border-radius:3px;
+      border:1px solid var(--border-soft);
+    }
+
+    /* Layout – compact terminal grid */
+    .layout-top {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    @media (min-width:768px) {
+      .page {
+        padding:16px;
+        gap:14px;
+      }
+      .news-list {
+        max-height:280px;
+      }
+    }
+
+    @media (min-width:1024px) {
+      .layout-top {
+        display:grid;
+        grid-template-columns:minmax(0,2fr) minmax(0,2.2fr);
+        gap:16px;
+        align-items:stretch;
+      }
+
+      .layout-top > .card {
+        height:100%;
+      }
+
+      .news-list {
+        max-height:320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- PAGE TITLE -->
+    <div>
+      <div class="page-title">Global News</div>
+      <div class="page-subtitle">
+        Core headlines &amp; cross-asset news stream · wired into your data backend.
+      </div>
     </div>
 
-    <div id="kuantaraModal" class="modal-overlay hidden">
-      <div id="card" class="modal-card">
-        <div class="flex items-center justify-between">
+    <!-- TOP LAYOUT: CORE NEWS (LEFT) + NEWS UNIVERSE + HEADLINE STREAM (RIGHT) -->
+    <div class="layout-top">
+      <!-- CORE NEWS HEADER -->
+      <section class="card" id="coreNewsHeader">
+        <div class="card-header-row">
           <div>
-            <p class="text-[10px] uppercase tracking-[0.3em] text-neutral-500">Kuantara AI</p>
-            <h2 id="kuantaraTitle" class="text-2xl font-semibold text-white">Catalyst Recap</h2>
+            <div class="badge">
+              <span class="dot-live"></span>CORE NEWS
+            </div>
           </div>
-          <button id="kuantaraClose" type="button" class="modal-close">&times;</button>
+          <div class="core-meta">
+            <span id="coreUpdated">Updated: --:--</span>
+            <span id="coreSource">Source: &ndash;</span>
+          </div>
         </div>
-        <div class="kuantara-chat mt-4" id="chatList"></div>
-        <div class="kuantara-input">
-          <textarea id="input" placeholder="Tulis instruksi untuk Kuantara…"></textarea>
-          <button id="send" type="button" class="kuantara-send-btn" aria-label="Kirim">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 19V5"></path>
-              <path d="m5 12 7-7 7 7"></path>
-            </svg>
+
+        <div class="core-title">Global Macro Focus</div>
+        <div class="core-headline" id="coreHeadline">
+          Waiting for API&hellip; inject your top headline here.
+        </div>
+
+        <p class="core-summary" id="coreSummary">
+          This block is for the single most important cross-asset story:
+          rate decisions, inflation surprises, geopolitical shocks,
+          or anything that defines the current risk-on / risk-off regime.
+        </p>
+
+        <div class="pill-row" id="coreTags">
+          <span class="pill">Macro</span>
+          <span class="pill">Cross-Asset</span>
+          <span class="pill">High Impact</span>
+        </div>
+      </section>
+
+      <!-- COMBINED PANEL: NEWS UNIVERSE + HEADLINE STREAM -->
+      <section class="card filter-panel">
+        <!-- HEADER + ACTIVE FILTER -->
+        <div class="filter-header">
+          <div>
+            <div class="panel-title">News Universe &amp; Headline Stream</div>
+            <div class="panel-subtitle">
+              Slide categories to filter the global feed in real time.
+            </div>
+          </div>
+          <div class="active-filter-label">
+            Active filter:<br>
+            <span id="activeFilterLabel">All Assets</span>
+          </div>
+        </div>
+
+        <!-- HORIZONTAL BUTTON ROW -->
+        <div class="filter-grid" id="filterGrid">
+          <!-- Top-level navigation group -->
+          <button class="filter-btn" data-filter="asset-class-insight">Asset Class Insight</button>
+          <button class="filter-btn" data-filter="news">News</button>
+          <button class="filter-btn" data-filter="error-404">Error • HTTP 404</button>
+
+          <!-- Main asset & topic filters -->
+          <button class="filter-btn is-active" data-filter="all-assets">All Assets</button>
+          <button class="filter-btn" data-filter="stocks">Stocks</button>
+          <button class="filter-btn" data-filter="commodities">Commodities</button>
+          <button class="filter-btn" data-filter="fx">Foreign Exchange and Currencies</button>
+          <button class="filter-btn" data-filter="indices">Indices</button>
+          <button class="filter-btn" data-filter="private-companies">
+            Private Companies and Brands
+          </button>
+          <button class="filter-btn" data-filter="macro-topics">Macro Topics</button>
+          <button class="filter-btn" data-filter="etfs">
+            Exchange Traded Funds (ETFs)
+          </button>
+          <button class="filter-btn" data-filter="crypto">Cryptocurrencies</button>
+          <button class="filter-btn" data-filter="organisations">Organisations</button>
+          <button class="filter-btn" data-filter="people">People</button>
+          <button class="filter-btn" data-filter="state-owned">
+            State-Owned Companies
+          </button>
+          <button class="filter-btn" data-filter="technical-analysis">
+            Technical Analysis
+          </button>
+          <button class="filter-btn" data-filter="closed-end-funds">
+            Closed-End Funds
+          </button>
+          <button class="filter-btn" data-filter="other-topics">
+            Other Topics
+          </button>
+          <button class="filter-btn" data-filter="events">Events</button>
+          <button class="filter-btn" data-filter="property">Property</button>
+          <button class="filter-btn" data-filter="fundamental-analysis">
+            Fundamental Analysis
+          </button>
+          <button class="filter-btn" data-filter="fin-regulation">
+            Financial Regulation and Related Topics
+          </button>
+          <button class="filter-btn" data-filter="other-events">
+            Other Events
+          </button>
+          <button class="filter-btn" data-filter="preferred-stocks">
+            Preferred Stocks
+          </button>
+          <button class="filter-btn" data-filter="alternative-data">
+            Alternative Data
+          </button>
+          <button class="filter-btn" data-filter="mutual-funds">
+            Mutual Funds
+          </button>
+          <button class="filter-btn" data-filter="financial-topics">
+            Financial Topics
+          </button>
+          <button class="filter-btn" data-filter="corporate-bonds">
+            Corporate Bonds
+          </button>
+          <button class="filter-btn" data-filter="products">Products</button>
+          <button class="filter-btn" data-filter="ratings-research">
+            Ratings and Research Firms
+          </button>
+          <button class="filter-btn" data-filter="sovereign-bonds">
+            Sovereign and Government Bonds
           </button>
         </div>
-      </div>
-    </div>
 
-    <div id="readerModal" class="modal-overlay hidden">
-      <div class="modal-card max-w-3xl">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-[10px] uppercase tracking-[0.3em] text-neutral-500">Reader</p>
-            <h2 id="readerTitle" class="text-2xl font-semibold text-white">X Feed Reader</h2>
-          </div>
-          <button id="readerClose" type="button" class="modal-close">&times;</button>
-        </div>
-        <div id="readerLoading" class="reader-loading hidden">Loading…</div>
-        <div id="readerBody" class="reader-body text-sm text-neutral-200 space-y-4"></div>
-      </div>
-    </div>
-
-    <script>
-      const FRONT_SIGNAL_ASSET_CLASS = "163"; // Macro Topics
-      const FRONT_SIGNAL_ROTATE_MS = 12000;
-      const AUTO_REFRESH_INTERVAL = 15000;
-
-      const ASSET_CLASSES = [
-        { id: "all", label: "All Assets" },
-        { id: "1", label: "Stocks" },
-        { id: "61", label: "Commodities" },
-        { id: "73", label: "Foreign Exchange and Currencies" },
-        { id: "72", label: "Indices" },
-        { id: "68", label: "Private Companies and Brands" },
-        { id: "163", label: "Macro Topics" },
-        { id: "26", label: "Exchange Traded Funds (ETFs)" },
-        { id: "152", label: "Cryptocurrencies" },
-        { id: "156", label: "Organisations" },
-        { id: "158", label: "People" },
-        { id: "165", label: "State-Owned Companies" },
-        { id: "172", label: "Technical Analysis" },
-        { id: "155", label: "Closed-End Funds" },
-        { id: "162", label: "Other Topics" },
-        { id: "157", label: "Events" },
-        { id: "151", label: "Property" },
-        { id: "173", label: "Fundamental Analysis" },
-        { id: "167", label: "Financial Regulation and Related Topics" },
-        { id: "182", label: "Other Events" },
-        { id: "181", label: "Preferred Stocks" },
-        { id: "183", label: "Alternative Data" },
-        { id: "159", label: "Mutual Funds" },
-        { id: "153", label: "Financial Topics" },
-        { id: "166", label: "Corporate Bonds" },
-        { id: "169", label: "Products" },
-        { id: "168", label: "Ratings and Research Firms" },
-        { id: "65", label: "Sovereign and Government Bonds" },
-      ];
-      const ASSET_LABEL_MAP = ASSET_CLASSES.reduce((acc, entry) => {
-        acc[entry.id] = entry.label;
-        return acc;
-      }, {});
-
-      const INSIGHTS_API = "https://kuantara-newsapi.hf.space/api/insights";
-      const CITYFALCON_API = "https://kuantara-newsapi.hf.space/api/cityfalcon";
-      const CATALYST_FEED_API =
-        "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjMfNinXgjitGptTt1Uj6nE6WK7rYjGTPSt5bUFepyHsCV7ZBDGq6iUYbWvAjM_GhWNcK3REbD8jDIDwMCKO2bUgT_H_aHRBj09Gwkd2uraHiWcmpd3uD3lWgzxnxEu9UOACjLZnVbgZ9fYMy0qtS-DvoKx9KjMK-AuT30tktXjEUxt-JhCWomT15gnuyLeRstzneutXUmRPLHr_lfJyz9_SOovs6xBP-DDH4tUkDSY2SdlvYhf5nZmmY36BH4ncn8t63S2Ua7iCwCMVRs8Ey8R2aWWd6C0Sv39n4V0anX6oX-zfP8&lib=MakTJ382BM__YWV6a2eDZUSqaUOX12Qs5";
-      const X_FEED_API = "https://api.dataflash.news/api/headlines";
-      const buildXFeedReaderUrl = (id) => `https://api.dataflash.news/api/headlines/${id}`;
-      const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1505843513577-22bb7d21e455?auto=format&fit=crop&w=1200&q=80";
-      const MAX_RECAP_ITEMS = 30;
-      const LIVE_STREAM_SRC =
-        "https://liveprodusphoenixeast.global.ssl.fastly.net/USPhx-HD/Channel-TX-USPhx-AWS-virginia-1/Source-USPhx-16k-1-s6lk2-BP-07-02-81ykIWnsMsg_live.m3u8";
-      const LIVE_CC_THRESHOLD = 500;
-      const FASTBULL_NEWS_ENDPOINT =
-        "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
-      const FASTBULL_HEADERS = {
-        Accept: "application/json",
-        "client-type": "4",
-        clientversion: "latest",
-        langid: "13",
-      };
-      const HF_API_TOKEN =
-        "eyJhbGciOiJFZERTQSJ9.eyJyZWFkIjp0cnVlLCJwZXJtaXNzaW9ucyI6eyJyZXBvLmNvbnRlbnQucmVhZCI6dHJ1ZX0sIm9uQmVoYWxmT2YiOnsia2luZCI6InVzZXIiLCJfaWQiOiI2OGZlMzllMDcwNWJmOGFhNzYxNTI4YjciLCJ1c2VyIjoiS3VhbnRhcmEiLCJzZXNzaW9uSWQiOiI2OGZlMzllMDcwNWJmOGFhNzYxNTI4YmMifSwiaWF0IjoxNzYyNjc5NzE5LCJzdWIiOiIvc3BhY2VzL0t1YW50YXJhL25ld3NhcGkiLCJleHAiOjE3NjI3NjYxMTksImlzcyI6Imh0dHBzOi8vaHVnZ2luZ2ZhY2UuY28ifQ.TumyY_6mybtslQX6rlpqTnty0ri-tFWIfxBjMVKsGg2JGm99P3ES-7JKKF9xP2nLj1x5x1g2rXBVz1ztI_4jBg";
-      let hfApiToken = HF_API_TOKEN;
-      const withAuthHeaders = (headers = {}) => {
-        if (!hfApiToken) return { ...headers };
-        return { ...headers, Authorization: `Bearer ${hfApiToken}` };
-      };
-      const fetchWithAuth = (url, options = {}) => {
-        const headers = withAuthHeaders(options.headers || {});
-        return fetch(url, { ...options, headers });
-      };
-      const FASTBULL_TAG_LABELS = {
-        100: "Central Banks",
-        126: "RBNZ",
-        124: "RBA",
-        123: "BOJ",
-        121: "SNB",
-        120: "BOE",
-        118: "ECB",
-        116: "BOC",
-        115: "FED",
-        114: "PBOC",
-        166: "Other Crypto News",
-        164: "Blockchain/Public Blockchain",
-        162: "Web3",
-        160: "NFT",
-        159: "Metaverse",
-        157: "Airdrops/Tokens",
-        155: "Mining/Miners",
-        137: "Major Crypto",
-        134: "Top Crypto",
-        174: "Corporate Announcements",
-        173: "Financial Statements",
-        171: "تقلبات سوق الأوراق المالية",
-        170: "Executive/Institutional Moves",
-        169: "Stock Ratings/Forecasts",
-        168: "Insider Trading",
-        167: "Other Stock News",
-        165: "Stock Splits",
-        163: "Dividends",
-        161: "Suspended/Delisted",
-        158: "New Issues/IPO",
-        156: "Most Popular Stocks",
-        154: "Large-Cap Stocks",
-        152: "Major Indices",
-        150: "China A-Shares",
-        149: "Vietnam Stocks",
-        145: "U.S. Stocks",
-        94: "Forex",
-        95: "Stocks",
-        96: "Bonds",
-        97: "Commodities",
-        98: "Cryptocurrencies",
-        105: "Disasters/Accidents",
-        178: "FB Top Picks",
-        144: "Other Macro News",
-        143: "Top/Focus/Breaking News",
-        142: "Other Financial Markets",
-        140: "Tech/Innovation",
-        136: "National Security/Geopolitics",
-        135: "Government/Political/Diplomatic Updates",
-        133: "Banking/Financial Institution Updates",
-        132: "Central Banks Updates",
-        129: "Other Policies",
-        127: "Fiscal Policy",
-        125: "Monetary Policy",
-        122: "Ratings",
-        119: "Economic Forecasts/Analysis/Surveys",
-        117: "International Economics and Trade",
-        112: "Population/Employment/Income",
-        111: "Interest Rates",
-        110: "Inflation",
-        109: "Macroeconomic Indicators",
-        108: "Russia-Ukraine Conflict",
-        177: "Middle East Flashpoint",
-        176: "Trump Trade",
-      };
-      const COPY_ICON =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
-      const CHECK_ICON =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-
-      const fastbullTagMap = new Map(
-        Object.entries(FASTBULL_TAG_LABELS).map(([key, value]) => [String(key), value])
-      );
-
-      const analysisEls = {
-        title: document.getElementById("analysisTitle"),
-        summary: document.getElementById("analysisSummary"),
-        meta: document.getElementById("analysisMeta"),
-        chips: document.getElementById("analysisChips"),
-        stats: document.getElementById("analysisStats"),
-        badge: document.getElementById("analysisBadge"),
-        image: document.getElementById("analysisImage"),
-        indicators: document.getElementById("analysisIndicators"),
-        link: document.getElementById("analysisLink"),
-        status: document.getElementById("analysisStatus"),
-        sourceLabel: document.getElementById("analysisSourceLabel"),
-      };
-      const latestTickerEl = document.getElementById("latestTicker");
-      const latestDropdownEl = document.getElementById("latestCategoryDropdown");
-      const latestStatusEl = document.getElementById("latestStatus");
-      const latestRecapBtn = document.getElementById("latestRecapBtn");
-      const xFeedListEl = document.getElementById("xFeedList");
-      const xFeedStatusEl = document.getElementById("xFeedStatus");
-      const xFeedRecapBtn = document.getElementById("xFeedRecapBtn");
-      const kuantaraModal = document.getElementById("kuantaraModal");
-      const kuantaraCloseBtn = document.getElementById("kuantaraClose");
-      const kuantaraTitleEl = document.getElementById("kuantaraTitle");
-      const catalystDropdownEl = document.getElementById("catalystCategoryDropdown");
-      const catalystStatusEl = document.getElementById("catalystStatus");
-      const catalystListEl = document.getElementById("catalystList");
-      const catalystRecapBtn = document.getElementById("catalystRecapBtn");
-      const readerModal = document.getElementById("readerModal");
-      const readerCloseBtn = document.getElementById("readerClose");
-      const readerTitleEl = document.getElementById("readerTitle");
-      const readerBodyEl = document.getElementById("readerBody");
-      const readerLoadingEl = document.getElementById("readerLoading");
-      const liveVideoEl = document.getElementById("livePlayer");
-      const aiSummaryToggleBtn = document.getElementById("aiSummaryToggle");
-      const captionsToggleBtn = document.getElementById("captionsToggle");
-      const ccWordCountEl = document.getElementById("ccWordCount");
-      const aiSummaryFeedEl = document.getElementById("aiSummaryFeed");
-      const mainColumnEl = document.querySelector(".main-column");
-      const sidebarEl = document.querySelector("main aside");
-
-      const toTagObjects = (tags) => {
-        if (!Array.isArray(tags)) return [];
-        return tags
-          .map((tag) => {
-            if (!tag) return null;
-            if (typeof tag === "string") return { text: tag, sentiment: 0, type: "" };
-            if (typeof tag === "object") {
-              const text = tag.text || tag.entity_name || "";
-              if (!text) return null;
-              return {
-                text,
-                sentiment: Number(tag.sentiment ?? 0),
-                type: tag.type || tag.entity_type || "",
-              };
-            }
-            return null;
-          })
-          .filter((tag) => tag && tag.text);
-      };
-
-      const tagTexts = (tags) => toTagObjects(tags).map((tag) => tag.text);
-
-      const sentimentChipClass = (value = 0) => {
-        if (value >= 40) return "border border-emerald-500/40 bg-emerald-500/10 text-emerald-200";
-        if (value <= -40) return "border border-rose-500/40 bg-rose-500/10 text-rose-200";
-        return "border border-amber-500/40 bg-amber-500/10 text-amber-100";
-      };
-
-
-      const formatSentimentValue = (value = 0) => {
-        const num = Math.round(value);
-        const sign = num > 0 ? "+" : "";
-        return `${sign}${num}%`;
-      };
-
-      const buildChipMarkup = (tags, limit = 4) => {
-        const chips = toTagObjects(tags).slice(0, limit);
-        if (!chips.length) return "";
-        return chips
-          .map(
-            (chip) =>
-              `<span class="px-2 py-1 text-[10px] uppercase tracking-wide ${sentimentChipClass(
-                chip.sentiment
-              )}">${chip.text} • ${formatSentimentValue(chip.sentiment)}</span>`
-          )
-          .join("");
-      };
-
-      const insightSourceSelect = document.getElementById("insightSource");
-      const insightListEl = document.getElementById("insightList");
-      const insightStatusEl = document.getElementById("insightStatus");
-      const frontSignalSkeletonEl = document.getElementById("frontSignalSkeleton");
-      const frontSignalContentEl = document.getElementById("frontSignalContent");
-      const frontSignalControlsEl = document.getElementById("frontSignalControls");
-      const frontSignalDotsEl = document.getElementById("frontSignalDots");
-      const assetTabsEl = document.getElementById("assetTabs");
-      const assetStoriesEl = document.getElementById("assetStories");
-      const assetStatusEl = document.getElementById("assetStatus");
-      const assetSentinelEl = document.getElementById("assetSentinel");
-      const latestTickerContainerEl = document.querySelector(".latest-ticker-container");
-      const catalystTickerContainerEl = document.querySelector(".catalyst-ticker-container");
-      const xFeedTickerContainerEl = document.querySelector(".x-feed-ticker-container");
-
-      let insightCache = [];
-      let availableSources = [];
-      let selectedSource = insightSourceSelect ? insightSourceSelect.value : "all";
-      let lastUpdatedIso = null;
-      let assetActiveId = ASSET_CLASSES[0]?.id || "all";
-      const assetState = new Map();
-      let frontSignalStories = [];
-      let frontSignalIndex = 0;
-      let frontSignalTimer = null;
-      const latestCache = new Map();
-      let latestFetchToken = 0;
-      let kuantaraRecapActive = false;
-      let catalystItems = [];
-      let catalystLoading = false;
-      let catalystFetched = false;
-      let catalystSelected = "all";
-      let xFeedItems = [];
-      let xFeedFetched = false;
-      let xFeedLoading = false;
-      let autoRefreshTimer = null;
-      let autoRefreshInProgress = false;
-      let liveCcWords = [];
-      let liveSummaryInFlight = false;
-      let aiSummaryEnabled = false;
-      let captionsEnabled = false;
-      let liveHlsInstance = null;
-      const getAssetState = (id) => {
-        if (!assetState.has(id)) {
-          assetState.set(id, { items: [], page: 0, loading: false, exhausted: false });
-        }
-        return assetState.get(id);
-      };
-      const buildItemKey = (item) => {
-        if (!item || typeof item !== "object") return "";
-        return (
-          item.uid ||
-          `${item.title || ""}__${item.publish_dt || item.publishTime || item.timeago || ""}`
-        );
-      };
-
-      const buildFeedLookup = (sourcesPayload) => {
-        const lookup = new Map();
-        (sourcesPayload || []).forEach((entry) => {
-          const label = (entry && entry.source) || "";
-          if (!label) return;
-          (entry.items || []).forEach((row) => {
-            const key = buildItemKey(row);
-            if (key) lookup.set(key, label);
-          });
-        });
-        return lookup;
-      };
-
-      const hydrateFeedLabels = (items, lookup) =>
-        (items || []).map((item) => {
-          const key = buildItemKey(item);
-          const feed = (key && lookup.get(key)) || "";
-          return { ...item, _feed: feed || item.source || "" };
-        });
-
-      const buildCityFalconUrl = (assetClassId, page = 1) => {
-        const url = new URL(CITYFALCON_API);
-        if (assetClassId && assetClassId !== "all") {
-          url.searchParams.set("asset_class", assetClassId);
-        }
-        url.searchParams.set("page", String(page));
-        return url.toString();
-      };
-
-      const resolveCityFalconList = (payload) => {
-        if (!payload) return [];
-        if (Array.isArray(payload.stories)) return payload.stories;
-        if (Array.isArray(payload.items)) return payload.items;
-        if (Array.isArray(payload.data)) return payload.data;
-        if (Array.isArray(payload.results)) return payload.results;
-        return [];
-      };
-
-      const normalizeCityFalconStory = (item) => {
-        if (!item || typeof item !== "object") return null;
-        const analytics = Array.isArray(item.analytics) ? item.analytics : [];
-        const tags = analytics
-          .map((row) => {
-            if (!row?.entity_name) return null;
-            return {
-              text: row.entity_name,
-              sentiment: Number(row.sentiment ?? 0),
-              type: row.entity_type || "",
-            };
-          })
-          .filter(Boolean);
-        return {
-          title: (item.title || item.headline || "").trim() || "Untitled story",
-          source: item.domain_name || item.source || "CityFalcon",
-          publish_dt: item.publish_time || item.publish_dt || item.published_at || "",
-          publish_time: item.publishTime || item.publish_time || item.publish_dt || item.published_at || "",
-          url: item.story_url || item.url || item.short_url || "#",
-          summary: item.summary || item.description || item.snippet || "",
-          tags,
-          sentiment: Number(item.sentiment ?? analytics[0]?.sentiment ?? 0),
-          score: Number(item.score ?? item.sentiment ?? analytics[0]?.sentiment ?? 0),
-          cf_score: Number(
-            item.cf_score ?? item.story_score ?? item.score ?? item.total_score ?? item.priority_score ?? 0
-          ),
-          image_url:
-            item.image_url ||
-            item.image ||
-            (Array.isArray(item.imageUrls) && item.imageUrls.length ? item.imageUrls[0] : null) ||
-            (Array.isArray(item.images) && item.images.length ? item.images[0] : null) ||
-            null,
-        };
-      };
-
-      const toggleFrontSignalSkeleton = (isLoading) => {
-        if (!frontSignalSkeletonEl || !frontSignalContentEl) return;
-        if (isLoading) {
-          frontSignalSkeletonEl.classList.remove("hidden");
-          frontSignalContentEl.classList.add("hidden");
-        } else {
-          frontSignalSkeletonEl.classList.add("hidden");
-          frontSignalContentEl.classList.remove("hidden");
-        }
-      };
-
-      const updateFrontStatusForStory = (story) => {
-        if (!story) {
-          setFrontStatus("Catalyst Global Macro • unavailable");
-          return;
-        }
-        const ts =
-          story.timeago || formatInsightTime(story.publish_time || story.publish_dt || story.publishTime);
-        const details = ["Catalyst Global Macro"];
-        if (typeof story.cf_score === "number") details.push(`CF ${story.cf_score}`);
-        if (typeof story.score === "number") details.push(`Score ${story.score}`);
-        if (ts) details.push(ts);
-        setFrontStatus(details.join(" • "));
-      };
-
-      const clearFrontSignalTimer = () => {
-        if (frontSignalTimer) {
-          clearInterval(frontSignalTimer);
-          frontSignalTimer = null;
-        }
-      };
-
-      const scheduleFrontSignalRotation = () => {
-        clearFrontSignalTimer();
-        if (frontSignalStories.length <= 1) return;
-        frontSignalTimer = setInterval(() => {
-          showFrontSignalAt(frontSignalIndex + 1);
-        }, FRONT_SIGNAL_ROTATE_MS);
-      };
-
-      const updateFrontSignalDots = () => {
-        if (!frontSignalDotsEl) return;
-        if (frontSignalStories.length <= 1) {
-          frontSignalDotsEl.innerHTML = "";
-          return;
-        }
-        frontSignalDotsEl.innerHTML = frontSignalStories
-          .map(
-            (_, idx) =>
-              `<button class="front-dot ${idx === frontSignalIndex ? "active" : ""}" data-index="${idx}"></button>`
-          )
-          .join("");
-        frontSignalDotsEl.querySelectorAll("button").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const idx = Number(btn.dataset.index);
-            showFrontSignalAt(idx);
-          });
-        });
-      };
-
-      const setFrontControlsState = () => {
-        if (!frontSignalControlsEl) return;
-        const disabled = frontSignalStories.length <= 1;
-        frontSignalControlsEl.classList.toggle("disabled", disabled);
-        frontSignalControlsEl.querySelectorAll("button").forEach((btn) => {
-          btn.disabled = disabled;
-        });
-      };
-
-      const showFrontSignalAt = (index) => {
-        if (!frontSignalStories.length) return;
-        const total = frontSignalStories.length;
-        frontSignalIndex = ((index % total) + total) % total;
-        const story = frontSignalStories[frontSignalIndex];
-        renderFrontSignal(story);
-        updateFrontStatusForStory(story);
-        updateFrontSignalDots();
-        setFrontControlsState();
-        scheduleFrontSignalRotation();
-      };
-
-      const initFrontSignalControls = () => {
-        if (!frontSignalControlsEl) return;
-        frontSignalControlsEl.querySelectorAll(".front-nav").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const dir = btn.dataset.dir === "prev" ? -1 : 1;
-            showFrontSignalAt(frontSignalIndex + dir);
-          });
-        });
-        setFrontControlsState();
-      };
-
-      const renderInsightSkeleton = (rows = 4) => {
-        if (!insightListEl) return;
-        insightListEl.innerHTML = "";
-        Array.from({ length: rows }).forEach(() => {
-          const li = document.createElement("li");
-          li.innerHTML = `
-            <div class="border border-frame bg-ink/50 p-3 text-xs">
-              <div class="mb-3 h-3 w-32 skeleton-line shimmer-line"></div>
-              <div class="mb-2 h-4 w-full skeleton-line shimmer-line"></div>
-              <div class="mb-2 h-3 w-4/5 skeleton-line shimmer-line"></div>
-              <div class="h-3 w-3/5 skeleton-line shimmer-line"></div>
-            </div>`;
-          insightListEl.appendChild(li);
-        });
-      };
-      renderInsightSkeleton();
-
-      const renderAssetSkeleton = (rows = 3) => {
-        if (!assetStoriesEl) return;
-        assetStoriesEl.innerHTML = "";
-        Array.from({ length: rows }).forEach(() => {
-          const card = document.createElement("div");
-          card.className = "asset-card border border-frame bg-ink/40 p-3";
-          card.innerHTML = `
-            <div class="mb-2 h-36 shimmer-line"></div>
-            <div class="mb-2 h-3 w-32 shimmer-line"></div>
-            <div class="mb-2 h-4 w-full shimmer-line"></div>
-            <div class="mb-2 h-3 w-3/4 shimmer-line"></div>
-            <div class="h-3 w-1/2 shimmer-line"></div>`;
-          assetStoriesEl.appendChild(card);
-        });
-      };
-      renderAssetSkeleton();
-
-      const renderAssetTabs = () => {
-        if (!assetTabsEl) return;
-        assetTabsEl.innerHTML = "";
-        ASSET_CLASSES.forEach(({ id, label }) => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.textContent = label;
-          btn.className = `border border-frame px-3 py-1 ${
-            id === assetActiveId ? "bg-[#FFBF00] text-black" : "text-neutral-400 hover:text-white"
-          }`;
-          btn.addEventListener("click", () => {
-            if (assetActiveId === id) return;
-            assetActiveId = id;
-            renderAssetTabs();
-            fetchAssetStories(assetActiveId);
-          });
-          assetTabsEl.appendChild(btn);
-        });
-      };
-
-      const renderAssetStories = (stories) => {
-        if (!assetStoriesEl) return;
-        assetStoriesEl.innerHTML = "";
-        if (!stories.length) {
-          assetStoriesEl.innerHTML = '<p class="text-xs text-neutral-500">No data for this asset class.</p>';
-          return;
-        }
-        stories.forEach((story) => {
-          const tagsLine = tagTexts(story.tags).slice(0, 3).join(" • ");
-          const summary = story.summary || tagsLine;
-          const chipMarkup = buildChipMarkup(story.tags, 4);
-          const imageMarkup = story.image_url
-            ? `<img src="${story.image_url}" alt="${story.title}" class="border border-frame/50" />`
-            : "";
-          const card = document.createElement("a");
-          card.href = story.url || "#";
-          card.target = "_blank";
-          card.rel = "noopener";
-          card.className =
-            "asset-card block border border-frame bg-ink/60 p-3 text-xs text-neutral-300 hover:border-[#FFBF00]";
-          card.innerHTML = `
-            ${imageMarkup}
-            <p class="mt-2 text-[10px] uppercase text-neutral-500">${story.source || "News"}</p>
-            <h3 class="mt-1 text-base font-semibold text-white">${story.title}</h3>
-            ${summary ? `<p class="mt-2 text-neutral-400">${summary}</p>` : ""}
-            ${chipMarkup ? `<div class="mt-3 flex flex-wrap gap-2">${chipMarkup}</div>` : ""}
-            <p class="mt-3 text-[10px] uppercase text-neutral-500">${formatInsightTime(story.publish_time || story.publish_dt)}</p>
-          `;
-          assetStoriesEl.appendChild(card);
-        });
-      };
-
-      const fetchAssetStories = async (assetId, { append = false } = {}) => {
-        const label = ASSET_LABEL_MAP[assetId] || "Asset";
-        const state = getAssetState(assetId);
-        if (state.loading) return;
-        if (append && state.exhausted) return;
-        const nextPage = append ? state.page + 1 : 1;
-
-        if (!append) {
-          if (state.items.length) {
-            renderAssetStories(state.items);
-            if (assetStatusEl)
-              assetStatusEl.textContent = `Cached ${label}${state.page ? ` • page ${state.page}` : ""}`;
-          } else {
-            renderAssetSkeleton();
-          }
-        }
-
-        state.loading = true;
-        if (assetStatusEl)
-          assetStatusEl.textContent = append ? `Loading more ${label}…` : `Loading ${label}…`;
-
-        try {
-          const response = await fetchWithAuth(buildCityFalconUrl(assetId, nextPage), {
-            headers: { Accept: "application/json" },
-          });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const payload = await response.json();
-          const normalized = resolveCityFalconList(payload)
-            .map(normalizeCityFalconStory)
-            .filter(Boolean);
-
-          if (append) {
-            if (normalized.length) {
-              state.items = state.items.concat(normalized);
-              state.page = nextPage;
-            } else {
-              state.exhausted = true;
-            }
-          } else {
-            state.items = normalized;
-            state.page = normalized.length ? nextPage : 0;
-            state.exhausted = normalized.length === 0;
-          }
-
-          renderAssetStories(state.items);
-          if (assetStatusEl) {
-            if (state.items.length) {
-              const suffix = state.exhausted ? " • end" : "";
-              assetStatusEl.textContent = state.exhausted
-                ? `${label}${suffix}`
-                : `${label}${state.page > 1 ? ` • page ${state.page}` : ""}`;
-            } else {
-              assetStatusEl.textContent = `No data for ${label}`;
-            }
-          }
-        } catch (error) {
-          console.error("Asset class feed error:", error);
-          if (!append) {
-            if (state.items.length) {
-              renderAssetStories(state.items);
-              if (assetStatusEl) assetStatusEl.textContent = `Offline • showing cached ${label}`;
-            } else {
-              renderAssetStories([]);
-              if (assetStatusEl) assetStatusEl.textContent = `Error • ${error.message || "Network error"}`;
-            }
-          } else if (assetStatusEl) {
-            assetStatusEl.textContent = `Load more failed • ${error.message || "Network error"}`;
-          }
-        } finally {
-          state.loading = false;
-        }
-      };
-
-      const formatInsightTime = (value) => {
-        if (!value) return "Unknown time";
-        if (value.includes("UTC")) return value;
-        const dt = new Date(value);
-        if (Number.isNaN(dt.getTime())) return value;
-        return `${dt.toLocaleDateString("en-GB")} ${dt.toLocaleTimeString("en-GB", { hour12: false })} UTC`;
-      };
-
-      const formatRelativeTimestamp = (iso) => {
-        if (!iso) return "";
-        const dt = new Date(iso);
-        if (Number.isNaN(dt.getTime())) return "";
-        const now = new Date();
-        const diffMinutes = Math.round((now - dt) / 60000);
-        if (diffMinutes < 1) return "Updated just now";
-        if (diffMinutes < 60) return `Updated ${diffMinutes}m ago`;
-        const diffHours = Math.round(diffMinutes / 60);
-        if (diffHours < 24) return `Updated ${diffHours}h ago`;
-        return `Updated ${dt.toLocaleDateString("en-GB")} ${dt.toLocaleTimeString("en-GB", { hour12: false })} UTC`;
-      };
-
-      const formatSentiment = (value) => {
-        const num = Number(value || 0);
-        if (num > 0) return "Bullish";
-        if (num < 0) return "Bearish";
-        return "Neutral";
-      };
-
-      const buildSummary = (item) => {
-        if (!item) return "";
-        if (item.summary) return item.summary;
-        const tags = tagTexts(item.tags).slice(0, 3).join(" • ");
-        if (tags) return tags;
-        if (Array.isArray(item.bullets) && item.bullets.length) {
-          return item.bullets.slice(0, 3).join(" • ");
-        }
-        return "";
-      };
-
-      const buildIndicators = (item) => {
-        if (!item) return "Awaiting data…";
-        const bullets = Array.isArray(item.bullets) ? item.bullets : [];
-        const tags = tagTexts(item.tags);
-        const merged = [...tags, ...bullets].filter(Boolean).slice(0, 4);
-        if (merged.length) return merged.join(" • ");
-        const label = item._feed || item.source || "Source";
-        return `${label} • Sentiment ${formatSentiment(item.sentiment)}`;
-      };
-
-      const resolveFastbullTagNames = (tagString) => {
-        if (!tagString) return [];
-        return tagString
-          .split(",")
-          .map((token) => fastbullTagMap.get(token.trim()))
-          .filter(Boolean)
-          .flatMap((entry) => entry.split("/").map((name) => name.trim()).filter(Boolean));
-      };
-
-      const formatFastbullUTC = (value) => {
-        if (!value) return "Unknown time";
-        let timestamp = Number(value);
-        if (Number.isNaN(timestamp)) {
-          const parsed = new Date(value);
-          timestamp = parsed.getTime();
-        }
-        if (!timestamp) return "Unknown time";
-        const date = new Date(timestamp);
-        if (Number.isNaN(date.getTime())) return "Unknown time";
-        const iso = date.toISOString();
-        return `${iso.slice(0, 16).replace("T", " ")} UTC`;
-      };
-
-      const setLatestStatus = (text) => {
-        if (latestStatusEl) latestStatusEl.textContent = text;
-      };
-
-      const resolveLatestCategoryLabel = (value) => {
-        if (!latestDropdownEl) return "Semua";
-        const options = Array.from(latestDropdownEl.options || []);
-        const found = options.find((opt) => opt.value === value);
-        return (found ? found.textContent : "Semua") || "Semua";
-      };
-
-      const updateLatestRecapButton = (value) => {
-        if (!latestRecapBtn) return;
-        const label = resolveLatestCategoryLabel(value);
-        latestRecapBtn.textContent = `Recap ${label} Catalyst By Kuantara AI`;
-      };
-
-      const ensureLatestCategoryData = async (tagIds) => {
-        let cache = latestCache.get(tagIds);
-        if (cache && cache.items.length) return cache;
-        await fetchFastbullNews(tagIds);
-        cache = latestCache.get(tagIds);
-        return cache || { items: [] };
-      };
-
-      const buildRecapPrompt = (label, items) => {
-        const headlines = Array.isArray(items) ? items : [];
-        if (!headlines.length) {
-          return `Tidak ada headline untuk kategori ${label}. Jelaskan kondisi tersebut namun tetap berikan wawasan makro singkat.`;
-        }
-        const lines = headlines.slice(0, MAX_RECAP_ITEMS).map((item, idx) => {
-          const time = formatFastbullUTC(item.timestamp);
-          const tags = (item.tagNames || []).slice(0, 3).join(", ");
-          return `${idx + 1}. [${time}] ${item.title}${tags ? ` (Tags: ${tags})` : ""}`;
-        });
-        return `Anda adalah Kuantara AI. Ringkaslah kategori ${label} dalam maksimal 10 poin tajuk utama + 1 paragraf kesimpulan, soroti katalis, risiko, dan peluang.\nData:\n${lines.join("\n")}`;
-      };
-
-      const normalizeCatalystItem = (item) => {
-        if (!item) return null;
-        const rawContent = item.content ?? item.summary ?? "";
-        const contentValue =
-          rawContent === null || rawContent === undefined
-            ? ""
-            : typeof rawContent === "string"
-            ? rawContent.trim()
-            : String(rawContent);
-        return {
-          timestamp: item.timestamp || item.time || "",
-          headline: item.headline || item.title || "Untitled catalyst",
-          content: contentValue,
-          impact: item.impact || "Low Impact",
-          category1: item.category1 || "",
-          category2: item.category2 || "",
-        };
-      };
-
-      const formatImpactBadgeClass = (impact = "") => {
-        if (/high/i.test(impact)) return "impact-high";
-        if (/medium/i.test(impact)) return "impact-medium";
-        return "";
-      };
-
-      const catalystCategories = () => {
-        const map = new Map();
-        catalystItems.forEach((item) => {
-          const key = item.category1 || "Lainnya";
-          if (!map.has(key)) map.set(key, key);
-        });
-        return Array.from(map.keys()).sort();
-      };
-
-      const renderCatalystSkeleton = () => {
-        if (!catalystListEl) return;
-        catalystListEl.innerHTML = "";
-        Array.from({ length: 3 }).forEach(() => {
-          const li = document.createElement("li");
-          li.className = "catalyst-card";
-          li.innerHTML = `
-            <div class="space-y-2">
-              <p class="headline shimmer-line h-4 w-3/4"></p>
-              <p class="shimmer-line h-3 w-full"></p>
-              <p class="shimmer-line h-3 w-4/5"></p>
+        <!-- HEADLINE STREAM -->
+        <div class="news-list" id="newsList">
+          <article class="news-item">
+            <div class="news-item-header">
+              <div class="news-ticker">SPX · Global Indices</div>
+              <div class="news-time">Just now</div>
             </div>
-          `;
-          catalystListEl.appendChild(li);
-        });
-      };
-
-      const fetchCatalystFeed = async ({ force = false, silent = false } = {}) => {
-        if (catalystLoading) return;
-        if (!force && catalystFetched) return;
-        catalystLoading = true;
-        const needsInitialUi = !catalystFetched || !catalystItems.length;
-        if (needsInitialUi) {
-          if (catalystStatusEl) catalystStatusEl.textContent = "Loading feed…";
-          renderCatalystSkeleton();
-        } else if (!silent && catalystStatusEl) {
-          catalystStatusEl.textContent = "Refreshing…";
-        }
-        try {
-          const response = await fetch(CATALYST_FEED_API, { headers: { Accept: "application/json" } });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const data = await response.json();
-          const list = Array.isArray(data) ? data : data?.items || [];
-          catalystItems = list.map(normalizeCatalystItem).filter(Boolean);
-          catalystFetched = true;
-          populateCatalystDropdown();
-          renderCatalystFeed();
-          if (catalystStatusEl) catalystStatusEl.textContent = "Updated";
-        } catch (error) {
-          console.error("Catalyst feed error:", error);
-          if (catalystStatusEl) catalystStatusEl.textContent = `Feed error • ${error.message || "Network error"}`;
-          if (catalystListEl)
-            catalystListEl.innerHTML =
-              '<li class="text-xs text-rose-300">Gagal memuat catalyst feed.</li>';
-        } finally {
-          catalystLoading = false;
-        }
-      };
-
-      const populateCatalystDropdown = () => {
-        if (!catalystDropdownEl) return;
-        const selected = catalystDropdownEl.value || "all";
-        catalystDropdownEl.innerHTML = '<option value="all">Semua</option>';
-        catalystCategories().forEach((cat) => {
-          const option = document.createElement("option");
-          option.value = cat;
-          option.textContent = cat;
-          catalystDropdownEl.appendChild(option);
-        });
-        if (Array.from(catalystDropdownEl.options).some((opt) => opt.value === selected)) {
-          catalystDropdownEl.value = selected;
-          catalystSelected = selected;
-        } else {
-          catalystDropdownEl.value = "all";
-          catalystSelected = "all";
-        }
-        updateCatalystRecapButton();
-      };
-
-      const updateCatalystRecapButton = () => {
-        if (!catalystRecapBtn || !catalystDropdownEl) return;
-        const label =
-          catalystDropdownEl.value === "all"
-            ? "Semua"
-            : catalystDropdownEl.options[catalystDropdownEl.selectedIndex]?.textContent || "Semua";
-        catalystRecapBtn.textContent = `Recap ${label} Catalyst By Kuantara AI`;
-      };
-
-      const filterCatalystItems = () => {
-        if (catalystSelected === "all") return catalystItems;
-        return catalystItems.filter((item) => (item.category1 || "") === catalystSelected);
-      };
-
-      const buildCatalystCard = (item) => {
-        const li = document.createElement("li");
-        li.className = "catalyst-card";
-        const isHigh = /high/i.test(item.impact);
-        const isMedium = /medium/i.test(item.impact);
-        if (isHigh) li.classList.add("high-impact-card");
-        if (isMedium) li.classList.add("impact-medium-card");
-        const impactClass = formatImpactBadgeClass(item.impact);
-        const chips = [item.category1, item.category2].filter(Boolean);
-        const chipMarkup = chips
-          .map((chip) => `<span class="chip">${chip}</span>`)
-          .join("");
-        li.innerHTML = `
-          <div class="space-y-2">
-            <div class="headline-container">
-              ${
-                /high/i.test(item.impact)
-                  ? '<span class="important-dot"></span>'
-                  : ""
-              }
-              <p class="headline">${item.headline}</p>
+            <div class="news-headline">
+              Waiting for API: push your first headline into this stream.
             </div>
-            <p class="text-xs text-neutral-500">${formatFastbullUTC(item.timestamp)}</p>
-            <p class="text-neutral-300">${item.content}</p>
-            ${
-              chipMarkup
-                ? `<div class="catalyst-tags">${chipMarkup}</div>`
-                : ""
-            }
-            <div class="impact-row">
-              <span class="impact-badge ${impactClass}">${item.impact || "Impact"}</span>
-              <button class="copy-btn" aria-label="Salin headline">
-                ${COPY_ICON}
-              </button>
+            <div class="news-tags">
+              <span class="news-tag">All Assets</span>
+              <span class="news-tag">Macro Topics</span>
             </div>
-          </div>
-        `;
-        const copyBtn = li.querySelector(".copy-btn");
-        if (copyBtn) {
-          copyBtn.addEventListener("click", () => copyLatestHeadline(item.headline, copyBtn));
-        }
-        return li;
-      };
-
-      const renderCatalystFeed = () => {
-        if (!catalystListEl) return;
-        const items = filterCatalystItems();
-        catalystListEl.innerHTML = "";
-        if (!items.length) {
-          catalystListEl.innerHTML =
-            '<li class="text-xs text-neutral-500">Tidak ada catalyst untuk kategori ini.</li>';
-          return;
-        }
-        items.slice(0, 30).forEach((item) => {
-          catalystListEl.appendChild(buildCatalystCard(item));
-        });
-      };
-
-      const ensureCatalystCategoryData = async (category) => {
-        if (!catalystFetched) await fetchCatalystFeed();
-        if (!catalystFetched) return { items: [] };
-        const list = category === "all" ? catalystItems : catalystItems.filter((item) => (item.category1 || "") === category);
-        return { items: list };
-      };
-
-      const buildCatalystRecapPrompt = (label, items) => {
-        if (!items.length) return "";
-        const lines = items.slice(0, MAX_RECAP_ITEMS).map((item, idx) => {
-          const hasContent = item.content !== undefined && item.content !== null;
-          const contentText = hasContent ? String(item.content).trim() : "";
-          const detail = contentText ? ` — ${contentText}` : "";
-          return `${idx + 1}. [${formatFastbullUTC(item.timestamp)}] ${item.headline}${detail} — Impact: ${item.impact}`;
-        });
-        return `Anda adalah Kuantara AI. Buat rangkuman catalyst untuk kategori ${label} dengan maksimal 5 poin utama dan satu kesimpulan yang menekankan dampak pasar.\nData:\n${lines.join(
-          "\n"
-        )}`;
-      };
-
-      const formatXFeedRelativeTime = (ts) => {
-        if (!ts) return "now";
-        const value = Number(ts);
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) return "now";
-        const diffMs = Date.now() - date.getTime();
-        const diffMinutes = Math.floor(diffMs / 60000);
-        if (diffMinutes < 1) return "now";
-        if (diffMinutes < 60) return `${diffMinutes}m`;
-        const diffHours = Math.floor(diffMinutes / 60);
-        if (diffHours < 24) return `${diffHours}h`;
-        const diffDays = Math.floor(diffHours / 24);
-        return `${diffDays}d`;
-      };
-
-      const normalizeXFeedItem = (item) => {
-        if (!item) return null;
-        return {
-          id: item.id || item.statusId || "",
-          timestamp: Number(item.ts) || Date.now(),
-          name: item.name || item.screenName || "X Feed",
-          screenName: item.screenName || "",
-          avatar: item.avatar || "",
-          text: item.text || "",
-          media: item.media || "",
-          tweetUrl: item.link || item.url || "",
-          externalUrl: item.externalUrl || "",
-          titleUrl: item.titleUrl || "",
-          descriptionUrl: item.descriptionUrl || "",
-          tts: item.tts || "",
-        };
-      };
-
-      const renderXFeedSkeleton = () => {
-        if (!xFeedListEl) return;
-        xFeedListEl.innerHTML = "";
-        Array.from({ length: 3 }).forEach(() => {
-          const li = document.createElement("li");
-          li.className = "x-feed-card";
-          li.innerHTML = `
-            <div class="space-y-3">
-              <div class="shimmer-line h-4 w-1/3"></div>
-              <div class="shimmer-line h-5 w-full"></div>
-              <div class="shimmer-line h-48 w-full"></div>
-            </div>
-          `;
-          xFeedListEl.appendChild(li);
-        });
-      };
-
-      const openXFeedLink = (url) => {
-        if (!url) return;
-        window.open(url, "_blank", "noopener");
-      };
-
-      const createXFeedActionButton = (label, handler, disabled = false) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "x-feed-action";
-        button.textContent = label;
-        if (disabled) {
-          button.disabled = true;
-          button.classList.add("disabled");
-        } else if (typeof handler === "function") {
-          button.addEventListener("click", handler);
-        }
-        return button;
-      };
-
-      const buildXFeedCard = (item) => {
-        const li = document.createElement("li");
-        li.className = "x-feed-card";
-        const header = document.createElement("div");
-        header.className = "x-feed-header";
-
-        const avatar = document.createElement("img");
-        avatar.className = "x-feed-avatar";
-        avatar.src = item.avatar || DEFAULT_IMAGE;
-        avatar.alt = item.name || item.screenName || "X Feed";
-        header.appendChild(avatar);
-
-        const author = document.createElement("div");
-        author.className = "x-feed-author";
-        const nameEl = document.createElement("span");
-        nameEl.className = "x-feed-name";
-        nameEl.textContent = item.name || "X Feed";
-        author.appendChild(nameEl);
-        if (item.screenName) {
-          const handle = document.createElement("span");
-          handle.className = "x-feed-handle";
-          handle.textContent = `@${item.screenName}`;
-          author.appendChild(handle);
-        }
-        header.appendChild(author);
-
-        const timeEl = document.createElement("span");
-        timeEl.className = "x-feed-time";
-        timeEl.textContent = formatXFeedRelativeTime(item.timestamp);
-        header.appendChild(timeEl);
-
-        li.appendChild(header);
-
-        if (item.text) {
-          const text = document.createElement("p");
-          text.className = "x-feed-text";
-          text.textContent = item.text;
-          li.appendChild(text);
-        }
-
-        const hasPreview = Boolean(item.externalUrl || item.titleUrl || item.descriptionUrl);
-
-        if (item.media && !hasPreview) {
-          const media = document.createElement("div");
-          media.className = "x-feed-media";
-          const img = document.createElement("img");
-          img.src = item.media;
-          img.alt = item.titleUrl || "X media";
-          media.appendChild(img);
-          li.appendChild(media);
-        }
-
-        if (hasPreview) {
-          const preview = document.createElement("a");
-          preview.className = "x-feed-preview";
-          preview.href = item.externalUrl || item.tweetUrl || "#";
-          preview.target = "_blank";
-          preview.rel = "noopener";
-          if (item.media) {
-            const previewImg = document.createElement("img");
-            previewImg.src = item.media;
-            previewImg.alt = item.titleUrl || "Preview";
-            preview.appendChild(previewImg);
-          }
-          const body = document.createElement("div");
-          body.className = "x-feed-preview-body";
-          if (item.externalUrl) {
-            const source = document.createElement("p");
-            source.className = "x-feed-preview-source";
-            try {
-              const hostname = new URL(item.externalUrl).hostname.replace("www.", "");
-              source.textContent = hostname;
-            } catch {
-              source.textContent = "Source";
-            }
-            body.appendChild(source);
-          }
-          if (item.titleUrl) {
-            const titleEl = document.createElement("p");
-            titleEl.className = "x-feed-preview-title";
-            titleEl.textContent = item.titleUrl;
-            body.appendChild(titleEl);
-          }
-          if (item.descriptionUrl) {
-            const descEl = document.createElement("p");
-            descEl.className = "x-feed-preview-desc";
-            descEl.textContent = item.descriptionUrl;
-            body.appendChild(descEl);
-          }
-          preview.appendChild(body);
-          li.appendChild(preview);
-        }
-
-        const buttons = document.createElement("div");
-        buttons.className = "x-feed-buttons";
-        const readBtn = createXFeedActionButton("READ", () => openXFeedReader(item), !item.id);
-        const quickBtn = createXFeedActionButton(
-          "QUICK",
-          () => openXFeedLink(item.externalUrl || item.tweetUrl),
-          !(item.externalUrl || item.titleUrl)
-        );
-        const insightBtn = createXFeedActionButton(
-          "INSIGHT",
-          () => showXFeedInsight(item),
-          !item.descriptionUrl
-        );
-        buttons.append(readBtn, quickBtn, insightBtn);
-        li.appendChild(buttons);
-        return li;
-      };
-
-      const renderXFeed = () => {
-        if (!xFeedListEl) return;
-        xFeedListEl.innerHTML = "";
-        if (!xFeedItems.length) {
-          xFeedListEl.innerHTML =
-            '<li class="text-xs text-neutral-500">Tidak ada update dari X Feed.</li>';
-          return;
-        }
-        xFeedItems.slice(0, 30).forEach((item) => {
-          const card = buildXFeedCard(item);
-          xFeedListEl.appendChild(card);
-        });
-      };
-
-      const fetchXFeed = async ({ silent = false } = {}) => {
-        if (!xFeedListEl || xFeedLoading) return;
-        xFeedLoading = true;
-        const needsInitialUi = !xFeedFetched || !xFeedItems.length;
-        if (needsInitialUi) {
-          renderXFeedSkeleton();
-          if (xFeedStatusEl) xFeedStatusEl.textContent = "Loading feed…";
-        } else if (!silent && xFeedStatusEl) {
-          xFeedStatusEl.textContent = "Refreshing feed…";
-        }
-        try {
-          const response = await fetch(X_FEED_API, { headers: { Accept: "application/json" } });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const payload = await response.json();
-          const list = Array.isArray(payload?.items) ? payload.items : [];
-          xFeedItems = list.map(normalizeXFeedItem).filter(Boolean);
-          xFeedFetched = true;
-          renderXFeed();
-          if (xFeedStatusEl) {
-            xFeedStatusEl.textContent = xFeedItems.length > 0 ? "Live" : "No posts";
-          }
-        } catch (error) {
-          console.error("X feed error:", error);
-          if (xFeedStatusEl) xFeedStatusEl.textContent = `Feed error • ${error.message || "Network error"}`;
-          if (xFeedListEl)
-            xFeedListEl.innerHTML = '<li class="text-xs text-rose-300">Gagal memuat X Feed.</li>';
-        } finally {
-          xFeedLoading = false;
-        }
-      };
-
-      const ensureXFeedData = async () => {
-        if (!xFeedFetched) await fetchXFeed();
-        return { items: xFeedItems };
-      };
-
-      const buildXFeedRecapPrompt = (label, items) => {
-        if (!items.length) return "";
-        const lines = items.slice(0, MAX_RECAP_ITEMS).map((item, idx) => {
-          const text = item.text || item.titleUrl || "Tanpa teks";
-          return `${idx + 1}. [${formatFastbullUTC(item.timestamp)}] ${item.name}: ${text}`;
-        });
-        return `Anda adalah Kuantara AI. Ringkas ${label} menjadi maksimal 5 poin headline dan 1 paragraf kesimpulan berbahasa Indonesia, soroti sentimen pasar, risiko, dan peluang.\nData:\n${lines.join(
-          "\n"
-        )}`;
-      };
-
-      const showXFeedInsight = (item) => {
-        if (!item || !item.descriptionUrl) return;
-        openReaderShell(item.titleUrl || "Insight");
-        setReaderLoading(false);
-        if (readerBodyEl) {
-          const desc = document.createElement("p");
-          desc.className = "text-sm leading-relaxed text-neutral-100";
-          desc.textContent = item.descriptionUrl;
-          readerBodyEl.innerHTML = "";
-          readerBodyEl.appendChild(desc);
-          if (item.externalUrl) {
-            const link = document.createElement("a");
-            link.href = item.externalUrl;
-            link.target = "_blank";
-            link.rel = "noopener";
-            link.className =
-              "inline-flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-amber-300 underline";
-            link.textContent = "Buka sumber";
-            readerBodyEl.appendChild(link);
-          }
-        }
-      };
-
-      const openXFeedReader = async (item) => {
-        if (!item || !item.id) return;
-        openReaderShell(item.titleUrl || item.text || "X Feed Reader");
-        setReaderLoading(true);
-        if (readerBodyEl) readerBodyEl.innerHTML = "";
-
-        let fallbackTriggered = false;
-        let fallbackAttempted = false;
-        const tryRedirectToFallbackLink = (reason = "HTTP 404") => {
-          fallbackAttempted = true;
-          if (fallbackTriggered) return true;
-          const fallbackUrl = item.externalUrl || item.tweetUrl;
-          if (!fallbackUrl) return false;
-          fallbackTriggered = true;
-          if (readerBodyEl) {
-            readerBodyEl.innerHTML = `<p class="text-sm text-neutral-300">Reader tidak tersedia (${reason}). Membuka sumber asli…</p>`;
-          }
-          openXFeedLink(fallbackUrl);
-          return true;
-        };
-
-        try {
-          const response = await fetch(buildXFeedReaderUrl(item.id), {
-            headers: { Accept: "application/json" },
-          });
-          if (!response.ok) {
-            if (response.status === 404 && tryRedirectToFallbackLink("HTTP 404")) {
-              return;
-            }
-            throw new Error(`HTTP ${response.status}`);
-          }
-          const payload = await response.json();
-          const html = payload?.reader;
-          if (readerBodyEl) {
-            readerBodyEl.innerHTML =
-              html || '<p class="text-sm text-neutral-400">Reader tidak tersedia.</p>';
-          }
-        } catch (error) {
-          console.error("Reader error:", error);
-          const message = error?.message || "Network error";
-          if (/404/.test(message) && tryRedirectToFallbackLink("HTTP 404")) {
-            return;
-          }
-          if (readerBodyEl) {
-            readerBodyEl.innerHTML = `<p class="text-sm text-rose-300">Gagal memuat reader. ${message}${
-              fallbackAttempted && !fallbackTriggered ? ". Tidak ada tautan sumber." : ""
-            }</p>`;
-          }
-        } finally {
-          setReaderLoading(false);
-        }
-      };
-
-      const updateCcCounter = () => {
-        if (ccWordCountEl) {
-          ccWordCountEl.textContent = `${liveCcWords.length} / ${LIVE_CC_THRESHOLD} kata`;
-        }
-      };
-
-      const pushLiveSummaryCard = (markdown, status = "AI Catalyst Summary") => {
-        if (!aiSummaryFeedEl || aiSummaryFeedEl.dataset.enabled !== "true") return;
-        if (aiSummaryFeedEl.dataset.empty !== "false") {
-          aiSummaryFeedEl.innerHTML =
-            '<p class="text-xs text-neutral-500 uppercase tracking-[0.25em] mb-3">AI SUMMARY FEED</p><p class="text-xs text-neutral-500">Mengumpulkan ringkasan…</p>';
-          aiSummaryFeedEl.dataset.empty = "false";
-          aiSummaryFeedEl.classList.remove("hidden");
-        }
-        const card = document.createElement("article");
-        card.className = "summary-card";
-        card.innerHTML = `
-          <h4>${status} • ${new Date().toLocaleTimeString("en-GB", { hour12: false })}</h4>
-          <div class="md">${markdownToHtml(markdown || "Tidak ada ringkasan.")}</div>
-        `;
-        aiSummaryFeedEl.prepend(card);
-        while (aiSummaryFeedEl.childElementCount > 5) {
-          aiSummaryFeedEl.removeChild(aiSummaryFeedEl.lastElementChild);
-        }
-      };
-
-      const requestLiveSummary = async (chunk) => {
-        const prompt = `Anda adalah editor realtime yang merangkum closed caption siaran berita. Buat ringkasan singkat (maks 4 kalimat) dan satu kalimat implikasi praktis. Gunakan bahasa Indonesia dan gaya lugas.\n\nTranskrip:\n"""${chunk}"""`;
-        const payload = {
-          model: "grok-4",
-          from: "chat",
-          client_prompt: {},
-          multi_content: [{ type: "text", text: prompt, user_input_text: prompt }],
-          prompt_templates: [],
-          tools: { auto: [] },
-          stream: true,
-          output_language: "id",
-          customize_instructions: { enable: true },
-        };
-        let summary = "";
-        try {
-          const resp = await fetch(`${API_BASE}/completions`, {
-            method: "POST",
-            headers: baseHeaders_chat(),
-            body: JSON.stringify(payload),
-            mode: "cors",
-            credentials: "omit",
-          });
-          if (!resp.ok || !resp.body) throw new Error(`HTTP ${resp.status}`);
-          const reader = resp.body.getReader();
-          const decoder = new TextDecoder();
-          let buffer = "";
-          while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            buffer += decoder.decode(value, { stream: true });
-            let idx;
-            while ((idx = buffer.indexOf("\n")) >= 0) {
-              const line = buffer.slice(0, idx).trim();
-              buffer = buffer.slice(idx + 1);
-              if (!line || line === "[DONE]") continue;
-              if (line.startsWith("data:")) {
-                const dataLine = line.slice(5).trim();
-                if (dataLine === "[DONE]") continue;
-                try {
-                  const json = JSON.parse(dataLine);
-                  const piece = json?.data?.text;
-                  if (typeof piece === "string") summary += piece;
-                } catch {
-                  summary += dataLine;
-                }
-              } else {
-                summary += line;
-              }
-            }
-          }
-          summary = summary.trim();
-          if (!summary) summary = "AI belum menemukan ringkasan.";
-          pushLiveSummaryCard(summary);
-        } catch (error) {
-          console.error("Live summary error:", error);
-          pushLiveSummaryCard(`Gagal membuat ringkasan: ${error.message || error}`, "AI Summary Error");
-        }
-      };
-
-      const maybeProcessLiveSummary = () => {
-        if (!aiSummaryEnabled) return;
-        if (liveSummaryInFlight) return;
-        if (liveCcWords.length < LIVE_CC_THRESHOLD) return;
-        const chunk = liveCcWords.splice(0, LIVE_CC_THRESHOLD).join(" ");
-        liveSummaryInFlight = true;
-        updateCcCounter();
-        requestLiveSummary(chunk).finally(() => {
-          liveSummaryInFlight = false;
-          updateCcCounter();
-          maybeProcessLiveSummary();
-        });
-      };
-
-      const appendLiveCaption = (text) => {
-        if (!text) return;
-        const words = text
-          .trim()
-          .split(/\s+/)
-          .filter(Boolean);
-        if (!words.length) return;
-        liveCcWords.push(...words);
-        updateCcCounter();
-        maybeProcessLiveSummary();
-      };
-
-      const setAiSummaryState = (enabled) => {
-        aiSummaryEnabled = enabled;
-        if (aiSummaryToggleBtn)
-          aiSummaryToggleBtn.dataset.active = enabled ? "true" : "false";
-        if (aiSummaryFeedEl) {
-          aiSummaryFeedEl.dataset.enabled = enabled ? "true" : "false";
-          if (!enabled) {
-            aiSummaryFeedEl.classList.add("hidden");
-            aiSummaryFeedEl.dataset.empty = "true";
-            aiSummaryFeedEl.innerHTML =
-              '<p class="text-xs text-neutral-500 uppercase tracking-[0.25em]">AI SUMMARY FEED</p><p class="mt-2 text-sm text-neutral-400">Belum ada ringkasan. Aktifkan AI auto-summary untuk mulai mengumpulkan insight.</p>';
-          } else {
-            aiSummaryFeedEl.classList.remove("hidden");
-            if (aiSummaryFeedEl.dataset.empty === "true") {
-              aiSummaryFeedEl.innerHTML =
-                '<p class="text-xs text-neutral-500 uppercase tracking-[0.25em] mb-3">AI SUMMARY FEED</p><p class="text-xs text-neutral-500">Menunggu ringkasan pertama…</p>';
-            }
-          }
-        }
-        if (enabled) maybeProcessLiveSummary();
-      };
-
-      const setCaptionsState = (enabled) => {
-        captionsEnabled = enabled;
-        if (captionsToggleBtn)
-          captionsToggleBtn.dataset.active = enabled ? "true" : "false";
-        attachCaptionHandlers();
-        updateHlsSubtitleState();
-        if (enabled && liveVideoEl && liveVideoEl.paused) {
-          liveVideoEl.play().catch(() => {});
-        }
-      };
-
-      const handleCaptionCueChange = (event) => {
-        const cues = event?.target?.activeCues || [];
-        let text = "";
-        for (let i = 0; i < cues.length; i += 1) {
-          const cueText = cues[i]?.text;
-          if (cueText) text += `${cueText} `;
-        }
-        appendLiveCaption(text.trim());
-      };
-
-      const attachCaptionHandlers = () => {
-        if (!liveVideoEl || !liveVideoEl.textTracks) return;
-        const tracks = liveVideoEl.textTracks;
-        if (!tracks || !tracks.length) return;
-        for (let i = 0; i < tracks.length; i += 1) {
-          const track = tracks[i];
-          track.removeEventListener?.("cuechange", handleCaptionCueChange);
-          track.addEventListener?.("cuechange", handleCaptionCueChange);
-          track.mode = captionsEnabled ? "showing" : "disabled";
-        }
-      };
-
-      const updateHlsSubtitleState = () => {
-        if (!liveHlsInstance) return;
-        if (captionsEnabled) {
-          const available = liveHlsInstance.subtitleTracks || [];
-          if (available.length) {
-            liveHlsInstance.subtitleDisplay = true;
-            if (liveHlsInstance.subtitleTrack < 0) liveHlsInstance.subtitleTrack = 0;
-          } else {
-            liveHlsInstance.subtitleTrack = -1;
-          }
-        } else {
-          liveHlsInstance.subtitleDisplay = false;
-          liveHlsInstance.subtitleTrack = -1;
-        }
-      };
-
-      const initializeLivePlayer = () => {
-        if (!liveVideoEl || !LIVE_STREAM_SRC) return;
-        liveVideoEl.crossOrigin = "anonymous";
-        try {
-          if (window.Hls && window.Hls.isSupported()) {
-            if (liveHlsInstance) {
-              liveHlsInstance.destroy();
-              liveHlsInstance = null;
-            }
-            const hls = new window.Hls({ enableWorker: true, enableWebVTT: true });
-            hls.loadSource(LIVE_STREAM_SRC);
-            hls.attachMedia(liveVideoEl);
-            hls.on(window.Hls.Events.SUBTITLE_TRACKS_UPDATED, updateHlsSubtitleState);
-            hls.on(window.Hls.Events.MANIFEST_PARSED, updateHlsSubtitleState);
-            liveHlsInstance = hls;
-            updateHlsSubtitleState();
-          } else if (liveVideoEl.canPlayType("application/vnd.apple.mpegurl")) {
-            liveVideoEl.src = LIVE_STREAM_SRC;
-          } else {
-            console.warn("HLS not supported in this browser.");
-          }
-          liveVideoEl.muted = true;
-        } catch (error) {
-          console.error("Live player init error:", error);
-        }
-        liveVideoEl.addEventListener("loadedmetadata", attachCaptionHandlers);
-        liveVideoEl.addEventListener("loadeddata", attachCaptionHandlers);
-        if (liveVideoEl.textTracks?.addEventListener) {
-          liveVideoEl.textTracks.addEventListener("addtrack", attachCaptionHandlers);
-        }
-      };
-
-      const openKuantaraModal = async (context) => {
-        if (!kuantaraModal || !context) return;
-        const { label = "Headline", key = label, ensureData, buildPrompt, autoRecap = true } = context;
-        kuantaraModal.classList.remove("hidden");
-        document.body.classList.add("overflow-hidden");
-        if (kuantaraTitleEl) kuantaraTitleEl.textContent = `${label} Recap`;
-        if (!recapConversations.has(key)) recapConversations.set(key, []);
-        messages = recapConversations.get(key);
-        renderChat();
-        if (!autoRecap || isStreaming) return;
-        try {
-          const dataset = (await ensureData?.()) || { items: [] };
-          const prompt = buildPrompt ? buildPrompt(dataset.items || [], label) : "";
-          if (!prompt) {
-            addMessage("Kuantara", `Tidak ada data untuk ${label}.`);
-            return;
-          }
-          kuantaraRecapActive = true;
-          startStreaming(prompt, { userVisibleText: null });
-        } catch (error) {
-          console.error("Recap modal error:", error);
-          addMessage("Kuantara", `Gagal menyiapkan data recap.\n\n${error.message || error}`);
-        }
-      };
-
-      const closeKuantaraModal = () => {
-        if (!kuantaraModal) return;
-        kuantaraModal.classList.add("hidden");
-        document.body.classList.remove("overflow-hidden");
-      };
-
-      const openReaderShell = (title = "Reader") => {
-        if (!readerModal) return;
-        readerModal.classList.remove("hidden");
-        document.body.classList.add("overflow-hidden");
-        if (readerTitleEl) readerTitleEl.textContent = title || "Reader";
-        if (readerBodyEl) readerBodyEl.innerHTML = "";
-      };
-
-      const closeReaderModal = () => {
-        if (!readerModal) return;
-        readerModal.classList.add("hidden");
-        document.body.classList.remove("overflow-hidden");
-      };
-
-      const setReaderLoading = (state) => {
-        if (!readerLoadingEl) return;
-        readerLoadingEl.classList.toggle("hidden", !state);
-      };
-
-      const updateMainColumnHeight = () => {
-        if (!mainColumnEl || !sidebarEl) return;
-        const sidebarHeight = sidebarEl.offsetHeight;
-        if (sidebarHeight > 0) {
-          mainColumnEl.style.setProperty("--main-column-height", `${sidebarHeight}px`);
-        }
-      };
-      if (sidebarEl && window.ResizeObserver) {
-        const sidebarObserver = new ResizeObserver(() => updateMainColumnHeight());
-        sidebarObserver.observe(sidebarEl);
-      }
-      window.addEventListener("resize", updateMainColumnHeight);
-      updateMainColumnHeight();
-
-      const createLatestSkeletonCard = () => {
-        const li = document.createElement("li");
-        li.className = "latest-card";
-        const line = document.createElement("div");
-        line.className = "space-y-3";
-        const header = document.createElement("div");
-        header.className = "h-4 w-3/4 shimmer-line";
-        const sub = document.createElement("div");
-        sub.className = "h-3 w-1/2 shimmer-line";
-        const chips = document.createElement("div");
-        chips.className = "flex gap-2";
-        const chip = document.createElement("div");
-        chip.className = "h-4 w-16 shimmer-line";
-        const chip2 = document.createElement("div");
-        chip2.className = "h-4 w-20 shimmer-line";
-        chips.append(chip, chip2);
-        line.append(header, sub, chips);
-        li.appendChild(line);
-        return li;
-      };
-
-      const renderLatestSkeleton = () => {
-        if (!latestTickerEl) return;
-        latestTickerEl.innerHTML = "";
-        Array.from({ length: 3 }).forEach(() => {
-          latestTickerEl.appendChild(createLatestSkeletonCard());
-        });
-      };
-
-      const normalizeFastbullNews = (item) => {
-        if (!item) return null;
-        const title = (item.newsTitle || "").trim();
-        const tags = typeof item.tags === "string" ? item.tags : "";
-        return {
-          id: item.newsId || item.path || title || String(item.releasedDate || Math.random()),
-          title: title || "Untitled headline",
-          tagIds: tags,
-          tagNames: resolveFastbullTagNames(tags),
-          timestamp: item.releasedDate || Date.now(),
-          important: Number(item.important) === 1,
-          source: item.simWebsiteName || item.simWebsite || "FastBull",
-        };
-      };
-
-      const copyLatestHeadline = (text, button) => {
-        if (!text || !button) return;
-        const original = button.innerHTML;
-        const handleSuccess = () => {
-          button.classList.add("copied");
-          button.innerHTML = CHECK_ICON;
-          setTimeout(() => {
-            button.classList.remove("copied");
-            button.innerHTML = original;
-          }, 1500);
-        };
-        const fallbackCopy = () => {
-          const textarea = document.createElement("textarea");
-          textarea.value = text;
-          textarea.style.position = "fixed";
-          textarea.style.opacity = "0";
-          document.body.appendChild(textarea);
-          textarea.select();
-          try {
-            document.execCommand("copy");
-            handleSuccess();
-          } catch (error) {
-            console.error("Copy failed:", error);
-          } finally {
-            document.body.removeChild(textarea);
-          }
-        };
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(handleSuccess).catch(fallbackCopy);
-        } else {
-          fallbackCopy();
-        }
-      };
-
-      const createLatestCardElement = (item) => {
-        const li = document.createElement("li");
-        li.className = "latest-card";
-        if (item.important) li.classList.add("important");
-        const row = document.createElement("div");
-        row.className = "flex items-start gap-3";
-        const content = document.createElement("div");
-        content.className = "flex-1 space-y-2";
-        const headlineWrap = document.createElement("div");
-        headlineWrap.className = "headline-container";
-        if (item.important) {
-          const badge = document.createElement("span");
-          badge.className = "important-dot";
-          headlineWrap.appendChild(badge);
-        }
-        const headline = document.createElement("p");
-        headline.className = "headline leading-snug";
-        headline.textContent = item.title;
-        headlineWrap.appendChild(headline);
-        const meta = document.createElement("div");
-        meta.className = "latest-meta";
-        const timeEl = document.createElement("span");
-        timeEl.textContent = formatFastbullUTC(item.timestamp);
-        meta.append(timeEl);
-        const tagsRow = document.createElement("div");
-        tagsRow.className = "latest-tags";
-        const tags = item.tagNames && item.tagNames.length ? item.tagNames : ["Berita"];
-        tags.slice(0, 4).forEach((tagName) => {
-          const span = document.createElement("span");
-          span.className = "label-tag";
-          span.textContent = tagName;
-          tagsRow.appendChild(span);
-        });
-        content.append(headlineWrap, meta, tagsRow);
-        const copyButton = document.createElement("button");
-        copyButton.type = "button";
-        copyButton.className = "copy-btn";
-        copyButton.innerHTML = COPY_ICON;
-        copyButton.setAttribute("aria-label", "Salin headline");
-        copyButton.addEventListener("click", () => copyLatestHeadline(item.title, copyButton));
-        row.append(content, copyButton);
-        li.appendChild(row);
-        return li;
-      };
-
-      const renderLatestFeed = (items) => {
-        if (!latestTickerEl) return;
-        latestTickerEl.innerHTML = "";
-        if (!items.length) {
-          const empty = document.createElement("li");
-          empty.className = "text-xs text-neutral-500";
-          empty.textContent = "Tidak ada berita untuk kategori ini.";
-          latestTickerEl.appendChild(empty);
-          return;
-        }
-        items.forEach((item) => {
-          const card = createLatestCardElement(item);
-          latestTickerEl.appendChild(card);
-        });
-      };
-
-      const buildFastbullUrl = (tagIds = "-1") => {
-        const url = new URL(FASTBULL_NEWS_ENDPOINT);
-        url.searchParams.set("checkImportant", "0");
-        url.searchParams.set("pageSize", "15");
-        url.searchParams.set("timestamp", "");
-        url.searchParams.set("includeCalendar", "0");
-        url.searchParams.set("tagIds", tagIds);
-        return url.toString();
-      };
-
-      const fetchFastbullNews = async (tagIds = "-1", { silent = false } = {}) => {
-        if (!latestTickerEl) return;
-        updateLatestRecapButton(tagIds);
-        const existing = latestCache.get(tagIds);
-        const shouldRenderCached = !silent || !existing || !existing.items.length;
-        if (shouldRenderCached) {
-          if (existing && existing.items.length) {
-            renderLatestFeed(existing.items);
-            const cachedLabel = formatRelativeTimestamp(existing.updatedIso) || "Cached feed";
-            setLatestStatus(cachedLabel);
-          } else {
-            renderLatestSkeleton();
-            setLatestStatus("Loading feed…");
-          }
-        }
-        const token = ++latestFetchToken;
-        try {
-          const response = await fetch(buildFastbullUrl(tagIds), { headers: FASTBULL_HEADERS });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const payload = await response.json();
-          const body =
-            typeof payload.bodyMessage === "string"
-              ? JSON.parse(payload.bodyMessage)
-              : payload.bodyMessage || {};
-          const list = Array.isArray(body?.pageDatas) ? body.pageDatas : [];
-          const normalized = list.map(normalizeFastbullNews).filter(Boolean);
-          latestCache.set(tagIds, { items: normalized, updatedIso: new Date().toISOString() });
-          if (token !== latestFetchToken) return;
-          renderLatestFeed(normalized);
-          setLatestStatus(
-            normalized.length
-              ? `Updated ${new Date().toLocaleTimeString("en-GB", { hour12: false })}`
-              : "No headlines"
-          );
-        } catch (error) {
-          console.error("Latest feed error:", error);
-          if (token !== latestFetchToken) return;
-          setLatestStatus(`Feed error • ${error.message || "Network error"}`);
-          latestTickerEl.innerHTML =
-            '<li class="text-xs text-rose-300">Gagal memuat headline FastBull.</li>';
-        }
-      };
-
-      const renderFrontSignal = (item, fallbackMessage) => {
-        if (!analysisEls.title) return;
-        if (!item) {
-          analysisEls.title.textContent = "Front signal unavailable";
-          if (analysisEls.summary) {
-            analysisEls.summary.textContent =
-              fallbackMessage || "Hubungkan server front-signal untuk menampilkan headline terbaru.";
-          }
-          if (analysisEls.meta) analysisEls.meta.textContent = "Waiting for data";
-          if (analysisEls.chips)
-            analysisEls.chips.innerHTML =
-              '<span class="px-2 py-1 text-[10px] uppercase tracking-wide border border-amber-500/40 bg-amber-500/5 text-amber-100">Menunggu feed real-time</span>';
-          if (analysisEls.stats) analysisEls.stats.textContent = "Sentiment —";
-          if (analysisEls.badge) analysisEls.badge.textContent = "OFFLINE";
-          if (analysisEls.image) {
-            analysisEls.image.src = DEFAULT_IMAGE;
-            analysisEls.image.alt = "Insight placeholder";
-          }
-          if (analysisEls.indicators) analysisEls.indicators.textContent = "Menunggu data feed…";
-          if (analysisEls.link) analysisEls.link.removeAttribute("href");
-          if (analysisEls.sourceLabel) analysisEls.sourceLabel.textContent = "Feed";
-          return;
-        }
-        const sourceName = item._feed || item.source || "Source";
-        analysisEls.title.textContent = item.title || "Untitled insight";
-        if (analysisEls.summary) {
-          const summary = buildSummary(item) || `Live update from ${sourceName}.`;
-          analysisEls.summary.textContent = summary;
-        }
-        if (analysisEls.meta) analysisEls.meta.textContent = item.timeago || formatInsightTime(item.publish_dt);
-        if (analysisEls.sourceLabel) analysisEls.sourceLabel.textContent = sourceName;
-        if (analysisEls.chips) {
-          const chipsMarkup = buildChipMarkup(item.tags, 5);
-          analysisEls.chips.innerHTML = chipsMarkup
-            ? chipsMarkup
-            : '<span class="px-2 py-1 text-[10px] uppercase tracking-wide border border-neutral-600 bg-neutral-800 text-neutral-200">Detail pending</span>';
-        }
-        if (analysisEls.stats) {
-          const parts = [`Sentiment ${formatSentiment(item.sentiment)}`];
-          if (typeof item.score === "number") parts.push(`Score ${item.score}`);
-          if (typeof item.cf_score === "number") parts.push(`CF ${item.cf_score}`);
-          analysisEls.stats.textContent = parts.join(" • ");
-        }
-        if (analysisEls.badge) analysisEls.badge.textContent = sourceName.toUpperCase();
-        if (analysisEls.image) {
-          analysisEls.image.src = item.image_url || DEFAULT_IMAGE;
-          analysisEls.image.alt = item.title || "Insight visual";
-        }
-        if (analysisEls.indicators) analysisEls.indicators.textContent = buildIndicators(item);
-        if (analysisEls.link) {
-          if (item.url) {
-            analysisEls.link.href = item.url;
-            analysisEls.link.target = "_blank";
-            analysisEls.link.rel = "noopener";
-          } else {
-            analysisEls.link.removeAttribute("href");
-          }
-        }
-      };
-
-      const renderInsightItems = (items) => {
-        if (!insightListEl) return;
-        insightListEl.innerHTML = "";
-        if (!items.length) {
-          insightListEl.innerHTML = '<li class="text-xs text-neutral-500">Tidak ada data dari sumber ini.</li>';
-          return;
-        }
-        items.forEach((item) => {
-          const summary = buildSummary(item);
-          const sourceName = item._feed || item.source || "Source";
-          const meta = `${item.timeago || formatInsightTime(item.publish_dt)} • ${sourceName}`;
-          const li = document.createElement("li");
-          li.innerHTML = `
-            <a class="flex gap-3 border border-frame bg-ink/60 p-3 text-xs text-neutral-300 hover:border-[#FFBF00]" href="${item.url || "#"}" target="_blank" rel="noopener">
-              <div class="space-y-1">
-                <p class="text-neutral-500">${meta}</p>
-                <p class="text-sm text-white">${item.title || "Untitled insight"}</p>
-                ${summary ? `<p class="text-neutral-400">${summary}</p>` : ""}
+            <div class="news-footer">
+              <span class="news-source">Source: &ndash;</span>
+              <div class="news-sentiment">
+                <span class="sentiment-chip sentiment-neutral">Sentiment: Neutral</span>
               </div>
-            </a>
-          `;
-          insightListEl.appendChild(li);
-        });
-      };
-
-      const populateSourceOptions = (sources) => {
-        if (!insightSourceSelect) return;
-        const list = Array.isArray(sources) ? sources : [];
-        const seen = new Set();
-        const uniqueSources = [];
-        list.forEach((source) => {
-          if (typeof source !== "string") return;
-          const trimmed = source.trim();
-          if (!trimmed || seen.has(trimmed)) return;
-          seen.add(trimmed);
-          uniqueSources.push(trimmed);
-        });
-        const previousValue = insightSourceSelect.value || "all";
-        insightSourceSelect.innerHTML = '<option value="all">All Sources</option>';
-        uniqueSources.forEach((source) => {
-          const option = document.createElement("option");
-          option.value = source;
-          option.textContent = source;
-          insightSourceSelect.appendChild(option);
-        });
-        if (uniqueSources.includes(previousValue)) {
-          insightSourceSelect.value = previousValue;
-          selectedSource = previousValue;
-        } else {
-          insightSourceSelect.value = "all";
-          selectedSource = "all";
-        }
-      };
-
-      const filterInsights = () => {
-        if (selectedSource === "all") return insightCache;
-        const token = selectedSource.toLowerCase();
-        return insightCache.filter((item) => {
-          const feed = (item._feed || "").toLowerCase();
-          const src = (item.source || "").toLowerCase();
-          return feed === token || src === token;
-        });
-      };
-
-      const refreshInsightView = () => {
-        const filtered = filterInsights();
-        renderInsightItems(filtered);
-      };
-
-      const setFrontStatus = (text) => {
-        if (analysisEls.status) analysisEls.status.textContent = text;
-      };
-
-      const setInsightStatus = (text) => {
-        if (insightStatusEl) insightStatusEl.textContent = text;
-      };
-
-      const fetchInsights = async ({ silent = false } = {}) => {
-        const shouldShowSkeleton = !insightCache.length || !silent;
-        if (shouldShowSkeleton) {
-          setInsightStatus("Loading feed…");
-          renderInsightSkeleton();
-        }
-        try {
-          const response = await fetchWithAuth(INSIGHTS_API, { headers: { Accept: "application/json" } });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const payload = await response.json();
-          const items = Array.isArray(payload.items) ? payload.items : [];
-          const lookup = buildFeedLookup(payload.sources);
-          insightCache = hydrateFeedLabels(items, lookup);
-          availableSources = payload.available_sources || [];
-          lastUpdatedIso = payload.updated_at || null;
-          if (!insightCache.length) throw new Error("Payload kosong");
-          populateSourceOptions(availableSources);
-          refreshInsightView();
-          setInsightStatus(formatRelativeTimestamp(lastUpdatedIso) || "Feed updated");
-        } catch (error) {
-          console.error("Insight feed error:", error);
-          insightCache = [];
-          availableSources = [];
-          populateSourceOptions(availableSources);
-          refreshInsightView();
-          setInsightStatus(`Feed error • ${error.message || "Network error"}`);
-        }
-      };
-
-      const fetchFrontSignal = async ({ silent = false } = {}) => {
-        const shouldShowSkeleton = !frontSignalStories.length || !silent;
-        if (shouldShowSkeleton) {
-          setFrontStatus("Loading front signal…");
-          toggleFrontSignalSkeleton(true);
-        }
-        clearFrontSignalTimer();
-        try {
-          const response = await fetchWithAuth(buildCityFalconUrl(FRONT_SIGNAL_ASSET_CLASS), {
-            headers: { Accept: "application/json" },
-          });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const payload = await response.json();
-          const stories = resolveCityFalconList(payload)
-            .map(normalizeCityFalconStory)
-            .filter(Boolean);
-          const eligible = stories.filter((story) => typeof story.cf_score === "number" && story.cf_score >= 20);
-          if (!eligible.length) throw new Error("No story with CF score > 20");
-          frontSignalStories = eligible.slice(0, 6);
-          frontSignalIndex = 0;
-          toggleFrontSignalSkeleton(false);
-          showFrontSignalAt(0);
-        } catch (error) {
-          console.error("Front signal error:", error);
-          frontSignalStories = [];
-          frontSignalIndex = 0;
-          clearFrontSignalTimer();
-          if (frontSignalDotsEl) frontSignalDotsEl.innerHTML = "";
-          setFrontControlsState();
-          toggleFrontSignalSkeleton(false);
-          renderFrontSignal(null, error.message || "Network error");
-          setFrontStatus(`Front signal error • ${error.message || "Network error"}`);
-        }
-      };
-
-      if (insightSourceSelect) {
-        insightSourceSelect.addEventListener("change", (ev) => {
-          selectedSource = ev.target.value;
-          refreshInsightView();
-        });
-      }
-
-      renderAssetTabs();
-      initFrontSignalControls();
-      if (assetActiveId) {
-        fetchAssetStories(assetActiveId);
-      }
-
-      if (assetSentinelEl && "IntersectionObserver" in window) {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (!entry.isIntersecting) return;
-              const state = getAssetState(assetActiveId);
-              if (!state.items.length || state.loading || state.exhausted) return;
-              fetchAssetStories(assetActiveId, { append: true });
-            });
-          },
-          { root: null, rootMargin: "200px 0px 200px 0px", threshold: 0 }
-        );
-        observer.observe(assetSentinelEl);
-      }
-
-      fetchFrontSignal();
-      fetchInsights();
-      if (latestDropdownEl) {
-        latestDropdownEl.addEventListener("change", (event) => {
-          fetchFastbullNews(event.target.value || "-1");
-        });
-        fetchFastbullNews(latestDropdownEl.value || "-1");
-      } else {
-        fetchFastbullNews("-1");
-      }
-
-      const captureScrollSnapshot = () => {
-        const doc = document.documentElement;
-        const windowTop = window.scrollY || doc.scrollTop || 0;
-        const snapshot = {
-          window: {
-            top: windowTop,
-            nearBottom: windowTop + window.innerHeight >= doc.scrollHeight - 16,
-          },
-          containers: [],
-        };
-        const track = (el) => {
-          if (!el) return;
-          snapshot.containers.push({
-            el,
-            top: el.scrollTop,
-            nearBottom: el.scrollTop + el.clientHeight >= el.scrollHeight - 8,
-          });
-        };
-        track(insightListEl);
-        track(latestTickerContainerEl);
-        track(catalystTickerContainerEl);
-        track(xFeedTickerContainerEl);
-        return snapshot;
-      };
-
-      const restoreScrollSnapshot = (snapshot) => {
-        if (!snapshot) return;
-        const doc = document.documentElement;
-        if (snapshot.window) {
-          const maxTop = Math.max(0, doc.scrollHeight - window.innerHeight);
-          const targetTop = snapshot.window.nearBottom
-            ? maxTop
-            : Math.min(Math.max(0, snapshot.window.top), maxTop);
-          window.scrollTo({ top: targetTop });
-        }
-        (snapshot.containers || []).forEach(({ el, top, nearBottom }) => {
-          if (!el) return;
-          const maxTop = Math.max(0, el.scrollHeight - el.clientHeight);
-          el.scrollTop = nearBottom ? maxTop : Math.min(Math.max(0, top), maxTop);
-        });
-      };
-
-      const stopAutoRefreshLoop = () => {
-        if (autoRefreshTimer) {
-          clearInterval(autoRefreshTimer);
-          autoRefreshTimer = null;
-        }
-      };
-
-      const runAutoRefreshCycle = () => {
-        if (autoRefreshInProgress || document.hidden) return;
-        autoRefreshInProgress = true;
-        const snapshot = captureScrollSnapshot();
-        const tagIds = latestDropdownEl?.value || "-1";
-        const tasks = [
-          fetchFrontSignal({ silent: true }),
-          fetchInsights({ silent: true }),
-          fetchFastbullNews(tagIds, { silent: true }),
-          fetchCatalystFeed({ silent: true, force: true }),
-          fetchXFeed({ silent: true }),
-        ];
-        Promise.allSettled(tasks).finally(() => {
-          restoreScrollSnapshot(snapshot);
-          autoRefreshInProgress = false;
-        });
-      };
-
-      const startAutoRefreshLoop = () => {
-        stopAutoRefreshLoop();
-        autoRefreshTimer = setInterval(runAutoRefreshCycle, AUTO_REFRESH_INTERVAL);
-      };
-
-      if (AUTO_REFRESH_INTERVAL > 0) {
-        startAutoRefreshLoop();
-        document.addEventListener("visibilitychange", () => {
-          if (document.hidden) {
-            stopAutoRefreshLoop();
-          } else {
-            runAutoRefreshCycle();
-            startAutoRefreshLoop();
-          }
-        });
-        window.addEventListener("beforeunload", stopAutoRefreshLoop);
-      }
-
-      const recapTabs = document.querySelectorAll(".recap-tab");
-      const catalystPanel = document.getElementById("catalystPanel");
-      const latestPanel = document.getElementById("latestPanel");
-      recapTabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-          recapTabs.forEach((btn) => {
-            btn.classList.remove("bg-[#FFBF00]", "text-black");
-            btn.classList.add("text-neutral-400");
-          });
-          tab.classList.add("bg-[#FFBF00]", "text-black");
-          tab.classList.remove("text-neutral-400");
-          if (tab.dataset.panel === "catalyst") {
-            catalystPanel.classList.remove("hidden");
-            latestPanel.classList.add("hidden");
-          } else {
-            catalystPanel.classList.add("hidden");
-            latestPanel.classList.remove("hidden");
-          }
-        });
-      });
-
-      const insightTabs = document.querySelectorAll(".insight-tab");
-      const insightPane = document.getElementById("insightPane");
-      const tvPane = document.getElementById("tvPane");
-      insightTabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-          insightTabs.forEach((btn) => btn.classList.remove("bg-[#FFBF00]", "text-black"));
-          insightTabs.forEach((btn) => btn.classList.add("text-neutral-400"));
-          tab.classList.remove("text-neutral-400");
-          tab.classList.add("bg-[#FFBF00]", "text-black");
-          if (tab.dataset.pane === "insight") {
-            insightPane.classList.remove("hidden");
-            tvPane.classList.add("hidden");
-          } else {
-            insightPane.classList.add("hidden");
-            tvPane.classList.remove("hidden");
-          }
-        });
-      });
-
-      const API_BASE = "https://sider.ai/api/chat/v1";
-      const TIMEZONE = "Asia/Makassar";
-      const TOKEN =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyMTgzNzM0NiwicmVnaXN0ZXJfdHlwZSI6Im9hdXRoMiIsImFwcF9uYW1lIjoiQ2hpdENoYXRfQ2hyb21lX0V4dCIsInRva2VuX2lkIjoiZTZlOGIwZGUtN2Q3Zi00NTZkLTkxNGQtNzUwNDQ0ZjkyZTNjIiwiaXNzIjoic2lkZXIuYWkiLCJhdWQiOlsiIl0sImV4cCI6MTc4ODY5NjUxMCwibmJmIjoxNzU3NTkyNTEwLCJpYXQiOjE3NTc1OTI1MTB9.mcq86TwFwPtql3S77_vhnJRGj08878Ej5WGkvY3OxWI";
-
-      let cid = null;
-      let parentMessageId = null;
-      let isStreaming = false;
-      let streamBuffer = "";
-
-      const chatListEl = document.getElementById("chatList");
-      const inputEl = document.getElementById("input");
-      const sendBtn = document.getElementById("send");
-      const card = document.getElementById("card");
-
-      function setAdaptiveHeight() {
-        const vh = window.innerHeight || 0;
-        const isMobile = vh && window.matchMedia("(max-width: 820px)").matches;
-        const base = isMobile ? Math.round(vh * 0.66) : Math.round(vh * 0.6);
-        document.documentElement.style.setProperty("--chat-h", Math.max(260, base) + "px");
-      }
-      setAdaptiveHeight();
-      const syncResultMaxHeight = () => {
-        if (!chatListEl) return;
-        const h = getComputedStyle(document.documentElement).getPropertyValue("--chat-h");
-        chatListEl.style.maxHeight = `calc(${h.trim() || "360px"} - 40px)`;
-      };
-      const handleChatResize = () => {
-        setAdaptiveHeight();
-        syncResultMaxHeight();
-      };
-      syncResultMaxHeight();
-      window.addEventListener("resize", handleChatResize);
-      if (window.ResizeObserver && card) {
-        const ro = new ResizeObserver(syncResultMaxHeight);
-        ro.observe(card);
-      }
-
-      const recapConversations = new Map();
-      let messages = [];
-      const markdownToHtml = (md) =>
-        window.marked ? window.marked.parse(md || "") : (md || "").replace(/\n/g, "<br>");
-
-      const renderChat = () => {
-        if (!chatListEl) return;
-        if (!messages.length) {
-          chatListEl.innerHTML = '<p class="placeholder text-center">Belum ada percakapan.</p>';
-          return;
-        }
-        chatListEl.innerHTML = messages
-          .map(
-            (msg) => `
-          <div class="kuantara-message ${msg.sender === "Anda" ? "user" : "ai"}">
-            <p class="kuantara-label">${msg.sender === "Anda" ? "YOU" : "AI"}</p>
-            <div class="kuantara-block">
-              <div class="md">${markdownToHtml(msg.contentMD || "")}</div>
             </div>
-          </div>`
-          )
-          .join("");
-        chatListEl.scrollTop = chatListEl.scrollHeight;
-      };
+          </article>
 
-      const addMessage = (sender, contentMD) => {
-        messages.push({ sender, contentMD });
-        renderChat();
-        return messages.length - 1;
-      };
+          <article class="news-item">
+            <div class="news-item-header">
+              <div class="news-ticker">XAUUSD · Commodities</div>
+              <div class="news-time">00:00 UTC</div>
+            </div>
+            <div class="news-headline">
+              Example row: when a filter is active, only matching items should be shown.
+            </div>
+            <div class="news-tags">
+              <span class="news-tag">Commodities</span>
+              <span class="news-tag">Macro Topics</span>
+            </div>
+            <div class="news-footer">
+              <span class="news-source">Source: Demo</span>
+              <div class="news-sentiment">
+                <span class="sentiment-chip sentiment-bull">Mildly Bullish</span>
+              </div>
+            </div>
+          </article>
+        </div>
 
-      const updateMessage = (index, contentMD) => {
-        if (index == null || index < 0 || index >= messages.length) return;
-        messages[index].contentMD = contentMD;
-        renderChat();
-      };
+        <div class="hint">
+          Suggested contract:
+          <code>onFilterChange(filterKey)</code> &rarr; call your API,
+          then feed into <code>updateNewsStream(payload)</code>.
+        </div>
+      </section>
+    </div>
+  </div>
 
-      renderChat();
-
-      function baseHeaders_chat() {
-        return {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
-          "Content-Type": "application/json",
-          "sec-ch-ua-platform": '"Windows"',
-          Accept: "text/event-stream",
-          "Cache-Control": "no-cache",
-          Connection: "keep-alive",
-          "sec-ch-ua": '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
-          authorization: `Bearer ${TOKEN}`,
-          "x-app-name": "ChitChat_Web",
-          "x-time-zone": TIMEZONE,
-          "sec-ch-ua-mobile": "?0",
-          "x-app-version": "1.0.0",
-          origin: "https://sider.ai",
-          "sec-fetch-site": "same-origin",
-          "sec-fetch-dest": "empty",
-          referer: "https://sider.ai/chat",
-          "accept-language": "en-US,en;q=0.9,id;q=0.8",
-        };
-      }
-      function baseHeaders_list() {
-        return {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
-          "Accept-Encoding": "gzip, deflate, br, zstd",
-          "Content-Type": "application/json",
-          "sec-ch-ua-platform": '"Windows"',
-          authorization: `Bearer ${TOKEN}`,
-          "x-app-name": "ChitChat_Web",
-          "sec-ch-ua": '"Google Chrome";v="141", "Not?A_Brand";v="8", "Chromium";v="141"',
-          "x-time-zone": TIMEZONE,
-          "sec-ch-ua-mobile": "?0",
-          "x-trace-id": crypto.randomUUID ? crypto.randomUUID() : "trace-" + Date.now(),
-          "x-app-version": "1.0.0",
-          origin: "https://sider.ai",
-          "sec-fetch-site": "same-origin",
-          "sec-fetch-dest": "empty",
-          referer: "https://sider.ai/chat",
-          "accept-language": "en-US,en;q=0.9,id;q=0.8",
-          priority: "u=1, i",
-          Cookie: "lang=en",
-        };
-      }
-
-      async function fetchCurrentLeaf(conversationId, limit = 100, timeoutMs = 15000) {
-        const ctrl = new AbortController();
-        const t = setTimeout(() => ctrl.abort(), timeoutMs);
-        try {
-          const resp = await fetch(`${API_BASE}/conversation/list`, {
-            method: "POST",
-            headers: baseHeaders_list(),
-            body: JSON.stringify({ limit, client_type: "chat", sort_type: "desc" }),
-            signal: ctrl.signal,
-            mode: "cors",
-            credentials: "omit",
-          });
-          if (!resp.ok) return null;
-          const data = await resp.json().catch(() => null);
-          const convs = data?.data?.conversations || [];
-          for (const c of convs) {
-            if (c?.id === conversationId) return c.current_leaf_message_id || null;
-          }
-          return null;
-        } catch {
-          return null;
-        } finally {
-          clearTimeout(t);
-        }
-      }
-
-      async function startStreaming(promptText, { userVisibleText = null } = {}) {
-        if (isStreaming) return;
-        if (cid) {
-          const leaf = await fetchCurrentLeaf(cid);
-          if (leaf) parentMessageId = leaf;
-        }
-        let aiMessageIndex = null;
-        if (userVisibleText) addMessage("Anda", userVisibleText);
-        aiMessageIndex = addMessage("Kuantara", "_Sedang berpikir…_");
-        isStreaming = true;
-        streamBuffer = "";
-
-        const payload = {
-          model: "grok-4",
-          from: "chat",
-          client_prompt: {},
-          multi_content: [{ type: "text", text: promptText, user_input_text: promptText }],
-          prompt_templates: [],
-          tools: { auto: ["search"] },
-          stream: true,
-          output_language: "id",
-          customize_instructions: { enable: true },
-        };
-        if (cid) payload.cid = cid;
-        if (parentMessageId) payload.parent_message_id = parentMessageId;
-
-        let resp;
-        try {
-          resp = await fetch(`${API_BASE}/completions`, {
-            method: "POST",
-            headers: baseHeaders_chat(),
-            body: JSON.stringify(payload),
-            mode: "cors",
-            credentials: "omit",
-          });
-        } catch (err) {
-          updateMessage(aiMessageIndex, `**Error koneksi:** ${err?.message || err}`);
-          resetStreamFlags();
-          return;
-        }
-
-        if (!resp.ok || !resp.body) {
-          const text = await safeText(resp);
-          updateMessage(
-            aiMessageIndex,
-            `**HTTP ${resp.status} ${resp.statusText}**${text ? "\n\n" + text.slice(0, 300) : ""}`
-          );
-          resetStreamFlags();
-          return;
-        }
-
-        const reader = resp.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-        try {
-          while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            buffer += decoder.decode(value, { stream: true });
-
-            let idx;
-            while ((idx = buffer.indexOf("\n")) >= 0) {
-              const rawLine = buffer.slice(0, idx);
-              buffer = buffer.slice(idx + 1);
-              const line = (rawLine || "").trim();
-              if (!line) continue;
-              if (line === "[DONE]") continue;
-              if (line.startsWith("data:")) {
-                const dataLine = line.slice(5).trim();
-                if (dataLine === "[DONE]") continue;
-                handleSSEData(dataLine);
-              } else {
-                handleSSEData(line);
-              }
-            }
-
-            if (streamBuffer) {
-              updateMessage(aiMessageIndex, streamBuffer);
-            }
-          }
-        } catch (err) {
-          updateMessage(aiMessageIndex, `**Stream error:** ${err?.message || err}`);
-        } finally {
-          if (streamBuffer) {
-            updateMessage(aiMessageIndex, streamBuffer);
-          } else {
-            updateMessage(aiMessageIndex, "_Tidak ada respons._");
-          }
-          resetStreamFlags();
-        }
-      }
-
-      function handleSSEData(dataStr) {
-        try {
-          const obj = JSON.parse(dataStr);
-          const payload = obj?.data || {};
-          const type = payload?.type;
-          if (type === "credit_info") return;
-          if (type === "message_start") {
-            const ms = payload?.message_start || {};
-            if (ms?.cid) cid = ms.cid;
-            if (ms?.assistant_message_id) parentMessageId = ms.assistant_message_id;
-            return;
-          }
-          if (type === "text") {
-            const piece = payload?.text;
-            if (typeof piece === "string" && piece) {
-              streamBuffer += piece;
-            }
-            return;
-          }
-          for (const key of ["text", "token", "content", "output", "message"]) {
-            const value = payload?.[key];
-            if (typeof value === "string" && value) {
-              streamBuffer += value;
-              return;
-            }
-          }
-        } catch {
-          if (dataStr && dataStr !== "[DONE]") streamBuffer += dataStr;
-        }
-      }
-
-      async function safeText(resp) {
-        try {
-          return await resp.text();
-        } catch {
-          return "";
-        }
-      }
-
-      function resetStreamFlags() {
-        isStreaming = false;
-        streamBuffer = "";
-        if (kuantaraRecapActive) kuantaraRecapActive = false;
-      }
-
-      sendBtn?.addEventListener("click", () => {
-        const txt = (inputEl?.value || "").trim();
-        if (!txt || isStreaming) return;
-        inputEl.value = "";
-        autoResize();
-        startStreaming(txt, { userVisibleText: txt });
-      });
-      inputEl?.addEventListener("keydown", (e) => {
-        if ((e.key === "Enter" || e.keyCode === 13) && !e.shiftKey) {
-          e.preventDefault();
-          sendBtn?.click();
-        }
-      });
-
-      function autoResize() {
-        if (!inputEl) return;
-        inputEl.style.height = "auto";
-        const h = Math.min(220, Math.max(44, inputEl.scrollHeight + 2));
-        inputEl.style.height = h + "px";
-      }
-      inputEl?.addEventListener("input", autoResize);
-
-      const triggerHeadlineRecap = () => {
-        const tagIds = latestDropdownEl?.value || "-1";
-        const label = resolveLatestCategoryLabel(tagIds);
-        openKuantaraModal({
-          key: `headline:${tagIds}`,
-          label,
-          ensureData: () => ensureLatestCategoryData(tagIds),
-          buildPrompt: (items) => buildRecapPrompt(label, items),
-        });
-      };
-      if (latestRecapBtn) {
-        latestRecapBtn.addEventListener("click", triggerHeadlineRecap);
-      }
-      const triggerXFeedRecap = () => {
-        openKuantaraModal({
-          key: "xfeed",
-          label: "X Feed",
-          ensureData: () => ensureXFeedData(),
-          buildPrompt: (items) => buildXFeedRecapPrompt("X Feed", items),
-        });
-      };
-      xFeedRecapBtn?.addEventListener("click", triggerXFeedRecap);
-      kuantaraCloseBtn?.addEventListener("click", closeKuantaraModal);
-      readerCloseBtn?.addEventListener("click", closeReaderModal);
-      readerModal?.addEventListener("click", (event) => {
-        if (event.target === readerModal) closeReaderModal();
-      });
-
-      aiSummaryToggleBtn?.addEventListener("click", () =>
-        setAiSummaryState(!aiSummaryEnabled)
+  <script>
+    // Basic filter behaviour + hook to backend
+    (function() {
+      const filterButtons = Array.from(
+        document.querySelectorAll(".filter-btn")
       );
-      captionsToggleBtn?.addEventListener("click", () =>
-        setCaptionsState(!captionsEnabled)
-      );
-      setAiSummaryState(false);
-      setCaptionsState(false);
-      updateCcCounter();
-      initializeLivePlayer();
-      window.pushLiveCaption = appendLiveCaption;
+      const activeLabel = document.getElementById("activeFilterLabel");
 
-      const resolveCatalystLabel = (value) => {
-        if (!catalystDropdownEl) return "Semua";
-        if (value === "all") return "Semua";
-        const option = catalystDropdownEl.options[catalystDropdownEl.selectedIndex];
-        return option?.textContent || value || "Semua";
-      };
+      filterButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          filterButtons.forEach(b => b.classList.remove("is-active"));
+          btn.classList.add("is-active");
+          activeLabel.textContent = btn.textContent.trim();
 
-      const triggerCatalystRecap = () => {
-        const category = catalystDropdownEl?.value || "all";
-        const label = resolveCatalystLabel(category);
-        openKuantaraModal({
-          key: `catalyst:${category}`,
-          label,
-          ensureData: () => ensureCatalystCategoryData(category),
-          buildPrompt: (items) => buildCatalystRecapPrompt(label, items),
+          // Backend hook:
+          // const filterKey = btn.dataset.filter;
+          // fetch(`/your-endpoint?filter=${encodeURIComponent(filterKey)}`)
+          //   .then(r => r.json())
+          //   .then(updateNewsStream);
+        });
+      });
+
+      // Update Headline Stream from API
+      window.updateNewsStream = function(payload) {
+        // payload = [{headline, ticker, time, tags:[], source, sentiment}, ...]
+        const list = document.getElementById("newsList");
+        if (!list || !Array.isArray(payload)) return;
+
+        list.innerHTML = "";
+        payload.forEach(item => {
+          const article = document.createElement("article");
+          article.className = "news-item";
+
+          const header = document.createElement("div");
+          header.className = "news-item-header";
+
+          const ticker = document.createElement("div");
+          ticker.className = "news-ticker";
+          ticker.textContent = item.ticker || "—";
+
+          const time = document.createElement("div");
+          time.className = "news-time";
+          time.textContent = item.time || "";
+
+          header.appendChild(ticker);
+          header.appendChild(time);
+
+          const headline = document.createElement("div");
+          headline.className = "news-headline";
+          headline.textContent = item.headline || "";
+
+          const tags = document.createElement("div");
+          tags.className = "news-tags";
+          (item.tags || []).forEach(t => {
+            const tag = document.createElement("span");
+            tag.className = "news-tag";
+            tag.textContent = t;
+            tags.appendChild(tag);
+          });
+
+          const footer = document.createElement("div");
+          footer.className = "news-footer";
+
+          const source = document.createElement("span");
+          source.className = "news-source";
+          source.textContent = "Source: " + (item.source || "—");
+
+          const sentimentWrap = document.createElement("div");
+          sentimentWrap.className = "news-sentiment";
+
+          const sentChip = document.createElement("span");
+          sentChip.className = "sentiment-chip sentiment-neutral";
+          const s = (item.sentiment || "").toLowerCase();
+          if (s.includes("bull")) sentChip.className = "sentiment-chip sentiment-bull";
+          else if (s.includes("bear")) sentChip.className = "sentiment-chip sentiment-bear";
+
+          sentChip.textContent = item.sentiment || "Neutral";
+          sentimentWrap.appendChild(sentChip);
+
+          footer.appendChild(source);
+          footer.appendChild(sentimentWrap);
+
+          article.appendChild(header);
+          article.appendChild(headline);
+          article.appendChild(tags);
+          article.appendChild(footer);
+
+          list.appendChild(article);
         });
       };
-
-      catalystDropdownEl?.addEventListener("change", (event) => {
-        catalystSelected = event.target.value || "all";
-        updateCatalystRecapButton();
-        renderCatalystFeed();
-      });
-      if (catalystRecapBtn) {
-        catalystRecapBtn.addEventListener("click", triggerCatalystRecap);
-      }
-
-      updateCatalystRecapButton();
-      fetchCatalystFeed();
-      fetchXFeed();
-
-    </script>
-  </body>
+    })();
+  </script>
+</body>
 </html>
-  
