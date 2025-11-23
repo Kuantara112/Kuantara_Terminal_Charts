@@ -46,9 +46,7 @@
       font-size:var(--fs-body);
     }
 
-    body {
-      display:block;
-    }
+    body { display:block; }
 
     .kt-root {
       width:100%;
@@ -234,9 +232,7 @@
       font-weight:500;
     }
 
-    .kt-select-wrap {
-      position:relative;
-    }
+    .kt-select-wrap { position:relative; }
 
     select,
     input[type="number"],
@@ -294,9 +290,7 @@
       letter-spacing:0.05em;
     }
 
-    .kt-btn-main:hover {
-      filter:brightness(1.08);
-    }
+    .kt-btn-main:hover { filter:brightness(1.08); }
 
     /* ====== RESULTS ====== */
     .kt-result-main {
@@ -367,19 +361,10 @@
       border-bottom:1px dashed rgba(255,255,255,0.06);
     }
 
-    .kt-pivot-table tr:last-child td {
-      border-bottom:none;
-    }
+    .kt-pivot-table tr:last-child td { border-bottom:none; }
 
-    .kt-pivot-label {
-      font-weight:600;
-      width:70px;
-    }
-
-    .kt-pivot-val {
-      text-align:right;
-      font-family:"Fira Code",monospace;
-    }
+    .kt-pivot-label { font-weight:600; width:70px; }
+    .kt-pivot-val { text-align:right; font-family:"Fira Code",monospace; }
 
     .p-res { color:#f97373; font-weight:700; }
     .p-sup { color:#4ade80; font-weight:700; }
@@ -427,11 +412,8 @@
       margin:4px 0;
     }
 
-    .kt-info-list li {
-      margin-bottom:3px;
-    }
+    .kt-info-list li { margin-bottom:3px; }
 
-    /* ====== UTIL ====== */
     .w-full { width:100%; }
   </style>
 </head>
@@ -442,7 +424,7 @@
       <div class="kt-title-icon">≡</div>
       <div class="kt-title-text">
         <h1>Kuantara – Terminal Kalkulator</h1>
-        <p>Margin, Pivot Points, Risk Management, Compounding &amp; Valuasi.</p>
+        <p>Margin, Pivot Points, Risk Management, Kelly, Compounding &amp; Valuasi.</p>
       </div>
     </div>
 
@@ -452,6 +434,7 @@
       <button class="kt-main-tab kt-main-active" data-tool="pivot">Pivot Points</button>
       <button class="kt-main-tab" data-tool="position">Position Size</button>
       <button class="kt-main-tab" data-tool="expectancy">Expectancy</button>
+      <button class="kt-main-tab" data-tool="kelly">Kelly Fraction</button>
       <button class="kt-main-tab" data-tool="growth">Inv. Growth</button>
       <button class="kt-main-tab" data-tool="dcf">DCF Valuation</button>
     </div>
@@ -802,6 +785,70 @@
       </div>
     </div>
 
+    <!-- ====== KELLY FRACTION ====== -->
+    <div class="kt-tool-view" id="tool-kelly">
+      <div class="kt-grid">
+        <section class="kt-panel">
+          <div class="kt-panel-header">
+            <span class="icon">κ</span><span>Kelly Fraction</span>
+          </div>
+          <p class="kt-muted-note" style="margin-bottom:12px;">
+            Menghitung fraksi modal optimal menurut formula Kelly berdasarkan winrate dan reward:risk ratio.
+          </p>
+
+          <div class="kt-form-grid kt-form-grid--2">
+            <div class="kt-field">
+              <label class="kt-label">Win Rate (%)</label>
+              <input id="k_winrate" type="number" value="40" step="0.1" placeholder="Contoh: 40">
+            </div>
+            <div class="kt-field">
+              <label class="kt-label">Reward : Risk (R)</label>
+              <input id="k_rr" type="number" value="2" step="0.1" placeholder="Contoh: 2 (artinya 2:1)">
+            </div>
+          </div>
+
+          <div class="kt-muted-note">
+            Rumus klasik: <strong>f* = p - (q / R)</strong> di mana p = winrate, q = 1 - p, R = reward:risk.
+            <br>Hasil dalam % menunjukkan seberapa besar modal yang “secara teori” boleh dipertaruhkan per trade.
+          </div>
+
+          <button class="kt-btn-main" onclick="calcKelly()">Hitung Kelly Fraction</button>
+        </section>
+
+        <section>
+          <div class="kt-result-main" id="k_panel_res">
+            <div class="kt-result-header">
+              <span>Kelly</span><span>Optimal Fraction</span>
+            </div>
+            <div class="kt-result-caption">Kelly Fraction (Teoretis)</div>
+            <div class="kt-result-value-big" id="k_res_frac">0.0%</div>
+            <div class="kt-split-line"></div>
+            <div class="kt-result-grid">
+              <div>
+                <div class="kt-result-item-label">½ Kelly (Praktis)</div>
+                <div class="kt-result-item-value" id="k_res_half">0.0%</div>
+              </div>
+              <div>
+                <div class="kt-result-item-label">¼ Kelly (Konservatif)</div>
+                <div class="kt-result-item-value" id="k_res_quarter">0.0%</div>
+              </div>
+            </div>
+            <div class="kt-split-line"></div>
+            <div class="kt-result-caption" id="k_res_note">Masukkan parameter untuk melihat rekomendasi.</div>
+          </div>
+
+          <div class="kt-info-card">
+            <div class="kt-info-title"><span>i</span>Catatan Penggunaan</div>
+            <ul class="kt-info-list">
+              <li>Jika <strong>Kelly &lt; 0</strong> &rarr; edge negatif, secara teori tidak layak ditradingkan.</li>
+              <li>Praktiknya banyak trader memakai <strong>½ Kelly</strong> atau <strong>¼ Kelly</strong> untuk mengurangi drawdown.</li>
+              <li>Gunakan Kelly sebagai panduan risk budgeting, bukan angka saklek yang wajib diikuti.</li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
     <!-- ====== GROWTH ====== -->
     <div class="kt-tool-view" id="tool-growth">
       <div class="kt-grid">
@@ -950,9 +997,7 @@
       if (!isFinite(num)) return '-';
       try {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(num);
-      } catch(e) {
-        return num.toFixed(2);
-      }
+      } catch(e) { return num.toFixed(2); }
     };
 
     const formatNum = (num, decimals = 2) => {
@@ -962,9 +1007,7 @@
           minimumFractionDigits:decimals,
           maximumFractionDigits:decimals
         }).format(num);
-      } catch(e) {
-        return num.toFixed(decimals);
-      }
+      } catch(e) { return num.toFixed(decimals); }
     };
 
     const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
@@ -1012,7 +1055,7 @@
       setTxt('pw_r2', formatNum(w_R2, 4));
       setTxt('pw_s2', formatNum(w_S2, 4));
 
-      // Camarilla (R3/R4/S3/S4) with standard P as ref
+      // Camarilla
       const range = H - L;
       const c_R4 = C + range * 1.1 / 2;
       const c_R3 = C + range * 1.1 / 4;
@@ -1027,13 +1070,9 @@
 
       // DeMark's
       let X;
-      if (C < O) {
-        X = H + 2 * L + C;
-      } else if (C > O) {
-        X = 2 * H + L + C;
-      } else {
-        X = H + L + 2 * C;
-      }
+      if (C < O) X = H + 2 * L + C;
+      else if (C > O) X = 2 * H + L + C;
+      else X = H + L + 2 * C;
 
       const d_P = X / 4;
       const d_R1 = X / 2 - L;
@@ -1045,14 +1084,12 @@
     }
 
     function switchPivotTab(type, btnElement) {
-      document.querySelectorAll('.pv-res-view')
-        .forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.pv-res-view').forEach(el => el.style.display = 'none');
       const tgt = document.getElementById('pv_res_' + type);
       if (tgt) tgt.style.display = 'block';
 
       const container = btnElement.parentElement;
-      container.querySelectorAll('.kt-tab')
-        .forEach(b => b.classList.remove('kt-active'));
+      container.querySelectorAll('.kt-tab').forEach(b => b.classList.remove('kt-active'));
       btnElement.classList.add('kt-active');
     }
 
@@ -1189,6 +1226,51 @@
       } else {
         pnl.style.backgroundColor = '#181818';
         pnl.style.color = 'var(--text-main)';
+      }
+    }
+
+    /* ====== KELLY FRACTION ====== */
+    function calcKelly() {
+      const wr = getVal('k_winrate');
+      const rr = getVal('k_rr');
+
+      const panel = document.getElementById('k_panel_res');
+      if (!panel) return;
+
+      if (wr <= 0 || wr >= 100 || rr <= 0) {
+        setTxt('k_res_frac', '0.0%');
+        setTxt('k_res_half', '0.0%');
+        setTxt('k_res_quarter', '0.0%');
+        setTxt('k_res_note', 'Parameter tidak valid. Pastikan winrate antara 0–100 dan Reward:Risk > 0.');
+        panel.style.backgroundColor = '#181818';
+        panel.style.color = 'var(--text-main)';
+        return;
+      }
+
+      const p = wr / 100;
+      const q = 1 - p;
+
+      let f = p - (q / rr); // Kelly fraction
+      if (!isFinite(f)) f = 0;
+
+      const fracPct = f * 100;
+      const half = (f / 2) * 100;
+      const quarter = (f / 4) * 100;
+
+      if (fracPct <= 0) {
+        setTxt('k_res_frac', '0.0%');
+        setTxt('k_res_half', '0.0%');
+        setTxt('k_res_quarter', '0.0%');
+        setTxt('k_res_note', 'Kelly negatif → secara teori sistem tidak punya edge (hindari position sizing agresif).');
+        panel.style.backgroundColor = 'var(--danger)';
+        panel.style.color = '#ffffff';
+      } else {
+        setTxt('k_res_frac', formatNum(fracPct, 2) + '%');
+        setTxt('k_res_half', formatNum(half, 2) + '%');
+        setTxt('k_res_quarter', formatNum(quarter, 2) + '%');
+        setTxt('k_res_note', 'Angka di atas adalah teori. Banyak trader defensif memakai ½ Kelly atau ¼ Kelly untuk menurunkan drawdown.');
+        panel.style.backgroundColor = 'var(--success)';
+        panel.style.color = '#ffffff';
       }
     }
 
