@@ -2,142 +2,1108 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
+  <title>Kuantara – Trading Calculators</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fira Code (Kuantara Standard) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
     :root {
-      --bg:#050505;
-      --card:#151515;
-      --accent:#ffbf00;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9px;
     }
 
-    *{
+    * {
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:"Fira Code",monospace !important;
     }
 
-    body{
-      min-height:100vh;
+    /* Scrollbar dark */
+    *::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track{
+      background:#000;
+    }
+    *::-webkit-scrollbar-thumb{
+      background:#2b2b2b;
+      border-radius:3px;
+    }
+
+    html, body {
+      width:100%;
+      height:100%;
+      background-color:var(--bg-root);
+      color:var(--text-main);
+      font-size:var(--fs-body);
+    }
+
+    body {
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+    }
+
+    .kt-root {
+      width:100%;
+      max-width:1200px;
+      padding:16px;
+    }
+
+    .kt-title-row {
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .kt-title-icon {
+      width:32px;
+      height:32px;
+      border-radius:4px;
+      background:#111;
       display:flex;
       align-items:center;
       justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
+      border:1px solid var(--border-soft);
+      font-size:16px;
+      color:var(--accent);
+      flex-shrink:0;
+    }
+
+    .kt-title-text {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .kt-title-text h1 {
+      font-size:var(--fs-title);
+      font-weight:700;
+      letter-spacing:0.04em;
+    }
+
+    .kt-title-text p {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    /* MAIN MENU (tool selector) */
+    .kt-main-menu {
+      display:flex;
+      gap:6px;
+      background-color:#050505;
+      border-radius:4px;
+      padding:4px;
+      border:1px solid var(--border-soft);
+      margin-bottom:12px;
+      overflow-x:auto;
+    }
+
+    .kt-main-tab {
+      flex:0 0 auto;
+      padding:6px 10px;
+      border-radius:3px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      border:none;
+      background:transparent;
+      cursor:pointer;
+      white-space:nowrap;
+      transition:background-color 0.15s ease,color 0.15s ease;
+    }
+
+    .kt-main-tab.kt-main-active {
+      background-color:var(--accent);
+      color:#000;
+      font-weight:600;
+    }
+
+    .kt-main-tab:not(.kt-main-active):hover {
+      background-color:#181818;
       color:var(--text-main);
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
-      text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    .kt-tool-view {
+      margin-top:12px;
     }
 
-    .badge{
-      display:inline-flex;
+    .kt-grid {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    @media (min-width:960px) {
+      .kt-grid {
+        display:grid;
+        grid-template-columns:7fr 5fr;
+        gap:12px;
+      }
+    }
+
+    .kt-panel {
+      background-color:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:16px;
+    }
+
+    .kt-panel-header {
+      font-size:var(--fs-subtitle);
+      font-weight:600;
+      margin-bottom:10px;
+      display:flex;
       align-items:center;
-      gap:8px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
+      gap:6px;
       color:var(--accent);
-      margin-bottom:18px;
     }
 
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
+    .kt-panel-header span.icon {
+      font-size:12px;
+      color:var(--accent);
     }
 
-    h1{
-      font-size:22px;
+    /* Inner tabs (asset category) */
+    .kt-tabs {
+      display:flex;
+      gap:6px;
+      background-color:#050505;
+      border-radius:4px;
+      padding:3px;
+      border:1px solid var(--border-soft);
+      margin-bottom:12px;
+      overflow-x:auto;
+    }
+
+    .kt-tab {
+      flex:1 1 auto;
+      min-width:0;
+      padding:6px 8px;
+      border-radius:3px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      text-align:center;
+      border:none;
+      background:transparent;
+      cursor:pointer;
+      white-space:nowrap;
+      transition:background-color 0.15s ease,color 0.15s ease;
+    }
+
+    .kt-tab.kt-active {
+      background-color:#222;
+      color:var(--accent);
+      font-weight:600;
+    }
+
+    .kt-tab:not(.kt-active):hover {
+      background-color:#181818;
+      color:var(--text-main);
+    }
+
+    /* Form layout */
+    .kt-form-grid {
+      display:grid;
+      gap:10px;
+    }
+
+    @media (min-width:720px) {
+      .kt-form-grid--2 {
+        grid-template-columns:1fr 1fr;
+      }
+    }
+
+    .kt-field {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .kt-label {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      font-weight:500;
+    }
+
+    .kt-select-wrap {
+      position:relative;
+    }
+
+    select, input[type="number"] {
+      width:100%;
+      padding:8px 26px 8px 10px;
+      font-size:var(--fs-body);
+      background-color:#000;
+      color:var(--text-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      outline:none;
+      appearance:none;
+    }
+
+    select:focus, input[type="number"]:focus {
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(255,191,0,0.25);
+    }
+
+    .kt-chevron {
+      position:absolute;
+      right:8px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:9px;
+      color:var(--text-muted);
+      pointer-events:none;
+    }
+
+    .kt-muted-note {
+      margin-top:2px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    /* Button */
+    .kt-btn-main {
+      margin-top:12px;
+      width:100%;
+      padding:8px 10px;
+      font-size:var(--fs-body);
+      font-weight:600;
+      border-radius:4px;
+      border:1px solid var(--accent);
+      background-color:var(--accent);
+      color:#000;
+      cursor:pointer;
+      text-align:center;
+      letter-spacing:0.04em;
+      text-transform:uppercase;
+    }
+
+    .kt-btn-main:hover {
+      filter:brightness(1.05);
+    }
+
+    /* Result panel – full color block */
+    .kt-result-main {
+      background-color:var(--accent);
+      border-radius:4px;
+      border:1px solid #000;
+      padding:16px;
+      color:#000;
+    }
+
+    .kt-result-header {
+      font-size:var(--fs-small);
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+      margin-bottom:10px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .kt-result-header span.icon {
+      font-size:11px;
+    }
+
+    .kt-result-value-big {
+      font-size:20px;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+
+    .kt-result-caption {
+      font-size:var(--fs-small);
+      font-weight:500;
+    }
+
+    .kt-split-line {
+      height:1px;
+      background:rgba(0,0,0,0.35);
+      margin:10px 0;
+    }
+
+    .kt-result-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    .kt-result-item-label {
+      font-size:var(--fs-small);
+      opacity:0.8;
+    }
+
+    .kt-result-item-value {
+      font-size:12px;
+      font-weight:600;
+    }
+
+    .kt-result-footer {
+      margin-top:10px;
+      font-size:var(--fs-small);
+      opacity:0.9;
+    }
+
+    /* Info card */
+    .kt-info-card {
+      margin-top:10px;
+      background-color:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px;
+      font-size:var(--fs-small);
+      color:var(--text-main);
+    }
+
+    .kt-info-title {
+      font-size:var(--fs-body);
+      font-weight:600;
+      margin-bottom:6px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .kt-info-title span.icon {
+      font-size:11px;
+      color:var(--accent);
+    }
+
+    .kt-code {
+      margin:6px 0;
+      padding:6px;
+      background-color:#050505;
+      border-radius:3px;
+      border:1px solid var(--border-soft);
+      font-family:"Fira Code",monospace;
+    }
+
+    .kt-info-list {
+      padding-left:16px;
+      margin:4px 0;
+    }
+
+    .kt-info-list li {
+      margin-bottom:2px;
+    }
+
+    .kt-legend-card {
+      margin-top:10px;
+      background-color:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:10px;
+    }
+
+    .kt-legend-title {
+      font-size:var(--fs-body);
+      margin-bottom:6px;
+      font-weight:600;
+    }
+
+    .kt-legend-grid {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:6px;
+    }
+
+    .kt-legend-item {
+      background-color:#050505;
+      border-radius:3px;
+      border:1px solid var(--border-soft);
+      padding:6px;
+      text-align:center;
+      font-size:var(--fs-small);
+    }
+
+    .kt-legend-item span {
+      display:block;
+      font-weight:600;
+      margin-bottom:2px;
+    }
+
+    .kt-legend-item span.label-gold {
+      color:var(--accent);
+    }
+
+    .kt-legend-item span.label-green {
+      color:#22c55e;
+    }
+
+    .kt-risk-note {
+      margin-top:10px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      line-height:1.4;
+      border-top:1px dashed var(--border-soft);
+      padding-top:8px;
+    }
+
+    /* Stub tool text */
+    .kt-tool-title {
+      font-size:var(--fs-subtitle);
+      font-weight:600;
+      margin-bottom:6px;
+      color:var(--accent);
+    }
+
+    .kt-tool-desc {
+      font-size:var(--fs-body);
+      color:var(--text-main);
       margin-bottom:8px;
     }
 
-    p{
-      font-size:14px;
-      line-height:1.6;
+    .kt-tool-tips-title {
+      font-size:var(--fs-small);
+      font-weight:600;
+      margin-bottom:4px;
       color:var(--text-muted);
-      margin-bottom:18px;
     }
 
-    .time-estimate{
-      font-size:13px;
-      color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
+    .kt-tool-tips {
+      font-size:var(--fs-small);
+      color:var(--text-main);
+      list-style:disc;
+      margin-left:16px;
     }
 
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
-    }
-
-    .btn:hover{
-      background:var(--accent);
-      color:#000;
-      transform:translateY(-1px);
-    }
-
-    .footer-text{
-      margin-top:16px;
-      font-size:11px;
-      color:#666;
+    @media (max-width:480px) {
+      .kt-title-row {
+        flex-direction:row;
+        align-items:center;
+      }
+      .kt-title-text p {
+        font-size:8.5px;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
+  <div class="kt-root">
+    <!-- TITLE -->
+    <div class="kt-title-row">
+      <div class="kt-title-icon">≡</div>
+      <div class="kt-title-text">
+        <h1>Kuantara – Trading Calculators Hub</h1>
+        <p>Margin, position sizing, expectancy, growth, dan DCF dalam satu panel kalkulator terminal.</p>
+      </div>
     </div>
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
-
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
+    <!-- MAIN MENU -->
+    <div class="kt-main-menu" id="toolMenu">
+      <button class="kt-main-tab kt-main-active" data-tool="margin">Margin Calculator</button>
+      <button class="kt-main-tab" data-tool="position">Position Size</button>
+      <button class="kt-main-tab" data-tool="expectancy">Trade Expectancy</button>
+      <button class="kt-main-tab" data-tool="growth">Investment Growth</button>
+      <button class="kt-main-tab" data-tool="dcf">DCF Valuation</button>
     </div>
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
+    <!-- TOOL: MARGIN -->
+    <div class="kt-tool-view" id="tool-margin">
+      <div class="kt-grid">
+        <!-- LEFT: FORM -->
+        <section class="kt-panel" aria-label="Form Margin">
+          <div class="kt-panel-header">
+            <span class="icon">⌘</span>
+            <span>Margin Calculator</span>
+          </div>
 
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
+          <!-- Asset Category Tabs -->
+          <div class="kt-tabs" id="categoryTabs">
+            <button class="kt-tab kt-active" data-category="forex">Forex (10 Pair)</button>
+            <button class="kt-tab" data-category="commodities">Komoditas</button>
+            <button class="kt-tab" data-category="indices">Indeks Saham</button>
+          </div>
+
+          <!-- Form -->
+          <div class="kt-form-grid kt-form-grid--2">
+            <div class="kt-field">
+              <label class="kt-label" for="assetSelect">Instrumen / Aset</label>
+              <div class="kt-select-wrap">
+                <select id="assetSelect"></select>
+                <span class="kt-chevron">▼</span>
+              </div>
+            </div>
+
+            <div class="kt-field">
+              <label class="kt-label" for="accountCurrencySelect">Mata Uang Akun</label>
+              <div class="kt-select-wrap">
+                <select id="accountCurrencySelect">
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="AUD">AUD</option>
+                  <option value="JPY">JPY</option>
+                </select>
+                <span class="kt-chevron">▼</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="kt-form-grid kt-form-grid--2" style="margin-top:10px;">
+            <div class="kt-field">
+              <label class="kt-label" for="leverageSelect">Rasio Leverage</label>
+              <div class="kt-select-wrap">
+                <select id="leverageSelect">
+                  <option value="1">1:1</option>
+                  <option value="10">1:10</option>
+                  <option value="20">1:20</option>
+                  <option value="30">1:30</option>
+                  <option value="50">1:50</option>
+                  <option value="100" selected>1:100</option>
+                  <option value="200">1:200</option>
+                  <option value="400">1:400</option>
+                  <option value="500">1:500</option>
+                  <option value="1000">1:1000</option>
+                </select>
+                <span class="kt-chevron">▼</span>
+              </div>
+            </div>
+
+            <div class="kt-field">
+              <label class="kt-label" for="lotsInput">Ukuran Trade (Lot)</label>
+              <input id="lotsInput" type="number" min="0.01" step="0.01" value="1.00" />
+            </div>
+          </div>
+
+          <!-- Price input ONLY (no "harga saat ini") -->
+          <div class="kt-field" style="margin-top:10px;">
+            <label class="kt-label" for="manualPriceInput">Harga Aset (Quote Currency)</label>
+            <input id="manualPriceInput" type="number" step="0.0001" />
+            <div class="kt-muted-note">
+              Gunakan titik (.) sebagai pemisah desimal. Contoh: 1.0850 untuk EUR/USD, 2685.50 untuk XAU/USD.
+            </div>
+          </div>
+
+          <button type="button" class="kt-btn-main" id="recalcBtn">
+            Hitung Ulang
+          </button>
+        </section>
+
+        <!-- RIGHT: RESULT + INFO -->
+        <section>
+          <!-- Result Card -->
+          <div class="kt-result-main" aria-label="Hasil Margin">
+            <div class="kt-result-header">
+              <span class="icon">$</span>
+              <span>Hasil Perhitungan</span>
+            </div>
+            <div class="kt-result-caption">Margin Diperlukan (Required Margin)</div>
+            <div class="kt-result-value-big" id="marginRequiredDisplay">–</div>
+
+            <div class="kt-split-line"></div>
+
+            <div class="kt-result-grid">
+              <div>
+                <div class="kt-result-item-label">Ukuran Kontrak</div>
+                <div class="kt-result-item-value" id="contractSizeDisplay">–</div>
+              </div>
+              <div>
+                <div class="kt-result-item-label">Nilai Penuh (Notional)</div>
+                <div class="kt-result-item-value" id="notionalDisplay">–</div>
+              </div>
+            </div>
+
+            <div class="kt-result-footer">
+              Estimasi berbasis harga yang Anda input. Margin aktual mengikuti spesifikasi broker & kondisi pasar.
+            </div>
+          </div>
+
+          <!-- Info Card -->
+          <div class="kt-info-card">
+            <div class="kt-info-title">
+              <span class="icon">i</span>
+              <span>Bagaimana Margin Dihitung?</span>
+            </div>
+            <p>
+              Kalkulator ini membantu Anda memahami berapa besar dana yang perlu disisihkan sebagai margin untuk membuka posisi.
+            </p>
+            <div class="kt-code">
+              Margin ≈ (Lot × Contract Size × Harga) ÷ Leverage
+            </div>
+            <p>
+              <strong>Contoh singkat:</strong> Akun USD, leverage 1:100, 1 lot EURUSD di harga 1.1500:
+            </p>
+            <ul class="kt-info-list">
+              <li>Ukuran kontrak: 100,000 EUR</li>
+              <li>Nilai transaksi: ≈ $115,000</li>
+              <li>Margin (1:100): ≈ <strong>$1,150</strong></li>
+            </ul>
+            <div class="kt-muted-note">
+              Jika mata uang akun berbeda dengan mata uang dasar/quote aset, sistem akan mengkonversi menggunakan cross rate internal.
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="kt-legend-card">
+            <div class="kt-legend-title">Spesifikasi Aset Default</div>
+            <div class="kt-legend-grid">
+              <div class="kt-legend-item">
+                <span>Forex</span>
+                1 Lot = 100k unit
+              </div>
+              <div class="kt-legend-item">
+                <span class="label-gold">Gold</span>
+                1 Lot = 100 oz
+              </div>
+              <div class="kt-legend-item">
+                <span class="label-green">Indeks</span>
+                1 Lot = 1 kontrak
+              </div>
+            </div>
+            <div class="kt-risk-note">
+              PERINGATAN RISIKO: Trading dengan leverage tinggi dapat memperbesar keuntungan sekaligus kerugian.
+              Pastikan ukuran posisi sejalan dengan toleransi risiko dan rencana manajemen modal Anda.
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
-  </main>
+
+    <!-- TOOL: POSITION SIZE (stub) -->
+    <div class="kt-tool-view" id="tool-position" style="display:none;">
+      <section class="kt-panel">
+        <div class="kt-panel-header">
+          <span class="icon">ψ</span>
+          <span>Position Size Calculator</span>
+        </div>
+        <div class="kt-tool-title">Tujuan Kalkulator</div>
+        <p class="kt-tool-desc">
+          Position Size Calculator akan membantu menentukan berapa besar lot/kontrak yang ideal berdasarkan
+          risiko per trade, jarak stop loss, dan besar akun. Fokusnya: menjaga risiko konsisten, bukan menebak-nebak ukuran lot.
+        </p>
+        <div class="kt-tool-tips-title">Tips Penggunaan (Konsep):</div>
+        <ul class="kt-tool-tips">
+          <li>Tentukan dulu risiko per trade (misal 0.5%–2% dari total equity).</li>
+          <li>Masukkan jarak stop loss dalam pips/tick atau dalam nilai uang.</li>
+          <li>Kalkulator akan mengembalikan besaran lot yang sesuai dengan batas risiko Anda.</li>
+          <li>Gunakan hasil position size ini langsung ke order, jangan dibulatkan sembarangan jika tidak perlu.</li>
+        </ul>
+        <div class="kt-muted-note">
+          Panel ini masih berupa placeholder. Logika kalkulator penuh bisa dihubungkan dengan parameter risk management Kuantara Terminal.
+        </div>
+      </section>
+    </div>
+
+    <!-- TOOL: TRADE EXPECTANCY (stub) -->
+    <div class="kt-tool-view" id="tool-expectancy" style="display:none;">
+      <section class="kt-panel">
+        <div class="kt-panel-header">
+          <span class="icon">Σ</span>
+          <span>Trade Expectancy Calculator</span>
+        </div>
+        <div class="kt-tool-title">Tujuan Kalkulator</div>
+        <p class="kt-tool-desc">
+          Trade Expectancy Calculator dirancang untuk menghitung seberapa “menguntungkan” suatu sistem trading
+          secara matematis per trade (rata-rata). Menggabungkan winrate, rata-rata profit, dan rata-rata loss
+          menjadi satu angka ekspektasi.
+        </p>
+        <div class="kt-tool-tips-title">Tips Penggunaan (Konsep):</div>
+        <ul class="kt-tool-tips">
+          <li>Kumpulkan data historis trade: jumlah menang, kalah, rata-rata profit, dan rata-rata loss.</li>
+          <li>Expectancy positif artinya sistem Anda profitable dalam jangka panjang (selama disiplin).</li>
+          <li>Jangan hanya fokus pada winrate; kombinasi R:R dan winrate jauh lebih penting.</li>
+          <li>Gunakan expectancy untuk membandingkan dua sistem atau dua setup berbeda.</li>
+        </ul>
+        <div class="kt-muted-note">
+          Panel ini masih kosong secara perhitungan. Nantinya, input winrate, average win, dan average loss
+          bisa diintegrasikan ke dalam kalkulator dengan output expectancy per trade.
+        </div>
+      </section>
+    </div>
+
+    <!-- TOOL: INVESTMENT GROWTH (stub) -->
+    <div class="kt-tool-view" id="tool-growth" style="display:none;">
+      <section class="kt-panel">
+        <div class="kt-panel-header">
+          <span class="icon">∞</span>
+          <span>Investment Growth Calculator</span>
+        </div>
+        <div class="kt-tool-title">Tujuan Kalkulator</div>
+        <p class="kt-tool-desc">
+          Investment Growth Calculator akan memproyeksikan pertumbuhan modal dari waktu ke waktu,
+          berdasarkan return tahunan/bulanan, tambahan setoran (top-up), dan horizon investasi.
+        </p>
+        <div class="kt-tool-tips-title">Tips Penggunaan (Konsep):</div>
+        <ul class="kt-tool-tips">
+          <li>Tentukan horizon waktu (jumlah tahun/bulan) dan asumsi rata-rata return.</li>
+          <li>Tambahkan kontribusi rutin (misal DCA bulanan) untuk melihat efek compounding.</li>
+          <li>Bandingkan skenario konservatif vs agresif dengan tingkat return berbeda.</li>
+          <li>Jangan lupa memasukkan skenario worst-case untuk menguji ketahanan rencana Anda.</li>
+        </ul>
+        <div class="kt-muted-note">
+          Untuk saat ini, panel masih berupa deskripsi. Kedepan, kalkulator ini dapat digabungkan dengan data
+          historis indeks, ETF, atau strategi tertentu di Kuantara Terminal.
+        </div>
+      </section>
+    </div>
+
+    <!-- TOOL: DCF VALUATION (stub) -->
+    <div class="kt-tool-view" id="tool-dcf" style="display:none;">
+      <section class="kt-panel">
+        <div class="kt-panel-header">
+          <span class="icon">¥</span>
+          <span>DCF Valuation Calculator</span>
+        </div>
+        <div class="kt-tool-title">Tujuan Kalkulator</div>
+        <p class="kt-tool-desc">
+          DCF (Discounted Cash Flow) Valuation Calculator akan digunakan untuk menghitung nilai wajar sebuah aset
+          (biasanya saham) berdasarkan proyeksi arus kas masa depan dan tingkat diskonto yang Anda pilih.
+        </p>
+        <div class="kt-tool-tips-title">Tips Penggunaan (Konsep):</div>
+        <ul class="kt-tool-tips">
+          <li>Siapkan proyeksi arus kas (FCF, dividen, atau metrik lain) per periode.</li>
+          <li>Tentukan discount rate (WACC, required return, atau rate lain yang relevan).</li>
+          <li>Masukkan terminal value assumptions (growth jangka panjang yang konservatif).</li>
+          <li>Bandingkan nilai wajar DCF dengan harga pasar saat ini untuk melihat margin of safety.</li>
+        </ul>
+        <div class="kt-muted-note">
+          Panel ini masih placeholder. Nantinya DCF dapat digabungkan dengan data fundamental yang ditarik
+          otomatis dari API untuk membantu screening saham berbasis nilai.
+        </div>
+      </section>
+    </div>
+  </div>
 
   <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
+    // --- DATA KONSTANTA & MOCK HARGA ---
+    const ASSETS = {
+      forex: [
+        { symbol: 'EUR/USD', name: 'Euro vs US Dollar', price: 1.0850, contractSize: 100000, base: 'EUR', quote: 'USD' },
+        { symbol: 'GBP/USD', name: 'Great Britain Pound vs US Dollar', price: 1.2640, contractSize: 100000, base: 'GBP', quote: 'USD' },
+        { symbol: 'USD/JPY', name: 'US Dollar vs Japanese Yen', price: 151.20, contractSize: 100000, base: 'USD', quote: 'JPY' },
+        { symbol: 'USD/CHF', name: 'US Dollar vs Swiss Franc', price: 0.8850, contractSize: 100000, base: 'USD', quote: 'CHF' },
+        { symbol: 'AUD/USD', name: 'Australian Dollar vs US Dollar', price: 0.6540, contractSize: 100000, base: 'AUD', quote: 'USD' },
+        { symbol: 'USD/CAD', name: 'US Dollar vs Canadian Dollar', price: 1.3950, contractSize: 100000, base: 'USD', quote: 'CAD' },
+        { symbol: 'NZD/USD', name: 'New Zealand Dollar vs US Dollar', price: 0.5980, contractSize: 100000, base: 'NZD', quote: 'USD' },
+        { symbol: 'EUR/GBP', name: 'Euro vs Great Britain Pound', price: 0.8580, contractSize: 100000, base: 'EUR', quote: 'GBP' },
+        { symbol: 'EUR/JPY', name: 'Euro vs Japanese Yen', price: 164.05, contractSize: 100000, base: 'EUR', quote: 'JPY' },
+        { symbol: 'GBP/JPY', name: 'Great Britain Pound vs Japanese Yen', price: 191.10, contractSize: 100000, base: 'GBP', quote: 'JPY' },
+      ],
+      commodities: [
+        { symbol: 'XAU/USD', name: 'Gold (Emas)', price: 2685.50, contractSize: 100, base: 'XAU', quote: 'USD' },
+        { symbol: 'XAG/USD', name: 'Silver (Perak)', price: 31.20, contractSize: 5000, base: 'XAG', quote: 'USD' },
+        { symbol: 'WTI', name: 'US Oil (WTI)', price: 71.50, contractSize: 1000, base: 'OIL', quote: 'USD' },
+        { symbol: 'BRENT', name: 'UK Oil (Brent)', price: 75.10, contractSize: 1000, base: 'OIL', quote: 'USD' },
+        { symbol: 'NGAS', name: 'Natural Gas', price: 2.95, contractSize: 10000, base: 'GAS', quote: 'USD' },
+      ],
+      indices: [
+        { symbol: 'US30', name: 'Wall Street 30 (Dow)', price: 44200, contractSize: 1, base: 'USD', quote: 'USD' },
+        { symbol: 'US500', name: 'US SPX 500', price: 6010, contractSize: 1, base: 'USD', quote: 'USD' },
+        { symbol: 'US100', name: 'US Tech 100 (Nasdaq)', price: 20950, contractSize: 1, base: 'USD', quote: 'USD' },
+      ]
+    };
+
+    const ALL_ASSETS = [
+      ...ASSETS.forex,
+      ...ASSETS.commodities,
+      ...ASSETS.indices
+    ];
+
+    const state = {
+      currentTool: 'margin',
+      category: 'forex',
+      selectedAssetSymbol: ASSETS.forex[0].symbol,
+      accountCurrency: 'USD',
+      leverage: 100,
+      lots: 1,
+      manualPrice: null
+    };
+
+    function getSelectedAsset() {
+      return ALL_ASSETS.find(a => a.symbol === state.selectedAssetSymbol) || ALL_ASSETS[0];
+    }
+
+    // gunakan format en-US agar desimal memakai "."
+    function formatCurrency(value, currency) {
+      if (!isFinite(value)) return '–';
+      try {
+        return new Intl.NumberFormat('en-US', {
+          style:'currency',
+          currency:currency,
+          minimumFractionDigits:2,
+          maximumFractionDigits:2
+        }).format(value);
+      } catch (e) {
+        return value.toFixed(2) + ' ' + currency;
+      }
+    }
+
+    function computeExchangeRateToAccount(selectedAsset, accountCurrency) {
+      const base = selectedAsset.base;
+      const target = accountCurrency;
+
+      if (base === target) return 1;
+
+      const directPair = ALL_ASSETS.find(a => a.base === base && a.quote === target);
+      if (directPair && directPair.price) return directPair.price;
+
+      const inversePair = ALL_ASSETS.find(a => a.base === target && a.quote === base);
+      if (inversePair && inversePair.price) return 1 / inversePair.price;
+
+      const baseToUSD =
+        base === 'USD'
+          ? 1
+          : (
+              (ALL_ASSETS.find(a => a.base === base && a.quote === 'USD') || {}).price ||
+              (1 / ((ALL_ASSETS.find(a => a.base === 'USD' && a.quote === base) || {}).price || 1))
+            );
+
+      const usdToTarget =
+        target === 'USD'
+          ? 1
+          : (
+              (ALL_ASSETS.find(a => a.base === 'USD' && a.quote === target) || {}).price ||
+              (1 / ((ALL_ASSETS.find(a => a.base === target && a.quote === 'USD') || {}).price || 1))
+            );
+
+      if (baseToUSD && usdToTarget && isFinite(baseToUSD) && isFinite(usdToTarget)) {
+        return baseToUSD * usdToTarget;
+      }
+
+      if (['OIL','GAS','XAU','XAG','US30','US500','US100'].includes(base) || selectedAsset.quote === 'USD') {
+        if (selectedAsset.quote === 'USD' && target !== 'USD') {
+          const pair1 = ALL_ASSETS.find(a => a.base === 'USD' && a.quote === target);
+          if (pair1 && pair1.price) return pair1.price;
+          const pair2 = ALL_ASSETS.find(a => a.base === target && a.quote === 'USD');
+          if (pair2 && pair2.price) return 1 / pair2.price;
+        }
+        return 1;
+      }
+
+      return 1;
+    }
+
+    function computeMarginRequired() {
+      const selectedAsset = getSelectedAsset();
+      const category = state.category;
+      const lots = state.lots;
+      const leverage = state.leverage || 1;
+      const accountCurrency = state.accountCurrency;
+
+      // jika user belum input atau nilai tidak valid, fallback ke harga default
+      let usePrice = parseFloat(state.manualPrice);
+      if (!isFinite(usePrice) || usePrice <= 0) {
+        usePrice = selectedAsset.price;
+      }
+
+      const activePrice = usePrice;
+      const exchangeRateToAccount = computeExchangeRateToAccount(selectedAsset, accountCurrency);
+
+      let rawMargin = 0;
+
+      if (category === 'forex') {
+        const baseMargin = (lots * selectedAsset.contractSize) / leverage;
+
+        if (accountCurrency === selectedAsset.quote) {
+          rawMargin = baseMargin * activePrice;
+        } else if (accountCurrency === selectedAsset.base) {
+          rawMargin = baseMargin;
+        } else {
+          rawMargin = baseMargin * (exchangeRateToAccount || selectedAsset.price);
+        }
+      } else {
+        const notionalValue = lots * selectedAsset.contractSize * activePrice;
+        const marginInQuote = notionalValue / leverage;
+
+        if (selectedAsset.quote === accountCurrency) {
+          rawMargin = marginInQuote;
+        } else {
+          let rate = 1;
+          if (selectedAsset.quote === 'USD' && accountCurrency !== 'USD') {
+            const pair = ALL_ASSETS.find(a => a.base === accountCurrency && a.quote === 'USD');
+            if (pair && pair.price) {
+              rate = 1 / pair.price;
+            } else {
+              const pair2 = ALL_ASSETS.find(a => a.base === 'USD' && a.quote === accountCurrency);
+              if (pair2 && pair2.price) rate = pair2.price;
+            }
+          }
+          rawMargin = marginInQuote * rate;
+        }
+      }
+
+      if (!isFinite(rawMargin)) return 0;
+      return rawMargin;
+    }
+
+    function populateAssetOptions() {
+      const select = document.getElementById('assetSelect');
+      select.innerHTML = '';
+      const list = ASSETS[state.category] || [];
+      list.forEach(asset => {
+        const opt = document.createElement('option');
+        opt.value = asset.symbol;
+        opt.textContent = asset.symbol + ' – ' + asset.name;
+        select.appendChild(opt);
+      });
+
+      const firstSymbol = list[0] ? list[0].symbol : null;
+      if (!list.find(a => a.symbol === state.selectedAssetSymbol)) {
+        state.selectedAssetSymbol = firstSymbol;
+      }
+      select.value = state.selectedAssetSymbol;
+
+      // setiap ganti kategori/asset, isi default price ke input sebagai starting point
+      const selectedAsset = getSelectedAsset();
+      state.manualPrice = selectedAsset.price;
+      const manualInput = document.getElementById('manualPriceInput');
+      if (manualInput) {
+        manualInput.value = String(selectedAsset.price);
+      }
+    }
+
+    function updateUI() {
+      const selectedAsset = getSelectedAsset();
+      const accountCurrency = state.accountCurrency;
+      const leverage = state.leverage || 1;
+      const lots = state.lots;
+
+      let usePrice = parseFloat(state.manualPrice);
+      if (!isFinite(usePrice) || usePrice <= 0) {
+        usePrice = selectedAsset.price;
+      }
+
+      const activePrice = usePrice;
+      const margin = computeMarginRequired();
+      const notional = margin * leverage;
+
+      const marginDisplay = document.getElementById('marginRequiredDisplay');
+      const contractSizeDisplay = document.getElementById('contractSizeDisplay');
+      const notionalDisplay = document.getElementById('notionalDisplay');
+
+      if (marginDisplay) marginDisplay.textContent = formatCurrency(margin, accountCurrency);
+      if (contractSizeDisplay) {
+        contractSizeDisplay.textContent =
+          (selectedAsset.contractSize || 0).toLocaleString('en-US') + ' ' + selectedAsset.base;
+      }
+      if (notionalDisplay) {
+        notionalDisplay.textContent = formatCurrency(notional, accountCurrency);
+      }
+    }
+
+    function switchTool(tool) {
+      state.currentTool = tool;
+      const tools = ['margin','position','expectancy','growth','dcf'];
+      tools.forEach(t => {
+        const view = document.getElementById('tool-' + t);
+        if (view) view.style.display = (t === tool) ? '' : 'none';
+      });
+
+      const menu = document.getElementById('toolMenu');
+      if (menu) {
+        Array.from(menu.querySelectorAll('.kt-main-tab')).forEach(btn => {
+          const t = btn.getAttribute('data-tool');
+          btn.classList.toggle('kt-main-active', t === tool);
+        });
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const assetSelect = document.getElementById('assetSelect');
+      const accountCurrencySelect = document.getElementById('accountCurrencySelect');
+      const leverageSelect = document.getElementById('leverageSelect');
+      const lotsInput = document.getElementById('lotsInput');
+      const manualPriceInput = document.getElementById('manualPriceInput');
+      const recalcBtn = document.getElementById('recalcBtn');
+
+      // Tool menu handler
+      const toolMenu = document.getElementById('toolMenu');
+      if (toolMenu) {
+        toolMenu.addEventListener('click', function(e) {
+          const btn = e.target.closest('.kt-main-tab');
+          if (!btn) return;
+          const tool = btn.getAttribute('data-tool');
+          if (!tool || tool === state.currentTool) return;
+          switchTool(tool);
+        });
+      }
+
+      // Asset category tabs
+      const tabsContainer = document.getElementById('categoryTabs');
+      tabsContainer.addEventListener('click', function(e) {
+        const btn = e.target.closest('.kt-tab');
+        if (!btn) return;
+        const cat = btn.getAttribute('data-category');
+        if (!cat || cat === state.category) return;
+        state.category = cat;
+
+        Array.from(tabsContainer.querySelectorAll('.kt-tab')).forEach(el => {
+          el.classList.toggle('kt-active', el === btn);
+        });
+
+        populateAssetOptions();
+        updateUI();
+      });
+
+      // Initial population
+      populateAssetOptions();
+
+      // Event listeners
+      assetSelect.addEventListener('change', function() {
+        state.selectedAssetSymbol = this.value;
+        const selectedAsset = getSelectedAsset();
+        state.manualPrice = selectedAsset.price;
+        if (manualPriceInput) manualPriceInput.value = String(selectedAsset.price);
+        updateUI();
+      });
+
+      accountCurrencySelect.addEventListener('change', function() {
+        state.accountCurrency = this.value;
+        updateUI();
+      });
+
+      leverageSelect.addEventListener('change', function() {
+        const v = Number(this.value);
+        state.leverage = isFinite(v) && v > 0 ? v : 1;
+        updateUI();
+      });
+
+      lotsInput.addEventListener('input', function() {
+        const v = Number(this.value);
+        if (!isFinite(v) || v <= 0) {
+          state.lots = 0.01;
+        } else {
+          state.lots = v;
+        }
+        updateUI();
+      });
+
+      manualPriceInput.addEventListener('input', function() {
+        const v = parseFloat(this.value);
+        if (!isFinite(v) || v <= 0) {
+          state.manualPrice = null;
+        } else {
+          state.manualPrice = v;
+        }
+        updateUI();
+      });
+
+      recalcBtn.addEventListener('click', function() {
+        updateUI();
+      });
+
+      // Init state
+      state.accountCurrency = accountCurrencySelect.value;
+      switchTool('margin');
+      updateUI();
+    });
   </script>
 </body>
 </html>
