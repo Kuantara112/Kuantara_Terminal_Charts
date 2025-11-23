@@ -228,9 +228,14 @@
 
   <script>
     // =========================
-    // Channel Map (15 feeds)
+    // Channel Map (15 feeds, CNBC pertama, BBC dihapus)
     // =========================
     const CHANNELS = [
+      {
+        key: "cnbc",
+        name: "CNBC Television",
+        url: "https://www.youtube.com/embed/1_Ih0JYmkjI?si=AvOy7Tv6B-SZ8dnj"
+      },
       {
         key: "bloomberg",
         name: "Bloomberg Global News",
@@ -297,11 +302,6 @@
         url: "https://www.youtube.com/embed/QliL4CGc7iY?si=fVnw9uKfLvz7tbDw"
       },
       {
-        key: "bbc",
-        name: "BBC News",
-        url: "https://www.youtube.com/embed/live_stream?channel=UC16niRr50-MSBwiO3YDb3RA"
-      },
-      {
         key: "abc",
         name: "ABC News",
         url: "https://www.youtube.com/embed/vOTiJkg1voo?si=4WbFbcG7g8MgfBvf"
@@ -338,8 +338,8 @@
       setChannel(e.target.value);
     });
 
-    // Default ke Bloomberg
-    setChannel("bloomberg");
+    // Default ke CNBC (urutan pertama)
+    setChannel("cnbc");
   </script>
 </body>
 </html>
