@@ -45,7 +45,7 @@
 
     .page {
       flex:1 1 auto;
-      padding:12px; /* jarak tipis dari tepi iframe */
+      padding:12px;
       background-color:var(--bg-root);
       display:flex;
       flex-direction:column;
@@ -61,40 +61,40 @@
       flex-direction:column;
       gap:8px;
       width:100%;
-      flex:1 1 auto;   /* isi tinggi page */
-      min-height:0;    /* cegah overflow vertikal */
+      flex:1 1 auto;
+      min-height:0;
     }
 
-    .top-row {
+    /* BAR KONTROL: dropdown + mode + now playing sejajar */
+    .controls-row {
       display:flex;
-      flex-direction:column;
-      gap:6px;
+      flex-wrap:wrap;
+      gap:10px 18px;
+      align-items:center;
     }
 
-    @media (min-width: 768px) {
-      .top-row {
-        flex-direction:row;
-        justify-content:space-between;
-        align-items:flex-end;
-      }
-    }
-
+    /* Label & dropdown sejajar */
     .field-group {
       display:flex;
-      flex-direction:column;
-      gap:4px;
-      max-width:320px;
+      flex-direction:row;
+      align-items:center;
+      gap:6px;
+      min-width:220px;
+      flex:1 1 260px;
+      max-width:420px;
     }
 
     .field-label {
       font-size:var(--fs-small);
       color:var(--text-muted);
+      white-space:nowrap;
     }
 
     .select-wrap {
       position:relative;
       display:flex;
       align-items:center;
+      flex:1 1 auto;
     }
 
     select {
@@ -125,11 +125,11 @@
 
     .meta-row {
       display:flex;
-      flex-wrap:wrap;
       gap:6px;
-      align-items:center;
-      font-size:var(--fs-small);
+      white-space:nowrap;
       color:var(--text-muted);
+      font-size:var(--fs-small);
+      flex:0 0 auto;
     }
 
     .meta-value {
@@ -139,20 +139,15 @@
 
     .now-playing {
       display:flex;
-      flex-wrap:wrap;
-      gap:4px 8px;
-      align-items:baseline;
-      margin-top:4px;
+      gap:6px;
+      white-space:nowrap;
       font-size:var(--fs-small);
-    }
-
-    .now-playing-label {
-      color:var(--text-muted);
+      flex:0 0 auto;
     }
 
     .now-playing-name {
-      font-size:var(--fs-body);
       color:var(--accent);
+      font-size:var(--fs-body);
       font-weight:500;
     }
 
@@ -163,9 +158,9 @@
       border:1px solid var(--border-soft);
       background-color:#000000;
       overflow:hidden;
-      flex:1 1 auto;  /* ambil sisa tinggi card */
-      min-height:0;
+      flex:1 1 auto;
       position:relative;
+      min-height:0;
     }
 
     .player-shell iframe {
@@ -176,7 +171,7 @@
       border:0;
     }
 
-    /* Scrollbar minimal (kalau pun muncul) */
+    /* Scrollbar minimal */
     ::-webkit-scrollbar {
       width:6px;
       height:6px;
@@ -192,44 +187,48 @@
     }
   </style>
 </head>
+
 <body>
   <div class="page">
     <section class="card">
-      <div class="top-row">
+
+      <div class="controls-row">
+        <!-- Dropdown + Label sejajar -->
         <div class="field-group">
-          <label for="channelSelect" class="field-label">Pilih kanal live</label>
+          <label class="field-label" for="channelSelect">Pilih kanal live</label>
           <div class="select-wrap">
             <select id="channelSelect"></select>
             <span class="select-caret">▼</span>
           </div>
         </div>
+
+        <!-- Mode -->
         <div class="meta-row">
           <span>Mode:</span>
           <span class="meta-value">24/7 Live News</span>
         </div>
+
+        <!-- Now Playing -->
+        <div class="now-playing">
+          <span>Now Playing:</span>
+          <span id="currentChannelName" class="now-playing-name">—</span>
+        </div>
       </div>
 
-      <div class="now-playing">
-        <span class="now-playing-label">Now Playing:</span>
-        <span class="now-playing-name" id="currentChannelName">—</span>
-      </div>
-
+      <!-- Player -->
       <div class="player-shell">
-        <iframe
-          id="channelPlayer"
+        <iframe id="channelPlayer"
           src=""
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen
           referrerpolicy="strict-origin-when-cross-origin"
-        ></iframe>
+          allowfullscreen></iframe>
       </div>
+
     </section>
   </div>
 
   <script>
-    // =========================
-    // Channel Map (Yahoo pertama)
-    // =========================
+    /* CHANNEL LIST — dengan NHK & ABC terbaru */
     const CHANNELS = [
       {
         key: "yahoo",
@@ -239,7 +238,7 @@
       {
         key: "cnbc",
         name: "CNBC Television",
-        url: "https://www.youtube.com/embed/1_Ih0JYmkjI?si=AvOy7Tv6B-SZ8dnj"
+        url: "https://www.youtube.com/embed/9NyxcX3rhQs?si=p9e_fXAge4zH215U"
       },
       {
         key: "bloomberg",
@@ -284,7 +283,7 @@
       {
         key: "nhk",
         name: "NHK World",
-        url: "https://www.youtube.com/embed/f0lYkdA-Gtw?si=zNfzd_U6PoA8Ex2z"
+        url: "https://www.youtube.com/embed/f0lYkdA-Gtw?si=YvBDoKWgGJCAk5VO"
       },
       {
         key: "aljazeera",
@@ -304,7 +303,7 @@
       {
         key: "abc",
         name: "ABC News",
-        url: "https://www.youtube.com/embed/vOTiJkg1voo?si=4WbFbcG7g8MgfBvf"
+        url: "https://www.youtube.com/embed/vOTiJkg1voo?si=MQF3klEmpQSOanTj"
       }
     ];
 
@@ -313,14 +312,15 @@
     const currentNameEl = document.getElementById("currentChannelName");
 
     // Populate dropdown
-    CHANNELS.forEach((ch, idx) => {
+    CHANNELS.forEach((ch, i) => {
       const opt = document.createElement("option");
       opt.value = ch.key;
       opt.textContent = ch.name;
-      if (idx === 0) opt.selected = true;
+      if (i === 0) opt.selected = true;
       selectEl.appendChild(opt);
     });
 
+    // Set player
     function setChannel(key) {
       const ch = CHANNELS.find(c => c.key === key);
       if (!ch) return;
@@ -334,11 +334,9 @@
     }
 
     // On change
-    selectEl.addEventListener("change", (e) => {
-      setChannel(e.target.value);
-    });
+    selectEl.addEventListener("change", e => setChannel(e.target.value));
 
-    // Default ke Yahoo (urutan pertama)
+    // Default: Yahoo
     setChannel("yahoo");
   </script>
 </body>
