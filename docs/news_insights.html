@@ -1,10 +1,12 @@
-<html lang="id"><head>
+<!DOCTYPE html>
+<html lang="id">
+<head>
   <meta charset="UTF-8">
   <title>Kuantara – Insights · TV · X Feeds</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
   <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
     :root{
@@ -856,526 +858,7 @@
       }
     }
   </style>
-<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 2147483647;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.immersive-translate-attach-loading::after {
-  content: " ";
 
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-2000%, -50%);
-  z-index: 100;
-}
-
-.immersive-translate-loading-spinner {
-  vertical-align: middle !important;
-  width: 10px !important;
-  height: 10px !important;
-  display: inline-block !important;
-  margin: 0 4px !important;
-  border: 2px rgba(221, 244, 255, 0.6) solid !important;
-  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-}
-
-@-webkit-keyframes immersive-translate-loading-animation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-
-@keyframes immersive-translate-loading-animation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.immersive-translate-input-loading {
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-}
-
-@keyframes immersiveTranslateShadowRolling {
-  0% {
-    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  12% {
-    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  25% {
-    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  36% {
-    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
-      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  50% {
-    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
-      110px 0 var(--loading-color), 100px 0 var(--loading-color);
-  }
-
-  62% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
-      120px 0 var(--loading-color), 110px 0 var(--loading-color);
-  }
-
-  75% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      130px 0 var(--loading-color), 120px 0 var(--loading-color);
-  }
-
-  87% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
-  }
-
-  100% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.immersive-translate-toast {
-  display: flex;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  right: 0;
-  top: 1%;
-  width: fit-content;
-  padding: 12px 20px;
-  margin: auto;
-  overflow: auto;
-  background: #fef6f9;
-  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
-  font-size: 15px;
-  border-radius: 8px;
-  color: #333;
-}
-
-.immersive-translate-toast-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.immersive-translate-toast-hidden {
-  margin: 0 20px 0 72px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.immersive-translate-toast-close {
-  color: #666666;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-toast {
-    top: 0;
-    padding: 12px 0px 0 10px;
-  }
-  .immersive-translate-toast-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .immersive-translate-toast-hidden {
-    margin: 10px auto;
-  }
-}
-
-.immersive-translate-dialog {
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  display: flex;
-  width: 300px;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: fit-content;
-  border-radius: 20px;
-  background-color: #fff;
-}
-
-.immersive-translate-modal {
-  display: none;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-}
-
-.immersive-translate-modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 40px 24px 24px;
-  border-radius: 12px;
-  width: 350px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
-    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-content {
-    margin: 25% auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .immersive-translate-modal-content {
-    width: 80vw !important;
-    margin: 20vh auto !important;
-    padding: 20px 12px 12px !important;
-  }
-
-  .immersive-translate-modal-title {
-    font-size: 14px !important;
-  }
-
-  .immersive-translate-modal-body {
-    font-size: 13px !important;
-    max-height: 60vh !important;
-  }
-
-  .immersive-translate-btn {
-    font-size: 13px !important;
-    padding: 8px 16px !important;
-    margin: 0 4px !important;
-  }
-
-  .immersive-translate-modal-footer {
-    gap: 6px !important;
-    margin-top: 16px !important;
-  }
-}
-
-.immersive-translate-modal .immersive-translate-modal-content-in-input {
-  max-width: 500px;
-}
-.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
-  text-align: left;
-  max-height: unset;
-}
-
-.immersive-translate-modal-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333333;
-}
-
-.immersive-translate-modal-body {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #333333;
-  margin-top: 24px;
-  word-break: break-all;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-body {
-    max-height: 250px;
-    overflow-y: auto;
-  }
-}
-
-.immersive-translate-close {
-  color: #666666;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.immersive-translate-close:hover,
-.immersive-translate-close:focus {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.immersive-translate-modal-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.immersive-translate-btn {
-  width: fit-content;
-  color: #fff;
-  background-color: #ea4c89;
-  border: none;
-  font-size: 14px;
-  margin: 0 8px;
-  padding: 9px 30px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.immersive-translate-btn-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.immersive-translate-btn:hover {
-  background-color: #f082ac;
-}
-.immersive-translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.immersive-translate-btn:disabled:hover {
-  background-color: #ea4c89;
-}
-
-.immersive-translate-link-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: none;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-}
-
-.immersive-translate-cancel-btn {
-  /* gray color */
-  background-color: rgb(89, 107, 120);
-}
-
-.immersive-translate-cancel-btn:hover {
-  background-color: hsl(205, 20%, 32%);
-}
-
-.immersive-translate-action-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: 1px solid #ea4c89;
-}
-
-.immersive-translate-btn svg {
-  margin-right: 5px;
-}
-
-.immersive-translate-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-primary-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-modal input[type="radio"] {
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.immersive-translate-modal label {
-  cursor: pointer;
-}
-
-.immersive-translate-close-action {
-  position: absolute;
-  top: 2px;
-  right: 0px;
-  cursor: pointer;
-}
-
-.imt-image-status {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 16px !important;
-}
-.imt-image-status img,
-.imt-image-status svg,
-.imt-img-loading {
-  width: 28px !important;
-  height: 28px !important;
-  margin: 0 0 8px 0 !important;
-  min-height: 28px !important;
-  min-width: 28px !important;
-  position: relative !important;
-}
-.imt-img-loading {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
-  background-size: 28px 28px;
-  animation: image-loading-rotate 1s linear infinite !important;
-}
-
-.imt-image-status span {
-  color: var(--bg-2, #fff) !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
-  font-weight: 500 !important;
-  font-family: "PingFang SC", Arial, sans-serif !important;
-}
-
-.imt-primary-button {
-  display: flex;
-  padding: 12px 80px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #ea4c89;
-  color: #fff;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.imt-retry-text {
-  color: #999;
-  text-align: center;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  cursor: pointer;
-}
-
-.imt-action-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.imt-modal-content-text {
-  text-align: left;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-@keyframes image-loading-rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.imt-linear-gradient-text {
-  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.imt-flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.imt-linear-black-btn {
-  border-radius: 50px;
-  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
-  height: 48px;
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
-</style>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
@@ -1484,6 +967,7 @@
     </div>
   </div>
 
+  <!-- Kuantara AI Modal -->
   <div id="kuantaraModal" class="modal-overlay hidden">
     <div id="card" class="modal-card">
       <div class="flex items-center justify-between" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
@@ -1506,6 +990,7 @@
     </div>
   </div>
 
+  <!-- Reader Modal -->
   <div id="readerModal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="flex items-center justify-between" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
@@ -1532,17 +1017,22 @@
       "https://liveprodusphoenixeast.global.ssl.fastly.net/USPhx-HD/Channel-TX-USPhx-AWS-virginia-1/Source-USPhx-16k-1-s6lk2-BP-07-02-81ykIWnsMsg_live.m3u8";
     const LIVE_CC_THRESHOLD = 500;
     const MAX_RECAP_ITEMS = 30;
+
     const HF_API_TOKEN =
       "eyJhbGciOiJFZERTQSJ9.eyJyZWFkIjp0cnVlLCJwZXJtaXNzaW9ucyI6eyJyZXBvLmNvbnRlbnQucmVhZCI6dHJ1ZX0sIm9uQmVoYWxmT2YiOnsia2luZCI6InVzZXIiLCJfaWQiOiI2OGZlMzllMDcwNWJmOGFhNzYxNTI4YjciLCJ1c2VyIjoiS3VhbnRhcmEiLCJzZXNzaW9uSWQiOiI2OGZlMzllMDcwNWJmOGFhNzYxNTI4YmMifSwiaWF0IjoxNzYyNjc5NzE5LCJzdWIiOiIvc3BhY2VzL0t1YW50YXJhL25ld3NhcGkiLCJleHAiOjE3NjI3NjYxMTksImlzcyI6Imh0dHBzOi8vaHVnZ2luZ2ZhY2UuY28ifQ.TumyY_6mybtslQX6rlpqTnty0ri-tFWIfxBjMVKsGg2JGm99P3ES-7JKKF9xP2nLj1x5x1g2rXBVz1ztI_4jBg";
     let hfApiToken = HF_API_TOKEN;
+
     const API_BASE = "https://sider.ai/api/chat/v1";
     const TIMEZONE = "Asia/Makassar";
     const TOKEN =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyMTgzNzM0NiwicmVnaXN0ZXJfdHlwZSI6Im9hdXRoMiIsImFwcF9uYW1lIjoiQ2hpdENoYXRfQ2hyb21lX0V4dCIsInRva2VuX2lkIjoiZTZlOGIwZGUtN2Q3Zi00NTZkLTkxNGQtNzUwNDQ0ZjkyZTNjIiwiaXNzIjoic2lkZXIuYWkiLCJhdWQiOlsiIl0sImV4cCI6MTc4ODY5NjUxMCwibmJmIjoxNzU3NTkyNTEwLCJpYXQiOjE3NTc1OTI1MTB9.mcq86TwFwPtql3S77_vhnJRGj08878Ej5WGkvY3OxWI";
+
     const COPY_ICON =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+
     const DEFAULT_PIQ_LIMIT = 50;
     const DEFAULT_FX_LIMIT = 100;
+
     const researchListEls = {
       insights: document.getElementById("researchListInsights"),
       fxcmd: document.getElementById("researchListFxcmd"),
@@ -1597,20 +1087,24 @@
     readerCloseBtn?.addEventListener("click", closeReaderShell);
 
     const toLower = (value) => (value || "").toString().toLowerCase();
+
     const withAuthHeaders = (headers = {}) => {
       if (!hfApiToken) return { ...headers };
       return { ...headers, Authorization: `Bearer ${hfApiToken}` };
     };
+
     const fetchWithAuth = (url, options = {}) => {
       const headers = withAuthHeaders(options.headers || {});
       return fetch(url, { ...options, headers });
     };
+
     const formatDateTime = (value) => {
       if (!value) return "Unknown time";
       const dt = new Date(value);
       if (Number.isNaN(dt.getTime())) return value;
       return `${dt.toLocaleDateString("en-GB")} ${dt.toLocaleTimeString("en-GB", { hour12: false })}`;
     };
+
     const formatRelative = (value) => {
       if (!value) return "";
       const dt = new Date(value);
@@ -1664,16 +1158,54 @@
     };
 
     // ===============================
-    // Research streams
+    // Research Streams
     // ===============================
+
     const insightCache = { insights: [], fxcmd: [] };
     const researchLoading = { insights: false, fxcmd: false };
     let currentResearchMode = "insights";
 
+    // Helper: coercion epoch detik/milis ke ms
+    const coerceEpochMs = (val) => {
+      if (typeof val === "number") {
+        return val < 1e12 ? val * 1000 : val;
+      }
+      if (typeof val === "string") {
+        const n = Number(val);
+        if (!Number.isNaN(n)) {
+          return n < 1e12 ? n * 1000 : n;
+        }
+      }
+      return null;
+    };
+
+    // *** FIX: timestamp FX/CMD lebih robust, tidak "nempel" satu tanggal ***
     const normalizeEfxInsight = (entry = {}) => {
       const summary = Array.isArray(entry.body) ? entry.body.join(" • ") : entry.summary || "";
-      const ts = entry.timestamp || entry.date_display || entry.date || entry.published_at;
-      const dt = ts ? new Date(ts) : new Date();
+
+      let ts =
+        entry.timestamp ??
+        entry.date_display ??
+        entry.date ??
+        entry.published_at ??
+        null;
+
+      let dt;
+
+      // Prioritaskan epoch numeric (detik / milidetik)
+      const ms = coerceEpochMs(ts);
+      if (ms !== null) {
+        dt = new Date(ms);
+      } else if (typeof ts === "string" && ts) {
+        dt = new Date(ts);
+      } else {
+        dt = new Date();
+      }
+
+      if (Number.isNaN(dt.getTime())) {
+        dt = new Date();
+      }
+
       return {
         title: entry.title || "Untitled insight",
         source: "",
@@ -1682,17 +1214,49 @@
         summary,
         topic: "fxcmd",
         url: entry.url || "",
-        timestamp: dt && !Number.isNaN(dt.getTime()) ? dt.toISOString() : new Date().toISOString(),
+        timestamp: dt.toISOString(), // sudah ISO granular
         body: Array.isArray(entry.body) ? entry.body : [],
         images: Array.isArray(entry.images) ? entry.images : [],
       };
     };
 
+    // *** FIX: pemilihan timestamp Market Insights ***
+    const pickInsightTimestamp = (entry = {}) => {
+      // 1. Epoch / numeric string
+      let ms = coerceEpochMs(entry.ts);
+      if (ms === null) ms = coerceEpochMs(entry.timestamp);
+      if (ms !== null) {
+        const d = new Date(ms);
+        if (!Number.isNaN(d.getTime())) return d.toISOString();
+      }
+
+      // 2. ISO dengan jam
+      const isoFields = ["published_at", "publish_at"];
+      for (const key of isoFields) {
+        const v = entry[key];
+        if (v) {
+          const d = new Date(v);
+          if (!Number.isNaN(d.getTime())) return d.toISOString();
+        }
+      }
+
+      // 3. Fallback ke tanggal harian (publish_dt)
+      if (entry.publish_dt) {
+        const d = new Date(entry.publish_dt);
+        if (!Number.isNaN(d.getTime())) return d.toISOString();
+      }
+
+      // 4. Kalau semua gagal, waktu sekarang
+      return new Date().toISOString();
+    };
+
     const normalizeInsight = (entry = {}) => {
-      const tags = Array.isArray(entry.tags) ? entry.tags.map((tag) => (tag.text ? tag.text : tag)).filter(Boolean) : [];
+      const tags = Array.isArray(entry.tags)
+        ? entry.tags.map((tag) => (tag.text ? tag.text : tag)).filter(Boolean)
+        : [];
       const bullets = Array.isArray(entry.bullets) ? entry.bullets.slice(0, 3).join(" • ") : "";
       const summary = entry.summary || bullets || tags.slice(0, 3).join(" • ");
-      const ts = entry.publish_dt || entry.publish_at || entry.published_at || entry.timestamp || entry.ts;
+
       return {
         title: entry.title || entry.headline || "Untitled insight",
         source: entry._feed || entry.source || "Source",
@@ -1701,7 +1265,7 @@
         summary,
         topic: toLower(entry.topic || entry.asset_class || entry.category || ""),
         url: entry.url || entry.link || "",
-        timestamp: ts,
+        timestamp: pickInsightTimestamp(entry), // sudah granular, tidak lagi hanya publish_dt
       };
     };
 
@@ -1753,7 +1317,10 @@
           mode === "fxcmd" && Array.isArray(item.images) && item.images.length
             ? `<div class="img-row">${item.images
                 .slice(0, 3)
-                .map((src) => `<img src="${src}" loading="lazy" alt="chart" onclick="window.open('${src}','_blank','noopener');event.stopPropagation();">`)
+                .map(
+                  (src) =>
+                    `<img src="${src}" loading="lazy" alt="chart" onclick="window.open('${src}','_blank','noopener');event.stopPropagation();">`
+                )
                 .join("")}</div>`
             : "";
         div.innerHTML = `
@@ -1876,6 +1443,7 @@
             throw err;
           }
         }
+
         let availableSources = [];
         if (isFxCmd) {
           const items = Array.isArray(payload.items) ? payload.items : [];
@@ -1896,9 +1464,11 @@
             (payload.available_sources && payload.available_sources.length && payload.available_sources) ||
             Array.from(new Set(insightCache.insights.map((it) => it.source).filter(Boolean)));
         }
+
         if (!isFxCmd) {
           refreshSourceOptions(availableSources);
         }
+
         refreshResearchView();
         if (researchStatusEl)
           researchStatusEl.textContent = (insightCache[mode]?.length || 0)
@@ -1937,6 +1507,7 @@
       if (currentResearchMode !== "insights") return;
       refreshResearchView();
     });
+
     const updateRecapVisibility = () => {
       if (!researchRecapBtn) return;
       researchRecapBtn.style.display = currentResearchMode === "fxcmd" ? "" : "none";
@@ -1947,6 +1518,7 @@
     if (topicField) topicField.style.display = currentResearchMode === "fxcmd" ? "" : "none";
     setListVisibility(currentResearchMode);
     updateRecapVisibility();
+
     const ensureResearchData = async () => {
       const mode = currentResearchMode;
       if (!(insightCache[mode] || []).length) await fetchInsights();
@@ -1973,12 +1545,10 @@ ${lines.join("\n")}`;
       });
     });
 
-    // Set initial visibility
-    updateRecapVisibility();
-
     // ===============================
     // X Feeds
     // ===============================
+
     let xFeedItems = [];
     let xFeedLoading = false;
     let xFeedFetched = false;
@@ -2059,8 +1629,8 @@ ${lines.join("\n")}`;
       openReaderShell(item.titleUrl || "Insight");
       setReaderLoading(false);
       if (readerBodyEl) {
-          const desc = document.createElement("p");
-          desc.className = "reader-text";
+        const desc = document.createElement("p");
+        desc.className = "reader-text";
         desc.textContent = item.descriptionUrl;
         readerBodyEl.innerHTML = "";
         readerBodyEl.appendChild(desc);
@@ -2084,6 +1654,7 @@ ${lines.join("\n")}`;
 
       let fallbackTriggered = false;
       let fallbackAttempted = false;
+
       const tryRedirectToFallbackLink = (reason = "HTTP 404") => {
         fallbackAttempted = true;
         if (fallbackTriggered) return true;
@@ -2131,6 +1702,7 @@ ${lines.join("\n")}`;
     const buildXFeedCard = (item) => {
       const li = document.createElement("li");
       li.className = "x-feed-card";
+
       const header = document.createElement("div");
       header.className = "x-feed-header";
 
@@ -2305,8 +1877,9 @@ ${lines.join("\n")}`;
     });
 
     // ===============================
-    // Bloomberg TV+
+    // Bloomberg TV+ (HLS + AI summary)
     // ===============================
+
     let aiSummaryEnabled = false;
     let captionsEnabled = true;
     let liveSummaryInFlight = false;
@@ -2316,6 +1889,9 @@ ${lines.join("\n")}`;
     const updateCcCounter = () => {
       if (ccWordCountEl) ccWordCountEl.textContent = `${liveCcWords.length} / ${LIVE_CC_THRESHOLD} kata`;
     };
+
+    const markdownToHtml = (md) =>
+      window.marked ? window.marked.parse(md || "") : (md || "").replace(/\n/g, "<br>");
 
     const pushLiveSummaryCard = (markdown, status = "AI Catalyst Summary") => {
       if (!aiSummaryFeedEl || aiSummaryFeedEl.dataset.enabled !== "true") return;
@@ -2565,6 +2141,7 @@ ${lines.join("\n")}`;
     // ===============================
     // Kuantara AI modal + streaming
     // ===============================
+
     let cid = null;
     let parentMessageId = null;
     let isStreaming = false;
@@ -2590,9 +2167,6 @@ ${lines.join("\n")}`;
       setAdaptiveHeight();
       syncChatHeight();
     });
-
-    const markdownToHtml = (md) =>
-      window.marked ? window.marked.parse(md || "") : (md || "").replace(/\n/g, "<br>");
 
     const renderChat = () => {
       if (!chatListEl) return;
@@ -2891,10 +2465,6 @@ ${lines.join("\n")}`;
 
     window.refreshResearchFeed = fetchInsights;
     window.refreshXFeed = fetchXFeed;
-
   </script>
-
-
-
-<div id="immersive-translate-browser-popup" style="all: initial"></div>
-</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
+</body>
+</html>
