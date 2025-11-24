@@ -1,143 +1,687 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Kuantara – Stocks Screener</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code (Kuantara Standard) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
-    :root {
-      --bg:#050505;
-      --card:#151515;
-      --accent:#ffbf00;
+    :root{
+      /* Kuantara Terminal Palette */
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      /* Font sizes (9–14px spec) */
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+
+      --up:#22c55e;
+      --down:#ef4444;
     }
 
     *{
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:"Fira Code",monospace!important;
     }
 
-    body{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
+    html,body{
+      width:100%;
+      height:100%;
+      background-color:var(--bg-root);
       color:var(--text-main);
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
-      text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    body{
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
     }
 
-    .badge{
-      display:inline-flex;
+    .panel-root{
+      width:100%;
+      max-width:100%;
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:calc(100vh - 32px);
+      flex:1 1 auto;
+      margin:0 auto;
+    }
+
+    .panel-header{
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:8px;
+      flex-wrap:wrap;
+      min-height:0;
+    }
+
+    .panel-header-right{
+      display:flex;
       align-items:center;
       gap:8px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
-      color:var(--accent);
-      margin-bottom:18px;
+      flex-wrap:nowrap;
     }
 
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
+    .market-toggle{
+      display:inline-flex;
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      overflow:hidden;
+      font-size:var(--fs-body);
+    }
+
+    .market-toggle button{
+      padding:4px 10px;
+      background:#111111;
+      border:none;
+      color:var(--text-muted);
+      cursor:pointer;
+      font-size:var(--fs-body);
+      white-space:nowrap;
+    }
+
+    .market-toggle button.active{
       background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
+      color:#000000;
+      font-weight:500;
     }
 
-    h1{
-      font-size:22px;
-      margin-bottom:8px;
+    .market-toggle button + button{
+      border-left:1px solid var(--border-soft);
     }
 
-    p{
-      font-size:14px;
-      line-height:1.6;
-      color:var(--text-muted);
-      margin-bottom:18px;
-    }
-
-    .time-estimate{
-      font-size:13px;
-      color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
-    }
-
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
+    .run-btn{
+      padding:4px 10px;
+      border-radius:4px;
       border:1px solid var(--accent);
+      background:transparent;
       color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
+      font-size:var(--fs-body);
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      white-space:nowrap;
     }
 
-    .btn:hover{
+    .run-btn:hover{
+      background:rgba(255,191,0,0.06);
+    }
+
+    .run-btn-icon{
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      border:1px solid var(--accent);
+      display:inline-block;
+      box-shadow:0 0 4px rgba(255,191,0,0.6);
+    }
+
+    .status-bar{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
+
+    .status-bar span strong{
+      color:var(--accent);
+      font-weight:500;
+    }
+
+    .status-dot{
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:#4b5563;
+      display:inline-block;
+      margin-right:4px;
+    }
+
+    .status-dot.running{
       background:var(--accent);
-      color:#000;
-      transform:translateY(-1px);
+      box-shadow:0 0 6px rgba(255,191,0,0.7);
     }
 
-    .footer-text{
-      margin-top:16px;
-      font-size:11px;
-      color:#666;
+    .status-dot.idle{
+      background:#4b5563;
+    }
+
+    .status-dot.error{
+      background:var(--down);
+    }
+
+    .panel-body{
+      margin-top:2px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:0;
+      flex:1 1 auto;
+    }
+
+    .screen-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      width:100%;
+      flex:1 1 auto;
+    }
+
+    .screen-card{
+      background:#000000;
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .screen-card-header{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .screen-card-title{
+      font-size:var(--fs-subtitle);
+      font-weight:500;
+      color:var(--text-main);
+    }
+
+    .screen-card-tagline{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .screen-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .chip{
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:2px 8px;
+      font-size:var(--fs-small);
+    }
+
+    .chip-label{
+      color:var(--text-muted);
+    }
+
+    .chip-strong{
+      color:var(--accent);
+    }
+
+    .chip-up{
+      color:var(--up);
+    }
+
+    .chip-down{
+      color:var(--down);
+    }
+
+    .table-wrapper{
+      margin-top:4px;
+      flex:1 1 auto;
+      border-radius:4px;
+      border:1px solid var(--border-soft);
+      overflow:auto;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:var(--fs-body);
+      min-width:260px;
+    }
+
+    thead{
+      background:#111111;
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+
+    th,td{
+      padding:4px 6px;
+      border-bottom:1px solid var(--border-soft);
+      text-align:left;
+      white-space:nowrap;
+    }
+
+    th{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      font-weight:500;
+    }
+
+    td{
+      font-size:var(--fs-body);
+      color:var(--text-main);
+    }
+
+    td.is-num{
+      text-align:right;
+      font-variant-numeric:tabular-nums;
+    }
+
+    .badge-long{
+      font-size:var(--fs-small);
+      padding:1px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      color:var(--accent);
+    }
+
+    .badge-bull{
+      color:var(--up);
+      border-color:var(--up);
+    }
+
+    .badge-bear{
+      color:var(--down);
+      border-color:var(--down);
+    }
+
+    .empty-state{
+      padding:10px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .hint{
+      margin-top:2px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    /* Scrollbars */
+    .table-wrapper::-webkit-scrollbar{
+      width:6px;
+      height:6px;
+    }
+    .table-wrapper::-webkit-scrollbar-track{
+      background:#000000;
+    }
+    .table-wrapper::-webkit-scrollbar-thumb{
+      background:#333333;
+      border-radius:999px;
+    }
+
+    /* Responsive */
+    @media (max-width: 960px){
+      body{
+        padding:12px;
+      }
+      .panel-root{
+        min-height:calc(100vh - 24px);
+      }
+      .screen-grid{
+        grid-template-columns:1fr;
+        max-width:100%;
+        margin:0 auto;
+      }
+      table{
+        min-width:240px;
+      }
+      .status-bar{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+
+    @media (max-width: 480px){
+      .panel-root{
+        padding:10px;
+      }
+      .panel-header{
+        justify-content:center;
+      }
+      .panel-header-right{
+        width:100%;
+        justify-content:center;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
+  <div class="panel-root" id="screener-panel">
+    <!-- HEADER -->
+    <div class="panel-header">
+      <div class="panel-header-right">
+        <div class="market-toggle" id="market-toggle">
+          <button type="button" data-market="US" class="active">US</button>
+          <button type="button" data-market="IDX">IDX</button>
+        </div>
+        <button type="button" class="run-btn" id="run-btn">
+          <span class="run-btn-icon"></span>
+          Run
+        </button>
+      </div>
     </div>
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
-
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
+    <!-- STATUS -->
+    <div class="status-bar">
+      <div>
+        <span class="status-dot idle" id="status-dot"></span>
+        <span id="status-text">Idle · pilih market lalu tekan <strong>Run</strong></span>
+      </div>
+      <div id="status-meta">
+        Last run: – · Universe: –
+      </div>
     </div>
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
+    <!-- BODY -->
+    <div class="panel-body">
+      <div class="screen-grid">
+        <!-- COL 1: TREND FOLLOWING -->
+        <section class="screen-card">
+          <div class="screen-card-header">
+            <div class="screen-card-title">Trend Following</div>
+            <div class="screen-card-tagline">
+              Screening saham dengan tren naik kuat berbasis MA & momentum.
+            </div>
+          </div>
+          <div class="screen-meta">
+            <span class="chip"><span class="chip-label">Signal:</span> <span class="chip-strong">Trend &amp; Momentum</span></span>
+            <span class="chip"><span class="chip-label">Horizon:</span> Swing 1–8 minggu</span>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ticker</th>
+                  <th>Price</th>
+                  <th>Trend</th>
+                  <th>%&Delta; 200MA</th>
+                  <th>50&gt;200</th>
+                </tr>
+              </thead>
+              <tbody id="trend-tbody">
+                <tr>
+                  <td colspan="5" class="empty-state">
+                    Tekan <strong>Run</strong> untuk menjalankan screening trend following.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hint">
+            Logika umum: MA50 &gt; MA200, harga &gt; MA50, momentum return positif 1–3 bulan, filter likuiditas &amp; market cap.
+          </div>
+        </section>
 
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
+        <!-- COL 2: VOLUME BREAKOUT -->
+        <section class="screen-card">
+          <div class="screen-card-header">
+            <div class="screen-card-title">Volume Breakout</div>
+            <div class="screen-card-tagline">
+              Deteksi lonjakan volume &amp; range harga, potensi awal pergerakan besar.
+            </div>
+          </div>
+          <div class="screen-meta">
+            <span class="chip"><span class="chip-label">Signal:</span> <span class="chip-strong">Volume &amp; Range</span></span>
+            <span class="chip"><span class="chip-label">Focus:</span> Breakout &amp; Accumulation</span>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ticker</th>
+                  <th>Price</th>
+                  <th>Vol / 20d</th>
+                  <th>Day %</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              <tbody id="volume-tbody">
+                <tr>
+                  <td colspan="5" class="empty-state">
+                    Tekan <strong>Run</strong> untuk screening volume breakout.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hint">
+            Logika umum: Volume hari ini &gt;= 2–5x rata-rata 20 hari, range harga melebar, optional filter gap &amp; close vs high.
+          </div>
+        </section>
+
+        <!-- COL 3: FUNDAMENTAL -->
+        <section class="screen-card">
+          <div class="screen-card-header">
+            <div class="screen-card-title">Fundamental Quality &amp; Value</div>
+            <div class="screen-card-tagline">
+              Screening berbasis valuasi &amp; kualitas earning untuk swing/position trade.
+            </div>
+          </div>
+          <div class="screen-meta">
+            <span class="chip"><span class="chip-label">Style:</span> <span class="chip-strong">Quality · Value</span></span>
+            <span class="chip"><span class="chip-label">Horizon:</span> Multi-month</span>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ticker</th>
+                  <th>Price</th>
+                  <th>P/E</th>
+                  <th>ROE%</th>
+                  <th>Debt/Equity</th>
+                </tr>
+              </thead>
+              <tbody id="fundamental-tbody">
+                <tr>
+                  <td colspan="5" class="empty-state">
+                    Tekan <strong>Run</strong> untuk screening saham berdasarkan fundamental.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hint">
+            Logika umum: Filter market cap &amp; likuiditas, P/E relatif ke sektor, ROE stabil/tinggi, leverage terkendali.
+          </div>
+        </section>
+      </div>
     </div>
-  </main>
+  </div>
 
   <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
+    (function(){
+      const state = {
+        market: "US",
+        loading: false,
+        lastRun: null
+      };
+
+      const toggleEl = document.getElementById("market-toggle");
+      const runBtn = document.getElementById("run-btn");
+      const statusDot = document.getElementById("status-dot");
+      const statusText = document.getElementById("status-text");
+      const statusMeta = document.getElementById("status-meta");
+
+      const trendBody = document.getElementById("trend-tbody");
+      const volumeBody = document.getElementById("volume-tbody");
+      const fundamentalBody = document.getElementById("fundamental-tbody");
+
+      // MARKET TOGGLE
+      toggleEl.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          toggleEl.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          state.market = btn.getAttribute("data-market") || "US";
+          updateStatus("Idle · universe: " + state.market, "idle");
+        });
+      });
+
+      // RUN BUTTON
+      runBtn.addEventListener("click", () => {
+        if(state.loading) return;
+        runScreener();
+      });
+
+      function updateStatus(text, mode){
+        statusText.innerHTML = text;
+
+        statusDot.classList.remove("idle","running","error");
+        if(mode === "running") statusDot.classList.add("running");
+        else if(mode === "error") statusDot.classList.add("error");
+        else statusDot.classList.add("idle");
+      }
+
+      function updateMeta(){
+        const ts = state.lastRun
+          ? new Date(state.lastRun).toLocaleTimeString("en-GB",{hour12:false})
+          : "–";
+        statusMeta.textContent = "Last run: " + ts + " · Universe: " + state.market;
+      }
+
+      function clearTablesForLoading(){
+        const rows = `
+          <tr><td colspan="5" class="empty-state">Loading screening results...</td></tr>
+        `;
+        trendBody.innerHTML = rows;
+        volumeBody.innerHTML = rows;
+        fundamentalBody.innerHTML = rows;
+      }
+
+      function renderTable(tbody, rows, fields){
+        tbody.innerHTML = "";
+        if(!rows || rows.length === 0){
+          const tr = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = fields.length;
+          td.className = "empty-state";
+          td.textContent = "Tidak ada hasil yang lolos filter screening.";
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+          return;
+        }
+
+        rows.forEach(row => {
+          const tr = document.createElement("tr");
+          fields.forEach(f => {
+            const td = document.createElement("td");
+            const val = row[f];
+
+            if(typeof val === "number"){
+              td.classList.add("is-num");
+              td.textContent = typeof val === "number"
+                ? (Math.abs(val) >= 100 ? val.toFixed(0) : val.toFixed(2))
+                : val;
+            }else{
+              td.textContent = val;
+            }
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+      }
+
+      function generateMockData(market){
+        // Contoh dummy – ganti dengan response backend dari yfinance nantinya.
+        if(market === "US"){
+          return {
+            trend:[
+              {symbol:"AAPL", price:235.4, trend:"Uptrend", dist200:15.2, maCross:"Yes"},
+              {symbol:"MSFT", price:420.8, trend:"Uptrend", dist200:18.9, maCross:"Yes"},
+              {symbol:"NVDA", price:122.3, trend:"Strong Up", dist200:35.7, maCross:"Yes"}
+            ],
+            volume:[
+              {symbol:"AMD", price:190.1, volRatio:3.8, dayRet:4.2, score:82},
+              {symbol:"TSLA", price:215.7, volRatio:2.4, dayRet:5.9, score:77}
+            ],
+            fundamental:[
+              {symbol:"GOOGL", price:192.2, pe:24.5, roe:18.3, de:0.12},
+              {symbol:"JPM", price:196.7, pe:10.8, roe:16.1, de:1.15}
+            ]
+          };
+        }else{
+          return {
+            trend:[
+              {symbol:"BBCA.JK", price:10400, trend:"Uptrend", dist200:8.5, maCross:"Yes"},
+              {symbol:"BMRI.JK", price:7200, trend:"Uptrend", dist200:6.3, maCross:"Yes"}
+            ],
+            volume:[
+              {symbol:"BBRI.JK", price:5600, volRatio:3.1, dayRet:3.4, score:75},
+              {symbol:"ANTM.JK", price:1580, volRatio:2.7, dayRet:4.9, score:71}
+            ],
+            fundamental:[
+              {symbol:"BBCA.JK", price:10400, pe:23.2, roe:18.9, de:0.40},
+              {symbol:"UNVR.JK", price:4100, pe:19.4, roe:38.1, de:0.50}
+            ]
+          };
+        }
+      }
+
+      function runScreener(){
+        state.loading = true;
+        updateStatus("Running screening untuk universe: <strong>" + state.market + "</strong>...", "running");
+        clearTablesForLoading();
+
+        // ==== INI YANG NANTI DISAMBUNG KE BACKEND PYTHON + YFINANCE ====
+        //
+        // fetch("/api/screener?market=" + state.market)
+        //   .then(r => r.json())
+        //   .then(data => {
+        //       applyScreeningResult(data);
+        //   })
+        //   .catch(err => { ... });
+        //
+        setTimeout(() => {
+          try{
+            const data = generateMockData(state.market);
+            applyScreeningResult(data);
+            state.lastRun = Date.now();
+            updateMeta();
+            updateStatus("Selesai · " + state.market + " screening updated", "idle");
+          }catch(e){
+            console.error(e);
+            updateStatus("Error saat menjalankan screening. Cek console/log backend.", "error");
+          }finally{
+            state.loading = false;
+          }
+        }, 600);
+      }
+
+      function applyScreeningResult(data){
+        renderTable(trendBody, data.trend, ["symbol","price","trend","dist200","maCross"]);
+        renderTable(volumeBody, data.volume, ["symbol","price","volRatio","dayRet","score"]);
+        renderTable(fundamentalBody, data.fundamental, ["symbol","price","pe","roe","de"]);
+      }
+
+      // Init
+      updateMeta();
+    })();
   </script>
 </body>
 </html>
