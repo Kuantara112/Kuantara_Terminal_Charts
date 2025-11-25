@@ -1,10 +1,11 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
   <title>Kuantara – Equities Market Snapshot</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
     :root {
@@ -29,99 +30,76 @@
       margin:0;
       padding:0;
       font-family:"Fira Code",monospace !important;
-      /* Firefox scrollbar */
       scrollbar-width:thin;
-      scrollbar-color:rgba(0,0,0,0.6) transparent;
+      scrollbar-color:rgba(255,255,255,0.2) transparent;
     }
 
     html, body {
       width:100%;
       height:100%;
-    }
-
-    body {
       background:var(--bg-root);
       color:var(--text-main);
+      overflow:hidden;
     }
 
-    /* Webkit scrollbar – hitam transparan */
     ::-webkit-scrollbar {
-      width:6px;
-      height:6px;
+      width:4px;
+      height:4px;
     }
     ::-webkit-scrollbar-track {
       background:transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background:rgba(0,0,0,0.6);
+      background:rgba(255,255,255,0.2);
       border-radius:999px;
-    }
-    ::-webkit-scrollbar-corner {
-      background:transparent;
     }
 
     .kt-page {
-      min-height:100vh;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
       padding:16px;
       background:var(--bg-root);
-      color:var(--text-main);
-    }
-
-    .kt-title {
-      font-size:var(--fs-title);
-      font-weight:600;
-      letter-spacing:0.03em;
-      margin-bottom:6px;
-      color:var(--text-main);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-    }
-
-    .kt-title span.label {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
+      overflow: hidden;
     }
 
     .kt-page-tabs {
       display:flex;
       gap:8px;
       margin-bottom:10px;
+      flex-shrink: 0;
       flex-wrap:wrap;
     }
 
     .kt-pill-page {
       border-radius:999px;
       border:1px solid var(--border-soft);
-      padding:3px 10px;
+      padding:4px 12px;
       font-size:var(--fs-small);
       cursor:pointer;
       user-select:none;
       white-space:nowrap;
       color:var(--text-muted);
       background:#050505;
+      transition:background 0.15s ease, color 0.15s ease;
     }
     .kt-pill-page.active {
       border-color:var(--amber);
       color:#000;
       background:var(--amber);
+      font-weight:700;
     }
 
     .kt-layout {
-      display:grid;
-      grid-template-columns:1fr;
-      height:auto;
-      max-height:none;
+      display:flex;
+      flex-direction:column;
+      flex:1;
+      min-height:0;
     }
 
     .kt-column {
       display:flex;
       flex-direction:column;
-      min-height:0;
-    }
-
-    .kt-column > .kt-card {
       flex:1;
       min-height:0;
     }
@@ -129,55 +107,51 @@
     .kt-card {
       background:var(--bg-main);
       border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:12px 14px;
+      border-radius:6px;
+      padding:0;
       display:flex;
       flex-direction:column;
-      gap:8px;
+      flex:1;
       min-height:0;
+      overflow:hidden;
     }
 
     .kt-card-header {
+      padding:12px 14px;
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
       gap:8px;
       font-size:var(--fs-subtitle);
       color:var(--text-main);
-      flex-wrap:wrap;
-    }
-
-    .kt-card-header .subtitle {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      margin-top:2px;
+      border-bottom:1px solid var(--border-soft);
+      flex-shrink:0;
+      background:var(--bg-main);
     }
 
     .kt-header-left {
       display:flex;
       flex-direction:column;
-      gap:2px;
-      min-width:0;
+    }
+    .kt-header-left #quotesTitle {
+      font-weight:700;
+      color:var(--amber);
     }
 
     .kt-toolbar {
       display:flex;
       align-items:center;
       gap:8px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      flex-wrap:wrap;
-      justify-content:flex-end;
     }
 
     .kt-search {
-      flex:1;
-      min-width:140px;
       display:flex;
       align-items:center;
       border-radius:4px;
       border:1px solid var(--border-soft);
-      padding:2px 6px;
+      padding:4px 8px;
+      background:#000;
+      width:180px;
     }
 
     .kt-search input {
@@ -190,651 +164,119 @@
       min-width:0;
     }
 
-    /* === Quotes Table === */
     .kt-table-wrapper {
       flex:1;
-      min-height:0;
-      overflow:auto;
-      margin-top:4px;
-      max-height:100%;
+      overflow-y:auto;
+      overflow-x:hidden;
+      background:var(--bg-main);
+      position:relative;
+    }
+
+    .kt-table-scroller {
+      width:100%;
+      overflow-x:auto;
     }
 
     table {
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:880px;
+      min-width: 880px;
     }
 
     thead {
       position:sticky;
       top:0;
-      background:linear-gradient(to bottom,#111111,#0b0b0b);
-      z-index:2;
+      background:#1a1a1a;
+      z-index:10;
+      box-shadow:0 1px 0 var(--border-soft);
     }
 
     th, td {
-      padding:5px 4px;
+      padding:8px 8px;
       text-align:right;
       white-space:nowrap;
-    }
-
-    th:first-child, td:first-child {
-      text-align:left;
-    }
-
-    th:nth-child(2), td:nth-child(2) {
-      text-align:left;
+      border-bottom:1px solid #1f1f1f;
     }
 
     th {
       font-size:var(--fs-small);
       font-weight:500;
       color:var(--text-muted);
-      border-bottom:1px solid var(--border-soft);
+      text-transform:uppercase;
+      letter-spacing:0.5px;
     }
 
-    tbody tr:nth-child(even) {
-      background:#0d0d0d;
+    th:first-child, td:first-child {
+      text-align:left;
+      position:sticky;
+      left:0;
+      background:inherit;
+      z-index:2;
+    }
+    th:nth-child(2), td:nth-child(2) {
+      text-align:left;
     }
 
-    tbody tr:nth-child(odd) {
-      background:#090909;
-    }
+    tbody tr:nth-child(even) td:first-child { background:#0d0d0d; }
+    tbody tr:nth-child(odd) td:first-child { background:#090909; }
+    tbody tr:hover td:first-child { background:#151515; }
 
-    tbody tr:hover {
-      background:#151515;
-    }
+    tbody tr:nth-child(even) { background:#0d0d0d; }
+    tbody tr:nth-child(odd) { background:#090909; }
+    tbody tr:hover { background:#151515; }
 
-    .text-up {
-      color:var(--green);
-    }
-
-    .text-down {
-      color:var(--red);
-    }
+    .text-up { color:var(--green); }
+    .text-down { color:var(--red); }
 
     .copy-btn {
-      border-radius:999px;
+      border-radius:4px;
       border:1px solid var(--border-soft);
       background:transparent;
       color:var(--text-muted);
-      font-size:var(--fs-small);
+      font-size:9px;
       padding:2px 6px;
       cursor:pointer;
-      white-space:nowrap;
-      transition:all 0.15s ease;
+      transition:0.2s;
     }
-
     .copy-btn:hover {
       border-color:var(--amber);
       color:var(--amber);
     }
 
-    @media (max-width:900px) {
-      .kt-page {
-        padding:12px;
-      }
-    }
+    .spark-cell svg { display:block; }
 
     @media (max-width:600px) {
-      :root {
-        --fs-title:13px;
-        --fs-subtitle:11px;
-        --fs-body:10px;
-        --fs-small:9px;
-      }
+      .kt-page { padding:8px; }
+      .kt-page-tabs { margin-bottom:8px; gap:6px; }
+      .kt-pill-page { padding:3px 10px; font-size:10px; }
 
-      .kt-title {
+      .kt-card-header {
         flex-direction:column;
         align-items:flex-start;
-        gap:4px;
+        gap:8px;
+        padding:10px;
       }
 
-      .kt-card {
-        padding:10px 10px;
+      .kt-header-left {
+        width:100%;
+        flex-direction:row;
+        justify-content:space-between;
+        align-items:center;
       }
+
+      .kt-toolbar { width:100%; }
+      .kt-search { width:100%; }
 
       th, td {
-        padding:4px 3px;
-      }
-
-      .kt-layout {
-        grid-template-columns:1fr;
-        height:auto;
-        max-height:none;
-      }
-
-      .kt-table-wrapper {
-        max-height:none;
+        padding:6px 5px;
+        font-size:10px;
       }
     }
   </style>
-<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 2147483647;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.immersive-translate-attach-loading::after {
-  content: " ";
-
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-2000%, -50%);
-  z-index: 100;
-}
-
-.immersive-translate-loading-spinner {
-  vertical-align: middle !important;
-  width: 10px !important;
-  height: 10px !important;
-  display: inline-block !important;
-  margin: 0 4px !important;
-  border: 2px rgba(221, 244, 255, 0.6) solid !important;
-  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-}
-
-@-webkit-keyframes immersive-translate-loading-animation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-
-@keyframes immersive-translate-loading-animation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.immersive-translate-input-loading {
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-}
-
-@keyframes immersiveTranslateShadowRolling {
-  0% {
-    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  12% {
-    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  25% {
-    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  36% {
-    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
-      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  50% {
-    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
-      110px 0 var(--loading-color), 100px 0 var(--loading-color);
-  }
-
-  62% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
-      120px 0 var(--loading-color), 110px 0 var(--loading-color);
-  }
-
-  75% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      130px 0 var(--loading-color), 120px 0 var(--loading-color);
-  }
-
-  87% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
-  }
-
-  100% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.immersive-translate-toast {
-  display: flex;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  right: 0;
-  top: 1%;
-  width: fit-content;
-  padding: 12px 20px;
-  margin: auto;
-  overflow: auto;
-  background: #fef6f9;
-  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
-  font-size: 15px;
-  border-radius: 8px;
-  color: #333;
-}
-
-.immersive-translate-toast-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.immersive-translate-toast-hidden {
-  margin: 0 20px 0 72px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.immersive-translate-toast-close {
-  color: #666666;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-toast {
-    top: 0;
-    padding: 12px 0px 0 10px;
-  }
-  .immersive-translate-toast-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .immersive-translate-toast-hidden {
-    margin: 10px auto;
-  }
-}
-
-.immersive-translate-dialog {
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  display: flex;
-  width: 300px;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: fit-content;
-  border-radius: 20px;
-  background-color: #fff;
-}
-
-.immersive-translate-modal {
-  display: none;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-}
-
-.immersive-translate-modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 40px 24px 24px;
-  border-radius: 12px;
-  width: 350px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
-    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-content {
-    margin: 25% auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .immersive-translate-modal-content {
-    width: 80vw !important;
-    margin: 20vh auto !important;
-    padding: 20px 12px 12px !important;
-  }
-
-  .immersive-translate-modal-title {
-    font-size: 14px !important;
-  }
-
-  .immersive-translate-modal-body {
-    font-size: 13px !important;
-    max-height: 60vh !important;
-  }
-
-  .immersive-translate-btn {
-    font-size: 13px !important;
-    padding: 8px 16px !important;
-    margin: 0 4px !important;
-  }
-
-  .immersive-translate-modal-footer {
-    gap: 6px !important;
-    margin-top: 16px !important;
-  }
-}
-
-.immersive-translate-modal .immersive-translate-modal-content-in-input {
-  max-width: 500px;
-}
-.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
-  text-align: left;
-  max-height: unset;
-}
-
-.immersive-translate-modal-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333333;
-}
-
-.immersive-translate-modal-body {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #333333;
-  margin-top: 24px;
-  word-break: break-all;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-body {
-    max-height: 250px;
-    overflow-y: auto;
-  }
-}
-
-.immersive-translate-close {
-  color: #666666;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.immersive-translate-close:hover,
-.immersive-translate-close:focus {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.immersive-translate-modal-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.immersive-translate-btn {
-  width: fit-content;
-  color: #fff;
-  background-color: #ea4c89;
-  border: none;
-  font-size: 14px;
-  margin: 0 8px;
-  padding: 9px 30px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.immersive-translate-btn-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.immersive-translate-btn:hover {
-  background-color: #f082ac;
-}
-.immersive-translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.immersive-translate-btn:disabled:hover {
-  background-color: #ea4c89;
-}
-
-.immersive-translate-link-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: none;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-}
-
-.immersive-translate-cancel-btn {
-  /* gray color */
-  background-color: rgb(89, 107, 120);
-}
-
-.immersive-translate-cancel-btn:hover {
-  background-color: hsl(205, 20%, 32%);
-}
-
-.immersive-translate-action-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: 1px solid #ea4c89;
-}
-
-.immersive-translate-btn svg {
-  margin-right: 5px;
-}
-
-.immersive-translate-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-primary-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-modal input[type="radio"] {
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.immersive-translate-modal label {
-  cursor: pointer;
-}
-
-.immersive-translate-close-action {
-  position: absolute;
-  top: 2px;
-  right: 0px;
-  cursor: pointer;
-}
-
-.imt-image-status {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 16px !important;
-}
-.imt-image-status img,
-.imt-image-status svg,
-.imt-img-loading {
-  width: 28px !important;
-  height: 28px !important;
-  margin: 0 0 8px 0 !important;
-  min-height: 28px !important;
-  min-width: 28px !important;
-  position: relative !important;
-}
-.imt-img-loading {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
-  background-size: 28px 28px;
-  animation: image-loading-rotate 1s linear infinite !important;
-}
-
-.imt-image-status span {
-  color: var(--bg-2, #fff) !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
-  font-weight: 500 !important;
-  font-family: "PingFang SC", Arial, sans-serif !important;
-}
-
-.imt-primary-button {
-  display: flex;
-  padding: 12px 80px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #ea4c89;
-  color: #fff;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.imt-retry-text {
-  color: #999;
-  text-align: center;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  cursor: pointer;
-}
-
-.imt-action-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.imt-modal-content-text {
-  text-align: left;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-@keyframes image-loading-rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.imt-linear-gradient-text {
-  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.imt-flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.imt-linear-black-btn {
-  border-radius: 50px;
-  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
-  height: 48px;
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
-</style></head>
+</head>
 <body>
   <div class="kt-page">
-    
-
-    <!-- PAGE SWITCHER -->
     <div class="kt-page-tabs">
       <div class="kt-pill-page active" data-page="indices">Indices</div>
       <div class="kt-pill-page" data-page="etf">ETF</div>
@@ -847,162 +289,37 @@
         <section class="kt-card">
           <header class="kt-card-header">
             <div class="kt-header-left">
-              <div id="quotesTitle">Indices Market Quotes</div>
-              <div id="tickerMeta" class="subtitle">Tickers: 7</div>
+              <div id="quotesTitle">Global Indices</div>
+              <div id="tickerMeta" class="subtitle" style="font-size:9px; color:var(--text-muted); display:none;"></div>
             </div>
             <div class="kt-toolbar">
               <div class="kt-search">
-                <input id="searchInput" type="text" placeholder="Filter index (e.g. SPX, NIKKEI, DAX)">
+                <input id="searchInput" type="text" placeholder="Search Symbol...">
               </div>
             </div>
           </header>
 
           <div class="kt-table-wrapper">
-            <table id="indicesTable">
-              <thead>
-                <tr>
-                  <th>Symbol</th>
-                  <th>Index</th>
-                  <th>Last</th>
-                  <th>Δ</th>
-                  <th>Δ%</th>
-                  <th>Open</th>
-                  <th>High</th>
-                  <th>Low</th>
-                  <th>Close</th>
-                  <th>%YTD</th>
-                  <th>Session</th>
-                  <th>Copy OHLC</th>
-                </tr>
-              </thead>
-              <tbody><tr>
-            <td>SPX</td>
-            <td>S&amp;P 500</td>
-            <td>5,534.21</td>
-            <td class="text-up">
-              +12.40
-            </td>
-            <td class="text-up">
-              +0.22%
-            </td>
-            <td>5,510</td>
-            <td>5,560</td>
-            <td>5,490.15</td>
-            <td>5,534.21</td>
-            <td class="text-up">
-              +15.30%
-            </td>
-            <td>New York</td>
-          <td><button class="copy-btn" title="Copy OHLC">Copy</button></td></tr><tr>
-            <td>NDX</td>
-            <td>Nasdaq 100</td>
-            <td>19,642.3</td>
-            <td class="text-down">
-              -32.80
-            </td>
-            <td class="text-down">
-              -0.17%
-            </td>
-            <td>19,690</td>
-            <td>19,780</td>
-            <td>19,510.2</td>
-            <td>19,642.3</td>
-            <td class="text-up">
-              +21.45%
-            </td>
-            <td>New York</td>
-          <td><button class="copy-btn" title="Copy OHLC">Copy</button></td></tr><tr>
-            <td>DJI</td>
-            <td>Dow Jones</td>
-            <td>40,251.8</td>
-            <td class="text-up">
-              +88.20
-            </td>
-            <td class="text-up">
-              +0.22%
-            </td>
-            <td>40,163.6</td>
-            <td>40,420.5</td>
-            <td>39,980</td>
-            <td>40,251.8</td>
-            <td class="text-up">
-              +8.95%
-            </td>
-            <td>New York</td>
-          <td><button class="copy-btn" title="Copy OHLC">Copy</button></td></tr><tr>
-            <td>RUT</td>
-            <td>Russell 2000</td>
-            <td>2,155.9</td>
-            <td class="text-up">
-              +9.70
-            </td>
-            <td class="text-up">
-              +0.45%
-            </td>
-            <td>2,146.2</td>
-            <td>2,175</td>
-            <td>2,120.5</td>
-            <td>2,155.9</td>
-            <td class="text-up">
-              +4.10%
-            </td>
-            <td>New York</td>
-          <td><button class="copy-btn" title="Copy OHLC">Copy</button></td></tr><tr>
-            <td>DAX</td>
-            <td>DAX Germany</td>
-            <td>18,840.7</td>
-            <td class="text-down">
-              -56.20
-            </td>
-            <td class="text-down">
-              -0.30%
-            </td>
-            <td>18,910</td>
-            <td>18,990</td>
-            <td>18,720.3</td>
-            <td>18,840.7</td>
-            <td class="text-up">
-              +6.55%
-            </td>
-            <td>Frankfurt</td>
-          <td><button class="copy-btn" title="Copy OHLC">Copy</button></td></tr><tr>
-            <td>NKY</td>
-            <td>Nikkei 225</td>
-            <td>38,742.9</td>
-            <td class="text-up">
-              +221.10
-            </td>
-            <td class="text-up">
-              +0.57%
-            </td>
-            <td>38,521.8</td>
-            <td>38,980</td>
-            <td>38,250</td>
-            <td>38,742.9</td>
-            <td class="text-up">
-              +9.60%
-            </td>
-            <td>Tokyo</td>
-          <td><button class="copy-btn" title="Copy OHLC">Copy</button></td></tr><tr>
-            <td>HSI</td>
-            <td>Hang Seng</td>
-            <td>18,450.2</td>
-            <td class="text-down">
-              -95.40
-            </td>
-            <td class="text-down">
-              -0.51%
-            </td>
-            <td>18,532</td>
-            <td>18,620</td>
-            <td>18,320</td>
-            <td>18,450.2</td>
-            <td class="text-down">
-              -3.40%
-            </td>
-            <td>Hong Kong</td>
-          <td><button class="copy-btn" title="Copy OHLC">Copy</button></td></tr></tbody>
-            </table>
+            <div class="kt-table-scroller">
+              <table id="eqTable">
+                <thead>
+                  <tr>
+                    <th>Sym</th>
+                    <th>Name</th>
+                    <th>Trend (30D)</th>
+                    <th>Last</th>
+                    <th>Chg</th>
+                    <th>%Chg</th>
+                    <th>Open</th>
+                    <th>High</th>
+                    <th>Low</th>
+                    <th>%YTD</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
         </section>
       </div>
@@ -1011,236 +328,399 @@
 
   <script>
     // ==========================
+    //  CONFIG
+    // ==========================
+    const BASE_URL   = "https://cloudkuant-541614645905.us-central1.run.app";
+    const INTERVAL   = "1D";
+    const BARS_COUNT = 30;
+    const MAX_CONCURRENT = 3;
+    const REFRESH_MS = 3000;
+
+    const EQ_CONFIG = {
+      indices: [
+        { symbol:"SPX",    name:"S&P 500",                   apiSymbol:"INDEX:SPX" },
+        { symbol:"DJI",    name:"Dow Jones Industrial",      apiSymbol:"INDEX:DJI" },
+        { symbol:"NDX",    name:"Nasdaq 100",                apiSymbol:"INDEX:NDX" },
+        { symbol:"RUT",    name:"Russell 2000",              apiSymbol:"INDEX:RUT" },
+        { symbol:"VIX",    name:"CBOE Volatility Index",     apiSymbol:"INDEX:VIX" },
+        { symbol:"DAX",    name:"German DAX",                apiSymbol:"INDEX:DAX" },
+        { symbol:"UKX",    name:"FTSE 100",                  apiSymbol:"INDEX:UKX" },
+        { symbol:"CAC40",  name:"CAC 40",                    apiSymbol:"INDEX:CAC40" },
+        { symbol:"STOXX50",name:"Euro Stoxx 50",             apiSymbol:"INDEX:STOXX50E" },
+        { symbol:"NKY",    name:"Nikkei 225",                apiSymbol:"INDEX:NKY" },
+        { symbol:"HSI",    name:"Hang Seng",                 apiSymbol:"INDEX:HSI" },
+        { symbol:"CSI300", name:"CSI 300",                   apiSymbol:"INDEX:CSI300" },
+        { symbol:"KOSPI",  name:"KOSPI",                     apiSymbol:"INDEX:KOSPI" },
+        { symbol:"SENSEX", name:"India Sensex",              apiSymbol:"INDEX:SENSEX" },
+        { symbol:"NIFTY",  name:"Nifty 50",                  apiSymbol:"INDEX:NIFTY" },
+        { symbol:"AS51",   name:"ASX 200",                   apiSymbol:"INDEX:AS51" },
+        { symbol:"SMI",    name:"Swiss SMI",                 apiSymbol:"INDEX:SMI" },
+        { symbol:"IBEX",   name:"Spain IBEX 35",             apiSymbol:"INDEX:IBEX" },
+        { symbol:"BVSP",   name:"Brazil Bovespa",            apiSymbol:"INDEX:BVSP" },
+        { symbol:"RTSI",   name:"Russia RTS",                apiSymbol:"INDEX:RTSI" },
+        { symbol:"JKSE",   name:"Indonesia IDX Composite",   apiSymbol:"INDEX:JKSE" },
+        { symbol:"IDX30",  name:"IDX30",                     apiSymbol:"INDEX:IDX30" }
+      ],
+      etf: [
+        { symbol:"SPY",    name:"SPDR S&P 500",              apiSymbol:"AMEX:SPY" },
+        { symbol:"QQQ",    name:"Invesco QQQ",               apiSymbol:"NASDAQ:QQQ" },
+        { symbol:"DIA",    name:"SPDR Dow Jones",            apiSymbol:"AMEX:DIA" },
+        { symbol:"IWM",    name:"iShares Russell 2000",      apiSymbol:"NYSE:IWM" },
+        { symbol:"VOO",    name:"Vanguard S&P 500",          apiSymbol:"NYSE:VOO" },
+        { symbol:"VEA",    name:"Vanguard Dev. Markets",     apiSymbol:"NYSE:VEA" },
+        { symbol:"EEM",    name:"iShares EM",                apiSymbol:"AMEX:EEM" },
+        { symbol:"EFA",    name:"iShares EAFE",              apiSymbol:"AMEX:EFA" },
+        { symbol:"HYG",    name:"iShares High Yield",        apiSymbol:"AMEX:HYG" },
+        { symbol:"LQD",    name:"iShares Investment Grade",  apiSymbol:"NYSE:LQD" },
+        { symbol:"TLT",    name:"iShares 20+Y Treasury",     apiSymbol:"NASDAQ:TLT" },
+        { symbol:"SHY",    name:"iShares 1-3Y Treasury",     apiSymbol:"NASDAQ:SHY" },
+        { symbol:"XLF",    name:"SPDR Financial",            apiSymbol:"AMEX:XLF" },
+        { symbol:"XLE",    name:"SPDR Energy",               apiSymbol:"AMEX:XLE" },
+        { symbol:"XLK",    name:"SPDR Technology",           apiSymbol:"AMEX:XLK" },
+        { symbol:"XLV",    name:"SPDR Health Care",          apiSymbol:"AMEX:XLV" },
+        { symbol:"XLY",    name:"SPDR Cons. Discretionary",  apiSymbol:"AMEX:XLY" },
+        { symbol:"XLP",    name:"SPDR Cons. Staples",        apiSymbol:"AMEX:XLP" },
+        { symbol:"XLI",    name:"SPDR Industrials",          apiSymbol:"AMEX:XLI" },
+        { symbol:"XLU",    name:"SPDR Utilities",            apiSymbol:"AMEX:XLU" },
+        { symbol:"XLRE",   name:"SPDR Real Estate",          apiSymbol:"AMEX:XLRE" },
+        { symbol:"SMH",    name:"VanEck Semiconductor",      apiSymbol:"NASDAQ:SMH" },
+        { symbol:"IBB",    name:"iShares Biotech",           apiSymbol:"NASDAQ:IBB" },
+        { symbol:"ARKK",   name:"ARK Innovation",            apiSymbol:"AMEX:ARKK" }
+      ],
+      usstocks: [
+        { symbol:"AAPL",   name:"Apple Inc.",                apiSymbol:"NASDAQ:AAPL" },
+        { symbol:"MSFT",   name:"Microsoft Corp.",           apiSymbol:"NASDAQ:MSFT" },
+        { symbol:"GOOGL",  name:"Alphabet Inc. A",           apiSymbol:"NASDAQ:GOOGL" },
+        { symbol:"GOOG",   name:"Alphabet Inc. C",           apiSymbol:"NASDAQ:GOOG" },
+        { symbol:"AMZN",   name:"Amazon.com Inc.",           apiSymbol:"NASDAQ:AMZN" },
+        { symbol:"META",   name:"Meta Platforms Inc.",       apiSymbol:"NASDAQ:META" },
+        { symbol:"TSLA",   name:"Tesla Inc.",                apiSymbol:"NASDAQ:TSLA" },
+        { symbol:"NVDA",   name:"NVIDIA Corp.",              apiSymbol:"NASDAQ:NVDA" },
+        { symbol:"AVGO",   name:"Broadcom Inc.",             apiSymbol:"NASDAQ:AVGO" },
+        { symbol:"AMD",    name:"Advanced Micro Devices",    apiSymbol:"NASDAQ:AMD" },
+        { symbol:"INTC",   name:"Intel Corp.",               apiSymbol:"NASDAQ:INTC" },
+        { symbol:"ADBE",   name:"Adobe Inc.",                apiSymbol:"NASDAQ:ADBE" },
+        { symbol:"NFLX",   name:"Netflix Inc.",              apiSymbol:"NASDAQ:NFLX" },
+        { symbol:"CRM",    name:"Salesforce Inc.",           apiSymbol:"NYSE:CRM" },
+        { symbol:"ORCL",   name:"Oracle Corp.",              apiSymbol:"NYSE:ORCL" },
+        { symbol:"COST",   name:"Costco Wholesale",          apiSymbol:"NASDAQ:COST" },
+        { symbol:"WMT",    name:"Walmart Inc.",              apiSymbol:"NYSE:WMT" },
+        { symbol:"HD",     name:"Home Depot Inc.",           apiSymbol:"NYSE:HD" },
+        { symbol:"MCD",    name:"McDonald's Corp.",          apiSymbol:"NYSE:MCD" },
+        { symbol:"DIS",    name:"Walt Disney Co.",           apiSymbol:"NYSE:DIS" },
+        { symbol:"JNJ",    name:"Johnson & Johnson",         apiSymbol:"NYSE:JNJ" },
+        { symbol:"PG",     name:"Procter & Gamble",          apiSymbol:"NYSE:PG" },
+        { symbol:"KO",     name:"Coca-Cola Co.",             apiSymbol:"NYSE:KO" },
+        { symbol:"PEP",    name:"PepsiCo Inc.",              apiSymbol:"NASDAQ:PEP" },
+        { symbol:"UNH",    name:"UnitedHealth Group",        apiSymbol:"NYSE:UNH" },
+        { symbol:"JPM",    name:"JPMorgan Chase",            apiSymbol:"NYSE:JPM" },
+        { symbol:"BAC",    name:"Bank of America",           apiSymbol:"NYSE:BAC" },
+        { symbol:"WFC",    name:"Wells Fargo",               apiSymbol:"NYSE:WFC" },
+        { symbol:"XOM",    name:"Exxon Mobil",               apiSymbol:"NYSE:XOM" },
+        { symbol:"CVX",    name:"Chevron Corp.",             apiSymbol:"NYSE:CVX" },
+        { symbol:"V",      name:"Visa Inc.",                 apiSymbol:"NYSE:V" },
+        { symbol:"MA",     name:"Mastercard Inc.",           apiSymbol:"NYSE:MA" },
+        { symbol:"BRK.B",  name:"Berkshire Hathaway B",      apiSymbol:"NYSE:BRK.B" },
+        { symbol:"PFE",    name:"Pfizer Inc.",               apiSymbol:"NYSE:PFE" },
+        { symbol:"MRK",    name:"Merck & Co.",               apiSymbol:"NYSE:MRK" },
+        { symbol:"T",      name:"AT&T Inc.",                 apiSymbol:"NYSE:T" },
+        { symbol:"VZ",     name:"Verizon Communications",    apiSymbol:"NYSE:VZ" }
+      ],
+      idstocks: [
+        { symbol:"BBCA",   name:"Bank Central Asia",         apiSymbol:"IDX:BBCA" },
+        { symbol:"BBRI",   name:"Bank Rakyat Indonesia",     apiSymbol:"IDX:BBRI" },
+        { symbol:"BMRI",   name:"Bank Mandiri",              apiSymbol:"IDX:BMRI" },
+        { symbol:"BBNI",   name:"Bank Negara Indonesia",     apiSymbol:"IDX:BBNI" },
+        { symbol:"BBTN",   name:"Bank Tabungan Negara",      apiSymbol:"IDX:BBTN" },
+        { symbol:"BRIS",   name:"Bank Syariah Indonesia",    apiSymbol:"IDX:BRIS" },
+        { symbol:"TLKM",   name:"Telkom Indonesia",          apiSymbol:"IDX:TLKM" },
+        { symbol:"EXCL",   name:"XL Axiata",                 apiSymbol:"IDX:EXCL" },
+        { symbol:"ISAT",   name:"Indosat Ooredoo Hutchison", apiSymbol:"IDX:ISAT" },
+        { symbol:"FREN",   name:"Smartfren Telecom",         apiSymbol:"IDX:FREN" },
+        { symbol:"ASII",   name:"Astra International",       apiSymbol:"IDX:ASII" },
+        { symbol:"UNVR",   name:"Unilever Indonesia",        apiSymbol:"IDX:UNVR" },
+        { symbol:"ICBP",   name:"Indofood CBP",              apiSymbol:"IDX:ICBP" },
+        { symbol:"INDF",   name:"Indofood Sukses Makmur",    apiSymbol:"IDX:INDF" },
+        { symbol:"MYOR",   name:"Mayora Indah",              apiSymbol:"IDX:MYOR" },
+        { symbol:"HMSP",   name:"HM Sampoerna",              apiSymbol:"IDX:HMSP" },
+        { symbol:"GGRM",   name:"Gudang Garam",              apiSymbol:"IDX:GGRM" },
+        { symbol:"INTP",   name:"Indocement",                apiSymbol:"IDX:INTP" },
+        { symbol:"SMGR",   name:"Semen Indonesia",           apiSymbol:"IDX:SMGR" },
+        { symbol:"INKP",   name:"Indah Kiat Pulp & Paper",   apiSymbol:"IDX:INKP" },
+        { symbol:"TKIM",   name:"Pabrik Kertas Tjiwi Kimia", apiSymbol:"IDX:TKIM" },
+        { symbol:"MEDC",   name:"Medco Energi",              apiSymbol:"IDX:MEDC" },
+        { symbol:"PGAS",   name:"Perusahaan Gas Negara",     apiSymbol:"IDX:PGAS" },
+        { symbol:"AKRA",   name:"AKR Corporindo",            apiSymbol:"IDX:AKRA" },
+        { symbol:"ITMG",   name:"Indo Tambangraya Megah",    apiSymbol:"IDX:ITMG" },
+        { symbol:"ADRO",   name:"Adaro Energy",              apiSymbol:"IDX:ADRO" },
+        { symbol:"PTBA",   name:"Bukit Asam",                apiSymbol:"IDX:PTBA" },
+        { symbol:"ANTM",   name:"Aneka Tambang",             apiSymbol:"IDX:ANTM" },
+        { symbol:"TINS",   name:"Timah",                     apiSymbol:"IDX:TINS" },
+        { symbol:"MDKA",   name:"Merdeka Copper Gold",       apiSymbol:"IDX:MDKA" },
+        { symbol:"UNTR",   name:"United Tractors",           apiSymbol:"IDX:UNTR" },
+        { symbol:"ERAA",   name:"Erajaya Swasembada",        apiSymbol:"IDX:ERAA" },
+        { symbol:"MAPI",   name:"Mitra Adiperkasa",          apiSymbol:"IDX:MAPI" },
+        { symbol:"SCMA",   name:"Surya Citra Media",         apiSymbol:"IDX:SCMA" },
+        { symbol:"BRPT",   name:"Barito Pacific",            apiSymbol:"IDX:BRPT" }
+      ]
+    };
+
+    // ==========================
     //  STATE
     // ==========================
-    const tableBody = document.querySelector("#indicesTable tbody");
+    const tableBody   = document.querySelector("#eqTable tbody");
     const searchInput = document.getElementById("searchInput");
     const quotesTitleEl = document.getElementById("quotesTitle");
-    const tickerMetaEl = document.getElementById("tickerMeta");
-    const pagePills = document.querySelectorAll(".kt-pill-page");
+    const tickerMetaEl  = document.getElementById("tickerMeta");
+    const pagePills     = document.querySelectorAll(".kt-pill-page");
+    const tableWrapper  = document.querySelector(".kt-table-wrapper");
 
     let latestQuotes = [];
-    let currentPage = "indices";
+    let currentPage  = "indices";
+    let isRefreshing = false;
 
-    let mockIndices = [];
-    let mockEtf = [];
-    let mockUSStocks = [];
-    let mockIDStocks = [];
+    const datasets = { indices: [], etf: [], usstocks: [], idstocks: [] };
 
     // ==========================
-    //  RENDER TABLE
+    //  UTIL
     // ==========================
-    function updateQuotesTable(data) {
-      latestQuotes = Array.isArray(data) ? data : [];
-      renderQuotesTable();
-    }
+    function sleep(ms){ return new Promise(res => setTimeout(res, ms)); }
 
-    function renderQuotesTable() {
-      const filter = (searchInput.value || "").trim().toLowerCase();
-      tableBody.innerHTML = "";
-
-      latestQuotes
-        .filter(row => {
-          if (!filter) return true;
-          const symbol = (row.symbol || "").toLowerCase();
-          const name = (row.name || "").toLowerCase();
-          return symbol.includes(filter) || name.includes(filter);
-        })
-        .forEach(row => {
-          const tr = document.createElement("tr");
-
-          const changePct = Number(row.changePct || 0);
-          const change = Number(row.change || 0);
-          const ytdPct = Number(row.ytdPct || 0);
-          const isUp = changePct > 0;
-          const isDown = changePct < 0;
-          const isYtdUp = ytdPct > 0;
-          const isYtdDown = ytdPct < 0;
-
-          tr.innerHTML = `
-            <td>${row.symbol || ""}</td>
-            <td>${row.name || ""}</td>
-            <td>${formatNumber(row.last)}</td>
-            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
-              ${formatSigned(change)}
-            </td>
-            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
-              ${formatSigned(changePct)}%
-            </td>
-            <td>${formatNumber(row.open)}</td>
-            <td>${formatNumber(row.high)}</td>
-            <td>${formatNumber(row.low)}</td>
-            <td>${formatNumber(row.close)}</td>
-            <td class="${isYtdUp ? "text-up" : isYtdDown ? "text-down" : ""}">
-              ${formatSigned(ytdPct)}%
-            </td>
-            <td>${row.session || ""}</td>
-          `;
-
-          const tdCopy = document.createElement("td");
-          const btn = document.createElement("button");
-          btn.className = "copy-btn";
-          btn.textContent = "Copy";
-          btn.title = "Copy OHLC";
-          btn.addEventListener("click", () => {
-            const text = [
-              `Symbol=${row.symbol || ""}`,
-              `O=${row.open}`,
-              `H=${row.high}`,
-              `L=${row.low}`,
-              `C=${row.close}`
-            ].join(" ");
-            copyTextToClipboard(text);
-          });
-          tdCopy.appendChild(btn);
-          tr.appendChild(tdCopy);
-
-          tableBody.appendChild(tr);
-        });
-    }
-
-    function formatNumber(value) {
+    function formatNumber(value){
       const num = Number(value);
-      if (Number.isNaN(num)) return "";
-      if (Math.abs(num) >= 1000) {
-        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
-      }
+      if (Number.isNaN(num)) return "-";
+      if (Math.abs(num) >= 1000) return num.toFixed(0);
+      if (Math.abs(num) >= 100)  return num.toFixed(1);
       return num.toFixed(2);
     }
 
-    function formatSigned(value) {
+    function formatSigned(value){
       const num = Number(value);
-      if (Number.isNaN(num) || num === 0) return num.toFixed(2);
+      if (Number.isNaN(num)) return "-";
+      if (num === 0) return "0.00";
       return (num > 0 ? "+" : "") + num.toFixed(2);
     }
 
-    function copyTextToClipboard(text) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).catch(() => {
-          fallbackCopyText(text);
-        });
+    function copyTextToClipboard(text){
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).catch(()=>{});
       } else {
-        fallbackCopyText(text);
-      }
-    }
-
-    function fallbackCopyText(text) {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.style.position = "fixed";
-      textarea.style.opacity = "0";
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
         document.execCommand("copy");
-      } catch (e) {
-        console.warn("Copy failed", e);
+        document.body.removeChild(ta);
       }
-      document.body.removeChild(textarea);
     }
 
-    function updateTickerMeta(count) {
-      tickerMetaEl.textContent = `Tickers: ${count}`;
+    function updateTickerMeta(count){
+      if (!tickerMetaEl) return;
+      tickerMetaEl.style.display = "block";
+      tickerMetaEl.textContent = `${count} Tickers`;
     }
 
-    searchInput.addEventListener("input", renderQuotesTable);
+    function drawSparkline(cell, values){
+      if (!cell || !Array.isArray(values) || values.length < 2) return;
+      cell.innerHTML = "";
+      const w = 60, h = 20, pad = 2;
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const range = (max - min) || 1;
 
-    // ==========================
-    //  PAGE SWITCHING
-    // ==========================
-    function applyPageDataset() {
-      let title = "";
-      let placeholder = "";
-      let dataset = [];
+      const svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+      svg.setAttribute("width", w);
+      svg.setAttribute("height", h);
+      svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
 
-      if (currentPage === "indices") {
-        title = "Indices Market Quotes";
-        placeholder = "Filter index (e.g. SPX, NIKKEI, DAX)";
-        dataset = mockIndices;
-      } else if (currentPage === "etf") {
-        title = "ETF Market Quotes";
-        placeholder = "Filter ETF (e.g. SPY, QQQ, EEM)";
-        dataset = mockEtf;
-      } else if (currentPage === "usstocks") {
-        title = "US Stocks Market Quotes";
-        placeholder = "Filter US stocks (e.g. AAPL, MSFT)";
-        dataset = mockUSStocks;
-      } else if (currentPage === "idstocks") {
-        title = "ID Stocks Market Quotes";
-        placeholder = "Filter ID stocks (e.g. BBCA, BBRI)";
-        dataset = mockIDStocks;
-      }
-
-      quotesTitleEl.textContent = title;
-      searchInput.placeholder = placeholder;
-
-      updateQuotesTable(dataset);
-      updateTickerMeta(dataset.length);
-    }
-
-    pagePills.forEach(pill => {
-      pill.addEventListener("click", () => {
-        pagePills.forEach(p => p.classList.remove("active"));
-        pill.classList.add("active");
-        currentPage = pill.dataset.page;
-        applyPageDataset();
+      let d = "";
+      values.forEach((v,i)=>{
+        const x = pad + (i/(values.length-1))*(w-2*pad);
+        const norm = (v-min)/range;
+        const y = h - pad - norm*(h-2*pad);
+        d += (i===0?"M":"L") + x + " " + y + " ";
       });
-    });
 
-    // ==========================
-    //  DUMMY DATA
-    // ==========================
-    function loadMockData() {
-      // Indices
-      mockIndices = [
-        { symbol:"SPX",    name:"S&P 500",            open:5510.00, high:5560.00, low:5490.15, last:5534.21, close:5534.21, change:12.40,  changePct:0.22,  ytdPct:15.30, session:"New York" },
-        { symbol:"NDX",    name:"Nasdaq 100",         open:19690.0, high:19780.0, low:19510.2, last:19642.3, close:19642.3, change:-32.80, changePct:-0.17, ytdPct:21.45, session:"New York" },
-        { symbol:"DJI",    name:"Dow Jones",          open:40163.6, high:40420.5, low:39980.0, last:40251.8, close:40251.8, change:88.20,  changePct:0.22,  ytdPct:8.95,  session:"New York" },
-        { symbol:"RUT",    name:"Russell 2000",       open:2146.2,  high:2175.0,  low:2120.5,  last:2155.9,  close:2155.9,  change:9.70,   changePct:0.45,  ytdPct:4.10,  session:"New York" },
-        { symbol:"DAX",    name:"DAX Germany",        open:18910.0, high:18990.0, low:18720.3, last:18840.7, close:18840.7, change:-56.20, changePct:-0.30, ytdPct:6.55,  session:"Frankfurt" },
-        { symbol:"NKY",    name:"Nikkei 225",         open:38521.8, high:38980.0, low:38250.0, last:38742.9, close:38742.9, change:221.10, changePct:0.57,  ytdPct:9.60,  session:"Tokyo" },
-        { symbol:"HSI",    name:"Hang Seng",          open:18532.0, high:18620.0, low:18320.0, last:18450.2, close:18450.2, change:-95.40, changePct:-0.51, ytdPct:-3.40, session:"Hong Kong" }
-      ];
+      const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+      path.setAttribute("d", d.trim());
 
-      // ETFs
-      mockEtf = [
-        { symbol:"SPY",   name:"SPDR S&P 500 ETF",     open:550.10, high:554.30, low:548.00, last:552.85, close:552.85, change:1.75,  changePct:0.32,  ytdPct:15.10, session:"New York" },
-        { symbol:"QQQ",   name:"Invesco QQQ",          open:470.20, high:474.90, low:468.10, last:471.35, close:471.35, change:-0.85, changePct:-0.18, ytdPct:20.25, session:"New York" },
-        { symbol:"IWM",   name:"iShares Russell 2000", open:205.40, high:208.10, low:203.80, last:206.95, close:206.95, change:0.90,  changePct:0.44,  ytdPct:3.90,  session:"New York" },
-        { symbol:"EEM",   name:"iShares MSCI EM",      open:42.10,  high:42.60,  low:41.85,  last:42.25,  close:42.25,  change:0.05,  changePct:0.12,  ytdPct:2.80,  session:"New York" },
-        { symbol:"EWJ",   name:"iShares MSCI Japan",   open:70.30,  high:71.20,  low:69.85,  last:70.95,  close:70.95,  change:0.40,  changePct:0.57,  ytdPct:8.50,  session:"Tokyo" }
-      ];
+      const first = values[0];
+      const last  = values[values.length-1];
+      let color = "#9b9b9b";
+      if (last > first) color = "#22c55e";
+      else if (last < first) color = "#ef4444";
 
-      // US Stocks
-      mockUSStocks = [
-        { symbol:"AAPL",  name:"Apple Inc.",           open:220.50, high:223.20, low:219.30, last:221.85, close:221.85, change:1.35,  changePct:0.61,  ytdPct:18.40, session:"New York" },
-        { symbol:"MSFT",  name:"Microsoft Corp.",      open:435.60, high:439.80, low:434.20, last:438.10, close:438.10, change:2.50,  changePct:0.57,  ytdPct:19.75, session:"New York" },
-        { symbol:"GOOGL", name:"Alphabet Inc. A",      open:190.10, high:192.40, low:188.90, last:191.35, close:191.35, change:1.25,  changePct:0.66,  ytdPct:22.30, session:"New York" },
-        { symbol:"AMZN",  name:"Amazon.com Inc.",      open:188.20, high:191.00, low:187.10, last:189.75, close:189.75, change:1.55,  changePct:0.82,  ytdPct:25.10, session:"New York" },
-        { symbol:"TSLA",  name:"Tesla Inc.",           open:245.30, high:249.90, low:242.80, last:247.15, close:247.15, change:1.85,  changePct:0.75,  ytdPct:-5.20, session:"New York" },
-        { symbol:"NVDA",  name:"NVIDIA Corp.",         open:125.40, high:128.90, low:124.50, last:127.65, close:127.65, change:2.25,  changePct:1.79,  ytdPct:35.90, session:"New York" }
-      ];
-
-      // ID Stocks
-      mockIDStocks = [
-        { symbol:"BBCA",  name:"Bank Central Asia Tbk", open:9350,  high:9450,  low:9300,  last:9400,  close:9400,  change:50,   changePct:0.53,  ytdPct:7.20,  session:"Jakarta" },
-        { symbol:"BBRI",  name:"Bank Rakyat Indonesia", open:5200,  high:5275,  low:5150,  last:5230,  close:5230,  change:30,   changePct:0.58,  ytdPct:5.40,  session:"Jakarta" },
-        { symbol:"BMRI",  name:"Bank Mandiri Tbk",      open:6750,  high:6825,  low:6700,  last:6790,  close:6790,  change:40,   changePct:0.59,  ytdPct:6.85,  session:"Jakarta" },
-        { symbol:"TLKM",  name:"Telkom Indonesia Tbk",  open:4100,  high:4160,  low:4060,  last:4120,  close:4120,  change:20,   changePct:0.49,  ytdPct:3.10,  session:"Jakarta" },
-        { symbol:"UNVR",  name:"Unilever Indonesia",    open:3950,  high:4000,  low:3920,  last:3980,  close:3980,  change:30,   changePct:0.76,  ytdPct:-1.80, session:"Jakarta" }
-      ];
-
-      applyPageDataset();
+      path.setAttribute("fill","none");
+      path.setAttribute("stroke",color);
+      path.setAttribute("stroke-width","1.5");
+      svg.appendChild(path);
+      cell.appendChild(svg);
     }
 
     // ==========================
-    //  INIT
+    //  API
     // ==========================
-    document.addEventListener("DOMContentLoaded", () => {
-      loadMockData();
-    });
+    async function fetchOhlcvWithRetry(apiSymbol){
+      try{
+        const url = `${BASE_URL}/api/tvohlc/ohlcv?symbol=${encodeURIComponent(apiSymbol)}&interval=${INTERVAL}&bars_count=${BARS_COUNT}`;
+        const res = await fetch(url,{ cache:"no-store" });
+        if (!res.ok) throw new Error("HTTP error");
+        const json = await res.json();
+        const r = (json.results || []).find(x => x.symbol === apiSymbol) || (json.results || [])[0];
+        if (!r || !r.bars) throw new Error("No bars");
+        return r.bars;
+      }catch(e){
+        return null;
+      }
+    }
+
+    function buildRowFromBars(cfg, bars){
+      if (!bars || !Array.isArray(bars) || bars.length < 2){
+        return { ...cfg, error:true };
+      }
+      const last  = bars[bars.length-1];
+      const prev  = bars[bars.length-2];
+      const first = bars[0];
+
+      const lastClose = Number(last.close);
+      const prevClose = Number(prev.close);
+
+      const chg    = lastClose - prevClose;
+      const chgPct = (chg / prevClose) * 100;
+      const ytdPct = ((lastClose / Number(first.open)) - 1) * 100;
+
+      return {
+        ...cfg,
+        open:  Number(last.open),
+        high:  Number(last.high),
+        low:   Number(last.low),
+        last:  lastClose,
+        close: lastClose,
+        change: chg,
+        changePct: chgPct,
+        ytdPct: ytdPct,
+        closes: bars.map(b => Number(b.close)),
+        error:false
+      };
+    }
+
+    async function loadCategoryData(pageKey){
+      const list = EQ_CONFIG[pageKey] || [];
+      const resultRows = [];
+
+      let idx = 0;
+      while (idx < list.length){
+        const slice = list.slice(idx, idx + MAX_CONCURRENT);
+        const chunk = await Promise.all(
+          slice.map(async item=>{
+            const bars = await fetchOhlcvWithRetry(item.apiSymbol);
+            return buildRowFromBars(item, bars);
+          })
+        );
+        resultRows.push(...chunk);
+        idx += MAX_CONCURRENT;
+        if (idx < list.length) await sleep(100);
+      }
+      datasets[pageKey] = resultRows;
+    }
+
+    // ==========================
+    //  RENDER
+    // ==========================
+    function renderQuotesTable(){
+      const filter = (searchInput.value || "").trim().toLowerCase();
+      const scrollTop = tableWrapper.scrollTop;
+
+      tableBody.innerHTML = "";
+
+      latestQuotes
+        .filter(r=>{
+          if (!filter) return true;
+          return (
+            r.symbol.toLowerCase().includes(filter) ||
+            r.name.toLowerCase().includes(filter)
+          );
+        })
+        .forEach(row=>{
+          const tr = document.createElement("tr");
+
+          const isUp      = !row.error && row.changePct > 0;
+          const isDown    = !row.error && row.changePct < 0;
+          const isYtdUp   = !row.error && row.ytdPct > 0;
+          const isYtdDown = !row.error && row.ytdPct < 0;
+
+          const lastText  = row.error ? "-" : formatNumber(row.last);
+          const chgText   = row.error ? "-" : formatSigned(row.change);
+          const chgPctTxt = row.error ? "-" : (formatSigned(row.changePct) + "%");
+          const openText  = row.error ? "-" : formatNumber(row.open);
+          const highText  = row.error ? "-" : formatNumber(row.high);
+          const lowText   = row.error ? "-" : formatNumber(row.low);
+          const ytdText   = row.error ? "-" : (formatSigned(row.ytdPct) + "%");
+
+          tr.innerHTML = `
+            <td><span style="font-weight:700; color:#fff;">${row.symbol}</span></td>
+            <td style="color:var(--text-muted)">${row.name}${row.error ? " (no data)" : ""}</td>
+            <td class="spark-cell"></td>
+            <td>${lastText}</td>
+            <td class="${isUp?"text-up":isDown?"text-down":""}">${chgText}</td>
+            <td class="${isUp?"text-up":isDown?"text-down":""}">${chgPctTxt}</td>
+            <td>${openText}</td>
+            <td>${highText}</td>
+            <td>${lowText}</td>
+            <td class="${isYtdUp?"text-up":isYtdDown?"text-down":""}">${ytdText}</td>
+            <td></td>
+          `;
+
+          if (!row.error && row.closes && row.closes.length > 1){
+            drawSparkline(tr.querySelector(".spark-cell"), row.closes);
+          }
+
+          const btn = document.createElement("button");
+          btn.className = "copy-btn";
+          btn.textContent = "COPY";
+          const copyVal = row.error ? "" : row.last;
+          btn.onclick = () => copyTextToClipboard(`${row.symbol} Last: ${copyVal}`);
+          tr.lastElementChild.appendChild(btn);
+
+          tableBody.appendChild(tr);
+        });
+
+      tableWrapper.scrollTop = scrollTop;
+    }
+
+    async function refreshCurrentPage(){
+      if (isRefreshing) return;
+      isRefreshing = true;
+      await loadCategoryData(currentPage);
+      latestQuotes = datasets[currentPage] || [];
+      renderQuotesTable();
+      updateTickerMeta(latestQuotes.length);
+      isRefreshing = false;
+    }
+
+    function switchPage(key){
+      currentPage = key;
+      pagePills.forEach(p=>{
+        p.classList.toggle("active", p.dataset.page === key);
+      });
+
+      if (key === "indices")      quotesTitleEl.textContent = "Global Indices";
+      else if (key === "etf")     quotesTitleEl.textContent = "Major ETFs";
+      else if (key === "usstocks")quotesTitleEl.textContent = "US Stocks – Large & Mega Caps";
+      else                        quotesTitleEl.textContent = "Indonesia Equities (IDX)";
+
+      latestQuotes = datasets[key] || [];
+      renderQuotesTable();
+      updateTickerMeta(latestQuotes.length);
+      refreshCurrentPage();
+    }
+
+    // INIT
+    pagePills.forEach(p => p.onclick = () => switchPage(p.dataset.page));
+    searchInput.oninput = renderQuotesTable;
+
+    switchPage("indices");
+    setInterval(refreshCurrentPage, REFRESH_MS);
   </script>
-
-
-</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
+</body>
+</html>
