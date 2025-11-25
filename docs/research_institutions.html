@@ -210,6 +210,31 @@
       box-orient:vertical;
     }
 
+    /* Shimmer loading */
+    @keyframes shimmer {
+      0% { background-position:-200% 0; }
+      100% { background-position:200% 0; }
+    }
+    .skeleton{
+      pointer-events:none;
+    }
+    .shimmer{
+      background:linear-gradient(110deg, #141414 8%, #1f1f1f 18%, #141414 33%);
+      background-size:200% 100%;
+      animation:shimmer 1.2s ease-in-out infinite;
+      border-radius:4px;
+    }
+    .skeleton .doc-thumb{
+      border-color:var(--border-main);
+      background:#141414;
+    }
+    .skeleton .doc-body{
+      gap:8px;
+    }
+    .shimmer.line.title{height:14px;width:70%;}
+    .shimmer.line.meta{height:10px;width:50%;}
+    .shimmer.line.desc{height:32px;width:100%;}
+
     .pill{
       display:inline-flex;
       align-items:center;
@@ -321,10 +346,34 @@
     .pdf-wrapper{
       display:inline-block;
       position:relative;
-      background:#111111;
+      background:var(--bg-main);
       box-shadow:0 8px 30px rgba(0,0,0,0.7);
       transform-origin:top center;
       /* width/height di-set via JS untuk responsive */
+    }
+
+    .viewer-skeleton{
+      position:absolute;
+      inset:0;
+      border-radius:4px;
+      background:linear-gradient(110deg, #141414 8%, #1f1f1f 18%, #141414 33%);
+      background-size:200% 100%;
+      animation:shimmer 1.2s ease-in-out infinite;
+      z-index:5;
+      pointer-events:none;
+    }
+
+    .viewer-skeleton.hidden{
+      display:none;
+    }
+
+    .pdf-mask{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,0.2);
+      pointer-events:none;
+      border-radius:4px;
+      z-index:2;
     }
 
     iframe{
@@ -332,7 +381,7 @@
       height:100%;
       border:none;
       display:block;
-      background:#ffffff;
+      background:var(--bg-main);
       pointer-events:auto; /* supaya scroll di dalam pdf berfungsi */
     }
 
@@ -434,6 +483,7 @@
           <option value="all">All Sources</option>
           <option value="westpac">Westpac</option>
           <option value="scotia">Scotiabank</option>
+          <option value="danske">Danske Bank</option>
           <option value="cibc">CIBC</option>
           <option value="seb">SEB</option>
           <option value="mufg">MUFG</option>
@@ -443,7 +493,6 @@
 
       <div class="list-header">
         <span>AVAILABLE DOCS</span>
-        <span id="docCount">0</span>
       </div>
 
       <div id="docList"></div>
@@ -494,7 +543,9 @@
 
     <div class="viewer-viewport mode-pan" id="viewport">
       <div class="pdf-wrapper" id="wrapper">
+        <div id="viewerLoading" class="viewer-skeleton hidden"></div>
         <iframe id="pdfFrame" src=""></iframe>
+        <div class="pdf-mask"></div>
         <canvas id="pdfCanvas"></canvas>
       </div>
     </div>
@@ -502,7 +553,11 @@
 </div>
 
 <script>
-  const PROXY   = "https://cors.eu.org/";
+  const PROXIES = [
+    "https://cors-anywhere-proxy-six.vercel.app/",
+    "https://cors.eu.org/",
+    ""
+  ];
   const URL     = "https://www.westpaciq.com.au/markets/";
   const PDF_BASE = "https://library.westpaciq.com.au";
   const SCOTIA_DATA_URL = "https://cors.eu.org/https://www.scotiabank.com/ca/en/about/economics/economics-publications/jcr:content/main-par/section_container/section-container-par/generic_filter_copy_.economicfilterservlet.0.english.all.all.all.html";
@@ -518,6 +573,11 @@
   const SEB_API_URL = "https://cors.eu.org/https://research.sebgroup.com/mapi/v2/reports?nbrows=100&language=English";
   const SEB_BASE_URL = "https://research.sebgroup.com";
   const SEB_LOGO = "https://pbs.twimg.com/profile_images/1968263186546597888/4XYqkNUN_400x400.png";
+  const MUFG_API_URL = "https://cloudkuant-541614645905.us-central1.run.app/api/mufg/";
+  const MUFG_BASE_URL = "https://www.mufgresearch.com";
+  const MUFG_LOGO = "https://www.mufg.co.id/assets/front/images/logo.png";
+  const DANSKE_API_URL = "https://cloudkuant-541614645905.us-central1.run.app/api/danske/";
+  const DANSKE_LOGO = "https://s3-symbol-logo.tradingview.com/danske-bank-a-s--600.png";
 
   const viewport   = document.getElementById('viewport');
   const wrapper    = document.getElementById('wrapper');
@@ -526,10 +586,13 @@
   const pdfFrame   = document.getElementById('pdfFrame');
   const sourceSel  = document.getElementById('sourceFilter');
   const docListEl  = document.getElementById('docList');
-  const docCountEl = document.getElementById('docCount');
 
   const sidebar  = document.getElementById('sidebar');
   const backdrop = document.getElementById('backdrop');
+  const viewerLoading = document.getElementById('viewerLoading');
+  const sourceStatus = {};
+
+  if(pdfFrame) pdfFrame.addEventListener('load', hidePdfLoading);
 
   let docs = [];
   let currentTool  = 'pan';
@@ -632,6 +695,12 @@
     return `${yyyy}-${mm}-${dd}`;
   }
 
+  function formatDateFriendly(d){
+    if(!(d instanceof Date) || Number.isNaN(d.getTime())) return '';
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[d.getMonth()]} ${String(d.getDate()).padStart(2,'0')}, ${d.getFullYear()}`;
+  }
+
   function normalizeDate(value){
     if(!value) return { display:'', ts:0 };
     const tryDate = new Date(value);
@@ -653,6 +722,35 @@
       return { display: iso, ts: d.getTime() };
     }
     return { display:value, ts:0 };
+  }
+
+  // --- PROXY UTIL ---
+  function buildProxyUrl(proxy, url){
+    if(!proxy) return url;
+    // cors-anywhere-style proxies expect the full URL (with scheme) appended.
+    const isCorsAnywhere = proxy.includes("cors-anywhere") || proxy.includes("vercel.app");
+    if(isCorsAnywhere){
+      return proxy.endsWith("/") ? `${proxy}${url}` : `${proxy}/${url}`;
+    }
+    const clean = url.replace(/^https?:\/\//, "");
+    return proxy.endsWith("/") ? `${proxy}${clean}` : `${proxy}/${clean}`;
+  }
+
+  async function fetchWithProxies(url, options, proxies){
+    let lastError = null;
+    for(const proxy of proxies || [""]){
+      const target = buildProxyUrl(proxy, url);
+      try{
+        const res = await fetch(target, options);
+        if(res.ok) return res;
+        lastError = new Error(`HTTP ${res.status} via ${proxy || "direct"}`);
+        continue;
+      }catch(e){
+        lastError = e;
+        continue;
+      }
+    }
+    throw lastError || new Error("Request failed");
   }
 
   // --- FILTER ---
@@ -693,17 +791,23 @@
       container.appendChild(el);
     });
 
-    docCountEl.textContent = filteredDocs.length;
-
     if(filteredDocs.length === 0){
       container.innerHTML = `<div class="doc-meta" style="color:var(--text-muted);">Tidak ada dokumen yang bisa ditampilkan.</div>`;
+      hidePdfLoading();
+      pdfFrame.src = "";
       return;
     }
 
     if(filteredDocs.length > 0){
-      const current = filteredDocs.find(d => d.id === currentDocId) || filteredDocs[0];
-      const el = container.querySelector(`.doc-item[data-id="${current.id}"]`) || container.querySelector('.doc-item');
-      if(el) loadDoc(current, el);
+      const current = filteredDocs.find(d => d.id === currentDocId);
+      const target = current || (!currentDocId ? filteredDocs[0] : null);
+      if(target){
+        const el = container.querySelector(`.doc-item[data-id="${target.id}"]`) || container.querySelector('.doc-item');
+        if(el) loadDoc(target, el);
+      } else if(currentDocId){
+        const el = container.querySelector(`.doc-item[data-id="${currentDocId}"]`);
+        if(el) el.classList.add('active');
+      }
     } else {
       currentDocId = null;
       ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -712,8 +816,50 @@
     }
   }
 
+  function appendDocs(list){
+    if(!Array.isArray(list)) return;
+    docs = [...docs, ...list];
+    renderList();
+  }
+
+  function logSourceResult(name, items, error){
+    const count = Array.isArray(items) ? items.length : 0;
+    sourceStatus[name] = {
+      count,
+      error: error ? (error.message || String(error)) : null
+    };
+    const summary = Object.entries(sourceStatus)
+      .map(([k,v]) => `${k}:${v.error ? 'ERROR' : v.count}`)
+      .join(' | ');
+    console.log(`[sources] ${summary} | totalDocs=${docs.length}`);
+  }
+
+  function renderSkeleton(count = 6){
+    docListEl.innerHTML = '';
+    for(let i=0;i<count;i++){
+      const el = document.createElement('div');
+      el.className = 'doc-item skeleton';
+      el.innerHTML = `
+        <div class="doc-thumb shimmer"></div>
+        <div class="doc-body">
+          <div class="shimmer line title"></div>
+          <div class="shimmer line meta"></div>
+          <div class="shimmer line desc"></div>
+        </div>`;
+      docListEl.appendChild(el);
+    }
+  }
+
+  function showPdfLoading(){
+    if(viewerLoading) viewerLoading.classList.remove('hidden');
+  }
+
+  function hidePdfLoading(){
+    if(viewerLoading) viewerLoading.classList.add('hidden');
+  }
+
   // --- LOAD DOC ---
-  function loadDoc(doc, elBtn){
+  async function loadDoc(doc, elBtn){
     currentDocId = doc.id;
     document.querySelectorAll('.doc-item').forEach(b=>b.classList.remove('active'));
     if(elBtn) elBtn.classList.add('active');
@@ -729,13 +875,16 @@
     }
 
     if(pdfUrl){
-      // Some sources block iframe; use Google viewer for those
-      const needsProxy = doc.source === 'westpac' || doc.source === 'scotia' || doc.source === 'cibc' || doc.source === 'seb';
+      showPdfLoading();
+      const sourceLower = (doc.source || '').toLowerCase();
+      const needsProxy = ['westpac','scotia','cibc','seb','mufg'].includes(sourceLower);
+      const directPdf = `${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`;
       pdfFrame.src = needsProxy
         ? `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(pdfUrl)}`
-        : `${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`;
+        : directPdf;
     } else {
       pdfFrame.src = doc.fullUrl || '';
+      if(pdfFrame.src) showPdfLoading(); else hidePdfLoading();
     }
 
     toggleSidebar(false);
@@ -901,7 +1050,7 @@
 
   async function loadWestpac() {
     try {
-        const res = await fetch(PROXY + URL);
+      const res = await fetchWithProxies(URL, {}, PROXIES);
         if (!res.ok) throw new Error("HTTP " + res.status);
         const html = await res.text();
 
@@ -912,7 +1061,7 @@
         const obj = JSON.parse(rawString);
 
         const articles = obj.articleAggregator || [];
-        return articles.map((a, idx) => {
+        const mapped = articles.map((a, idx) => {
           const pdfUrl = pickPdf(a);
           const preview = toPreview(extractPlainText(a.executiveSummary || a.articledescription || ''), 180);
           const dateInfo = normalizeDate((a.publishdate || '').split(' ')[0]);
@@ -930,6 +1079,8 @@
             fullUrl: "https://www.westpaciq.com.au" + (a.articlePath || '')
           };
         });
+        // Only keep Westpac items that have a PDF link
+        return mapped.filter(item => !!item.pdf);
     } catch (e) {
         console.error(e);
         return [{ id:'westpac-error', title:'Error memuat Westpac', date:'', dateTs:0, source:'westpac', displaySource:'Westpac', umbrella:'', preview:e.message, logo:WESTPAC_LOGO, pdf:null, fullUrl:'' }];
@@ -947,6 +1098,26 @@
       const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
       const idx = months.indexOf(m2[2].slice(0,3).toLowerCase());
       return `${m2[3]}-${String(idx+1).padStart(2,'0')}-${m2[1].padStart(2,'0')}`;
+    }
+    return '';
+  }
+
+  function parseDateFromSlug(slug){
+    if(!slug) return '';
+    const last = slug.split('/').filter(Boolean).pop();
+    if(!last) return '';
+    const lower = last.toLowerCase();
+    let m = lower.match(/(\d{1,2})[-_ ]?(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[-_ ]?(20\d{2})/);
+    if(m){
+      const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+      const monthIndex = months.indexOf(m[2].slice(0,3));
+      if(monthIndex >= 0){
+        return `${m[3]}-${String(monthIndex+1).padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+      }
+    }
+    m = lower.match(/(20\d{2})[-_ ]?(\d{1,2})[-_ ]?(\d{1,2})/);
+    if(m){
+      return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
     }
     return '';
   }
@@ -1128,23 +1299,145 @@
     }
   }
 
-  async function loadAll(){
+  async function loadMufg(){
     try{
-      const [westpacDocs, scotiaDocs, cibcDocs, sebDocs] = await Promise.all([loadWestpac(), loadScotia(), loadCibc(), loadSeb()]);
-      docs = [...(westpacDocs || []), ...(scotiaDocs || []), ...(cibcDocs || []), ...(sebDocs || [])].sort((a,b) => (b.dateTs||0) - (a.dateTs||0));
-      renderList();
-      console.log("Loaded docs:", docs.length);
+      const res = await fetch(MUFG_API_URL);
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const json = await res.json();
+      const items = Array.isArray(json)
+        ? json
+        : (json.items || json.results || json.data || []);
+
+      return (items || []).map((it, idx) => {
+        const title = cleanTitle(it.title || `MUFG Doc ${idx+1}`);
+        const subtitle = it.subtitle || it.description || it.summary || '';
+        const preview = toPreview(extractPlainText(subtitle), 180);
+        const primaryDate = it.date || it.published || it.publishDate || '';
+        let dateInfo = normalizeDate(primaryDate);
+        if(!dateInfo.ts){
+          const slugDate = parseDateFromSlug(it.href || it.url || it.link || it.title || '');
+          dateInfo = normalizeDate(slugDate || primaryDate);
+        }
+        const dateDisplay = dateInfo.ts ? formatDateFriendly(new Date(dateInfo.ts)) : dateInfo.display;
+        const pdfRaw = (it.pdf || it.pdfUrl || it.file || '').trim();
+        const pdfUrl = pdfRaw.startsWith('http') ? pdfRaw : (pdfRaw ? absolutize(pdfRaw, MUFG_BASE_URL) : '');
+        const hrefRaw = it.href || it.url || it.link || '';
+        const fullUrl = absolutize(hrefRaw, MUFG_BASE_URL) || pdfUrl;
+        const umbrella = Array.isArray(it.tags) ? it.tags.join(', ') : (it.tag || it.category || '');
+        const displaySource = 'MUFG Research';
+
+        return {
+          id: it.id || it.slug || hrefRaw || pdfUrl || `mufg-${idx+1}`,
+          title,
+          date: dateDisplay,
+          dateTs: dateInfo.ts,
+          source: 'mufg',
+          displaySource,
+          umbrella,
+          preview,
+          logo: MUFG_LOGO,
+          pdf: pdfUrl,
+          fullUrl: fullUrl
+        };
+      });
     }catch(e){
-      console.error("loadAll error", e);
-      docs = [];
-      docListEl.innerHTML = `<div class="doc-meta" style="color:red;">Gagal memuat data: ${e.message}</div>`;
-      docCountEl.textContent = "0";
+      console.error(e);
+      return [{ id:'mufg-error', title:'Error memuat MUFG', date:'', dateTs:0, source:'mufg', displaySource:'MUFG Research', umbrella:'', preview:e.message, logo:MUFG_LOGO, pdf:null, fullUrl:MUFG_BASE_URL }];
     }
+  }
+
+  async function loadDanske(){
+    try{
+      const res = await fetch(DANSKE_API_URL, { headers: { Accept: "application/json" } });
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const payload = await res.json().catch(() => ({}));
+      const items = Array.isArray(payload)
+        ? payload
+        : (payload.articles || payload.items || payload.data || payload.results || []);
+      return (items || []).map((it, idx) => {
+        const dateInfo = normalizeDate(it.published_date || it.raw_date || it.publishDate || it.publishedDate || it.date || "");
+        const dateDisplay = dateInfo.ts ? formatDateFriendly(new Date(dateInfo.ts)) : dateInfo.display;
+        const categories = Array.isArray(it.categories)
+          ? it.categories
+          : Array.isArray(it.categoryInfo)
+            ? it.categoryInfo
+                .map((c) => [c.category || c.Category, c.subcategory || c.SubCategory].filter(Boolean).join(" – "))
+                .filter(Boolean)
+            : [];
+        const umbrella = categories[0] || "";
+        const preview = toPreview(extractPlainText(it.summary || it.description || ""), 180);
+        const pdfRaw = (it.pdf || it.published_url || it.full_url || it.url || it.link || "").trim();
+        const pdf = pdfRaw.toLowerCase().includes(".pdf") ? pdfRaw : "";
+        const fullUrl = pdf || pdfRaw || "";
+        return {
+          id: it.articleid || it.articleId || it.id || `danske-${idx+1}`,
+          title: cleanTitle(it.title || it.headline || `Danske Doc ${idx+1}`),
+          date: dateDisplay,
+          dateTs: dateInfo.ts,
+          source: "danske",
+          displaySource: "Danske Bank",
+          umbrella: umbrella || categories.slice(1).join(", "),
+          preview,
+          logo: DANSKE_LOGO,
+          pdf,
+          fullUrl: fullUrl || DANSKE_API_URL
+        };
+      });
+    }catch(e){
+      console.error(e);
+      return [{ id:'danske-error', title:'Error memuat Danske Bank', date:'', dateTs:0, source:'danske', displaySource:'Danske Bank', umbrella:'', preview:e.message, logo:DANSKE_LOGO, pdf:null, fullUrl:DANSKE_API_URL }];
+    }
+  }
+
+  async function loadAll(){
+    renderSkeleton();
+    docs = [];
+
+    const loaders = [
+      { name:'westpac', fn: loadWestpac },
+      { name:'scotia', fn: loadScotia },
+      { name:'danske', fn: loadDanske },
+      { name:'cibc', fn: loadCibc },
+      { name:'seb', fn: loadSeb },
+      { name:'mufg', fn: loadMufg }
+    ];
+
+    loaders.forEach(({name, fn}) => {
+      fn()
+        .then(items => {
+          const safeItems = items || [];
+          appendDocs(safeItems);
+          logSourceResult(name, safeItems, null);
+        })
+        .catch(err => {
+          console.error(`load ${name} error`, err);
+          const fallback = {
+            id:`${name}-error`,
+            title:`Error memuat ${name.toUpperCase()}`,
+            date:'',
+            dateTs:0,
+            source:name,
+            displaySource:name.toUpperCase(),
+            umbrella:'',
+            preview:err.message,
+            logo: name === 'westpac' ? WESTPAC_LOGO :
+                  name === 'scotia' ? SCOTIA_LOGO :
+                  name === 'danske' ? DANSKE_LOGO :
+                  name === 'cibc' ? CIBC_LOGO :
+                  name === 'seb' ? SEB_LOGO : MUFG_LOGO,
+            pdf:null,
+            fullUrl:''
+          };
+          appendDocs([fallback]);
+          logSourceResult(name, [fallback], err);
+        });
+    });
   }
 
   function init(){
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
+    renderSkeleton();
     loadAll();
   }
 
