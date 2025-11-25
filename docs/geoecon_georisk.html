@@ -1,10 +1,13 @@
-<html lang="en"><head>
-  <meta charset="UTF-8">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
   <title>Kuantara – Geo Risk Monitor</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
     :root{
@@ -336,534 +339,20 @@
       }
     }
   </style>
-<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 2147483647;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.immersive-translate-attach-loading::after {
-  content: " ";
-
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-2000%, -50%);
-  z-index: 100;
-}
-
-.immersive-translate-loading-spinner {
-  vertical-align: middle !important;
-  width: 10px !important;
-  height: 10px !important;
-  display: inline-block !important;
-  margin: 0 4px !important;
-  border: 2px rgba(221, 244, 255, 0.6) solid !important;
-  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-}
-
-@-webkit-keyframes immersive-translate-loading-animation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-
-@keyframes immersive-translate-loading-animation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.immersive-translate-input-loading {
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-}
-
-@keyframes immersiveTranslateShadowRolling {
-  0% {
-    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  12% {
-    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  25% {
-    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  36% {
-    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
-      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  50% {
-    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
-      110px 0 var(--loading-color), 100px 0 var(--loading-color);
-  }
-
-  62% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
-      120px 0 var(--loading-color), 110px 0 var(--loading-color);
-  }
-
-  75% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      130px 0 var(--loading-color), 120px 0 var(--loading-color);
-  }
-
-  87% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
-  }
-
-  100% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.immersive-translate-toast {
-  display: flex;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  right: 0;
-  top: 1%;
-  width: fit-content;
-  padding: 12px 20px;
-  margin: auto;
-  overflow: auto;
-  background: #fef6f9;
-  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
-  font-size: 15px;
-  border-radius: 8px;
-  color: #333;
-}
-
-.immersive-translate-toast-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.immersive-translate-toast-hidden {
-  margin: 0 20px 0 72px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.immersive-translate-toast-close {
-  color: #666666;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-toast {
-    top: 0;
-    padding: 12px 0px 0 10px;
-  }
-  .immersive-translate-toast-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .immersive-translate-toast-hidden {
-    margin: 10px auto;
-  }
-}
-
-.immersive-translate-dialog {
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  display: flex;
-  width: 300px;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: fit-content;
-  border-radius: 20px;
-  background-color: #fff;
-}
-
-.immersive-translate-modal {
-  display: none;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-}
-
-.immersive-translate-modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 40px 24px 24px;
-  border-radius: 12px;
-  width: 350px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
-    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-content {
-    margin: 25% auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .immersive-translate-modal-content {
-    width: 80vw !important;
-    margin: 20vh auto !important;
-    padding: 20px 12px 12px !important;
-  }
-
-  .immersive-translate-modal-title {
-    font-size: 14px !important;
-  }
-
-  .immersive-translate-modal-body {
-    font-size: 13px !important;
-    max-height: 60vh !important;
-  }
-
-  .immersive-translate-btn {
-    font-size: 13px !important;
-    padding: 8px 16px !important;
-    margin: 0 4px !important;
-  }
-
-  .immersive-translate-modal-footer {
-    gap: 6px !important;
-    margin-top: 16px !important;
-  }
-}
-
-.immersive-translate-modal .immersive-translate-modal-content-in-input {
-  max-width: 500px;
-}
-.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
-  text-align: left;
-  max-height: unset;
-}
-
-.immersive-translate-modal-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333333;
-}
-
-.immersive-translate-modal-body {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #333333;
-  margin-top: 24px;
-  word-break: break-all;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-body {
-    max-height: 250px;
-    overflow-y: auto;
-  }
-}
-
-.immersive-translate-close {
-  color: #666666;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.immersive-translate-close:hover,
-.immersive-translate-close:focus {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.immersive-translate-modal-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.immersive-translate-btn {
-  width: fit-content;
-  color: #fff;
-  background-color: #ea4c89;
-  border: none;
-  font-size: 14px;
-  margin: 0 8px;
-  padding: 9px 30px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.immersive-translate-btn-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.immersive-translate-btn:hover {
-  background-color: #f082ac;
-}
-.immersive-translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.immersive-translate-btn:disabled:hover {
-  background-color: #ea4c89;
-}
-
-.immersive-translate-link-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: none;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-}
-
-.immersive-translate-cancel-btn {
-  /* gray color */
-  background-color: rgb(89, 107, 120);
-}
-
-.immersive-translate-cancel-btn:hover {
-  background-color: hsl(205, 20%, 32%);
-}
-
-.immersive-translate-action-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: 1px solid #ea4c89;
-}
-
-.immersive-translate-btn svg {
-  margin-right: 5px;
-}
-
-.immersive-translate-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-primary-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-modal input[type="radio"] {
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.immersive-translate-modal label {
-  cursor: pointer;
-}
-
-.immersive-translate-close-action {
-  position: absolute;
-  top: 2px;
-  right: 0px;
-  cursor: pointer;
-}
-
-.imt-image-status {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 16px !important;
-}
-.imt-image-status img,
-.imt-image-status svg,
-.imt-img-loading {
-  width: 28px !important;
-  height: 28px !important;
-  margin: 0 0 8px 0 !important;
-  min-height: 28px !important;
-  min-width: 28px !important;
-  position: relative !important;
-}
-.imt-img-loading {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
-  background-size: 28px 28px;
-  animation: image-loading-rotate 1s linear infinite !important;
-}
-
-.imt-image-status span {
-  color: var(--bg-2, #fff) !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
-  font-weight: 500 !important;
-  font-family: "PingFang SC", Arial, sans-serif !important;
-}
-
-.imt-primary-button {
-  display: flex;
-  padding: 12px 80px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #ea4c89;
-  color: #fff;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.imt-retry-text {
-  color: #999;
-  text-align: center;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  cursor: pointer;
-}
-
-.imt-action-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.imt-modal-content-text {
-  text-align: left;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-@keyframes image-loading-rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.imt-linear-gradient-text {
-  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.imt-flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.imt-linear-black-btn {
-  border-radius: 50px;
-  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
-  height: 48px;
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
-</style></head>
+</head>
 <body>
   <div class="page">
     <header class="page-header">
-      
-      
+      <div class="page-title">Geo Risk Monitor</div>
+      <div class="page-subtitle">
+        Monitor risiko geopolitik global yang berdampak pada pasar: konflik,
+        tarif perdagangan, sanksi, dan perang. Data bersumber dari feed
+        <span style="color:var(--accent);">Permutable Live Insights</span>
+        dan diperbarui secara berkala.
+      </div>
 
       <div class="tab-bar">
-        <button class="tab-btn" data-panel="geopolitics">
+        <button class="tab-btn active" data-panel="geopolitics">
           <span class="label">Geopolitical Risk</span>
           <span class="badge">GEO</span>
         </button>
@@ -875,7 +364,7 @@
           <span class="label">Sanctions</span>
           <span class="badge">SAN</span>
         </button>
-        <button class="tab-btn active" data-panel="wars">
+        <button class="tab-btn" data-panel="wars">
           <span class="label">Wars &amp; Conflicts</span>
           <span class="badge">WAR</span>
         </button>
@@ -884,12 +373,12 @@
 
     <main class="content">
       <!-- GEOPOLITICS -->
-      <section class="panel" id="panel-geopolitics">
+      <section class="panel active" id="panel-geopolitics">
         <div class="panel-header">
-          <div class="panel-title">Geopolitical Risk</div>
+          <div class="panel-title">Geopolitical Risk – Country &amp; Region Focus</div>
           <div class="panel-meta">
             <span class="status-pill ok">Live feed</span>
-            
+            <span class="status-pill">Source: Permutable Geo Insights</span>
           </div>
         </div>
 
@@ -903,7 +392,9 @@
               </div>
               <span class="card-tag">LATEST TABLE</span>
             </div>
-            <div class="card-body" id="geo-latest-table"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Palladium (NYMEX)">Palladium (NYMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="13">13</td></tr><tr><td title="Gold (COMEX)">Gold (COMEX)</td><td title="2.0">2.0</td><td title="98.0">98.0</td><td title="247">247</td></tr><tr><td title="US Treasury T-Note Bonds">US Treasury T-Note Bonds</td><td title="2.0">2.0</td><td title="98.0">98.0</td><td title="174">174</td></tr><tr><td title="Henry Hub Natural Gas (NYMEX)">Henry Hub Natural Gas (NYMEX)</td><td title="18.0">18.0</td><td title="82.0">82.0</td><td title="11">11</td></tr><tr><td title="Liquefied Natural Gas">Liquefied Natural Gas</td><td title="19.0">19.0</td><td title="81.0">81.0</td><td title="93">93</td></tr><tr><td title="Dutch TTF Natural Gas (ICE)">Dutch TTF Natural Gas (ICE)</td><td title="23.0">23.0</td><td title="77.0">77.0</td><td title="94">94</td></tr><tr><td title="tesla inc">tesla inc</td><td title="23.0">23.0</td><td title="77.0">77.0</td><td title="22">22</td></tr><tr><td title="Coffee ‘C’ (NYBOT)">Coffee ‘C’ (NYBOT)</td><td title="26.0">26.0</td><td title="74.0">74.0</td><td title="19">19</td></tr><tr><td title="Hot-Rolled Coil Steel (COMEX)">Hot-Rolled Coil Steel (COMEX)</td><td title="27.0">27.0</td><td title="73.0">73.0</td><td title="121">121</td></tr><tr><td title="Soybean (CBOT)">Soybean (CBOT)</td><td title="28.0">28.0</td><td title="72.0">72.0</td><td title="25">25</td></tr><tr><td title="European Hot-Rolled Coil Steel (ICE)">European Hot-Rolled Coil Steel (ICE)</td><td title="28.0">28.0</td><td title="72.0">72.0</td><td title="118">118</td></tr><tr><td title="Silver (COMEX)">Silver (COMEX)</td><td title="29.0">29.0</td><td title="71.0">71.0</td><td title="14">14</td></tr><tr><td title="Platinum (NYMEX)">Platinum (NYMEX)</td><td title="33.0">33.0</td><td title="67.0">67.0</td><td title="12">12</td></tr><tr><td title="nvidia corp">nvidia corp</td><td title="35.0">35.0</td><td title="65.0">65.0</td><td title="40">40</td></tr><tr><td title="Chicago SRW Wheat (CBOT)">Chicago SRW Wheat (CBOT)</td><td title="35.0">35.0</td><td title="65.0">65.0</td><td title="26">26</td></tr><tr><td title="Aluminum (COMEX)">Aluminum (COMEX)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="36">36</td></tr><tr><td title="RBOB Gasoline (NYMEX)">RBOB Gasoline (NYMEX)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="211">211</td></tr><tr><td title="Palm Oil">Palm Oil</td><td title="38.0">38.0</td><td title="63.0">63.0</td><td title="16">16</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="41.0">41.0</td><td title="59.0">59.0</td><td title="154">154</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="41.0">41.0</td><td title="59.0">59.0</td><td title="296">296</td></tr><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="41.0">41.0</td><td title="59.0">59.0</td><td title="193">193</td></tr><tr><td title="Live Cattle (CME)">Live Cattle (CME)</td><td title="41.0">41.0</td><td title="59.0">59.0</td><td title="27">27</td></tr><tr><td title="Corn (Yellow No. 2) (CBOT)">Corn (Yellow No. 2) (CBOT)</td><td title="43.0">43.0</td><td title="57.0">57.0</td><td title="28">28</td></tr><tr><td title="New York Harbor ULSD (NYMEX)">New York Harbor ULSD (NYMEX)</td><td title="43.0">43.0</td><td title="57.0">57.0</td><td title="119">119</td></tr><tr><td title="Iron Ore (COMEX)">Iron Ore (COMEX)</td><td title="50.0">50.0</td><td title="50.0">50.0</td><td title="26">26</td></tr><tr><td title="us dollar">us dollar</td><td title="57.0">57.0</td><td title="43.0">43.0</td><td title="86">86</td></tr><tr><td title="Lean Hogs (CME)">Lean Hogs (CME)</td><td title="62.0">62.0</td><td title="38.0">38.0</td><td title="13">13</td></tr><tr><td title="chinese yuan">chinese yuan</td><td title="71.0">71.0</td><td title="29.0">29.0</td><td title="52">52</td></tr><tr><td title="Euro">Euro</td><td title="74.0">74.0</td><td title="26.0">26.0</td><td title="107">107</td></tr><tr><td title="japanese yen">japanese yen</td><td title="94.0">94.0</td><td title="6.0">6.0</td><td title="34">34</td></tr></tbody></table></div>
+            <div class="card-body" id="geo-latest-table">
+              <div class="loader">Loading latest geopolitical table…</div>
+            </div>
           </div>
 
           <!-- Previous Week (left bottom) -->
@@ -915,7 +406,9 @@
               </div>
               <span class="card-tag">PREVIOUS WEEK</span>
             </div>
-            <div class="card-body" id="geo-previous-week"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Gold (COMEX)">Gold (COMEX)</td><td title="1.0">1.0</td><td title="99.0">99.0</td><td title="121">121</td></tr><tr><td title="Uranium (COMEX)">Uranium (COMEX)</td><td title="5.0">5.0</td><td title="95.0">95.0</td><td title="41">41</td></tr><tr><td title="US Treasury T-Note Bonds">US Treasury T-Note Bonds</td><td title="8.0">8.0</td><td title="92.0">92.0</td><td title="77">77</td></tr><tr><td title="New York Harbor ULSD (NYMEX)">New York Harbor ULSD (NYMEX)</td><td title="10.0">10.0</td><td title="90.0">90.0</td><td title="72">72</td></tr><tr><td title="Dutch TTF Natural Gas (ICE)">Dutch TTF Natural Gas (ICE)</td><td title="16.0">16.0</td><td title="84.0">84.0</td><td title="25">25</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="17.0">17.0</td><td title="83.0">83.0</td><td title="76">76</td></tr><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="19.0">19.0</td><td title="81.0">81.0</td><td title="115">115</td></tr><tr><td title="Liquefied Natural Gas">Liquefied Natural Gas</td><td title="20.0">20.0</td><td title="80.0">80.0</td><td title="40">40</td></tr><tr><td title="Palm Oil">Palm Oil</td><td title="21.0">21.0</td><td title="79.0">79.0</td><td title="14">14</td></tr><tr><td title="Live Cattle (CME)">Live Cattle (CME)</td><td title="22.0">22.0</td><td title="78.0">78.0</td><td title="18">18</td></tr><tr><td title="RBOB Gasoline (NYMEX)">RBOB Gasoline (NYMEX)</td><td title="25.0">25.0</td><td title="75.0">75.0</td><td title="110">110</td></tr><tr><td title="Hot-Rolled Coil Steel (COMEX)">Hot-Rolled Coil Steel (COMEX)</td><td title="27.0">27.0</td><td title="73.0">73.0</td><td title="56">56</td></tr><tr><td title="Aluminum (COMEX)">Aluminum (COMEX)</td><td title="30.0">30.0</td><td title="70.0">70.0</td><td title="23">23</td></tr><tr><td title="Sugar No. 11 (NYBOT)">Sugar No. 11 (NYBOT)</td><td title="30.0">30.0</td><td title="70.0">70.0</td><td title="23">23</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="34.0">34.0</td><td title="66.0">66.0</td><td title="135">135</td></tr><tr><td title="European Hot-Rolled Coil Steel (ICE)">European Hot-Rolled Coil Steel (ICE)</td><td title="35.0">35.0</td><td title="65.0">65.0</td><td title="55">55</td></tr><tr><td title="Silver (COMEX)">Silver (COMEX)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="11">11</td></tr><tr><td title="Corn (Yellow No. 2) (CBOT)">Corn (Yellow No. 2) (CBOT)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="22">22</td></tr><tr><td title="blackrock inc">blackrock inc</td><td title="40.0">40.0</td><td title="60.0">60.0</td><td title="15">15</td></tr><tr><td title="Chicago SRW Wheat (CBOT)">Chicago SRW Wheat (CBOT)</td><td title="42.0">42.0</td><td title="58.0">58.0</td><td title="26">26</td></tr><tr><td title="us dollar">us dollar</td><td title="43.0">43.0</td><td title="57.0">57.0</td><td title="44">44</td></tr><tr><td title="Soybean (CBOT)">Soybean (CBOT)</td><td title="50.0">50.0</td><td title="50.0">50.0</td><td title="18">18</td></tr><tr><td title="chinese yuan">chinese yuan</td><td title="72.0">72.0</td><td title="28.0">28.0</td><td title="32">32</td></tr><tr><td title="Euro">Euro</td><td title="79.0">79.0</td><td title="21.0">21.0</td><td title="47">47</td></tr></tbody></table></div>
+            <div class="card-body" id="geo-previous-week">
+              <div class="loader">Loading previous week geopolitical shifts…</div>
+            </div>
           </div>
 
           <!-- Events / News (right, tall) -->
@@ -928,246 +421,8 @@
               <span class="card-tag">LATEST EVENTS</span>
             </div>
             <div class="card-body" id="geo-latest-events">
-          <div class="event-item">
-            <div class="event-title">US-Ukraine Trump Administration Peace Plan</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">The US, under the Trump administration, has proposed a 28-point peace plan for Ukraine, which includes Ukraine potentially giving Russia a chunk of its territory. This plan has sparked controversy and concern, with European leaders stating it needs work and may favor Russia. The plan is a topic of discussion at the G20 summit, with crisis meetings extended to address it. Ukraine faces a choice between 'loss of dignity' or losing a key ally over the plan. Trump has set a deadline for Ukraine to accept the plan, and formal talks are scheduled in Switzerland. European leaders are coordinating closely with Ukraine and the US, while some, like Orban, threaten to block EU aid to Ukraine.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Escalating Violence in Gaza: Senior Hamas Officials and Civilians Killed in Israeli Airstrikes</div>
-            <div class="event-meta"><span>Israel</span></div>
-            <div class="event-desc">Escalating violence in Gaza has resulted in the deaths of several senior Hamas officials and civilians. A senior Hamas official was killed in an Israeli airstrike in Gaza City, with reports indicating that the strike targeted the commander of the military wing of Hamas. Additionally, a vehicle attack in Gaza City resulted in the deaths of four people, and at least five more were killed in an Israeli attack in western Gaza City. The IDF reported killing three terrorists in Rafah and another armed terrorist who crossed the yellow line in the Gaza Strip. The death toll in Gaza attacks has risen significantly, with reports indicating 69,733 deaths. The fragile peace in the region has been shattered by these airstrikes, escalating tensions further.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Ukraine War Impact: Peace Talks and Military Developments</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">Ukraine is at a standstill and the US is running out of patience. Zelensky discussed a peace plan with the Dutch prime minister and consultations on steps to end the war are ongoing in Switzerland. Ukraine has received 31 civilians held in Belarus and suffered losses on the Donbass front but has punished Russia in its oil industry. Europe has added 132,000 million in aid to Kiev since the war began in 2022. Zelensky faces a choice between protecting Ukraine’s sovereignty or losing U.S. support. Trump has set a deadline for his peace plan amid Ukraine's quandary. The EU military chief warns Europe 'can no longer sit back', calling Ukraine the 'front line'. Orban says continuing military and financial aid to Ukraine only burns money, while Vance said supporting Ukraine with weapons will not lead to victory.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-Russia Ukraine Peace Plan: Trump's 28-Point Proposal Faces International Scrutiny</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">The US-Russia Ukraine Peace Plan, proposed by Trump, includes a 28-point proposal aimed at ending the war in Ukraine. The plan has sparked international debate, with European leaders welcoming US efforts but expressing concerns about elements relating to EU and NATO. Russia views the plan as a potential basis for peace, while Ukraine faces pressure and risks losing American support. Talks on the plan are set to begin in Switzerland, with Ukraine and the US discussing the proposal. Senator Karasin warned of potential Ukrainian provocations, and Trump has set a deadline of the 27th for an agreement. The plan's feasibility and acceptance by Ukraine remain contentious, with some analysts suggesting it could lead to future Russian aggression.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Gaza Ceasefire Violations and Escalating Tensions</div>
-            <div class="event-meta"><span>Israel</span></div>
-            <div class="event-desc">The ceasefire in Gaza has been violated by the Israeli army, with reports of airstrikes and ground operations. Hamas has accused Israel of targeting civilians and has called for urgent intervention from mediators and the US. The IDF has conducted attacks in Gaza, including airstrikes in Rafah and heavy fire in Gaza City and Khan Yunis. Tensions remain high, with both sides engaged in military actions and diplomatic efforts to prevent further escalation.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Israeli Airstrikes on Lebanon Continue Amid Tensions</div>
-            <div class="event-meta"><span>Israel</span></div>
-            <div class="event-desc">Israeli forces have continued their airstrikes on Lebanon, targeting Hezbollah launchers and military sites in southern Lebanon. Reports indicate that attacks have occurred in East Lebanon and other areas, with one person killed in a recent strike despite a ceasefire. The Israeli Defense Forces (IDF) have also carried out targeted killings in Lebanon. The United Nations Interim Force in Lebanon (UNIFIL) has emphasized the importance of Lebanon's territorial integrity for regional stability. Tensions remain high as Israel prepares for further actions against Hezbollah.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Lebanon-Israel Conflict: Ceasefire Threats and Regional Tensions</div>
-            <div class="event-meta"><span>Canada</span></div>
-            <div class="event-desc">Lebanon's President Aoun has stated the country is ready for an agreement to end Israeli strikes. Hamas has accused Israel of violating the ceasefire and called for immediate intervention from mediators and the US. Meanwhile, tensions persist as Israel's actions continue to be a point of contention, with reports of a senior Hamas official being killed in Gaza City. The conflict has broader regional implications, with discussions on a US-Israeli 'peace plan' for Gaza and concerns about potential attacks in Europe involving Hamas leaders. Additionally, the giant gas deal between Egypt and Israel is reportedly on the verge of collapse.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia-Ukraine War: Eastern Ukraine Conflict Intensifies with Russian Advances and Ukrainian Counterattacks</div>
-            <div class="event-meta"><span>Canada</span></div>
-            <div class="event-desc">The Russia-Ukraine war in Eastern Ukraine has seen significant developments. Russian forces have captured several villages and towns, including New Zaporozhye and Zvanovka, and are advancing towards Pokrovsk. Ukrainian forces are counter-attacking in the Pokrovsk area, and there have been reports of Russian forces being repelled near Krasnoarmeiysk. Additionally, Russian air defenses have shot down multiple Ukrainian drones, and there have been explosions and attacks on energy facilities in occupied Crimea. The situation remains fluid with both sides reporting gains and losses.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia Ukraine War: Recent Military Developments and Diplomatic Reactions</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">In the ongoing Russia-Ukraine war, Russia has intensified its military actions, striking the border of Ukraine with Romania and attacking a checkpoint on the border between Ukraine and a NATO country. Additionally, Russia's drone revolution is putting significant pressure on Ukrainian defenses. Meanwhile, Ukraine has returned 31 civilians from Belarus, with ages ranging from 18 to 58. Diplomatic reactions include Georgia declaring Ukraine's situation hopeless, and Orban stating that Europe is at a crossroads due to the conflict. The West has also reacted to the idea of sending troops to Ukraine, with Ryabkov calling it a strategic mistake. In the Voronezh region, missiles were shot down, and in Kamyshin, Volgograd region, two soldiers of the SVO will be greeted. It has been reported that the armed forces are taking measures to block the possibility of surrendering, and officers of the armed forces fled from an important settlement in the Kharkov region. Ambassador Kelin stated that Britain is still trying to defeat Russia in Ukraine, and Trump made comments about the Russia war, causing Zelensky to get emotional. Air defense forces shot down six Ukrainian drones over Crimea in three hours.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia-Ukraine Conflict: Strategic Moves and International Reactions</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">The Russia-Ukraine conflict continues to escalate with significant international reactions. Georgia has declared Ukraine's situation hopeless, while journalist Fazi has labeled Ukraine's supporters as the country's greatest enemies. The Kremlin has shown its true intentions, with Putin not backing down from old demands, which is destroying the chances of a deal. The West is seen as divided and vulnerable, with Russia confidently strengthening its position. Pushkov has stated that the American strategy in Ukraine is failing, and Ryabkov has accused the West of being strategically wrong in assessing Russia's determination to protect its interests. The German Foreign Minister has emphasized that the war was started by Russia and that the Russia-Ukraine agreement should not be rushed. Additionally, Belarus has pardoned 31 Ukrainians under a Trump deal, and Kallas made a provocative statement against Russia.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Tariff Reduction: Trump Administration Prepares Measures Ahead of Court Ruling</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">The Trump administration is preparing alternative tariff measures ahead of a Supreme Court ruling, according to multiple reports from Bloomberg News. The Federal Council Parmelin expects the reduction of US tariffs to come into force from December. These preparations include fallback options and alternative measures in anticipation of the court's decision.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Brazil COP30 Climate Talks: Tentative Deal Reached Amid Fossil Fuel Disputes</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The COP30 climate negotiations in Brazil have reached a provisional agreement, according to sources. The talks, which were extended due to a rift over the future of fossil fuels, saw the Brazilian presidency plan a parallel text on fossil fuels and energy. The EU initially blocked the climate deal but later indicated it would not oppose an agreement. Despite the tentative deal, there is ongoing disappointment over the fossil fuel plans.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Israeli Airstrikes in Southern Lebanon Kill Several, Including Hezbollah Members</div>
-            <div class="event-meta"><span>Israel</span></div>
-            <div class="event-desc">Israeli airstrikes in southern Lebanon have resulted in multiple fatalities, including a Hezbollah member identified as Kamel Karnabash. The attacks targeted vehicles and military sites, with reports indicating at least one person killed in a drone strike and another in a car bombing. The IDF confirmed these strikes, which occurred despite a ceasefire, and also reported the elimination of a terrorist in the region. Additionally, there were injuries and explosions in northern Israel as a result of these strikes.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Series of Explosions and Attacks in Russia</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">A series of explosions and attacks have occurred in various regions of Russia. In the Rostov region, drones destroyed administrative buildings and caused damage. Explosions were reported in Donetsk, Syzran, Saratov, Engels, and Volgograd. Additionally, a mass car bombing in Moscow has led to the arrest of a suspect. The U.S. Army attacked a substation in Rylsk, leaving 3,000 people without power. In Energodar, a man was injured in a high-speed attack on a residential area. The occupied Crimea also experienced explosions targeting energy facilities.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Ukraine War Impact Eastern Ukraine: Russian Advances and Ukrainian Counter-Offensives</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">Russian forces have made advances in eastern Ukraine, taking control of the right bank of the Gaichur River and liberating New Zaporozhye. They also attacked the Orlovka checkpoint on the Romanian border. Meanwhile, Ukrainian forces have foiled a Russian breakthrough attempt in the Kupyan district and destroyed a rare Soviet-era Ovod air defense command post in the Donetsk region. Ukrainian military reported killing 24 Shahed drones in one night, a new record. Additionally, Ukraine is holding consultations with the US in Switzerland to discuss ending the war.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia's Commentary on Europe's Security and Future</div>
-            <div class="event-meta"><span>Canada</span></div>
-            <div class="event-desc">Russia has issued strong commentary on Europe's future, stating that Europe is facing a reality due to Russia and that 'this is the end of the end' if Europe does not become Ukraine's security guarantor. The message to Europe is clear: everyone will pay if Europe does not comply. Additionally, the armed forces are taking steps to block the possibility of surrendering. In the State Duma, Russians were reminded about the most 'unemployed' period since 2021, extending to January 2026. Meanwhile, EU, Canada, and Japan are working to refine the US plan on Ukraine.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Hungary's Stance on Russia-Ukraine Conflict Amid NATO Tensions</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Hungary, a NATO member, has asserted its position in the ongoing Russia-Ukraine conflict, stating that Russia cannot impose its will. This comes amidst warnings that Europe could face total disengagement, potentially fulfilling Putin's wishes.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Manufacturing Slowdown: Factory Activity Slows in November</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">US factory activity slowed in November to a 4-month low, with high prices curbing demand. The manufacturing slowdown was attributed to tariffs pushing up prices, while the services sector cushioned overall growth. Hon Hai Chairman Liu Yangwei announced plans to expand AI layout in the US to cope with tariff changes and strengthen competitive advantage through local manufacturing.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Ukraine Explosions: Russian Attacks on Multiple Regions</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Russian forces conducted multiple drone and missile attacks across Ukraine, resulting in significant casualties and infrastructure damage. In the Ternopil region, a rocket attack on a multi-storey building killed at least 32 people, with the body of another woman recently found. In the Dnipropetrovsk region, Russian drones caused fires and injured civilians. Odesa Oblast suffered infrastructure damage and injuries from overnight strikes, while the Orlivka crossing point on the Romanian border was attacked and rendered inoperable. Explosions were also reported in the Zaporizhzhsk region and occupied Crimea, targeting energy facilities. Additionally, a grenade-like object was discovered near the Obolon metro station in Kiev, leading to a police response.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">China-Japan Military Tensions Escalate Over Taiwan</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">China has escalated its warnings to Japan over potential intervention in Taiwan, asserting its right to self-defense and referring the dispute to the United Nations. Japan has released a danger signal and is transforming its military strategy, while China has demonstrated its combat and logistics capabilities through drills. The Chinese embassy in Japan has reiterated that aggression by Japan could lead to direct force by the five permanent members of the UN Security Council. Additionally, China has sent a harsh letter to the UN and warned Japan against intervening in the Taiwan Strait, stating that such actions would be considered an act of aggression.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Iran's Withdrawal from the International Atomic Energy Agency</div>
-            <div class="event-meta"><span>India</span></div>
-            <div class="event-desc">Iran has officially announced its withdrawal from the International Atomic Energy Agency (IAEA). The IAEA head stated that Iran is not seeking nuclear weapons. The US reported that nuclear facilities were destroyed, but Iran has not provided a specific response. Iran has also rejected a UN atomic agency's resolution and threatened further reprisal actions.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia Ukraine War: Eastern Ukraine - Pushilin Reports on Surrounded Forces, U.S.S.R. Counter-Offensive</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">In Eastern Ukraine, the armed forces are attempting to break out of the surrounded Dimitrov into the DPR, with remaining militants having almost no chance to escape, according to Pushilin. Meanwhile, more than 150,000 Russians are storming Pokrovsky, while the U.S.S.R. is conducting counter-offensive operations.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Trump Tariffs on Brazil: Partial Relief and Diplomatic Efforts</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The Trump administration has lifted tariffs on Brazilian beef and coffee, and removed 40% surcharges on over 200 Brazilian products, following diplomatic negotiations between Brazil and the US. However, 22% of Brazil's shipments remain subject to tariffs. The Trump White House is also preparing a backup plan on tariffs pending a court ruling. Brazilian President Lula's persistence and diplomatic efforts have been noted in the tariff negotiations.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Global Energy Markets Changes: Oil Prices Fall Amid US Pressure for Ukraine Peace Deal</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">International oil prices fell on news of US pressure to accept Ukraine's end-of-war plan, with WTI dropping 1.59%. The energy markets are expected to undergo profound changes, and power markets are set for sweeping long-term changes. Oil prices settled at their lowest in a month as the US seeks a Russia-Ukraine peace deal.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-Ukraine Peace Talks Impact on Oil Prices</div>
-            <div class="event-meta"><span>Ukraine</span></div>
-            <div class="event-desc">International oil prices fell on news of US pressure to accept Ukraine's end-of-war plan, with WTI crude oil dropping by 1.59%.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Ukrainian Peace Plan: Oil Prices Fall Amid Market Fears and US Sanctions</div>
-            <div class="event-meta"><span>Ukraine</span></div>
-            <div class="event-desc">International oil prices fell on news of US pressure to accept Ukraine's end-of-war plan, with WTI crude oil dropping by 1.59%. World oil prices plummeted as markets feared the Ukrainian peace plan and potential US sanctions.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Ukraine Pokrovsk Conflict: Zelenskyy Reports Counter-Attacks and Defensive Line</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Ukraine is carrying out counter-attacks in Pokrovsk, with President Zelenskyy discussing the situation. The city is strategically crucial, and Russia is intensifying efforts to capture it. Ukraine maintains a defensive line in the northern part of Pokrovsk.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Trump's 28-Point Ukraine Peace Plan Faces Resistance from Zelensky</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Former US President Donald Trump has presented a 28-point peace plan for Ukraine, urging Ukrainian President Volodymyr Zelensky to adopt it swiftly. The plan has sparked controversy, with Zelensky facing pressure from Trump to accept it, while Putin has indicated support for the plan as a basis for peace. Key figures, including EU leaders and European politicians, have expressed reservations about the plan, and Ukraine's top security official has denied accepting its terms. The US has reportedly threatened to cut intelligence and weapons support to pressure Ukraine into a peace deal. Despite these developments, Zelensky has rejected the American plan, and Putin has threatened to continue the invasion.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia UAV Attack on Samara Region</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Two people were killed and two others were injured in a UAV attack on the Samara region. The attack targeted energy facilities, and the governor confirmed the casualties. Additionally, 15 drones were shot down over the Samara region on the night of November 22.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Brazil Political Climate Talks: COP30 Negotiations Disrupted by Fossil Fuel Phaseout Pushback</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The COP30 climate talks in Brazil were disrupted by significant pushback against the fossil fuel phaseout, with demonstrations occurring inside the conference. A fire at the event led to the urgent evacuation of Minister Kastytis Žuromskas, further complicating the negotiations. The UN climate talks stalled as Brazil's draft dropped the fossil fuel roadmap, causing upset among participants.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Tensions Rise in Global China Japan Taiwan Relations Amidst Diplomatic Remarks and Legal Battles</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">Tensions in global China-Japan-Taiwan relations have escalated due to recent diplomatic remarks and legal battles. Chairman of Taiwan’s New Party warned against Japan's potential aggression, while China accused Japan at the UN of violating international law over Taiwan comments. Japanese PM's remarks on Taiwan were criticized by an Australian party chief for destabilizing regional security. Additionally, Taiwan protested against the Japanese PM's comments, and China warned that Taiwan will not tolerate foreign interference. Meanwhile, a scholar discussed the historical context of U.S. criticism of Taiwan's actions, and a legal battle in The Hague was noted as irrelevant to Taiwan. Furthermore, Honduras' economic struggles due to its relations with China have led to calls to resume diplomatic ties with Taiwan, and Japan's inquiry into a summit with China and South Korea was rejected. Nancy Pelosi’s 2022 Taiwan trip was also noted as influencing Japan's decision to rearm.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Nvidia China Chip Talks: US Considers Approving H200 AI Chip Sales</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">The United States is considering allowing Nvidia to sell H200 artificial intelligence chips to China. Reports indicate that Trump's team is discussing the potential approval of this sale, with some sources suggesting that the order could be scheduled until 2026. This development comes amid a softer tech stance from the US, as indicated by various media outlets including Bloomberg.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Egypt Israel Gas Deal on Verge of Collapse</div>
-            <div class="event-meta"><span>Egypt</span></div>
-            <div class="event-desc">The significant gas deal between Egypt and Israel is reportedly on the brink of collapse.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Considers Sale of AI Chips to China</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">The US is considering approving the sale of AI chips to China, with Trump and Mamdani discussing the potential deal. Nvidia's sale of H200 chips to China is also under consideration, with the order potentially scheduled until 2026.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Hungary's Prime Minister Warns of War with Russia</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">The Hungarian Prime Minister has expressed concerns about the potential for war with Russia, raising alarms across Europe.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Ukraine Peace Talks: Oil Prices Fall on Optimism</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">Oil prices have fallen due to optimism surrounding Ukraine peace talks. The market is reacting to the potential for a peace plan and the impact of U.S. sanctions, with prices plummeting as hopes for peace weigh on market sentiment. President Zelenskyy's agreement to a U.S.-backed peace deal has contributed to this trend.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Japan Trade War: Japan Blocks US Beef and Marine Products</div>
-            <div class="event-meta"><span>Japan</span></div>
-            <div class="event-desc">Japan has blocked US beef and marine products, putting the trade agreement at risk of a 'trade war'.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Troops Accidentally Invade Northern Mexico</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">US troops have accidentally crossed the border into northern Mexico, leading to a military incident between the two countries.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Turkey Faces Potential US Sanctions Over Russia Relations</div>
-            <div class="event-meta"><span>Israel</span></div>
-            <div class="event-desc">Turkey may face new US sanctions due to its relations with Russia, as indicated by concerns raised in Dünya. Additionally, Dr. Eray Güçlüer suggested that Israel was behind the CAATSA sanctions.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Congress Pushes for Tougher Sanctions Against Russia</div>
-            <div class="event-meta"><span>Hungary</span></div>
-            <div class="event-desc">The U.S. Congress is actively gathering signatures to force a vote on new, tougher sanctions against Russia. President Trump has announced the introduction of very powerful sanctions against Russia soon. Additionally, the US has eased some sanctions to allow the construction of a factory in Hungary and has lifted part of the sanctions on Russian banks in favor of Hungary. The US has also assessed the role of sanctions in the settlement of the Ukraine crisis and has hit Russian oil giants with sanctions. The US has not excluded the discussion of NATO expansion, and Russia has expressed disappointment over the US decision to limit visa application points.</div>
-          </div>
-        </div>
+              <div class="loader">Loading geopolitical events…</div>
+            </div>
           </div>
         </div>
       </section>
@@ -1175,10 +430,10 @@
       <!-- TARIFFS -->
       <section class="panel" id="panel-tariffs">
         <div class="panel-header">
-          <div class="panel-title">Tariffs &amp; Trade</div>
+          <div class="panel-title">Tariffs &amp; Trade Barriers</div>
           <div class="panel-meta">
             <span class="status-pill warn">Watch for trade disruptions</span>
-            
+            <span class="status-pill">Source: Permutable Tariff Insights</span>
           </div>
         </div>
 
@@ -1192,7 +447,9 @@
               </div>
               <span class="card-tag">LATEST TABLE</span>
             </div>
-            <div class="card-body" id="tariff-latest-table"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Coffee ‘C’ (NYBOT)">Coffee ‘C’ (NYBOT)</td><td title="18.0">18.0</td><td title="82.0">82.0</td><td title="17">17</td></tr><tr><td title="Live Cattle (CME)">Live Cattle (CME)</td><td title="55.0">55.0</td><td title="45.0">45.0</td><td title="11">11</td></tr><tr><td title="us dollar">us dollar</td><td title="57.0">57.0</td><td title="43.0">43.0</td><td title="35">35</td></tr><tr><td title="Hot-Rolled Coil Steel (COMEX)">Hot-Rolled Coil Steel (COMEX)</td><td title="62.0">62.0</td><td title="38.0">38.0</td><td title="26">26</td></tr><tr><td title="European Hot-Rolled Coil Steel (ICE)">European Hot-Rolled Coil Steel (ICE)</td><td title="63.0">63.0</td><td title="38.0">38.0</td><td title="16">16</td></tr><tr><td title="Aluminum (COMEX)">Aluminum (COMEX)</td><td title="82.0">82.0</td><td title="18.0">18.0</td><td title="11">11</td></tr></tbody></table></div>
+            <div class="card-body" id="tariff-latest-table">
+              <div class="loader">Loading tariff snapshot…</div>
+            </div>
           </div>
 
           <!-- Previous Week -->
@@ -1204,7 +461,9 @@
               </div>
               <span class="card-tag">PREVIOUS WEEK</span>
             </div>
-            <div class="card-body" id="tariff-previous-week"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Hot-Rolled Coil Steel (COMEX)">Hot-Rolled Coil Steel (COMEX)</td><td title="24.0">24.0</td><td title="76.0">76.0</td><td title="17">17</td></tr><tr><td title="us dollar">us dollar</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="14">14</td></tr></tbody></table></div>
+            <div class="card-body" id="tariff-previous-week">
+              <div class="loader">Loading previous week tariff data…</div>
+            </div>
           </div>
 
           <!-- Events / News -->
@@ -1217,246 +476,8 @@
               <span class="card-tag">LATEST EVENTS</span>
             </div>
             <div class="card-body" id="tariff-latest-events">
-          <div class="event-item">
-            <div class="event-title">US Tariff Reduction: Trump Administration Prepares Measures Ahead of Court Ruling</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">The Trump administration is preparing alternative tariff measures ahead of a Supreme Court ruling, according to multiple reports from Bloomberg News. The Federal Council Parmelin expects the reduction of US tariffs to come into force from December. These preparations include fallback options and alternative measures in anticipation of the court's decision.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Manufacturing Slowdown: Factory Activity Slows in November</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">US factory activity slowed in November to a 4-month low, with high prices curbing demand. The manufacturing slowdown was attributed to tariffs pushing up prices, while the services sector cushioned overall growth. Hon Hai Chairman Liu Yangwei announced plans to expand AI layout in the US to cope with tariff changes and strengthen competitive advantage through local manufacturing.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Trump Tariffs on Brazil: Partial Relief and Diplomatic Efforts</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The Trump administration has lifted tariffs on Brazilian beef and coffee, and removed 40% surcharges on over 200 Brazilian products, following diplomatic negotiations between Brazil and the US. However, 22% of Brazil's shipments remain subject to tariffs. The Trump White House is also preparing a backup plan on tariffs pending a court ruling. Brazilian President Lula's persistence and diplomatic efforts have been noted in the tariff negotiations.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Taiwan-US Tariff Agreement: Taiwan to Invest $400 Billion in the United States</div>
-            <div class="event-meta"><span>Taiwan, Province of China</span></div>
-            <div class="event-desc">The Taiwan-US tariff agreement was recently announced, with Taiwan committing to invest US$400 billion in the United States.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Eliminates 40% Tariffs on Brazilian Coffee and Beef Imports</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">President Trump has removed a 40% tariff on Brazilian coffee and beef imports, leading to a significant drop in global coffee prices. The tariff relief was hailed as a victory by Brazilian coffee exporters and celebrated by politicians, ministers, and farmers. The move is expected to make coffee and beef cheaper in the US, although inflation controls are not mentioned.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Trump Rolls Back 40% Tariffs on Brazilian Food Imports, Including Beef and Coffee</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The United States has rolled back 40% tariffs on hundreds of Brazilian products, including beef and coffee, in a move hailed as a significant victory by Brazilian exporters. The tariff relief, which affects 11% of Brazil's exports to the US, is seen as a major step in improving relations between the two countries. Despite the rollback, 22% of Brazil's shipments to the US remain subject to additional tariffs.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Removes 40% Tariffs on Brazilian Agricultural Products, Including Beef and Coffee</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The United States has removed 40% tariffs on 249 agricultural products from Brazil, including beef and coffee. This move, hailed as a significant victory by Brazil, benefits a substantial portion of Brazilian exports to the US. However, 22% of Brazilian exports to the US remain subject to the 40% tariff. The tariff rollback aims to bring down food prices and increase predictability in the sector, with ongoing negotiations for further exemptions.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Imposes Tariffs on Mexican Steel, Impacting Nuevo León Industry</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">The U.S. has imposed tariffs on Mexican steel, significantly affecting the steel industry in Mexico's Nuevo León region. A legal victory by Zekelman Industries has made it unlawful for public agencies and state contractors in Pennsylvania to purchase or use steel conduit products made in Mexico for public works projects. This development has cast a pall over the Mexican steel industry, particularly in Nuevo León, as American industries weigh in on the trade pact review.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-Brazil Tariff Removal: Trump Abolishes 40% Tariffs on Brazilian Agricultural Products</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The US has removed 40% tariffs on various Brazilian products, including meat, coffee, and other agricultural goods. This move has been hailed as a significant victory by Brazilian exporters and the government, which welcomes the US withdrawal of tariffs and will continue negotiations. The tariff rollback has been described as a step in the right direction and a significant progress, with Brazil regaining competitive access to the US market. The US President signed an order canceling customs duties on Brazilian goods, and the Ministry of Agriculture assesses that Brazil has made significant progress in this regard.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Imposes 40% Tariffs on Brazilian Beef and Coffee</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The United States has imposed a 40% tariff on Brazilian beef and coffee. This move follows President Trump's decision to remove Brazil's food tariffs, leading to a sharp decrease in coffee prices.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Trade Tariffs: 22% of Exports to the US Still Subject to Tariffs</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">Alckmin reports that 22% of exports to the US are still subject to tariffs.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">EU's Von der Leyen and Lagarde Advocate for Trade Agreements and Internal Reforms to Counter US Tariffs</div>
-            <div class="event-meta"><span>Australia</span></div>
-            <div class="event-desc">At the G20, EU Commission President Ursula von der Leyen emphasized the EU's commitment to finalizing trade agreements with India, Australia, UAE, Thailand, Philippines, and Malaysia, while ECB President Christine Lagarde proposed that Europe can mitigate US tariffs through domestic trade reforms and the removal of internal barriers. Von der Leyen also reaffirmed the EU's support for a strong, reformed WTO and rules-based trade.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Semiconductor Tariff Suspension to Prevent China's Rare Earth Interference</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">The United States plans to suspend semiconductor tariffs to prevent China from interfering with the supply of rare earth raw materials. Taiwan has agreed to invest US$400 billion in the United States to reduce tariffs, with the Economic and Trade Office continuing to confirm the content of the negotiations. Wu Chengwen, in an exclusive interview with FT, stated that the United States will not punish Taiwan’s chip industry with tariffs.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-Japan Trade Decline: Exports to the US Decrease for 7 Consecutive Months</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">Japan's exports to the United States have declined for seven consecutive months, with a 3% decrease in October compared to the same month last year. The trade surplus with the U.S. has dropped by 34% due to tariffs, marking a 7-year decline in exports affected by tariffs.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Mexico Steel Industry Faces U.S. Tariffs Impact in Nuevo León</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">The U.S. tariffs have significantly affected Mexico's steel industry, particularly in Nuevo León, casting a pall over the region's economic outlook.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Suspends 40% Tariffs on Brazilian Agricultural Products</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The United States has suspended 40% tariffs on various Brazilian agricultural products, including coffee, beef, and fruit. This move is a result of the resumption of dialogue between the two countries, as stated by Fávaro. The Farmers' Union has pointed out the potential return of exports for the products benefited by Trump's tariff suspension.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Removes Tariffs on Brazilian Beef and Other Agricultural Products</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The United States has removed tariffs on Brazilian beef, coffee, and orange juice. President Trump suspended 40% tariffs on these and other Brazilian agricultural products, expanding and extending the tariff relief.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Removes 40% Tariffs on Brazilian Agricultural Imports</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The United States has eliminated the additional 40% tariff on certain agricultural imports from Brazil, including meat and coffee. President Trump signed an executive order to lift these tariffs, exempting many Brazilian farm goods from the steep duties.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Trump Lifts Tariffs on Brazilian Beef, Coffee, and Other Agricultural Products</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">U.S. President Donald Trump has signed an executive order to remove tariffs on various Brazilian agricultural products, including beef, coffee, and orange juice. The move follows negotiations with Brazilian President Lula and aims to address rising prices and public dissatisfaction. The tariffs, which were as high as 40%, have been lifted on a range of goods, demonstrating effective negotiations between the two countries.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Eases Agricultural Tariffs on Brazil Amid Ongoing Dispute</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The US has eased agricultural tariffs on Brazil, although sanctions remain in place. The Secretary of Agriculture described the US measure as 'excellent' for Brazil. Additionally, President Trump has updated further tariffs on Brazilian agricultural products.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Tariff Reduction on Lead Benefits Brazil's Exports</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The reduction of US tariffs has led to lower export losses and is expected to benefit Brazil's competitive products, potentially resuming exports. This development was highlighted by Fazenda, indicating a positive impact on Brazil's lead exports to the US.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Europe Energy Crisis: EU Policies, Gas Withdrawal, and Industrial Concerns</div>
-            <div class="event-meta"><span>France</span></div>
-            <div class="event-desc">The European energy crisis is exacerbated by EU energy policies deemed illegal by former Austrian officials, with €6.5 billion spent on capacity mechanisms in 2024. European gas withdrawal and governmental mismanagement are cited as contributing factors. The crisis impacts industries, with Morgan Stanley warning of electricity network saturation threatening industrial development in Spain. European industry also warns of low estimates for overseas CO2 emissions potentially neutering carbon tariffs. The UK's role in Europe's integrated oil system is highlighted as critical.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Tariff Plan Delay on Semiconductors Amid China Friction and Price Concerns</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">The US government is considering delaying the imposition of tariffs on semiconductors. This decision is driven by concerns about rising prices and the potential disruption to the rare earth supply. Additionally, the delay is aimed at avoiding further friction with China and escalating the US-China trade war. Officials and reports indicate that there is no immediate rush to implement the tariffs, with a focus on maintaining stable trade relations and managing economic impacts.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Global Tech Trade War: US-China Tensions and AI Chip Disputes</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">The global tech trade war is intensifying, with the US and China at the forefront. The US has delayed chip tariffs to avoid public dissatisfaction and is targeting Chinese chipmaking equipment imports by CHIPS Act grant recipients. Meanwhile, the White House is urging Congress to block a bill curbing Nvidia's China chip sales, indicating a complex AI chip war. The EU and G20 are also involved, with the EU believing in a multilateral system and the G20 unlikely to criticize US tariffs. The trade conflicts present both burdens and opportunities for reorganization, with big tech pouring money into AI data center investments. The impact of these tariffs on the economy remains unclear, according to a JPMorgan analyst.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Authorizes Export of Advanced AI Semiconductors to Saudi Arabia and UAE</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">The US has authorized the export of advanced AI semiconductors to Saudi Arabia and UAE companies. The White House has urged Congress to reject a bill limiting Nvidia's exports, and Trump has indicated a delay in semiconductor tariffs to avoid escalating the US-China trade war. Additionally, Saudi Arabia is investing in Silicon Valley, with Musk and Nvidia already present.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Mexico Steel Industry Faces US Tariffs Impact</div>
-            <div class="event-meta"><span>Mexico</span></div>
-            <div class="event-desc">The steel industry in Nuevo Leon, Mexico, is experiencing challenges due to US tariffs, which are casting a shadow over the region. Despite these tariffs, Mexico remains the top supplier to the United States and the top buyer of American goods, with UBS forecasting continued growth in exports from Mexico to the US.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Tariffs Impact Nuevo Leon's Steel Industry in Mexico</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">US tariffs are negatively affecting the steel industry in Nuevo Leon, Mexico, casting a shadow over the region's steel production and economic stability.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Approves Export of Advanced Semiconductors to UAE and Saudi Arabia</div>
-            <div class="event-meta"><span>Saudi Arabia</span></div>
-            <div class="event-desc">The U.S. Department of Commerce has authorized the export of advanced American semiconductors to companies in the United Arab Emirates and Saudi Arabia. This approval includes the sale of 31.2 billion U.S.-made AI chips to two companies from the UAE and Saudi Arabia. The move is part of a broader strategy to diversify markets and face U.S. tariffs, with TSMC, Hon Hai, and Wiwing among the beneficiaries.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Trade Deficit Reduction: Trump's Tariffs Cut Imports by 24%</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">The U.S. trade deficit decreased by 24% in August due to the impact of Trump's tariffs, which reduced imports. This reduction is attributed to the tariff hikes implemented by the Trump administration.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Global Trade War Impact: Retailers Raise Prices Ahead of US Tariffs</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">Trade war announcements led to price increases from retailers months before US tariffs were implemented, as reported by IPRoyal.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">German Machine Builders Face US Business Losses</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">German machine builders are experiencing significant losses in US business, leading the industry association VDMA to demand a US tariff exemption as exports slump.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-China Trade: Semiconductor Tariffs May Be Postponed</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">U.S. officials have indicated that semiconductor tariffs, which were part of the ongoing trade discussions with China, may be postponed. This development comes amidst concerns about potential price increases and disruptions to the trade truce between the two countries.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Global Trade War Impact: Tariffs, Market Shifts, and Economic Responses</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">The global trade war is causing significant shifts in markets and economic policies. China is seen as having an advantage in trade, while the EU is overhauling consumer protection rules in response to rising companies like Shein and Temu. The platinum market is expected to balance in 2026 due to easing tariff tensions. Saudi Arabia is signing $30 billion worth of energy deals with the US, and Latin America is urged to diversify markets to face US tariffs. Higher tariffs are taking a toll on global growth, and mining leaders are urging Congress to strengthen financial tools against China. The SCO is defending equal trade, and ECLAC recommends Latin America to deepen trade with Asia and Europe to avoid tariff effects. China has suspended seafood imports from Japan, and there is a lack of trust in the marketplace. Trump's tariffs are breaking down US trade, and the laws of economics are catching up with his policies. Macron is in a balancing act over the Mercosur deal, and new industrialization is ensuring Russia's global leadership.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-China-Japan Cyber Threat: Tensions Rise Amid Trade and Diplomatic Conflicts</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">Tensions between the US, China, and Japan are escalating due to cyber threats and trade conflicts. The US may delay semiconductor tariffs to avoid escalating the trade war with China. China's diplomatic behavior towards Japan is described as 'malicious' and disrespectful. The pharmaceutical supply chain could be devastated by a conflict with China, according to Biden's drug czar. Singapore observes a 'tactical pause' in US-China tensions, while the US-China rivalry is expected to persist despite trade truces. Additionally, Japan is forcefully pulling the US into its diplomatic disputes with China, intensifying the situation.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Trade War Impact: Trump Delays Semiconductor Tariffs to Avoid Escalation</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">The U.S. may delay the imposition of semiconductor tariffs to prevent further escalation of the trade war with China, according to multiple reports. This move comes amidst concerns about rising prices and the potential impact on the U.S.-China conflict. Additionally, U.S. ports have experienced a slowdown at the end of the year due to tariff front-loading, and Trump's tariff hikes have affected U.S. August imports, as delayed data shows. The administration has also considered tariffs on beef, coffee, and bananas, but their effectiveness in helping Americans is uncertain. Trump has previously stated that the tariffs have restored U.S. respect on the world stage.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Semiconductor Tariff Delay Amid Trade War Concerns</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">The Trump administration is considering a delay in the imposition of semiconductor tariffs to prevent further escalation of the U.S.-China trade war. Officials have indicated that the rollout of these tariffs is likely to be postponed, taking into account concerns about the ongoing conflict and potential price increases. Advisers to the president are reportedly in no hurry to implement the promised tariffs, as reported by Reuters and other sources.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-Mexico Trade Growth: Mexico Becomes Top US Export Destination</div>
-            <div class="event-meta"><span>Canada</span></div>
-            <div class="event-desc">Mexico has surpassed Canada to become the primary destination for US exports, solidifying its position as the top buyer of American goods. Despite ongoing tariffs, Mexico remains the first trading partner of the US, with significant export volumes to the United States, as highlighted by the Economic Commission for Latin America and the Caribbean (Cepal).</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">India Considers Raising Sugar Floor Price and Ethanol Rates to Support Mills</div>
-            <div class="event-meta"><span>India</span></div>
-            <div class="event-desc">India is considering raising the floor price of sugar and the tariffs on ethanol to support sugar mills. This move is aimed at providing financial relief to the sugar industry, with sources indicating that the government is exploring these measures to bolster the sector. Additionally, there are discussions about increasing the minimum selling price of sugar, which could further impact the market dynamics.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Trade Deficit Narrows Sharply in August Due to Falling Imports</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">The US trade deficit narrowed significantly in August, with imports falling sharply. The deficit dropped by 24%, driven by a substantial decrease in imports, which plummeted for the first time in four months. This reduction was attributed to the impact of Trump's tariffs, which took effect during this period. The trade deficit reached its lowest point since the beginning of the year, with the data showing a deficit of $59.6 billion for August.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Tariff Easing on Steel and Aluminum for Domestic Auto Manufacturing</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">The U.S. is considering reducing tariffs on steel and aluminum used in domestic auto manufacturing. President Trump has indicated a willingness to ease some of these tariffs, potentially leading to new trade deals.</div>
-          </div>
-        </div>
+              <div class="loader">Loading tariff events…</div>
+            </div>
           </div>
         </div>
       </section>
@@ -1467,7 +488,7 @@
           <div class="panel-title">Sanctions &amp; Restrictions</div>
           <div class="panel-meta">
             <span class="status-pill risk">High impact on flows</span>
-            
+            <span class="status-pill">Source: Permutable Sanctions Insights</span>
           </div>
         </div>
 
@@ -1481,7 +502,9 @@
               </div>
               <span class="card-tag">LATEST TABLE</span>
             </div>
-            <div class="card-body" id="sanctions-latest-table"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="US Treasury T-Note Bonds">US Treasury T-Note Bonds</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="20">20</td></tr><tr><td title="Gold (COMEX)">Gold (COMEX)</td><td title="5.0">5.0</td><td title="95.0">95.0</td><td title="22">22</td></tr><tr><td title="Liquefied Natural Gas">Liquefied Natural Gas</td><td title="6.0">6.0</td><td title="94.0">94.0</td><td title="16">16</td></tr><tr><td title="Dutch TTF Natural Gas (ICE)">Dutch TTF Natural Gas (ICE)</td><td title="22.0">22.0</td><td title="78.0">78.0</td><td title="23">23</td></tr><tr><td title="New York Harbor ULSD (NYMEX)">New York Harbor ULSD (NYMEX)</td><td title="23.0">23.0</td><td title="77.0">77.0</td><td title="22">22</td></tr><tr><td title="RBOB Gasoline (NYMEX)">RBOB Gasoline (NYMEX)</td><td title="26.0">26.0</td><td title="74.0">74.0</td><td title="27">27</td></tr><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="29.0">29.0</td><td title="71.0">71.0</td><td title="28">28</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="32.0">32.0</td><td title="68.0">68.0</td><td title="31">31</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="34.0">34.0</td><td title="66.0">66.0</td><td title="38">38</td></tr><tr><td title="us dollar">us dollar</td><td title="41.0">41.0</td><td title="59.0">59.0</td><td title="17">17</td></tr><tr><td title="Euro">Euro</td><td title="78.0">78.0</td><td title="22.0">22.0</td><td title="18">18</td></tr></tbody></table></div>
+            <div class="card-body" id="sanctions-latest-table">
+              <div class="loader">Loading sanctions snapshot…</div>
+            </div>
           </div>
 
           <!-- Previous Week -->
@@ -1493,7 +516,9 @@
               </div>
               <span class="card-tag">PREVIOUS WEEK</span>
             </div>
-            <div class="card-body" id="sanctions-previous-week"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="14">14</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="21.0">21.0</td><td title="79.0">79.0</td><td title="14">14</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="36.0">36.0</td><td title="64.0">64.0</td><td title="11">11</td></tr></tbody></table></div>
+            <div class="card-body" id="sanctions-previous-week">
+              <div class="loader">Loading previous week sanctions data…</div>
+            </div>
           </div>
 
           <!-- Events / News -->
@@ -1506,257 +531,19 @@
               <span class="card-tag">LATEST EVENTS</span>
             </div>
             <div class="card-body" id="sanctions-latest-events">
-          <div class="event-item">
-            <div class="event-title">Ukrainian Peace Plan: Oil Prices Fall Amid Market Fears and US Sanctions</div>
-            <div class="event-meta"><span>Ukraine</span></div>
-            <div class="event-desc">International oil prices fell on news of US pressure to accept Ukraine's end-of-war plan, with WTI crude oil dropping by 1.59%. World oil prices plummeted as markets feared the Ukrainian peace plan and potential US sanctions.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Ukraine Peace Talks: Oil Prices Fall on Optimism</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">Oil prices have fallen due to optimism surrounding Ukraine peace talks. The market is reacting to the potential for a peace plan and the impact of U.S. sanctions, with prices plummeting as hopes for peace weigh on market sentiment. President Zelenskyy's agreement to a U.S.-backed peace deal has contributed to this trend.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Turkey Faces Potential US Sanctions Over Russia Relations</div>
-            <div class="event-meta"><span>Israel</span></div>
-            <div class="event-desc">Turkey may face new US sanctions due to its relations with Russia, as indicated by concerns raised in Dünya. Additionally, Dr. Eray Güçlüer suggested that Israel was behind the CAATSA sanctions.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Congress Pushes for Tougher Sanctions Against Russia</div>
-            <div class="event-meta"><span>Hungary</span></div>
-            <div class="event-desc">The U.S. Congress is actively gathering signatures to force a vote on new, tougher sanctions against Russia. President Trump has announced the introduction of very powerful sanctions against Russia soon. Additionally, the US has eased some sanctions to allow the construction of a factory in Hungary and has lifted part of the sanctions on Russian banks in favor of Hungary. The US has also assessed the role of sanctions in the settlement of the Ukraine crisis and has hit Russian oil giants with sanctions. The US has not excluded the discussion of NATO expansion, and Russia has expressed disappointment over the US decision to limit visa application points.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Warship Intercepts Russian Tanker En Route to Venezuela</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">A US warship intercepted a Russian tanker, forcing it to change course as it was headed to Venezuela. The tanker was previously sanctioned.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Sanctions Impact on Global Oil Market</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">The United States has imposed sanctions on a Russian oil tanker near Venezuela, causing it to divert its route. Additionally, the US has targeted an Indian shipping firm for alleged Iranian oil exports. These actions have led to millions of barrels of oil being stranded at sea, threatening chaos in the oil market. Meanwhile, the US has authorized separate operations for a Hungarian nuclear power project being built by Russia, despite ongoing sanctions relief discussions.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Venezuela Military Escalation: US Maneuvers and Maduro's Response</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">The US military maneuvers in Trinidad and Tobago have been labeled as 'aggression' by Venezuela, leading to Maduro's deployment of troops and heavy weapons. A US warship also forced a sanctioned Russian oil tanker to divert its route near Venezuela. Maduro has urged Venezuelan and US students to oppose the war, while Democrats in the US are looking to prevent military escalation.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Global War Peace Talks: Ukraine and Russia Face US Proposals</div>
-            <div class="event-meta"><span>Bosnia and Herzegovina</span></div>
-            <div class="event-desc">The US has presented a peace plan for the Ukraine-Russia conflict that includes proposals deemed unpalatable by both sides. Ukrainian President Zelensky has stated that Ukraine is facing one of its most difficult moments. The EU's top diplomat has suggested that Russia is attempting to stall US sanctions through its proposals related to the Ukraine war. Additionally, Ukraine is under pressure from the US to accept the peace plan, which presents a 'difficult choice' for the country.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Navy Intercepts Sanctioned Russian Oil Tanker Near Venezuela</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">A US warship intercepted a sanctioned Russian oil tanker near Venezuela, forcing it to divert its route.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Congress Pushes for Vote on Sanctions Against Russia</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Congress is seeking to vote on sanctions against Russia, aiming to bypass the speaker's authority.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Implements Sanctions on Lukoil and Rosneft</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">The United States has implemented sanctions on Russian energy companies Lukoil and Rosneft, with the Trump administration taking a tough stance on the measures.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Imposes New Sanctions on Iran, Targeting Oil Trade and Entities</div>
-            <div class="event-meta"><span>France</span></div>
-            <div class="event-desc">The United States has imposed new sanctions on 17 entities, individuals, and ships linked to Iran, targeting those involved in promoting Iranian oil sales. Among the sanctioned entities is an India-based trader. Additionally, a container ship was arrested in a dispute related to the sanctions. Meanwhile, Iran has ended the Cairo agreement with the International Atomic Energy Agency (IAEA) and rejected a UN resolution, accusing Western powers of seeking escalation and sabotaging cooperation.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Global Oil Price Decline Amid Russia-Ukraine Peace Talks and Supply Concerns</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">Global oil prices have declined due to prospects of a Russia-Ukraine peace deal that could boost supply, with WTI oil falling to monthly lows. The decline is also attributed to US efforts to end the conflict and new sanctions affecting Russian maritime exports. Oil prices have fallen for the third consecutive session, with Brent oil trading at $62.12 a barrel. Additionally, Chinese and Indian firms are cutting Russian oil dealings over US sanctions, while surging Chinese imports of Indonesian oil suggest rebranded Iranian crude. The oil market is experiencing chaos with millions of barrels blocked by US sanctions, and international oil prices are expected to impact gasoline and diesel prices next week.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Tightens Sanctions on Iran's Oil Network, Targeting Indian Firms and Global Entities</div>
-            <div class="event-meta"><span>India</span></div>
-            <div class="event-desc">The US Treasury has intensified sanctions on Iran's shadow oil network, targeting an Indian firm and 41 other companies, individuals, and ships from a dozen countries for selling Iranian crude. The sanctions aim to disrupt Iran's oil trade, with the US expanding restrictions on tankers and companies involved in the trade. The measures include fines and bans on Indian companies and businessmen involved in Iranian petroleum and petroleum products sales.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Sudan Civil War: Resource Scramble and Humanitarian Crisis</div>
-            <div class="event-meta"><span>Congo, The Democratic Republic of the</span></div>
-            <div class="event-desc">The ongoing civil war in Sudan is driven by a scramble for the country's resources, leading to brutal conflict. Thousands have fled el-Fasher to escape the violence, according to humanitarian groups. The EU has imposed sanctions on a Sudanese paramilitary leader due to atrocities committed by his forces in Darfur. The US and Saudi Arabia are collaborating to assist peace efforts in Sudan.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Imposes New Sanctions on Russia Amid Oil and Geopolitical Tensions</div>
-            <div class="event-meta"><span>India</span></div>
-            <div class="event-desc">The United States has announced new sanctions against Russia, aiming to make it harder for Russia to sell its oil. These sanctions have led to millions of barrels of Russian oil being stuck at sea, with India preparing to end its buying spree. Russia has responded by dissolving the international board of Lukoil and stating it will not bow to the new sanctions. The US has also urged Baltic states not to worry about Russia's aggression, while experts warn against drawing wrong conclusions from the Ukraine war. Additionally, the US and Russia have discussed potential settlements for the Russian-Ukrainian conflict, and the US has agreed with Russia on certain defense matters.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia-Belarus-Lithuania Relations: Transit Dispute and Saboteur Claims</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">Lithuania has stopped the transit of Lukoil cargo to the Kaliningrad region as part of its alignment with Western sanctions against Russia. Belarus and Poland have initiated a manhunt for Ukrainian saboteurs, with Belarus claiming it was unaware of their entry. Meanwhile, Belarusian President Lukashenko is accused of forcing Lithuania to surrender, and Lithuania has announced a new provocative move against Russia.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">WTI Light Sweet Crude Oil (NYMEX) Drops on Ukraine-Russia Peace Plan</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">WTI Light Sweet Crude Oil (NYMEX) prices have fallen due to the introduction of a Ukraine-Russia peace plan. The decline in oil prices is attributed to easing geopolitical tensions and the potential for reduced supply concerns. The peace plan has led to a drop in oil prices, with some reports indicating a one-month low for WTI. The fall in oil prices is also influenced by the implementation of US sanctions against Russia, which are set to take effect on November 21st.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Global Russia Sanctions: International Response and Economic Impact</div>
-            <div class="event-meta"><span>India</span></div>
-            <div class="event-desc">The international community has intensified sanctions against Russia, targeting various sectors including energy and finance. India's largest conglomerate has halted Russian oil imports, and the EU has imposed sanctions on Russian prison officials linked to the death of a Ukrainian journalist. Additionally, a money-laundering network in Britain has been exposed for aiding Russia in circumventing sanctions. These measures are part of a broader strategy to keep Russia in check and limit its financial resources.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Venezuela and Russia Extend Oil Partnership to 2041</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Venezuela and Russia have expanded their partnership by extending oil projects between PDVSA and a Russian state-owned company until 2041. This move comes amidst international sanctions and aims to strengthen energy cooperation between the two countries. Additionally, Venezuela has approved a 15-year extension for Russia-linked oil joint ventures.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Debt Collapse Speculation Amid Market Volatility</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">Speculation about a potential collapse of U.S. debt in June has emerged, with netizens highlighting the recurring nature of such fears. Meanwhile, Federal Reserve officials have warned of potential 'outsized asset price declines' due to elevated stock valuations. Wall Street is experiencing volatility, with a sharp sell-off in the S&amp;P 500 triggered by Fed data, and differing expectations regarding interest rate cuts. Additionally, U.S. Treasury officials anticipate the complete severance of Lukoil and Rosneft from their foreign assets as sanctions take effect.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Peace Efforts for Russia-Ukraine Lead to Oil Price Decline</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Oil prices fell as the U.S. pushed for Russia-Ukraine peace talks, with hopes of a peace deal contributing to the decline in crude oil prices. The renewed U.S. peace efforts led to extended losses in oil, with energy company shares also experiencing a decline. Despite the progress towards peace, U.S. sanctions against Russia went into effect.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">WTI Crude Oil Drops to $58.00 Amid Easing Russia-Ukraine Tensions</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">WTI Light Sweet Crude Oil prices fell to $58.00 on the NYMEX as tensions between Russia and Ukraine eased, with market participants also considering potential sanctions.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Sanctions on Iran's Oil Network Impact Indian Firms</div>
-            <div class="event-meta"><span>India</span></div>
-            <div class="event-desc">The US Treasury has imposed additional sanctions on Iran's shadow oil network, with an Indian firm being one of the targeted entities. This move follows previous sanctions and is expected to have implications for India's oil imports from Iran.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US and EU Impose New Sanctions Against Russia</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The United States and the European Union have expanded their sanctions against Russia. The EU has extended its sanctions, adding new individuals and entities to the list. Meanwhile, US Representative Waltz has stated that the US is prepared to impose new sanctions against Russia. These actions are part of a broader effort to increase pressure on Russia.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Ukraine Peace Plan Leads to Drop in Oil Prices</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Oil prices fell in response to a Ukraine peace plan, despite the impending start of Russia sanctions.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Ukraine Peace Plan Leads to Oil Price Drop</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Oil prices fell in response to a Ukraine peace plan, despite the impending start of Russia sanctions.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">EU Imposes New Sanctions on Russia for Human Rights Violations</div>
-            <div class="event-meta"><span>Germany</span></div>
-            <div class="event-desc">The European Union is imposing new sanctions on Russia, targeting individuals involved in the death of prisoner Roshchina and the torture of Roshchyna and other prisoners. The EU has also expanded its sanctions list for alleged human rights violations in Russia. Additionally, the EU is considering new sanctions against Russia's shadow fleet and is preparing to change the principle of its sanctions against Russia. The UK has extended a sanctions waiver for Bulgarian Lukoil subsidiaries, while Germany and some EU members have called for lifting sanctions on Russia.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Peace Plan for Ukraine Alarms European Allies</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">The US has revealed a new peace plan for Ukraine, which has alarmed European allies. The plan, which aligns with Putin's proposals, includes the lifting of sanctions on Russia and the suspension of war crimes investigations. European allies have expressed concern and insist that they and Ukraine must be involved in any peace process. Meanwhile, Putin has called the Ukrainian leadership a criminal group and has visited the command post of the Western Group, while Zelensky has agreed to work on the US peace plan despite pressure from various sources.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Imposes New Sanctions on Russian Oil Firms, Impacting Global Markets</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">The US has imposed new sanctions on major Russian oil firms, which are having their intended effect, according to a Treasury official. These sanctions are part of a broader strategy to increase pressure on Russia, with the US also threatening further sanctions and continuing military aid to Ukraine. The measures have led to a significant impact on Russia's oil industry, a key source of Kremlin funds, and have influenced entities in China and India to move away from Russian oil. The sanctions have also affected Russia's influence in the Balkans and Serbia, forcing the sale of an oil company. Additionally, the US has threatened Russia with new sanctions and continued military aid to Ukraine, while a US Senator has stated that the US can handle the oil price impact of increasing pressure on Russia.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-Russia-Ukraine War: Peace Plan Proposals and Military Developments</div>
-            <div class="event-meta"><span>France</span></div>
-            <div class="event-desc">The US has proposed a peace plan to end the war in Ukraine, which includes land concessions and military reductions. Ukraine has rejected the plan, citing displeasure from politicians in Kiev and Europe. Meanwhile, military actions continue, with Ukraine striking Russian targets and Russia engaging in street fighting in Seversk. The US has threatened Russia with new sanctions and continued military aid to Ukraine. The Russian military has also reported destroying Ukrainian targets and engaging in combat. The US and Russia have been negotiating a peace plan, with Europe and Ukraine demanding participation. The US State Department has made a statement on the Ukrainian conflict, and the White House has said it has spoken equally with Russia and Ukraine about the plan to end the war.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-Russia Ukraine War Plan: Concessions and Peace Proposals</div>
-            <div class="event-meta"><span>Azerbaijan</span></div>
-            <div class="event-desc">The United States and Russia have developed a peace plan for Ukraine that includes significant concessions from Kyiv, such as land transfers and military reductions. The plan also proposes lifting sanctions on Russia and involves financial payments for the lease of territories. European countries have expressed opposition and demanded a seat at the negotiating table, while Ukraine has received the draft plan and will discuss it with the US. The White House has assured Ukraine that its position will be considered, and Trump has approved the peace plan, with his team pushing for a deal in Kyiv. The Kremlin has acknowledged secret consultations with the US on Ukraine.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Eases Agricultural Tariffs on Brazil Amid Ongoing Dispute</div>
-            <div class="event-meta"><span>Brazil</span></div>
-            <div class="event-desc">The US has eased agricultural tariffs on Brazil, although sanctions remain in place. The Secretary of Agriculture described the US measure as 'excellent' for Brazil. Additionally, President Trump has updated further tariffs on Brazilian agricultural products.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">EU Regulatory Developments: Fossil Fuels Exclusion from Green Funds and Environmental Policies</div>
-            <div class="event-meta"><span>France</span></div>
-            <div class="event-desc">The European Commission is proposing to exclude fossil fuels from green funds, aiming to bar 'green' labels for fossil fuel investments. Additionally, the Commission is extending the scope of environmental directives and regulations, including measures to combat fraud and protect workers from dangerous substances. The Commission has also been tasked with submitting reports and proposals on various environmental and regulatory matters, including a new directive on the protection of the environment and a regulation on the use of the term 'cross-border' in the transport sector. Furthermore, the EU is preparing new sanctions against Russia's 'shadow fleet' and considering the abolition of cookie banners, which may impact privacy.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Sanctions on Russian Oil Firms Impact Kremlin Funds</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">US sanctions on major Russian oil firms are significantly impacting Russia's oil industry, a key source of funding for the Kremlin, according to findings by the US Treasury. The sanctions are reported to be achieving their intended effects, as stated by a Treasury official.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia-Ukraine War Developments: Oil Prices Fall on Peace Efforts</div>
-            <div class="event-meta"><span>Australia</span></div>
-            <div class="event-desc">Oil prices fell as the United States pushed a new plan to end the Russia-Ukraine war, with NYMEX crude oil dropping 0.5%. The renewed diplomatic efforts led to a decrease in oil futures. Meanwhile, there were reports of a Russian oil refinery being hit and ongoing discussions about US sanctions related to the conflict.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Global Oil Sanctions Concern: EU, US, and Asian Compliance and Market Impact</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">The EU and US sanctions against Russia are facing challenges as some companies find ways to bypass them, while others, including Chinese and Indian banks and refineries, align with the sanctions. Uncertainty surrounds Rosneft and Lukoil's overseas assets, and the US is forcing the sale of an oil company in Serbia to loosen Russia's grip. Oil prices are under pressure due to geopolitical tensions and stockpiles, with traders doubting the effectiveness of Trump's sanctions.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Ukraine Russia War: US Peace Plan and Russian Attacks on Energy Infrastructure</div>
-            <div class="event-meta"><span>Moldova, Republic of</span></div>
-            <div class="event-desc">The US has proposed a new peace plan for the Ukraine war, which includes lifting sanctions against Russia. Zelensky has received Trump's peace plan and is preparing for tough decisions. Meanwhile, Russia has launched drone strikes on energy facilities in several areas, and Ukraine's Security Service has charged occupation officials over the deportation of children to Russia. The SBU has also tracked down occupiers who kidnapped and deported hundreds of Ukrainian children. Additionally, Ukraine says it's ready to work with the US on the plan to end the war, but Europe has warned that it won't go ahead without Kiev and the EU.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Threatens Russia with New Sanctions</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">The United States has threatened Russia with new sanctions. The US envoy to the UN has explicitly stated this, and Deputy Aksakov has confirmed that the US is attempting to impose these sanctions on Russia.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia-West Ukraine Conflict: US Plan Involves Territorial Concessions</div>
-            <div class="event-meta"><span>Poland</span></div>
-            <div class="event-desc">The US plan for Ukraine includes territorial concessions, specifically the transfer of Donbass territories to Russia. This plan takes into account Russia's interests and involves halving Ukraine's military. The US has been pushing Ukrainian President Zelensky to cooperate on this deal amidst a corruption scandal. Meanwhile, the US Senate is not rushing to pass a sanctions law against Russia, and the EU is urged to diversify LNG supplies. The West has been warned about the dangers of trying to 'win over' Russia, and there are concerns about the lack of US data on peace settlement proposals. Additionally, Russia has been confiscating satellite dishes and blocking communications without a passport, while Poland plans to charge two Ukrainians with sabotage for a railway explosion.</div>
-          </div>
-        </div>
+              <div class="loader">Loading sanctions events…</div>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- WARS -->
-      <section class="panel active" id="panel-wars">
+      <section class="panel" id="panel-wars">
         <div class="panel-header">
           <div class="panel-title">Wars &amp; Armed Conflicts</div>
           <div class="panel-meta">
             <span class="status-pill risk">Critical geopolitical risk</span>
-            
+            <span class="status-pill">Source: Permutable Wars Insights</span>
           </div>
         </div>
 
@@ -1770,7 +557,9 @@
               </div>
               <span class="card-tag">LATEST TABLE</span>
             </div>
-            <div class="card-body" id="wars-latest-table"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="US Treasury T-Note Bonds">US Treasury T-Note Bonds</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="77">77</td></tr><tr><td title="Gold (COMEX)">Gold (COMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="102">102</td></tr><tr><td title="Liquefied Natural Gas">Liquefied Natural Gas</td><td title="12.0">12.0</td><td title="88.0">88.0</td><td title="26">26</td></tr><tr><td title="Hot-Rolled Coil Steel (COMEX)">Hot-Rolled Coil Steel (COMEX)</td><td title="19.0">19.0</td><td title="81.0">81.0</td><td title="36">36</td></tr><tr><td title="RBOB Gasoline (NYMEX)">RBOB Gasoline (NYMEX)</td><td title="21.0">21.0</td><td title="79.0">79.0</td><td title="58">58</td></tr><tr><td title="European Hot-Rolled Coil Steel (ICE)">European Hot-Rolled Coil Steel (ICE)</td><td title="23.0">23.0</td><td title="78.0">78.0</td><td title="40">40</td></tr><tr><td title="Dutch TTF Natural Gas (ICE)">Dutch TTF Natural Gas (ICE)</td><td title="26.0">26.0</td><td title="74.0">74.0</td><td title="31">31</td></tr><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="27.0">27.0</td><td title="73.0">73.0</td><td title="51">51</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="28.0">28.0</td><td title="72.0">72.0</td><td title="99">99</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="32.0">32.0</td><td title="68.0">68.0</td><td title="47">47</td></tr><tr><td title="New York Harbor ULSD (NYMEX)">New York Harbor ULSD (NYMEX)</td><td title="50.0">50.0</td><td title="50.0">50.0</td><td title="20">20</td></tr><tr><td title="us dollar">us dollar</td><td title="56.0">56.0</td><td title="44.0">44.0</td><td title="27">27</td></tr><tr><td title="chinese yuan">chinese yuan</td><td title="83.0">83.0</td><td title="17.0">17.0</td><td title="23">23</td></tr><tr><td title="Euro">Euro</td><td title="92.0">92.0</td><td title="8.0">8.0</td><td title="37">37</td></tr><tr><td title="japanese yen">japanese yen</td><td title="100.0">100.0</td><td title="0.0">0.0</td><td title="17">17</td></tr></tbody></table></div>
+            <div class="card-body" id="wars-latest-table">
+              <div class="loader">Loading conflict snapshot…</div>
+            </div>
           </div>
 
           <!-- Previous Week -->
@@ -1782,7 +571,9 @@
               </div>
               <span class="card-tag">PREVIOUS WEEK</span>
             </div>
-            <div class="card-body" id="wars-previous-week"><table><thead><tr><th>name</th><th>sell_percentage</th><th>buy_percentage</th><th>total_signals</th></tr></thead><tbody><tr><td title="Gold (COMEX)">Gold (COMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="52">52</td></tr><tr><td title="Uranium (COMEX)">Uranium (COMEX)</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="12">12</td></tr><tr><td title="Liquefied Natural Gas">Liquefied Natural Gas</td><td title="0.0">0.0</td><td title="100.0">100.0</td><td title="13">13</td></tr><tr><td title="US Treasury T-Note Bonds">US Treasury T-Note Bonds</td><td title="5.0">5.0</td><td title="95.0">95.0</td><td title="40">40</td></tr><tr><td title="New York Harbor ULSD (NYMEX)">New York Harbor ULSD (NYMEX)</td><td title="9.0">9.0</td><td title="91.0">91.0</td><td title="11">11</td></tr><tr><td title="RBOB Gasoline (NYMEX)">RBOB Gasoline (NYMEX)</td><td title="10.0">10.0</td><td title="90.0">90.0</td><td title="20">20</td></tr><tr><td title="WTI Light Sweet Crude Oil (NYMEX)">WTI Light Sweet Crude Oil (NYMEX)</td><td title="11.0">11.0</td><td title="89.0">89.0</td><td title="18">18</td></tr><tr><td title="Brent Crude Oil (NYMEX)">Brent Crude Oil (NYMEX)</td><td title="12.0">12.0</td><td title="88.0">88.0</td><td title="25">25</td></tr><tr><td title="Gasoil (ICE)">Gasoil (ICE)</td><td title="21.0">21.0</td><td title="79.0">79.0</td><td title="28">28</td></tr><tr><td title="European Hot-Rolled Coil Steel (ICE)">European Hot-Rolled Coil Steel (ICE)</td><td title="23.0">23.0</td><td title="77.0">77.0</td><td title="13">13</td></tr><tr><td title="Euro">Euro</td><td title="80.0">80.0</td><td title="20.0">20.0</td><td title="15">15</td></tr><tr><td title="chinese yuan">chinese yuan</td><td title="82.0">82.0</td><td title="18.0">18.0</td><td title="11">11</td></tr></tbody></table></div>
+            <div class="card-body" id="wars-previous-week">
+              <div class="loader">Loading previous week conflict data…</div>
+            </div>
           </div>
 
           <!-- Events / News -->
@@ -1795,246 +586,8 @@
               <span class="card-tag">LATEST EVENTS</span>
             </div>
             <div class="card-body" id="wars-latest-events">
-          <div class="event-item">
-            <div class="event-title">Ukraine War Impact: Peace Talks and Military Developments</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">Ukraine is at a standstill and the US is running out of patience. Zelensky discussed a peace plan with the Dutch prime minister and consultations on steps to end the war are ongoing in Switzerland. Ukraine has received 31 civilians held in Belarus and suffered losses on the Donbass front but has punished Russia in its oil industry. Europe has added 132,000 million in aid to Kiev since the war began in 2022. Zelensky faces a choice between protecting Ukraine’s sovereignty or losing U.S. support. Trump has set a deadline for his peace plan amid Ukraine's quandary. The EU military chief warns Europe 'can no longer sit back', calling Ukraine the 'front line'. Orban says continuing military and financial aid to Ukraine only burns money, while Vance said supporting Ukraine with weapons will not lead to victory.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-Russia Ukraine Peace Plan: Trump's 28-Point Proposal Faces International Scrutiny</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">The US-Russia Ukraine Peace Plan, proposed by Trump, includes a 28-point proposal aimed at ending the war in Ukraine. The plan has sparked international debate, with European leaders welcoming US efforts but expressing concerns about elements relating to EU and NATO. Russia views the plan as a potential basis for peace, while Ukraine faces pressure and risks losing American support. Talks on the plan are set to begin in Switzerland, with Ukraine and the US discussing the proposal. Senator Karasin warned of potential Ukrainian provocations, and Trump has set a deadline of the 27th for an agreement. The plan's feasibility and acceptance by Ukraine remain contentious, with some analysts suggesting it could lead to future Russian aggression.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia Ukraine War: Recent Military Developments and Diplomatic Reactions</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">In the ongoing Russia-Ukraine war, Russia has intensified its military actions, striking the border of Ukraine with Romania and attacking a checkpoint on the border between Ukraine and a NATO country. Additionally, Russia's drone revolution is putting significant pressure on Ukrainian defenses. Meanwhile, Ukraine has returned 31 civilians from Belarus, with ages ranging from 18 to 58. Diplomatic reactions include Georgia declaring Ukraine's situation hopeless, and Orban stating that Europe is at a crossroads due to the conflict. The West has also reacted to the idea of sending troops to Ukraine, with Ryabkov calling it a strategic mistake. In the Voronezh region, missiles were shot down, and in Kamyshin, Volgograd region, two soldiers of the SVO will be greeted. It has been reported that the armed forces are taking measures to block the possibility of surrendering, and officers of the armed forces fled from an important settlement in the Kharkov region. Ambassador Kelin stated that Britain is still trying to defeat Russia in Ukraine, and Trump made comments about the Russia war, causing Zelensky to get emotional. Air defense forces shot down six Ukrainian drones over Crimea in three hours.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia-Ukraine Conflict: Strategic Moves and International Reactions</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">The Russia-Ukraine conflict continues to escalate with significant international reactions. Georgia has declared Ukraine's situation hopeless, while journalist Fazi has labeled Ukraine's supporters as the country's greatest enemies. The Kremlin has shown its true intentions, with Putin not backing down from old demands, which is destroying the chances of a deal. The West is seen as divided and vulnerable, with Russia confidently strengthening its position. Pushkov has stated that the American strategy in Ukraine is failing, and Ryabkov has accused the West of being strategically wrong in assessing Russia's determination to protect its interests. The German Foreign Minister has emphasized that the war was started by Russia and that the Russia-Ukraine agreement should not be rushed. Additionally, Belarus has pardoned 31 Ukrainians under a Trump deal, and Kallas made a provocative statement against Russia.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia-Ukraine War: Eastern Ukraine Conflict Intensifies with Russian Advances and Ukrainian Counterattacks</div>
-            <div class="event-meta"><span>Canada</span></div>
-            <div class="event-desc">The Russia-Ukraine war in Eastern Ukraine has seen significant developments. Russian forces have captured several villages and towns, including New Zaporozhye and Zvanovka, and are advancing towards Pokrovsk. Ukrainian forces are counter-attacking in the Pokrovsk area, and there have been reports of Russian forces being repelled near Krasnoarmeiysk. Additionally, Russian air defenses have shot down multiple Ukrainian drones, and there have been explosions and attacks on energy facilities in occupied Crimea. The situation remains fluid with both sides reporting gains and losses.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Ukraine War Impact Eastern Ukraine: Russian Advances and Ukrainian Counter-Offensives</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">Russian forces have made advances in eastern Ukraine, taking control of the right bank of the Gaichur River and liberating New Zaporozhye. They also attacked the Orlovka checkpoint on the Romanian border. Meanwhile, Ukrainian forces have foiled a Russian breakthrough attempt in the Kupyan district and destroyed a rare Soviet-era Ovod air defense command post in the Donetsk region. Ukrainian military reported killing 24 Shahed drones in one night, a new record. Additionally, Ukraine is holding consultations with the US in Switzerland to discuss ending the war.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Hungary's Stance on Russia-Ukraine Conflict Amid NATO Tensions</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Hungary, a NATO member, has asserted its position in the ongoing Russia-Ukraine conflict, stating that Russia cannot impose its will. This comes amidst warnings that Europe could face total disengagement, potentially fulfilling Putin's wishes.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">China-Japan Military Tensions Escalate Over Taiwan</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">China has escalated its warnings to Japan over potential intervention in Taiwan, asserting its right to self-defense and referring the dispute to the United Nations. Japan has released a danger signal and is transforming its military strategy, while China has demonstrated its combat and logistics capabilities through drills. The Chinese embassy in Japan has reiterated that aggression by Japan could lead to direct force by the five permanent members of the UN Security Council. Additionally, China has sent a harsh letter to the UN and warned Japan against intervening in the Taiwan Strait, stating that such actions would be considered an act of aggression.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Global Energy Markets Changes: Oil Prices Fall Amid US Pressure for Ukraine Peace Deal</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">International oil prices fell on news of US pressure to accept Ukraine's end-of-war plan, with WTI dropping 1.59%. The energy markets are expected to undergo profound changes, and power markets are set for sweeping long-term changes. Oil prices settled at their lowest in a month as the US seeks a Russia-Ukraine peace deal.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Ukrainian Peace Plan: Oil Prices Fall Amid Market Fears and US Sanctions</div>
-            <div class="event-meta"><span>Ukraine</span></div>
-            <div class="event-desc">International oil prices fell on news of US pressure to accept Ukraine's end-of-war plan, with WTI crude oil dropping by 1.59%. World oil prices plummeted as markets feared the Ukrainian peace plan and potential US sanctions.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-Ukraine Peace Talks Impact on Oil Prices</div>
-            <div class="event-meta"><span>Ukraine</span></div>
-            <div class="event-desc">International oil prices fell on news of US pressure to accept Ukraine's end-of-war plan, with WTI crude oil dropping by 1.59%.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Tensions Rise in Global China Japan Taiwan Relations Amidst Diplomatic Remarks and Legal Battles</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">Tensions in global China-Japan-Taiwan relations have escalated due to recent diplomatic remarks and legal battles. Chairman of Taiwan’s New Party warned against Japan's potential aggression, while China accused Japan at the UN of violating international law over Taiwan comments. Japanese PM's remarks on Taiwan were criticized by an Australian party chief for destabilizing regional security. Additionally, Taiwan protested against the Japanese PM's comments, and China warned that Taiwan will not tolerate foreign interference. Meanwhile, a scholar discussed the historical context of U.S. criticism of Taiwan's actions, and a legal battle in The Hague was noted as irrelevant to Taiwan. Furthermore, Honduras' economic struggles due to its relations with China have led to calls to resume diplomatic ties with Taiwan, and Japan's inquiry into a summit with China and South Korea was rejected. Nancy Pelosi’s 2022 Taiwan trip was also noted as influencing Japan's decision to rearm.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Hungary's Prime Minister Warns of War with Russia</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">The Hungarian Prime Minister has expressed concerns about the potential for war with Russia, raising alarms across Europe.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Japan Trade War: Japan Blocks US Beef and Marine Products</div>
-            <div class="event-meta"><span>Japan</span></div>
-            <div class="event-desc">Japan has blocked US beef and marine products, putting the trade agreement at risk of a 'trade war'.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Taiwan Strait Tensions Escalate with Chinese Military Moves and Diplomatic Threats</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">Tensions in the Taiwan Strait have escalated as China's military activities, including the deployment of 26 aircraft and warships, are closely monitored by Taiwan's national military. Chinese diplomats have issued threats against Japan, stating that any intervention in the Taiwan Strait would be met with self-defense measures under the UN Charter. Additionally, a South China Sea expert has warned that China's navy would struggle to manage a war on multiple fronts. These developments have raised concerns about potential conflicts between China and Japan, with experts suggesting that Japan's Self-Defense Forces are prepared to support the US military rather than directly intervene.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Escalating Violence in the West Bank</div>
-            <div class="event-meta"><span>Palestine, State of</span></div>
-            <div class="event-desc">Violence in the West Bank is intensifying, with reports of Israeli attacks and Palestinian deaths rising. The UN has issued a warning about the escalating situation. Additionally, Israeli soldiers have been arrested in the region.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-China Tensions in the West Sea: Maritime Security Consultation and Sovereignty Disputes</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">Tensions between the US and China in the West Sea have escalated, with both countries engaging in a war of nerves. The US and China held a maritime military security consultation where China firmly opposed actions that threaten its sovereignty, particularly in the name of freedom of navigation and overflight. The situation is further complicated by the presence of a Korean nuclear-powered submarine, which has added to the military tensions in the region.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Military Buildup and Naval Blockade Near Venezuela</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">The US military has staged a significant show of force near Venezuela, including a demonstration of an attack and a naval buildup, marking the largest since the Cold War. The US Army has also deployed heavy bombers in the region. Additionally, US warships have blocked the road, causing a Russian oil tanker to make a U-turn. President Trump has not ruled out sending troops to Venezuela.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Warships Blockade Venezuelan Ports, Russian Oil Tanker Turns Back</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">US warships have established a blockade around Venezuelan ports, leading a Russian oil tanker to reverse course and avoid the area.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Warship Intercepts Russian Tanker En Route to Venezuela</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">A US warship intercepted a Russian tanker, forcing it to change course as it was headed to Venezuela. The tanker was previously sanctioned.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia-Ukraine Energy Conflict Escalates Amid Peace Talks</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Russia and Ukraine have intensified their energy dispute, with peace talks on the horizon. Minsk has expressed openness to dialogue with all interested countries, while a meeting between the US and Europe over Ukraine was held in a tense atmosphere. Russia has warned that the situation in Ukraine will deteriorate further.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Venezuela Military Escalation: US Maneuvers and Maduro's Response</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">The US military maneuvers in Trinidad and Tobago have been labeled as 'aggression' by Venezuela, leading to Maduro's deployment of troops and heavy weapons. A US warship also forced a sanctioned Russian oil tanker to divert its route near Venezuela. Maduro has urged Venezuelan and US students to oppose the war, while Democrats in the US are looking to prevent military escalation.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Italy's New Biofuel Policy Signals End to Diesel Engine War</div>
-            <div class="event-meta"><span>Italy</span></div>
-            <div class="event-desc">Italy has announced a new policy that opens the country to biofuel, marking the end of the war on diesel engines. This shift in policy is expected to have significant implications for the automotive industry and fuel market in Italy.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Global War Peace Talks: Ukraine and Russia Face US Proposals</div>
-            <div class="event-meta"><span>Bosnia and Herzegovina</span></div>
-            <div class="event-desc">The US has presented a peace plan for the Ukraine-Russia conflict that includes proposals deemed unpalatable by both sides. Ukrainian President Zelensky has stated that Ukraine is facing one of its most difficult moments. The EU's top diplomat has suggested that Russia is attempting to stall US sanctions through its proposals related to the Ukraine war. Additionally, Ukraine is under pressure from the US to accept the peace plan, which presents a 'difficult choice' for the country.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-China Japan Conflict: US-Russian Involvement in War</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">The conflict between China and Japan is intensifying, with the US and Russia participating in the war.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">China and Russia Encircling Japan's Border on Multiple Fronts</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">China and Russia are encircling Japan's border on multiple fronts, according to High market Sanae, which warns that this belligerent action is leading Japan into a dangerous situation.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Navy Intercepts Sanctioned Russian Oil Tanker Near Venezuela</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">A US warship intercepted a sanctioned Russian oil tanker near Venezuela, forcing it to divert its route.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Trump's 28-Point Peace Plan for Ukraine with NATO-Style Security Guarantees</div>
-            <div class="event-meta"><span>Finland</span></div>
-            <div class="event-desc">Former US President Donald Trump has presented a 28-point peace plan for Ukraine, which includes security guarantees modeled after NATO's Article 5. Ukrainian President Volodymyr Zelensky has expressed readiness to work with Washington on the plan and expects talks with Trump. The plan has been criticized by some in Kiev and the EU, with Politico describing it as a 'very bad plan'. Despite this, Ukraine and Europe are reportedly unable to reject the US plan, according to media reports. The plan aims to end the war in Ukraine and has been discussed by Trump with various international figures, including German politician Friedrich Merz. The US has asserted its power to make Russia serious about ending the war, according to Zelensky.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-Venezuela Relations: Trump's Escalation and Petro's Power Sharing Proposal</div>
-            <div class="event-meta"><span>Colombia</span></div>
-            <div class="event-desc">US-Venezuela relations are tense as President Trump escalates pressure on Venezuelan President Maduro, authorizing CIA operations and declaring a no-fly zone. Meanwhile, Colombian President Petro proposes a power-sharing deal for Venezuela, suggesting a 'shared transition' government amid US tensions. Maduro has denounced the presence of CIA agents and is preparing to export gas to Colombia. Trump has hinted at specific actions against Maduro but refused to confirm demands for his resignation. Democrats are working to prevent military escalation, while the FAA has warned pilots of risks flying over Venezuela due to the worsening security situation.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russian Military Actions in Ukraine: Drone Strikes and Territorial Advances</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">Russian military actions in Ukraine include significant drone strikes and territorial advances. The 'North' troop group has been using strike drones to destroy enemy targets. Russian forces have liberated 16 settlements in one week and occupied four settlements in the DPR. They have also launched six group strikes on Ukrainian air defense facilities and drone assembly sites. Additionally, Russian air defense forces destroyed 33 UAVs over Russia. The situation at the front remains difficult for the Armed Forces, with over 1570 soldiers lost in the West zone in a week. Russia has also retaliated against Norwegian ships and named conditions for victory in the drone war.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US-Ukraine-Russia Peace Plan: Trump Pushes for Deal by Thanksgiving</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">The United States is urging Ukraine to sign a peace deal with Russia by Thanksgiving, with President Trump stating that Ukrainian President Zelenskyy will have to approve the US-backed plan. The White House has highlighted Zelenskyy's weak position, and Trump has warned of a cold winter for Ukraine if the deal is not accepted. The US is also sending generals to Moscow to discuss the plan, while Trump predicts that Ukraine will inevitably lose control of part of the Donbas region.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">US Military Build-Up and Tensions with Venezuela</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">The United States has significantly increased its military presence around Venezuela, with jets and warships encircling the country. This escalation includes a US warship blocking a Russian oil tanker from reaching Venezuela, leading to the tanker being stranded at sea. The Trump administration has authorized CIA operations in Venezuela and has been conducting war games to simulate the fall of President Maduro. Additionally, the US has warned civilian air traffic about increased military activity in the region, while Democrats are attempting to prevent further military escalation.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Venezuela-US Relations Tense Amid Terror Designation and Military Moves</div>
-            <div class="event-meta"><span>Colombia</span></div>
-            <div class="event-desc">The US has designated Venezuela's government as a terrorist network, with the Pentagon performing military exercises near the country. Venezuelan President Maduro has accused the US of attempting to make Venezuela its 51st state and has ordered coastal defenses with missiles. The FAA has warned pilots of risks flying over Venezuela due to a worsening security situation. Meanwhile, opposition leader María Corina Machado faces potential fugitive status if she leaves the country to receive her Nobel Peace Prize. Maduro has also suspended his birthday concert due to fears of US harassment, and the US has stopped a Russian tanker off Venezuela's coast. The White House has indicated that any incident in Venezuela could lead to a drop in oil prices.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Poland Accuses Russia of State Terrorism After Railway Sabotage</div>
-            <div class="event-meta"><span>Germany</span></div>
-            <div class="event-desc">Poland has accused Russia of 'state terrorism' following sabotage on its railway network. The Polish Sejm adopted a resolution urging the government to relocate the Russian Embassy in Warsaw. The Polish Prime Minister labeled the sabotage as Russian state terrorism, and the Polish MP demanded the resignation of the Foreign Minister over Ukraine. Additionally, Russian MPs asked to recognize the Polish 'Sungress of People's Deputies' as a terrorist organization, and the Polish Sejm called for the relocation of the Russian embassy from Warsaw.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Poland Railway Sabotage: Arrests and Special Operation Launched</div>
-            <div class="event-meta"><span>Belarus</span></div>
-            <div class="event-desc">Polish police discovered bullets on railway tracks and launched a special operation called 'Put' following an explosion on the railway. The Polish Prime Minister labeled the incident as sabotage and Russian state terrorism. Belarus confirmed the arrival of two suspects, while Minsk and Warsaw are searching for Ukrainians allegedly involved. Four people have been arrested in connection with the case.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russian Tanker Changes Course to Venezuela Amid US Military Presence</div>
-            <div class="event-meta"><span>United States</span></div>
-            <div class="event-desc">A Russian tanker initially heading to Venezuela changed its course due to the presence of a US destroyer. This incident occurred amidst a broader context of US military buildup in the Caribbean region, as discussed by a former Venezuelan ambassador. Venezuelan President Maduro also urged Venezuelan and US students to oppose war.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">12-Day Iran-Israel War: No Clear Winners, Tehran's Nuclear Efforts Continue</div>
-            <div class="event-meta"><span>Iran, Islamic Republic of</span></div>
-            <div class="event-desc">A 12-day war between Iran and Israel, with U.S. involvement, resulted in no clear winners. Despite the conflict, Iran's nuclear efforts are expected to continue.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">Russia-Ukraine Intelligence: Assessments and Military Developments</div>
-            <div class="event-meta"><span>Russian Federation</span></div>
-            <div class="event-desc">Ukrainian intelligence has assessed the consequences of prolonging the conflict, stating that it is dragging on. Meanwhile, Russian forces have made advances in Pokrovsk and near three other settlements, and have taken control of the city of Kupyansk in the Kharkov region, according to the Russian Chief of General Staff Valery Gerasimov. Additionally, the UK has revealed an international money laundering network secretly funding Russia's war in Ukraine.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">West Bank Terrorist Attacks: Settler Violence and Israeli-Palestinian Clashes</div>
-            <div class="event-meta"><span>Israel</span></div>
-            <div class="event-desc">Settler violence escalated in the West Bank, with Jewish extremists committing arson and attacking Palestinians. The Israeli army shot dead a Palestinian who allegedly wounded an Israeli soldier. At least one Israeli was killed and three injured in an attack at a West Bank junction. The IDF eliminated a gunman who shot a reservist in Judea and Samaria. The UN warned of increasing violence in the region.</div>
-          </div>
-        
-          <div class="event-item">
-            <div class="event-title">China-Japan Military Tension Escalates with Diplomatic and Military Threats</div>
-            <div class="event-meta"><span>China</span></div>
-            <div class="event-desc">China has escalated its military and diplomatic tensions with Japan, with the Chinese Embassy in Japan citing the UN Charter to hint at the right to carry out military operations against Japan. The People's Liberation Army Daily has stated that China's military and civilians will not tolerate the resurgence of Japanese militarism. The US State Department has noted that the China-Japan conflict is escalating, with Japan's defense commitments, including the Senkakus, remaining firm. China has also warned Japan that it could become a battlefield amid rising tensions. Additionally, the US, Korea, and Japan are cooperating against Chinese Communist Party revisionism, while Russia and North Korea are taking sides in the intensifying conflict.</div>
-          </div>
-        </div>
+              <div class="loader">Loading wars events…</div>
+            </div>
           </div>
         </div>
       </section>
@@ -2273,44 +826,5 @@
       loadBlock("geopolitics");
     });
   </script>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
-
-
-</body><chatgpt-sidebar data-gpts-theme="dark"></chatgpt-sidebar></html>
+</body>
+</html>
