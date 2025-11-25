@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Kuantara – Forex Market Snapshot</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <!-- Fira Code -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
@@ -32,131 +31,131 @@
       padding:0;
       font-family:"Fira Code",monospace !important;
       scrollbar-width:thin;
-      scrollbar-color:rgba(0,0,0,0.6) transparent;
+      scrollbar-color:rgba(255,255,255,0.2) transparent;
     }
 
+    /* 1. KUNCI UTAMA: Body tidak boleh scroll */
     html, body {
       width:100%;
       height:100%;
-    }
-
-    body {
       background:var(--bg-root);
       color:var(--text-main);
+      overflow:hidden; /* Mencegah scroll global */
     }
 
     ::-webkit-scrollbar {
-      width:6px;
-      height:6px;
+      width:4px;
+      height:4px;
     }
     ::-webkit-scrollbar-track {
       background:transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background:rgba(0,0,0,0.6);
+      background:rgba(255,255,255,0.2);
       border-radius:999px;
     }
-    ::-webkit-scrollbar-corner {
-      background:transparent;
-    }
 
+    /* 2. STRUKTUR FLEXBOX: Mengisi tinggi layar */
     .kt-page {
-      min-height:100vh;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
       padding:16px;
       background:var(--bg-root);
-      color:var(--text-main);
+      overflow: hidden;
     }
 
     .kt-page-tabs {
       display:flex;
       gap:8px;
       margin-bottom:10px;
+      flex-shrink: 0; /* Tabs tidak boleh mengecil */
       flex-wrap:wrap;
     }
 
     .kt-pill-page {
       border-radius:999px;
       border:1px solid var(--border-soft);
-      padding:3px 10px;
+      padding:4px 12px;
       font-size:var(--fs-small);
       cursor:pointer;
       user-select:none;
       white-space:nowrap;
       color:var(--text-muted);
       background:#050505;
-      transition:background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+      transition:background 0.15s ease, color 0.15s ease;
     }
     .kt-pill-page.active {
       border-color:var(--amber);
       color:#000;
       background:var(--amber);
+      font-weight: 700;
     }
 
+    /* Layout Container */
     .kt-layout {
-      display:grid;
-      grid-template-columns:1fr;
-      height:auto;
-      max-height:none;
+      display: flex;
+      flex-direction: column;
+      flex: 1;      /* Ambil sisa tinggi vertikal */
+      min-height: 0; /* Penting untuk nested scroll */
     }
 
     .kt-column {
       display:flex;
       flex-direction:column;
+      flex: 1;
       min-height:0;
     }
 
+    /* 3. CARD: Menjadi Flex Container */
     .kt-card {
       background:var(--bg-main);
       border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:12px 14px;
+      border-radius:6px;
+      padding:0; /* Padding dipindah ke inner elements agar scroll rapi */
       display:flex;
       flex-direction:column;
-      gap:8px;
+      flex: 1; /* Card mengisi penuh kolom */
       min-height:0;
+      overflow: hidden;
     }
 
     .kt-card-header {
+      padding: 12px 14px;
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
       gap:8px;
       font-size:var(--fs-subtitle);
       color:var(--text-main);
-      flex-wrap:wrap;
-    }
-
-    .kt-card-header .subtitle {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      margin-top:2px;
+      border-bottom: 1px solid var(--border-soft);
+      flex-shrink: 0; /* Header tidak boleh mengecil */
+      background: var(--bg-main);
     }
 
     .kt-header-left {
       display:flex;
       flex-direction:column;
-      gap:2px;
-      min-width:0;
+    }
+    .kt-header-left #quotesTitle {
+      font-weight: 700;
+      color: var(--amber);
     }
 
     .kt-toolbar {
       display:flex;
       align-items:center;
       gap:8px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      flex-wrap:wrap;
-      justify-content:flex-end;
     }
 
     .kt-search {
-      flex:1;
-      min-width:140px;
       display:flex;
       align-items:center;
       border-radius:4px;
       border:1px solid var(--border-soft);
-      padding:2px 6px;
+      padding:4px 8px;
+      background: #000;
+      width: 180px;
     }
 
     .kt-search input {
@@ -169,126 +168,133 @@
       min-width:0;
     }
 
+    /* 4. SCROLLER AREA: Ini yang di-scroll */
     .kt-table-wrapper {
-      flex:1;
-      min-height:0;
-      overflow:auto;
-      margin-top:4px;
-      max-height:100%;
+      flex:1;         /* Mengambil sisa tinggi card */
+      overflow-y:auto; /* Scroll vertikal aktif DI SINI */
+      overflow-x:hidden;
+      background: var(--bg-main);
+      position: relative;
+    }
+
+    /* Horizontal scroll untuk tabel lebar */
+    .kt-table-scroller {
+      width:100%;
+      overflow-x:auto; 
     }
 
     table {
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:880px;
+      min-width: 800px; /* Lebar minimum tabel */
     }
 
     thead {
       position:sticky;
       top:0;
-      background:linear-gradient(to bottom,#111111,#0b0b0b);
-      z-index:2;
+      background: #1a1a1a;
+      z-index:10;
+      box-shadow: 0 1px 0 var(--border-soft);
     }
 
     th, td {
-      padding:5px 4px;
+      padding:8px 8px;
       text-align:right;
       white-space:nowrap;
-    }
-
-    th:first-child, td:first-child {
-      text-align:left;
-    }
-
-    th:nth-child(2), td:nth-child(2) {
-      text-align:left;
+      border-bottom: 1px solid #1f1f1f;
     }
 
     th {
       font-size:var(--fs-small);
       font-weight:500;
       color:var(--text-muted);
-      border-bottom:1px solid var(--border-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    tbody tr:nth-child(even) {
-      background:#0d0d0d;
-    }
+    th:first-child, td:first-child { text-align:left; position:sticky; left:0; background:inherit; z-index:2; }
+    th:nth-child(2), td:nth-child(2) { text-align:left; }
 
-    tbody tr:nth-child(odd) {
-      background:#090909;
-    }
+    /* Fix background untuk sticky column saat di hover */
+    tbody tr:nth-child(even) td:first-child { background:#0d0d0d; }
+    tbody tr:nth-child(odd) td:first-child { background:#090909; }
+    tbody tr:hover td:first-child { background:#151515; }
 
-    tbody tr:hover {
-      background:#151515;
-    }
+    tbody tr:nth-child(even) { background:#0d0d0d; }
+    tbody tr:nth-child(odd) { background:#090909; }
+    tbody tr:hover { background:#151515; }
 
-    .text-up {
-      color:var(--green);
-    }
-
-    .text-down {
-      color:var(--red);
-    }
+    .text-up { color:var(--green); }
+    .text-down { color:var(--red); }
 
     .copy-btn {
-      border-radius:999px;
+      border-radius:4px;
       border:1px solid var(--border-soft);
       background:transparent;
       color:var(--text-muted);
-      font-size:var(--fs-small);
+      font-size:9px;
       padding:2px 6px;
       cursor:pointer;
-      white-space:nowrap;
-      transition:all 0.15s ease;
+      transition:0.2s;
     }
-
     .copy-btn:hover {
       border-color:var(--amber);
       color:var(--amber);
     }
 
-    @media (max-width:900px) {
-      .kt-page {
-        padding:12px;
-      }
-    }
+    .spark-cell svg { display:block; }
 
+    /* 5. MOBILE RESPONSIVE */
     @media (max-width:600px) {
-      :root {
-        --fs-title:13px;
-        --fs-subtitle:11px;
-        --fs-body:10px;
-        --fs-small:9px;
+      .kt-page {
+        padding: 8px; /* Padding lebih tipis di mobile */
+      }
+      
+      .kt-page-tabs {
+        margin-bottom: 8px;
+        gap: 6px;
+      }
+      
+      .kt-pill-page {
+        padding: 3px 10px;
+        font-size: 10px;
       }
 
-      .kt-card {
-        padding:10px 10px;
+      .kt-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .kt-header-left {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .kt-toolbar {
+        width: 100%;
+      }
+      
+      .kt-search {
+        width: 100%; /* Search full width di mobile */
       }
 
       th, td {
-        padding:4px 3px;
-      }
-
-      .kt-layout {
-        grid-template-columns:1fr;
-        height:auto;
-        max-height:none;
-      }
-
-      .kt-table-wrapper {
-        max-height:none;
+        padding: 6px 5px;
+        font-size: 10px;
       }
     }
   </style>
 </head>
 <body>
   <div class="kt-page">
-    <!-- PAGE SWITCHER -->
     <div class="kt-page-tabs">
       <div class="kt-pill-page active" data-page="major">Major</div>
-      <div class="kt-pill-page" data-page="minor">Minor / Cross</div>
+      <div class="kt-pill-page" data-page="minor">Minor</div>
       <div class="kt-pill-page" data-page="exotic">Exotic</div>
     </div>
 
@@ -297,42 +303,40 @@
         <section class="kt-card">
           <header class="kt-card-header">
             <div class="kt-header-left">
-              <div id="quotesTitle">Major FX Market Quotes</div>
-              <!-- meta & last update disembunyikan -->
-              <div id="tickerMeta" class="subtitle" style="display:none;"></div>
-              <div id="lastUpdated" class="subtitle" style="display:none;"></div>
+              <div id="quotesTitle">Market Quotes</div>
+              <div id="tickerMeta" class="subtitle" style="font-size:9px; color:var(--text-muted); display:none;"></div>
             </div>
             <div class="kt-toolbar">
               <div class="kt-search">
-                <input id="searchInput" type="text" placeholder="Filter FX pair (e.g. EURUSD, GBPUSD)">
+                <input id="searchInput" type="text" placeholder="Search Symbol...">
               </div>
             </div>
           </header>
 
           <div class="kt-table-wrapper">
-            <table id="fxTable">
-              <thead>
-                <tr>
-                  <th>Symbol</th>
-                  <th>Pair</th>
-                  <th>Last</th>
-                  <th>Δ</th>
-                  <th>Δ%</th>
-                  <th>Open</th>
-                  <th>High</th>
-                  <th>Low</th>
-                  <th>Close</th>
-                  <th>%YTD*</th>
-                  <th>Session</th>
-                  <th>Copy OHLC</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Filled by JS -->
-              </tbody>
-            </table>
+            <div class="kt-table-scroller">
+              <table id="fxTable">
+                <thead>
+                  <tr>
+                    <th>Sym</th>
+                    <th>Name</th>
+                    <th>Trend (30D)</th>
+                    <th>Last</th>
+                    <th>Chg</th>
+                    <th>%Chg</th>
+                    <th>Open</th>
+                    <th>High</th>
+                    <th>Low</th>
+                    <th>%YTD</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  </tbody>
+              </table>
+            </div>
           </div>
-        </section>
+          </section>
       </div>
     </div>
   </div>
@@ -345,59 +349,52 @@
     const INTERVAL = "1D";
     const BARS_COUNT = 30;
     const MAX_CONCURRENT = 3;
-    const REFRESH_MS = 2000;
+    const REFRESH_MS = 3000;
 
     const FX_CONFIG = {
       major: [
-        { symbol:"EURUSD", name:"EUR/USD", apiSymbol:"FX:EURUSD" },
-        { symbol:"GBPUSD", name:"GBP/USD", apiSymbol:"FX:GBPUSD" },
-        { symbol:"USDJPY", name:"USD/JPY", apiSymbol:"FX:USDJPY" },
-        { symbol:"USDCHF", name:"USD/CHF", apiSymbol:"FX:USDCHF" },
-        { symbol:"USDCAD", name:"USD/CAD", apiSymbol:"FX:USDCAD" },
-        { symbol:"AUDUSD", name:"AUD/USD", apiSymbol:"FX:AUDUSD" },
-        { symbol:"NZDUSD", name:"NZD/USD", apiSymbol:"FX:NZDUSD" }
+        { symbol:"EURUSD", name:"Euro", apiSymbol:"FX:EURUSD" },
+        { symbol:"GBPUSD", name:"Pound", apiSymbol:"FX:GBPUSD" },
+        { symbol:"USDJPY", name:"Yen", apiSymbol:"FX:USDJPY" },
+        { symbol:"USDCHF", name:"Swissie", apiSymbol:"FX:USDCHF" },
+        { symbol:"USDCAD", name:"Loonie", apiSymbol:"FX:USDCAD" },
+        { symbol:"AUDUSD", name:"Aussie", apiSymbol:"FX:AUDUSD" },
+        { symbol:"NZDUSD", name:"Kiwi", apiSymbol:"FX:NZDUSD" }
       ],
       minor: [
         { symbol:"EURGBP", name:"EUR/GBP", apiSymbol:"FX:EURGBP" },
         { symbol:"EURJPY", name:"EUR/JPY", apiSymbol:"FX:EURJPY" },
         { symbol:"GBPJPY", name:"GBP/JPY", apiSymbol:"FX:GBPJPY" },
-
         { symbol:"EURCHF", name:"EUR/CHF", apiSymbol:"FX:EURCHF" },
         { symbol:"EURCAD", name:"EUR/CAD", apiSymbol:"FX:EURCAD" },
         { symbol:"EURAUD", name:"EUR/AUD", apiSymbol:"FX:EURAUD" },
         { symbol:"EURNZD", name:"EUR/NZD", apiSymbol:"FX:EURNZD" },
-
         { symbol:"GBPCHF", name:"GBP/CHF", apiSymbol:"FX:GBPCHF" },
         { symbol:"GBPCAD", name:"GBP/CAD", apiSymbol:"FX:GBPCAD" },
         { symbol:"GBPAUD", name:"GBP/AUD", apiSymbol:"FX:GBPAUD" },
         { symbol:"GBPNZD", name:"GBP/NZD", apiSymbol:"FX:GBPNZD" },
-
         { symbol:"AUDCAD", name:"AUD/CAD", apiSymbol:"FX:AUDCAD" },
         { symbol:"AUDCHF", name:"AUD/CHF", apiSymbol:"FX:AUDCHF" },
         { symbol:"AUDJPY", name:"AUD/JPY", apiSymbol:"FX:AUDJPY" },
         { symbol:"AUDNZD", name:"AUD/NZD", apiSymbol:"FX:AUDNZD" },
-
         { symbol:"CADCHF", name:"CAD/CHF", apiSymbol:"FX:CADCHF" },
         { symbol:"CADJPY", name:"CAD/JPY", apiSymbol:"FX:CADJPY" },
-
         { symbol:"CHFJPY", name:"CHF/JPY", apiSymbol:"FX:CHFJPY" },
-
         { symbol:"NZDCAD", name:"NZD/CAD", apiSymbol:"FX:NZDCAD" },
         { symbol:"NZDCHF", name:"NZD/CHF", apiSymbol:"FX:NZDCHF" },
         { symbol:"NZDJPY", name:"NZD/JPY", apiSymbol:"FX:NZDJPY" }
       ],
       exotic: [
-        { symbol:"USDTRY", name:"USD/TRY", apiSymbol:"FX:USDTRY" },
-        { symbol:"USDZAR", name:"USD/ZAR", apiSymbol:"FX:USDZAR" },
-        { symbol:"USDMXN", name:"USD/MXN", apiSymbol:"FX:USDMXN" },
-        { symbol:"USDIDR", name:"USD/IDR", apiSymbol:"FX:USDIDR" },
-        { symbol:"USDINR", name:"USD/INR", apiSymbol:"FX:USDINR" },
-        { symbol:"USDCNH", name:"USD/CNH", apiSymbol:"FX:USDCNH" },
-        { symbol:"USDSGD", name:"USD/SGD", apiSymbol:"FX:USDSGD" },
-        { symbol:"USDHKD", name:"USD/HKD", apiSymbol:"FX:USDHKD" },
-
+        { symbol:"USDTRY", name:"Lira", apiSymbol:"FX:USDTRY" },
+        { symbol:"USDZAR", name:"Rand", apiSymbol:"FX:USDZAR" },
+        { symbol:"USDMXN", name:"Peso", apiSymbol:"FX:USDMXN" },
+        { symbol:"USDIDR", name:"Rupiah", apiSymbol:"FX:USDIDR" },
+        { symbol:"USDINR", name:"Rupee", apiSymbol:"FX:USDINR" },
+        { symbol:"USDCNH", name:"Yuan", apiSymbol:"FX:USDCNH" },
+        { symbol:"USDSGD", name:"SGD", apiSymbol:"FX:USDSGD" },
+        { symbol:"USDHKD", name:"HKD", apiSymbol:"FX:USDHKD" },
         { symbol:"EURTRY", name:"EUR/TRY", apiSymbol:"FX:EURTRY" },
-        { symbol:"EURPLN", name:"EUR/PLN", apiSymbol:"FX:EURPLN" }
+        { symbol:"EURPLN", name:"Zloty", apiSymbol:"FX:EURPLN" }
       ]
     };
 
@@ -407,8 +404,7 @@
     const tableBody = document.querySelector("#fxTable tbody");
     const searchInput = document.getElementById("searchInput");
     const quotesTitleEl = document.getElementById("quotesTitle");
-    const tickerMetaEl = document.getElementById("tickerMeta");     // hidden
-    const lastUpdatedEl = document.getElementById("lastUpdated");   // hidden
+    const tickerMetaEl = document.getElementById("tickerMeta");
     const pagePills = document.querySelectorAll(".kt-pill-page");
     const tableWrapper = document.querySelector(".kt-table-wrapper");
 
@@ -417,28 +413,19 @@
     let isRefreshing = false;
     let refreshTimer = null;
 
-    const datasets = {
-      major: [],
-      minor: [],
-      exotic: []
-    };
+    const datasets = { major: [], minor: [], exotic: [] };
 
     // ==========================
     //  UTIL
     // ==========================
-    function sleep(ms) {
-      return new Promise(res => setTimeout(res, ms));
-    }
+    function sleep(ms) { return new Promise(res => setTimeout(res, ms)); }
 
     function formatNumber(value, isFx=false) {
       const num = Number(value);
       if (Number.isNaN(num)) return "";
       if (isFx) {
-        if (Math.abs(num) >= 10) return num.toFixed(4);
-        return num.toFixed(5);
-      }
-      if (Math.abs(num) >= 1000) {
-        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+        if (Math.abs(num) >= 10) return num.toFixed(3); // Sedikit hemat tempat
+        return num.toFixed(4); // Sedikit hemat tempat
       }
       return num.toFixed(2);
     }
@@ -447,295 +434,209 @@
       const num = Number(value);
       if (Number.isNaN(num)) return "";
       const decimals = isFx ? 4 : 2;
-      if (num === 0) return num.toFixed(decimals);
+      if (num === 0) return "0.00";
       return (num > 0 ? "+" : "") + num.toFixed(decimals);
     }
 
     function copyTextToClipboard(text) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).catch(() => fallbackCopyText(text));
+        navigator.clipboard.writeText(text).catch(() => {});
       } else {
-        fallbackCopyText(text);
-      }
-    }
-
-    function fallbackCopyText(text) {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.style.position = "fixed";
-      textarea.style.opacity = "0";
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-      try {
+        // Fallback simple
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
         document.execCommand("copy");
-      } catch (e) {
-        console.warn("Copy failed", e);
+        document.body.removeChild(ta);
       }
-      document.body.removeChild(textarea);
     }
 
-    function updateTickerMeta(count, statusText = "") {
-      if (!tickerMetaEl) return;
-      const statusPart = statusText ? ` | ${statusText}` : "";
-      tickerMetaEl.textContent = `Tickers: ${count}${statusPart}`;
+    function updateTickerMeta(count) {
+      if (tickerMetaEl) {
+        tickerMetaEl.style.display = "block";
+        tickerMetaEl.textContent = `${count} Pairs`;
+      }
     }
 
-    function updateLastUpdated() {
-      if (!lastUpdatedEl) return;
-      const now = new Date();
-      const hh = now.getHours().toString().padStart(2, "0");
-      const mm = now.getMinutes().toString().padStart(2, "0");
-      const ss = now.getSeconds().toString().padStart(2, "0");
-      lastUpdatedEl.textContent = `Last update: ${hh}:${mm}:${ss}`;
+    function drawSparkline(cell, values) {
+      if (!cell || !Array.isArray(values) || values.length < 2) return;
+      cell.innerHTML = "";
+      const w = 60, h = 20, pad = 2; // Sparkline lebih compact
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const range = (max - min) || 1;
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", w);
+      svg.setAttribute("height", h);
+      svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+
+      let d = "";
+      values.forEach((v, i) => {
+        const x = pad + (i / (values.length - 1)) * (w - 2 * pad);
+        const norm = (v - min) / range;
+        const y = h - pad - norm * (h - 2 * pad);
+        d += (i === 0 ? "M" : "L") + x + " " + y + " ";
+      });
+
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", d.trim());
+      
+      const first = values[0];
+      const last = values[values.length - 1];
+      let color = "#9b9b9b";
+      if (last > first) color = "#22c55e";
+      else if (last < first) color = "#ef4444";
+
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", color);
+      path.setAttribute("stroke-width", "1.5");
+      svg.appendChild(path);
+      cell.appendChild(svg);
     }
 
     // ==========================
-    //  API
+    //  API LOGIC
     // ==========================
-    async function fetchOhlcvWithRetry(apiSymbol, barsCount = BARS_COUNT, maxAttempts = 2) {
-      let lastError;
-      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-          const url = `${BASE_URL}/api/tvohlc/ohlcv?symbol=${encodeURIComponent(apiSymbol)}&interval=${INTERVAL}&bars_count=${barsCount}`;
-          const res = await fetch(url, { cache: "no-store" });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-          const json = await res.json();
-
-          if (!json.ok || !Array.isArray(json.results) || json.results.length === 0) {
-            throw new Error("Invalid JSON: missing results");
-          }
-
-          let result = json.results.find(r => r.symbol === apiSymbol);
-          if (!result) result = json.results[0];
-
-          if (!result.ok || !Array.isArray(result.bars) || result.bars.length < 2) {
-            throw new Error("Invalid result: bars missing or <2");
-          }
-
-          return result.bars;
-        } catch (err) {
-          lastError = err;
-          console.warn(`Attempt ${attempt} failed for ${apiSymbol}:`, err);
-          if (attempt < maxAttempts) {
-            await sleep(300 + Math.random() * 400);
-          }
-        }
+    async function fetchOhlcvWithRetry(apiSymbol) {
+      // Simplified logic
+      try {
+        const url = `${BASE_URL}/api/tvohlc/ohlcv?symbol=${encodeURIComponent(apiSymbol)}&interval=${INTERVAL}&bars_count=${BARS_COUNT}`;
+        const res = await fetch(url, { cache: "no-store" });
+        if(!res.ok) throw new Error("Err");
+        const json = await res.json();
+        const r = (json.results || []).find(x => x.symbol === apiSymbol) || (json.results || [])[0];
+        if(!r || !r.bars) throw new Error("No bars");
+        return r.bars;
+      } catch(e) {
+        return null; 
       }
-      throw lastError;
     }
 
     function buildRowFromBars(cfg, bars) {
+      if(!bars) return { ...cfg, error:true };
       const last = bars[bars.length - 1];
       const prev = bars[bars.length - 2];
       const first = bars[0];
-
       const lastClose = Number(last.close);
       const prevClose = Number(prev.close);
-      const dayChange = lastClose - prevClose;
-      const dayChangePct = (dayChange / prevClose) * 100;
-
-      const basePrice = Number(first.open ?? first.close ?? lastClose);
-      const ytdPct = basePrice ? ((lastClose / basePrice) - 1) * 100 : 0;
+      const chg = lastClose - prevClose;
+      const chgPct = (chg / prevClose) * 100;
+      const ytdPct = ((lastClose / Number(first.open)) - 1) * 100;
 
       return {
-        symbol: cfg.symbol,
-        name: cfg.name,
+        ...cfg,
         open: Number(last.open),
         high: Number(last.high),
         low: Number(last.low),
         last: lastClose,
         close: lastClose,
-        change: dayChange,
-        changePct: dayChangePct,
+        change: chg,
+        changePct: chgPct,
         ytdPct: ytdPct,
-        session: "24h"
-      };
-    }
-
-    function buildErrorRow(cfg) {
-      return {
-        symbol: cfg.symbol,
-        name: cfg.name,
-        open: null,
-        high: null,
-        low: null,
-        last: null,
-        close: null,
-        change: null,
-        changePct: null,
-        ytdPct: null,
-        session: "ERR"
+        closes: bars.map(b => Number(b.close))
       };
     }
 
     async function loadCategoryData(pageKey) {
       const list = FX_CONFIG[pageKey] || [];
       const resultRows = [];
-
+      
+      // Batch processing to avoid hitting rate limits too hard
       let idx = 0;
-      while (idx < list.length) {
+      while(idx < list.length) {
         const slice = list.slice(idx, idx + MAX_CONCURRENT);
-        const promises = slice.map(async cfg => {
-          try {
-            const bars = await fetchOhlcvWithRetry(cfg.apiSymbol);
-            return buildRowFromBars(cfg, bars);
-          } catch (err) {
-            console.error("Failed to load", cfg.apiSymbol, err);
-            return buildErrorRow(cfg);
-          }
-        });
-
-        const rows = await Promise.all(promises);
-        resultRows.push(...rows);
-
-        idx += slice.length;
-        if (idx < list.length) {
-          await sleep(150);
-        }
+        const chunk = await Promise.all(slice.map(async item => {
+          const bars = await fetchOhlcvWithRetry(item.apiSymbol);
+          return buildRowFromBars(item, bars);
+        }));
+        resultRows.push(...chunk);
+        idx += MAX_CONCURRENT;
+        if(idx < list.length) await sleep(100);
       }
-
       datasets[pageKey] = resultRows;
     }
 
     // ==========================
-    //  TABLE
+    //  RENDER
     // ==========================
-    function updateQuotesTable(data) {
-      latestQuotes = Array.isArray(data) ? data : [];
-      renderQuotesTable();
-    }
-
     function renderQuotesTable() {
       const filter = (searchInput.value || "").trim().toLowerCase();
-      const scrollTop = tableWrapper.scrollTop;
+      const scrollTop = tableWrapper.scrollTop; // Simpan posisi scroll
 
       tableBody.innerHTML = "";
+      
+      latestQuotes.filter(r => {
+        if(r.error) return false;
+        if(!filter) return true;
+        return (r.symbol.toLowerCase().includes(filter) || r.name.toLowerCase().includes(filter));
+      }).forEach(row => {
+        const tr = document.createElement("tr");
+        const isUp = row.changePct > 0;
+        const isDown = row.changePct < 0;
+        const isYtdUp = row.ytdPct > 0;
+        const isYtdDown = row.ytdPct < 0;
 
-      latestQuotes
-        .filter(row => {
-          if (!filter) return true;
-          const symbol = (row.symbol || "").toLowerCase();
-          const name = (row.name || "").toLowerCase();
-          return symbol.includes(filter) || name.includes(filter);
-        })
-        .forEach(row => {
-          const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><span style="font-weight:700; color:#fff;">${row.symbol}</span></td>
+          <td style="color:var(--text-muted)">${row.name}</td>
+          <td class="spark-cell"></td>
+          <td>${formatNumber(row.last, true)}</td>
+          <td class="${isUp?"text-up":isDown?"text-down":""}">${formatSigned(row.change, true)}</td>
+          <td class="${isUp?"text-up":isDown?"text-down":""}">${formatSigned(row.changePct, false)}%</td>
+          <td>${formatNumber(row.open, true)}</td>
+          <td>${formatNumber(row.high, true)}</td>
+          <td>${formatNumber(row.low, true)}</td>
+          <td class="${isYtdUp?"text-up":isYtdDown?"text-down":""}">${formatSigned(row.ytdPct, false)}%</td>
+          <td></td>
+        `;
 
-          const changePct = Number(row.changePct || 0);
-          const change = Number(row.change || 0);
-          const ytdPct = Number(row.ytdPct || 0);
-          const isUp = changePct > 0;
-          const isDown = changePct < 0;
-          const isYtdUp = ytdPct > 0;
-          const isYtdDown = ytdPct < 0;
+        drawSparkline(tr.querySelector(".spark-cell"), row.closes);
 
-          tr.innerHTML = `
-            <td>${row.symbol || ""}</td>
-            <td>${row.name || ""}</td>
-            <td>${formatNumber(row.last, true)}</td>
-            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
-              ${formatSigned(change, true)}
-            </td>
-            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
-              ${formatSigned(changePct, false)}%
-            </td>
-            <td>${formatNumber(row.open, true)}</td>
-            <td>${formatNumber(row.high, true)}</td>
-            <td>${formatNumber(row.low, true)}</td>
-            <td>${formatNumber(row.close, true)}</td>
-            <td class="${isYtdUp ? "text-up" : isYtdDown ? "text-down" : ""}">
-              ${formatSigned(ytdPct, false)}%
-            </td>
-            <td>${row.session || ""}</td>
-          `;
+        // Action Btn
+        const btn = document.createElement("button");
+        btn.className = "copy-btn";
+        btn.textContent = "COPY";
+        btn.onclick = () => copyTextToClipboard(`${row.symbol} Price: ${row.last}`);
+        tr.lastElementChild.appendChild(btn);
 
-          const tdCopy = document.createElement("td");
-          const btn = document.createElement("button");
-          btn.className = "copy-btn";
-          btn.textContent = "Copy";
-          btn.title = "Copy OHLC";
-          btn.addEventListener("click", () => {
-            const text = [
-              `Symbol=${row.symbol || ""}`,
-              `O=${row.open}`,
-              `H=${row.high}`,
-              `L=${row.low}`,
-              `C=${row.close}`
-            ].join(" ");
-            copyTextToClipboard(text);
-          });
-          tdCopy.appendChild(btn);
-          tr.appendChild(tdCopy);
-
-          tableBody.appendChild(tr);
-        });
-
-      tableWrapper.scrollTop = scrollTop;
+        tableBody.appendChild(tr);
+      });
+      
+      tableWrapper.scrollTop = scrollTop; // Kembalikan posisi scroll
     }
 
-    searchInput.addEventListener("input", renderQuotesTable);
-
-    // ==========================
-    //  PAGE SWITCHING
-    // ==========================
-    function setPageTitleAndPlaceholder() {
-      let title = "";
-      let placeholder = "";
-
-      if (currentPage === "major") {
-        title = "Major FX Market Quotes";
-        placeholder = "Filter major FX pair (e.g. EURUSD, GBPUSD)";
-      } else if (currentPage === "minor") {
-        title = "Minor / Cross FX Market Quotes";
-        placeholder = "Filter cross FX pair (e.g. EURCHF, AUDJPY)";
-      } else if (currentPage === "exotic") {
-        title = "Exotic FX Market Quotes";
-        placeholder = "Filter exotic FX pair (e.g. USDTRY, USDIDR)";
-      }
-
-      quotesTitleEl.textContent = title;
-      searchInput.placeholder = placeholder;
-    }
-
-    function applyPageDataset() {
-      const dataset = datasets[currentPage] || [];
-      updateQuotesTable(dataset);
-      updateTickerMeta(dataset.length);
+    function switchPage(key) {
+      currentPage = key;
+      pagePills.forEach(p => {
+        p.classList.toggle("active", p.dataset.page === key);
+      });
+      quotesTitleEl.textContent = key === 'major' ? 'Major Pairs' : key === 'minor' ? 'Minor/Cross' : 'Exotic Pairs';
+      latestQuotes = datasets[key] || [];
+      renderQuotesTable();
+      updateTickerMeta(latestQuotes.length);
+      refreshCurrentPage();
     }
 
     async function refreshCurrentPage() {
-      if (isRefreshing) return;
+      if(isRefreshing) return;
       isRefreshing = true;
-      updateTickerMeta((datasets[currentPage] || []).length, "");
-      try {
-        await loadCategoryData(currentPage);
-        applyPageDataset();
-        updateLastUpdated();
-      } finally {
-        isRefreshing = false;
-      }
+      await loadCategoryData(currentPage);
+      latestQuotes = datasets[currentPage];
+      renderQuotesTable();
+      updateTickerMeta(latestQuotes.length);
+      isRefreshing = false;
     }
 
-    pagePills.forEach(pill => {
-      pill.addEventListener("click", () => {
-        pagePills.forEach(p => p.classList.remove("active"));
-        pill.classList.add("active");
-        currentPage = pill.dataset.page;
-        setPageTitleAndPlaceholder();
-        refreshCurrentPage();
-      });
-    });
+    // INIT
+    pagePills.forEach(p => p.onclick = () => switchPage(p.dataset.page));
+    searchInput.oninput = renderQuotesTable;
+    
+    // Start
+    switchPage("major");
+    setInterval(refreshCurrentPage, REFRESH_MS);
 
-    // ==========================
-    //  INIT + AUTO REFRESH
-    // ==========================
-    document.addEventListener("DOMContentLoaded", () => {
-      setPageTitleAndPlaceholder();
-      refreshCurrentPage();
-      refreshTimer = setInterval(refreshCurrentPage, REFRESH_MS);
-    });
   </script>
 </body>
 </html>
