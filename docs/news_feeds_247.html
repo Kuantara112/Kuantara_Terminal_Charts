@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Kuantara – 24/7 Headlines & Articles</title>
+  <title>Kuantara – 24/7 Headlines</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
@@ -42,52 +42,6 @@
       width:100%; height:100%; padding:16px;
       background:var(--bg-root);
       display:flex; flex-direction:column;
-      gap:10px;
-    }
-
-    /* Top menu (switch between Headlines vs Catalyst) */
-    .kt-topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      min-height:28px;
-    }
-
-    .kt-brand{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      text-transform:uppercase;
-      letter-spacing:0.16em;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .kt-toggle{
-      display:inline-flex;
-      background:#050505;
-      border:1px solid var(--border-soft);
-      border-radius:999px;
-      padding:2px;
-      gap:2px;
-    }
-
-    .kt-toggle-btn{
-      border:none;
-      background:transparent;
-      color:var(--text-muted);
-      font-size:var(--fs-small);
-      padding:4px 10px;
-      border-radius:999px;
-      cursor:pointer;
-      white-space:nowrap;
-      transition:background 0.15s ease,color 0.15s ease;
-    }
-
-    .kt-toggle-btn.active{
-      background:var(--accent);
-      color:#000000;
     }
 
     .kt-grid{
@@ -111,7 +65,7 @@
       gap:8px; margin-bottom:8px;
     }
 
-    .kt-panel-title-area{ display: flex; align-items: center; gap: 8px; }
+    .kt-panel-title-area{ display:flex; align-items:center; gap:8px; }
 
     .kt-panel-title{
       font-size:var(--fs-title); font-weight:600;
@@ -119,18 +73,20 @@
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
 
-    .live-indicator {
-      width: 6px; height: 6px; background-color: #22c55e;
-      border-radius: 50%; box-shadow: 0 0 8px #22c55e;
-      animation: pulse 2s infinite;
+    .live-indicator{
+      width:6px; height:6px; background-color:#22c55e;
+      border-radius:50%; box-shadow:0 0 8px #22c55e;
+      animation:pulse 2s infinite;
     }
-    @keyframes pulse {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.8); }
-      100% { opacity: 1; transform: scale(1); }
+    @keyframes pulse{
+      0%{opacity:1; transform:scale(1);}
+      50%{opacity:0.4; transform:scale(0.8);}
+      100%{opacity:1; transform:scale(1);}
     }
 
-    .kt-panel-controls{ display:flex; align-items:center; gap:6px; min-width:0; }
+    .kt-panel-controls{
+      display:flex; align-items:center; gap:6px; min-width:0;
+    }
 
     .kt-select{
       background:#000000; border:1px solid var(--border-soft);
@@ -140,8 +96,8 @@
       appearance:none; -moz-appearance:none; -webkit-appearance:none;
     }
     .kt-select:focus{ border-color:var(--accent); box-shadow:0 0 0 1px rgba(255,191,0,0.25); }
-    .kt-select optgroup { font-style: normal; color: var(--accent); background: #1a1a1a; }
-    .kt-select option { color: var(--text-main); background: #000000; padding: 4px; }
+    .kt-select optgroup{ font-style:normal; color:var(--accent); background:#1a1a1a; }
+    .kt-select option{ color:var(--text-main); background:#000000; padding:4px; }
 
     .kt-btn{
       border:none; outline:none; cursor:pointer;
@@ -157,8 +113,28 @@
     }
 
     .kt-meta-row{
-      display:flex; justify-content:space-between; gap:8px; margin-bottom:8px;
+      display:flex; justify-content:space-between; align-items:center;
+      gap:8px; margin-bottom:8px;
       font-size:var(--fs-small); color:var(--text-muted);
+    }
+    .kt-meta-left{ white-space:nowrap; }
+    .kt-meta-right{ display:flex; align-items:center; gap:6px; }
+
+    .kt-filter-btn{
+      border:1px solid var(--border-soft);
+      background:#050505;
+      color:var(--text-muted);
+      font-size:var(--fs-small);
+      padding:4px 8px;
+      border-radius:999px;
+      cursor:pointer;
+      white-space:nowrap;
+      transition:background 0.15s ease,color 0.15s ease,border-color 0.15s ease;
+    }
+    .kt-filter-btn.active{
+      background:var(--accent);
+      color:#000000;
+      border-color:var(--accent);
     }
 
     .kt-feed{
@@ -166,7 +142,7 @@
       display:flex; flex-direction:column; gap:6px;
       flex:1; min-height:0; overflow-y:auto;
     }
-    #fastbull-feed, #te-feed{ max-height:100%; }
+    #fastbull-feed{ max-height:100%; }
 
     .kt-item{
       border:1px solid var(--border-soft); border-radius:3px;
@@ -175,14 +151,14 @@
       display:flex; flex-direction:column; gap:4px;
     }
     .kt-item.selected{ border-color:var(--accent); background:#18120a; }
-    
+
     .kt-item[data-important="true"] .kt-item-content{
       border:1px solid rgba(14,165,233,0.65);
       background:linear-gradient(140deg,rgba(5,10,20,0.95),rgba(8,47,73,0.85));
       box-shadow:0 0 18px rgba(14,165,233,0.18);
     }
     .kt-item[data-important="true"].selected .kt-item-content{ border-color:rgba(59,130,246,0.8); }
-    
+
     .kt-item[data-medium="true"]:not([data-important="true"]) .kt-item-content{
       border-color:rgba(59,130,246,0.35);
       background:linear-gradient(135deg,rgba(30,64,175,0.16),rgba(6,8,12,0.96));
@@ -195,7 +171,7 @@
 
     .kt-item-header{ display:flex; align-items:center; justify-content:flex-end; gap:8px; }
     .kt-item-tag{ font-size:var(--fs-small); color:var(--accent); }
-    
+
     .kt-tags{ display:flex; flex-wrap:wrap; gap:4px; margin-top:2px; }
     .kt-tag{
       font-size:9px; text-transform:uppercase; letter-spacing:0.08em;
@@ -205,7 +181,7 @@
 
     .kt-item-title{ font-size:var(--fs-body); color:var(--text-main); }
     .kt-item-desc{ font-size:var(--fs-small); color:var(--text-muted); line-height:1.4; }
-    
+
     .kt-item-meta{
       display:flex; justify-content:space-between; align-items:center; gap:8px;
       font-size:var(--fs-small); color:var(--text-muted); margin-top:2px;
@@ -223,65 +199,68 @@
     .kt-copy-icon:hover{ border-color:var(--accent); color:var(--accent); }
     .kt-copy-icon.copied{ border-color:#2ea043; color:#2ea043; }
 
-    .kt-empty{ font-size:var(--fs-small); color:var(--text-muted); padding:6px 2px; text-align:center; }
+    .kt-empty{
+      font-size:var(--fs-small); color:var(--text-muted);
+      padding:6px 2px; text-align:center;
+    }
 
     /* Modal */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.78);
-      display: flex; align-items: center; justify-content: center;
-      padding: 16px; z-index: 999;
+    .modal-overlay{
+      position:fixed; inset:0; background:rgba(0,0,0,0.78);
+      display:flex; align-items:center; justify-content:center;
+      padding:16px; z-index:999;
     }
-    .modal-card {
-      width: min(960px, 100%); max-height: min(520px, 100%);
-      background: #050505; border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 30px 120px rgba(0, 0, 0, 0.75); padding: 16px;
-      position: relative; overflow-y: auto;
+    .modal-card{
+      width:min(960px,100%); max-height:min(520px,100%);
+      background:#050505; border:1px solid rgba(255,255,255,0.08);
+      box-shadow:0 30px 120px rgba(0,0,0,0.75); padding:16px;
+      position:relative; overflow-y:auto;
     }
-    .modal-close {
-      border: 1px solid rgba(255, 255, 255, 0.18); background: transparent;
-      color: #ffbf00; width: 32px; height: 32px; border-radius: 999px;
-      font-size: 1rem; cursor:pointer;
+    .modal-close{
+      border:1px solid rgba(255,255,255,0.18); background:transparent;
+      color:#ffbf00; width:32px; height:32px; border-radius:999px;
+      font-size:1rem; cursor:pointer;
     }
-    .modal-close:hover { background: rgba(255, 255, 255, 0.06); }
-    
-    .kuantara-chat {
-      border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(0, 0, 0, 0.55);
-      padding: 12px; min-height: 200px; max-height: 320px; overflow-y: auto;
-      font-size: var(--fs-body); line-height: 1.5; scrollbar-width: none; margin-top:10px;
+    .modal-close:hover{ background:rgba(255,255,255,0.06); }
+
+    .kuantara-chat{
+      border:1px solid rgba(255,255,255,0.08); background:rgba(0,0,0,0.55);
+      padding:12px; min-height:200px; max-height:320px; overflow-y:auto;
+      font-size:var(--fs-body); line-height:1.5; scrollbar-width:none; margin-top:10px;
     }
-    .kuantara-chat::-webkit-scrollbar { width: 0; height: 0; }
-    .kuantara-chat .placeholder {
-      font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.4); text-align:center;
+    .kuantara-chat::-webkit-scrollbar{ width:0; height:0; }
+    .kuantara-chat .placeholder{
+      font-size:10px; letter-spacing:0.08em; text-transform:uppercase;
+      color:rgba(255,255,255,0.4); text-align:center;
     }
-    .kuantara-message { margin-bottom: 10px; }
-    .kuantara-label {
-      font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.5);
+    .kuantara-message{ margin-bottom:10px; }
+    .kuantara-label{
+      font-size:9px; letter-spacing:0.14em; text-transform:uppercase;
+      color:rgba(255,255,255,0.5);
     }
-    .kuantara-message.user .kuantara-label { color: #7dd3fc; }
-    .kuantara-message.ai .kuantara-label { color: #ffbf00; }
-    .kuantara-block {
-      margin-top: 4px; border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px; padding: 8px 10px; background: rgba(15, 23, 42, 0.9);
+    .kuantara-message.user .kuantara-label{ color:#7dd3fc; }
+    .kuantara-message.ai .kuantara-label{ color:#ffbf00; }
+    .kuantara-block{
+      margin-top:4px; border:1px solid rgba(255,255,255,0.08);
+      border-radius:10px; padding:8px 10px; background:rgba(15,23,42,0.9);
     }
-    .kuantara-message.ai .kuantara-block {
-      border-radius: 0; border:none; background: transparent; padding: 6px 0;
+    .kuantara-message.ai .kuantara-block{
+      border-radius:0; border:none; background:transparent; padding:6px 0;
     }
-    .kuantara-block .md p { margin: 3px 0; }
-    .kuantara-block .md ul, .kuantara-block .md ol { padding-left: 18px; margin: 3px 0; }
-    .kuantara-input { margin-top: 10px; display: flex; gap: 8px; }
-    .kuantara-input textarea {
-      flex: 1; min-height: 44px; max-height: 200px;
-      border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(0, 0, 0, 0.4);
-      color: #fff; padding: 6px 8px; resize: none; font-size: var(--fs-small);
+    .kuantara-block .md p{ margin:3px 0; }
+    .kuantara-block .md ul,.kuantara-block .md ol{ padding-left:18px; margin:3px 0; }
+    .kuantara-input{ margin-top:10px; display:flex; gap:8px; }
+    .kuantara-input textarea{
+      flex:1; min-height:44px; max-height:200px;
+      border:1px solid rgba(255,255,255,0.14); background:rgba(0,0,0,0.4);
+      color:#fff; padding:6px 8px; resize:none; font-size:var(--fs-small);
     }
-    .kuantara-send-btn {
-      width: 52px; border: none; border-radius: 10px; background: #ffffff;
-      display: grid; place-items: center; color: #050505; cursor:pointer;
-      transition: transform 0.12s ease;
+    .kuantara-send-btn{
+      width:52px; border:none; border-radius:10px; background:#ffffff;
+      display:grid; place-items:center; color:#050505; cursor:pointer;
+      transition:transform 0.12s ease;
     }
-    .kuantara-send-btn:hover { transform: translateY(-1px); }
+    .kuantara-send-btn:hover{ transform:translateY(-1px); }
 
     .flex{ display:flex; }
     .items-center{ align-items:center; }
@@ -291,16 +270,8 @@
 </head>
 <body>
 <div class="kt-root">
-  <div class="kt-topbar">
-    <div class="kt-brand">Kuantara · 24/7 Headlines & Articles</div>
-    <div class="kt-toggle">
-      <button type="button" class="kt-toggle-btn active" data-view="fastbull">24/7 Headlines</button>
-      <button type="button" class="kt-toggle-btn" data-view="catalyst">Catalyst Articles</button>
-    </div>
-  </div>
-
   <div class="kt-grid">
-    <!-- PANEL: 24/7 HEADLINES (default visible) -->
+    <!-- PANEL: 24/7 HEADLINES (full page) -->
     <section class="kt-panel" id="panel-fastbull">
       <div class="kt-panel-header">
         <div class="kt-panel-title-area">
@@ -318,41 +289,12 @@
       <div class="kt-panel-body">
         <div class="kt-meta-row">
           <div class="kt-meta-left" id="fastbull-count"></div>
+          <div class="kt-meta-right">
+            <button class="kt-filter-btn" id="fastbull-highimpact-btn">High Impact</button>
+          </div>
         </div>
 
         <ul class="kt-feed" id="fastbull-feed">
-          <li class="kt-item">
-            <div class="kt-item-content">
-              <div class="kt-item-header"><div class="kt-item-tag">Loading</div></div>
-              <div class="kt-item-title">Initializing Feed...</div>
-              <div class="kt-item-meta"><span class="kt-item-time">...</span></div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- PANEL: CATALYST ARTICLES (default hidden, same full panel area) -->
-    <section class="kt-panel hidden" id="panel-te">
-      <div class="kt-panel-header">
-        <div class="kt-panel-title-area">
-           <div class="live-indicator" title="Auto-refreshing every 60s"></div>
-           <div class="kt-panel-title">Catalyst Articles</div>
-        </div>
-        <div class="kt-panel-controls">
-          <select class="kt-select" id="te-topic">
-            <option value="all">All categories</option>
-          </select>
-          <button class="kt-btn" id="te-recap-btn">Recap AI</button>
-        </div>
-      </div>
-
-      <div class="kt-panel-body">
-        <div class="kt-meta-row">
-          <div class="kt-meta-left" id="te-count"></div>
-        </div>
-
-        <ul class="kt-feed" id="te-feed">
           <li class="kt-item">
             <div class="kt-item-content">
               <div class="kt-item-header"><div class="kt-item-tag">Loading</div></div>
@@ -394,8 +336,6 @@
   const FASTBULL_NEWS_ENDPOINT = "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
   const FASTBULL_HEADERS = { Accept: "application/json", "client-type": "4", clientversion: "latest", langid: "13" };
   const FASTBULL_CORS_PROXY = "https://api.allorigins.win/raw?url=";
-
-  const CATALYST_FEED_API = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjMfNinXgjitGptTt1Uj6nE6WK7rYjGTPSt5bUFepyHsCV7ZBDGq6iUYbWvAjM_GhWNcK3REbD8jDIDwMCKO2bUgT_H_aHRBj09Gwkd2uraHiWcmpd3uD3lWgzxnxEu9UOACjLZnVbgZ9fYMy0qtS-DvoKx9KjMK-AuT30tktXjEUxt-JhCWomT15gnuyLeRstzneutXUmRPLHr_lfJyz9_SOovs6xBP-DDH4tUkDSY2SdlvYhf5nZmmY36BH4ncn8t63S2Ua7iCwCMVRs8Ey8R2aWWd6C0Sv39n4V0anX6oX-zfP8&lib=MakTJ382BM__YWV6a2eDZUSqaUOX12Qs5";
 
   const MAX_RECAP_ITEMS = 15;
   const AUTO_REFRESH_INTERVAL = 60000;
@@ -488,11 +428,7 @@
   const fastbullCountEl  = document.getElementById("fastbull-count");
   const fastbullTopicEl  = document.getElementById("fastbull-topic");
   const fastbullRecapBtn = document.getElementById("fastbull-recap-btn");
-
-  const articlesFeedEl   = document.getElementById("te-feed");
-  const articlesCountEl  = document.getElementById("te-count");
-  const articlesTopicEl  = document.getElementById("te-topic");
-  const articlesRecapBtn = document.getElementById("te-recap-btn");
+  const fastbullHighImpactBtn = document.getElementById("fastbull-highimpact-btn");
 
   const kuantaraModal    = document.getElementById("kuantaraModal");
   const kuantaraCloseBtn = document.getElementById("kuantaraClose");
@@ -502,14 +438,11 @@
   const sendBtn          = document.getElementById("send");
   const copyIconSvg      = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
 
-  const panelFastbull = document.getElementById("panel-fastbull");
-  const panelTe       = document.getElementById("panel-te");
-  const toggleButtons = document.querySelectorAll(".kt-toggle-btn");
-
   // ========== STATE ==========
   const fastbullCache = new Map();
-  const articlesCache = new Map();
   let fastbullProxyEnabled = false;
+
+  let highImpactOnly = false;
 
   // AI State
   let isStreaming = false;
@@ -517,23 +450,22 @@
   const recapConversations = new Map();
   let messages = [];
   let selectedFastbullItemId = null;
-  let selectedArticleItemId = null;
 
   // ========== HELPERS ==========
   const escapeHtml = (value = "") => {
     const str = value == null ? "" : String(value);
     return str
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#39;");
   };
 
   const markdownToHtml = (md) => {
     if (!md) return "";
-    let html = md.replace(/\n/g, "<br>");
-    html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    let html = md.replace(/\n/g,"<br>");
+    html = html.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>");
     return html;
   };
 
@@ -580,10 +512,10 @@
     if (!value) return "";
     const d = new Date(value);
     if (isNaN(d.getTime())) return value;
-    return d.toLocaleTimeString("id-ID", {
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZone: "Asia/Jakarta"
+    return d.toLocaleTimeString("id-ID",{
+      hour:"2-digit",
+      minute:"2-digit",
+      timeZone:"Asia/Jakarta"
     }) + " WIB";
   };
 
@@ -601,7 +533,7 @@
     document.body.appendChild(temp);
     temp.focus();
     temp.select();
-    try { document.execCommand("copy"); } catch {}
+    try{ document.execCommand("copy"); }catch{}
     document.body.removeChild(temp);
   };
 
@@ -609,35 +541,35 @@
     if (!text || !buttonEl) return;
     const originalLabel = buttonEl.getAttribute("aria-label") || "Copy headline";
 
-    const setState = (label, success = false) => {
-      buttonEl.setAttribute("aria-label", label);
-      buttonEl.classList.toggle("copied", success);
+    const setState = (label, success=false) => {
+      buttonEl.setAttribute("aria-label",label);
+      buttonEl.classList.toggle("copied",success);
       clearTimeout(buttonEl._copyTimer);
-      buttonEl._copyTimer = setTimeout(() => {
-        buttonEl.setAttribute("aria-label", originalLabel);
+      buttonEl._copyTimer = setTimeout(()=>{
+        buttonEl.setAttribute("aria-label",originalLabel);
         buttonEl.classList.remove("copied");
-      }, 1100);
+      },1100);
     };
 
-    try {
-      if (navigator.clipboard?.writeText) {
+    try{
+      if (navigator.clipboard?.writeText){
         await navigator.clipboard.writeText(text);
-      } else {
+      }else{
         fallbackCopy(text);
       }
-      setState("Copied!", true);
-    } catch {
-      setState("Copy failed", false);
+      setState("Copied!",true);
+    }catch{
+      setState("Copy failed",false);
     }
   };
 
   const bindCopyButton = (buttonEl, textProducer) => {
     if (!buttonEl || buttonEl.dataset.bound === "true") return;
     buttonEl.dataset.bound = "true";
-    buttonEl.addEventListener("click", (event) => {
+    buttonEl.addEventListener("click",(event)=>{
       event.stopPropagation();
       const text = typeof textProducer === "function" ? textProducer() : textProducer;
-      copyHeadlineText(text || "", buttonEl);
+      copyHeadlineText(text || "",buttonEl);
     });
   };
 
@@ -653,7 +585,7 @@
     const prevScroll = listEl.scrollTop;
     listEl.innerHTML = "";
 
-    if (!items || !items.length) {
+    if (!items || !items.length){
       listEl.innerHTML = '<li class="kt-empty">No items found.</li>';
       if (countEl) countEl.textContent = "0 items";
       return;
@@ -669,7 +601,7 @@
       li.dataset.important = item.isImportant ? "true" : "false";
       li.dataset.medium = item.isMedium ? "true" : "false";
 
-      if (selectedId && String(item.id) === selectedId) {
+      if (selectedId && String(item.id) === selectedId){
         li.classList.add("selected");
       }
 
@@ -717,52 +649,57 @@
     };
   };
 
-  const normalizeCatalystItem = (item) => {
-    if (!item) return null;
-    const impact = (item.impact || item.importance || "").toString().trim();
-    const category = item.category1 || item.category || "Catalyst";
-    const isImportant = /high/i.test(impact);
-    const isMedium   = /medium/i.test(impact);
+  const getCurrentFastbullTopicKey = () => fastbullTopicEl.value || "all";
 
-    return {
-      id: item.id || item.key || item.headline,
-      source: item.source || "Catalyst",
-      tag: category,
-      title: item.headline || item.title || "Catalyst Update",
-      time: formatTimestamp(item.timestamp || item.publishedAt || Date.now()),
-      impact,
-      isImportant,
-      isMedium,
-      content: item.content || item.summary || "",
-      url: item.url || item.link || "",
-      categories: [item.category1, item.category2, item.category3].filter(Boolean)
-    };
+  const getFastbullItemsForTopic = (topicKey) => {
+    return fastbullCache.get(topicKey) || [];
+  };
+
+  const getFastbullItemsForDisplay = () => {
+    const topicKey = getCurrentFastbullTopicKey();
+    let items = getFastbullItemsForTopic(topicKey);
+    if (highImpactOnly){
+      items = items.filter(item => item.isImportant);
+    }
+    return items;
+  };
+
+  const renderFastbull = () => {
+    const items = getFastbullItemsForDisplay();
+    renderFeed(
+      fastbullFeedEl,
+      fastbullCountEl,
+      items,
+      "FastBull",
+      selectedFastbullItemId,
+      { showSource:false }
+    );
   };
 
   // ========== FETCHING ==========
   const fetchFastbullNews = async (topicId = "all", forceRefresh = false) => {
-    let tagIdsToSend = topicId === "all" ? getAllFastbullIds() : topicId;
     const cacheKey = topicId;
+    let tagIdsToSend = topicId === "all" ? getAllFastbullIds() : topicId;
 
-    if (!forceRefresh && fastbullCache.has(cacheKey)) {
-      renderFeed(fastbullFeedEl, fastbullCountEl, fastbullCache.get(cacheKey), "FastBull", selectedFastbullItemId, {showSource:false});
+    if (!forceRefresh && fastbullCache.has(cacheKey)){
+      renderFastbull();
       return;
     }
 
-    if (!forceRefresh) {
+    if (!forceRefresh){
       fastbullFeedEl.innerHTML = '<li class="kt-empty">Loading headlines...</li>';
       fastbullCountEl.textContent = "...";
     }
 
-    try {
+    try{
       const baseUrl = `${FASTBULL_NEWS_ENDPOINT}?checkImportant=0&pageSize=100&tagIds=${tagIdsToSend}`;
       let payload;
 
-      try {
-        const r = await fetch(baseUrl, { headers: FASTBULL_HEADERS });
+      try{
+        const r = await fetch(baseUrl,{ headers:FASTBULL_HEADERS });
         if (!r.ok) throw new Error("HTTP " + r.status);
         payload = await r.json();
-      } catch (err) {
+      }catch(err){
         if (fastbullProxyEnabled) throw err;
         fastbullProxyEnabled = true;
         const r = await fetch(FASTBULL_CORS_PROXY + encodeURIComponent(baseUrl));
@@ -773,79 +710,17 @@
       const list = JSON.parse(payload.bodyMessage || "{}").pageDatas || [];
       let items = list.map(item => normalizeFastbullItem(item, topicId));
 
-      if (topicId !== "all") {
+      if (topicId !== "all"){
         const requestedIds = topicId.split(",").map(s => s.trim()).filter(Boolean);
         items = items.filter(item => item.rawTags.some(rt => requestedIds.includes(rt)));
       }
 
       fastbullCache.set(cacheKey, items);
-      renderFeed(fastbullFeedEl, fastbullCountEl, items, "FastBull", selectedFastbullItemId, {showSource:false});
-    } catch (e) {
-      if (!forceRefresh) {
+      renderFastbull();
+    }catch(e){
+      if (!forceRefresh){
         fastbullFeedEl.innerHTML = '<li class="kt-empty">Error loading data.</li>';
         fastbullCountEl.textContent = "0 items";
-      }
-    }
-  };
-
-  const populateArticleCategories = (items) => {
-    const cur = articlesTopicEl.value;
-    const cats = [...new Set(items.map(i => i.tag).filter(Boolean))].sort();
-    articlesTopicEl.innerHTML = '<option value="all">All categories</option>';
-    cats.forEach(c => {
-      const o = document.createElement("option");
-      o.value = c;
-      o.textContent = c;
-      articlesTopicEl.appendChild(o);
-    });
-    articlesTopicEl.value = (cur === "all" || cats.includes(cur)) ? cur : "all";
-  };
-
-  const getArticleItemsForCategory = (categoryKey = "all") => {
-    const baseItems = articlesCache.get("all") || [];
-    if (!baseItems.length) return [];
-    const norm = (categoryKey || "all").toLowerCase();
-    if (norm === "all") return baseItems;
-
-    const cacheKey = "filter:" + norm;
-    if (!articlesCache.has(cacheKey)) {
-      const filtered = baseItems.filter((item) => (item.tag || "").toLowerCase() === norm);
-      articlesCache.set(cacheKey, filtered);
-    }
-    return articlesCache.get(cacheKey) || [];
-  };
-
-  const filterArticles = (cat) => {
-    const items = getArticleItemsForCategory(cat);
-    renderFeed(articlesFeedEl, articlesCountEl, items, "Catalyst", selectedArticleItemId, { limit: Infinity });
-  };
-
-  const fetchArticles = async (forceRefresh = false) => {
-    if (!forceRefresh && articlesCache.has("all")) {
-      filterArticles(articlesTopicEl.value || "all");
-      return;
-    }
-
-    if (!forceRefresh) {
-      articlesFeedEl.innerHTML = '<li class="kt-empty">Loading catalyst...</li>';
-      articlesCountEl.textContent = "...";
-    }
-
-    try {
-      const r = await fetch(CATALYST_FEED_API);
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      const d = await r.json();
-      const items = (Array.isArray(d) ? d : d.items || [])
-        .map(normalizeCatalystItem)
-        .filter(Boolean);
-
-      articlesCache.set("all", items);
-      populateArticleCategories(items);
-      filterArticles(articlesTopicEl.value || "all");
-    } catch (e) {
-      if (!forceRefresh) {
-        articlesFeedEl.innerHTML = '<li class="kt-empty">Error loading catalyst.</li>';
-        articlesCountEl.textContent = "0 items";
       }
     }
   };
@@ -872,9 +747,9 @@
 
   const renderChat = () => {
     if (!chatListEl) return;
-    if (!messages.length) {
+    if (!messages.length){
       chatListEl.innerHTML = '<p class="placeholder">AI Ready to Recap.</p>';
-    } else {
+    }else{
       chatListEl.innerHTML = messages.map(msg => `
         <div class="kuantara-message ${msg.sender === 'Anda' ? 'user' : 'ai'}">
           <p class="kuantara-label">${msg.sender === 'Anda' ? 'YOU' : 'AI'}</p>
@@ -892,77 +767,77 @@
 
   const handleSSEData = (dataStr) => {
     if (!dataStr || dataStr === "[DONE]") return false;
-    try {
+    try{
       const obj = JSON.parse(dataStr);
       const payload = obj?.data ?? obj;
       if (payload?.type === "credit_info") return false;
       if (payload?.type === "message_start") return false;
 
-      if (typeof payload?.text === "string" && payload.text) {
+      if (typeof payload?.text === "string" && payload.text){
         streamBuffer += payload.text;
         return true;
       }
 
-      const candidateKeys = ["token", "content", "output", "message"];
-      for (const key of candidateKeys) {
+      const candidateKeys = ["token","content","output","message"];
+      for (const key of candidateKeys){
         const value = payload?.[key];
-        if (typeof value === "string" && value) {
+        if (typeof value === "string" && value){
           streamBuffer += value;
           return true;
         }
       }
 
       const choices = payload?.choices;
-      if (Array.isArray(choices)) {
+      if (Array.isArray(choices)){
         let appended = false;
         choices.forEach(choice => {
           const delta = choice?.delta || choice;
           const text = delta?.content || delta?.text;
-          if (typeof text === "string" && text) {
+          if (typeof text === "string" && text){
             streamBuffer += text;
             appended = true;
           }
         });
         if (appended) return true;
       }
-    } catch {
+    }catch{
       streamBuffer += dataStr;
       return true;
     }
     return false;
   };
 
-  async function startStreaming(promptText, { userVisibleText = null } = {}) {
+  async function startStreaming(promptText, { userVisibleText = null } = {}){
     if (isStreaming) return;
     isStreaming = true;
     streamBuffer = "";
 
     if (userVisibleText) addMessage("Anda", userVisibleText);
-    const aiMessageIndex = addMessage("Kuantara", "Thinking...");
+    const aiMessageIndex = addMessage("Kuantara","Thinking...");
 
     const payload = {
-      model: "grok-4",
-      from: "chat",
-      client_prompt: {},
-      multi_content: [{ type: "text", text: promptText, user_input_text: promptText }],
-      stream: true,
-      output_language: "id",
+      model:"grok-4",
+      from:"chat",
+      client_prompt:{},
+      multi_content:[{ type:"text", text:promptText, user_input_text:promptText }],
+      stream:true,
+      output_language:"id",
     };
 
-    try {
-      const resp = await fetch(SIDER_API_BASE + "/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "text/event-stream",
-          "Authorization": "Bearer " + SIDER_TOKEN,
-          "x-app-name": "ChitChat_Web",
-          "x-time-zone": TIMEZONE,
+    try{
+      const resp = await fetch(SIDER_API_BASE + "/completions",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Accept":"text/event-stream",
+          "Authorization":"Bearer " + SIDER_TOKEN,
+          "x-app-name":"ChitChat_Web",
+          "x-time-zone":TIMEZONE,
         },
-        body: JSON.stringify(payload),
+        body:JSON.stringify(payload),
       });
 
-      if (!resp.ok || !resp.body) {
+      if (!resp.ok || !resp.body){
         throw new Error("HTTP " + resp.status + " - " + resp.statusText);
       }
 
@@ -970,22 +845,22 @@
       const decoder = new TextDecoder();
       let buffer = "";
 
-      while (true) {
+      while (true){
         const { value, done } = await reader.read();
         if (done) break;
 
-        buffer += decoder.decode(value, { stream: true });
+        buffer += decoder.decode(value,{ stream:true });
         let idx;
         let updated = false;
 
-        while ((idx = buffer.indexOf("\n")) >= 0) {
+        while ((idx = buffer.indexOf("\n")) >= 0){
           const rawLine = buffer.slice(0, idx);
           buffer = buffer.slice(idx + 1);
           const line = (rawLine || "").trim();
           if (!line || line === "[DONE]") continue;
 
           let dataLine = line;
-          if (line.startsWith("data:")) {
+          if (line.startsWith("data:")){
             dataLine = line.slice(5).trim();
             if (!dataLine || dataLine === "[DONE]") continue;
           }
@@ -993,13 +868,13 @@
           if (handleSSEData(dataLine)) updated = true;
         }
 
-        if (updated) {
+        if (updated){
           updateMessage(aiMessageIndex, streamBuffer);
         }
       }
-    } catch (err) {
+    }catch(err){
       updateMessage(aiMessageIndex, "**Connection Error:** " + err.message);
-    } finally {
+    }finally{
       updateMessage(aiMessageIndex, streamBuffer || "No response from AI.");
       resetStreamFlags();
     }
@@ -1008,7 +883,7 @@
   const buildRecapPrompt = (source, label, items) => {
     const headlines = items
       .slice(0, MAX_RECAP_ITEMS)
-      .map((item, i) => `${i + 1}. [${item.time}] ${item.title}`)
+      .map((item,i)=>`${i+1}. [${item.time}] ${item.title}`)
       .join("\n");
     return `You are Kuantara AI. Summarize the following ${source} headlines for the '${label}' bucket into concise Indonesian bullet points. Highlight main macro/market themes, risks, and trading opportunities.\n\nData:\n${headlines}`;
   };
@@ -1024,32 +899,17 @@
 
     if (isStreaming) return;
 
-    try {
+    try{
       const items = getItems();
-      if (!items || !items.length) {
+      if (!items || !items.length){
         addMessage("Kuantara", `No data available for ${label} to recap.`);
         return;
       }
-      const prompt = buildRecapPrompt(key.startsWith("fastbull") ? "FastBull" : "Catalyst Feed", label, items);
-      startStreaming(prompt, { userVisibleText: `Summarize ${label}` });
-    } catch (error) {
+      const prompt = buildRecapPrompt("FastBull", label, items);
+      startStreaming(prompt,{ userVisibleText:`Summarize ${label}` });
+    }catch(error){
       addMessage("Kuantara", `Failed to prepare recap data: ${error.message}`);
     }
-  };
-
-  // ========== VIEW SWITCHER ==========
-  const switchView = (view) => {
-    if (view === "fastbull") {
-      panelFastbull.classList.remove("hidden");
-      panelTe.classList.add("hidden");
-    } else {
-      panelFastbull.classList.add("hidden");
-      panelTe.classList.remove("hidden");
-    }
-
-    toggleButtons.forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.view === view);
-    });
   };
 
   // ========== INIT ==========
@@ -1057,33 +917,18 @@
     initFastbullDropdown();
 
     fetchFastbullNews("all");
-    fetchArticles();
-
     setInterval(() => {
-      fetchFastbullNews(fastbullTopicEl.value, true);
-      fetchArticles(true);
+      fetchFastbullNews(getCurrentFastbullTopicKey(), true);
     }, AUTO_REFRESH_INTERVAL);
 
-    // Top-level menu toggle
-    toggleButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const view = btn.dataset.view;
-        switchView(view);
-      });
-    });
-
-    fastbullTopicEl.addEventListener("change", (e) => {
+    fastbullTopicEl.addEventListener("change",(e)=>{
       selectedFastbullItemId = null;
       fetchFastbullNews(e.target.value);
     });
 
-    articlesTopicEl.addEventListener("change", (e) => {
-      selectedArticleItemId = null;
-      filterArticles(e.target.value || "all");
-    });
-
-    const bindSelect = (el, isFb) => {
-      el.addEventListener("click", (e) => {
+    // Selection
+    const bindSelect = (el) => {
+      el.addEventListener("click",(e)=>{
         if (e.target.closest(".kt-copy-icon")) return;
         const item = e.target.closest(".kt-item");
         if (!item || item.classList.contains("kt-empty")) return;
@@ -1091,45 +936,35 @@
         const id = item.dataset.id;
         const isSel = item.classList.contains("selected");
 
-        if (isFb) selectedFastbullItemId = isSel ? null : id;
-        else selectedArticleItemId = isSel ? null : id;
+        selectedFastbullItemId = isSel ? null : id;
 
         el.querySelectorAll(".kt-item").forEach(i => {
-          const targetId = isFb ? selectedFastbullItemId : selectedArticleItemId;
+          const targetId = selectedFastbullItemId;
           i.classList.toggle("selected", i.dataset.id === targetId);
         });
       });
     };
-    bindSelect(fastbullFeedEl, true);
-    bindSelect(articlesFeedEl, false);
+    bindSelect(fastbullFeedEl);
 
+    // High Impact filter button
+    fastbullHighImpactBtn.addEventListener("click", () => {
+      highImpactOnly = !highImpactOnly;
+      fastbullHighImpactBtn.classList.toggle("active", highImpactOnly);
+      renderFastbull();
+    });
+
+    // Recap
     fastbullRecapBtn.addEventListener("click", () => {
-      const topic = fastbullTopicEl.value;
-      const topicLabel = fastbullTopicEl.options[fastbullTopicEl.selectedIndex].text;
+      const topic = getCurrentFastbullTopicKey();
+      const topicLabel = fastbullTopicEl.options[fastbullTopicEl.selectedIndex]?.text || topic;
       const selectionActive = !!selectedFastbullItemId;
 
       openKuantaraModal({
-        key: `fastbull-${topic}${selectionActive ? `-${selectedFastbullItemId}` : ""}`,
-        label: `${selectionActive ? "Selected Headline" : "Headlines"} (${topicLabel})`,
+        key: `fastbull-${topic}${selectionActive ? `-${selectedFastbullItemId}` : ""}${highImpactOnly ? "-high" : "-all"}`,
+        label: `${selectionActive ? "Selected Headline" : (highImpactOnly ? "High Impact Headlines" : "Headlines")} (${topicLabel})`,
         getItems: () => {
-          const cacheKey = topic;
-          const items = fastbullCache.get(cacheKey) || [];
+          let items = getFastbullItemsForDisplay();
           return resolveSelectedItems(items, selectedFastbullItemId);
-        }
-      });
-    });
-
-    articlesRecapBtn.addEventListener("click", () => {
-      const topic = articlesTopicEl.value || "all";
-      const topicLabel = articlesTopicEl.options[articlesTopicEl.selectedIndex]?.text || topic;
-      const selectionActive = !!selectedArticleItemId;
-
-      openKuantaraModal({
-        key: `articles-${topic}${selectionActive ? `-${selectedArticleItemId}` : ""}`,
-        label: `${selectionActive ? "Selected Catalyst" : "Catalyst"} (${topicLabel})`,
-        getItems: () => {
-          const items = getArticleItemsForCategory(topic);
-          return resolveSelectedItems(items, selectedArticleItemId);
         }
       });
     });
@@ -1140,11 +975,11 @@
       const txt = inputEl.value.trim();
       if (!txt || isStreaming) return;
       inputEl.value = "";
-      startStreaming(txt, { userVisibleText: txt });
+      startStreaming(txt,{ userVisibleText:txt });
     });
 
-    inputEl.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
+    inputEl.addEventListener("keydown",(e)=>{
+      if (e.key === "Enter" && !e.shiftKey){
         e.preventDefault();
         sendBtn.click();
       }
