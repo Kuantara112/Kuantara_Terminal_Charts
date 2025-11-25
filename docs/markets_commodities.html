@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Kuantara – Commodities Market Snapshot</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <!-- Fira Code -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
@@ -31,155 +30,128 @@
       margin:0;
       padding:0;
       font-family:"Fira Code",monospace !important;
-      /* Firefox scrollbar */
       scrollbar-width:thin;
-      scrollbar-color:rgba(0,0,0,0.6) transparent;
+      scrollbar-color:rgba(255,255,255,0.2) transparent;
     }
 
     html, body {
       width:100%;
       height:100%;
-    }
-
-    body {
       background:var(--bg-root);
       color:var(--text-main);
+      overflow:hidden;
     }
 
-    /* Webkit scrollbar – hitam transparan */
     ::-webkit-scrollbar {
-      width:6px;
-      height:6px;
+      width:4px;
+      height:4px;
     }
     ::-webkit-scrollbar-track {
       background:transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background:rgba(0,0,0,0.6);
+      background:rgba(255,255,255,0.2);
       border-radius:999px;
-    }
-    ::-webkit-scrollbar-corner {
-      background:transparent;
     }
 
     .kt-page {
-      min-height:100vh;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
       padding:16px;
       background:var(--bg-root);
-      color:var(--text-main);
-    }
-
-    .kt-title {
-      font-size:var(--fs-title);
-      font-weight:600;
-      letter-spacing:0.03em;
-      margin-bottom:6px;
-      color:var(--text-main);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-    }
-
-    .kt-title span.label {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
+      overflow: hidden;
     }
 
     .kt-page-tabs {
       display:flex;
       gap:8px;
       margin-bottom:10px;
+      flex-shrink: 0;
       flex-wrap:wrap;
     }
 
     .kt-pill-page {
       border-radius:999px;
       border:1px solid var(--border-soft);
-      padding:3px 10px;
+      padding:4px 12px;
       font-size:var(--fs-small);
       cursor:pointer;
       user-select:none;
       white-space:nowrap;
       color:var(--text-muted);
       background:#050505;
+      transition:background 0.15s ease, color 0.15s ease;
     }
     .kt-pill-page.active {
       border-color:var(--amber);
       color:#000;
       background:var(--amber);
+      font-weight: 700;
     }
 
     .kt-layout {
-      display:grid;
-      grid-template-columns:1fr;
-      height:auto;
-      max-height:none;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
     }
 
     .kt-column {
       display:flex;
       flex-direction:column;
-      min-height:0;
-    }
-
-    .kt-column > .kt-card {
-      flex:1;
+      flex: 1;
       min-height:0;
     }
 
     .kt-card {
       background:var(--bg-main);
       border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:12px 14px;
+      border-radius:6px;
+      padding:0;
       display:flex;
       flex-direction:column;
-      gap:8px;
+      flex: 1;
       min-height:0;
+      overflow: hidden;
     }
 
     .kt-card-header {
+      padding: 12px 14px;
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
       gap:8px;
       font-size:var(--fs-subtitle);
       color:var(--text-main);
-      flex-wrap:wrap;
-    }
-
-    .kt-card-header .subtitle {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      margin-top:2px;
+      border-bottom: 1px solid var(--border-soft);
+      flex-shrink: 0;
+      background: var(--bg-main);
     }
 
     .kt-header-left {
       display:flex;
       flex-direction:column;
-      gap:2px;
-      min-width:0;
+    }
+    .kt-header-left #quotesTitle {
+      font-weight: 700;
+      color: var(--amber);
     }
 
     .kt-toolbar {
       display:flex;
       align-items:center;
       gap:8px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      flex-wrap:wrap;
-      justify-content:flex-end;
     }
 
     .kt-search {
-      flex:1;
-      min-width:140px;
       display:flex;
       align-items:center;
       border-radius:4px;
       border:1px solid var(--border-soft);
-      padding:2px 6px;
+      padding:4px 8px;
+      background: #000;
+      width: 180px;
     }
 
     .kt-search input {
@@ -192,134 +164,130 @@
       min-width:0;
     }
 
-    /* === Quotes Table === */
     .kt-table-wrapper {
       flex:1;
-      min-height:0;
-      overflow:auto;
-      margin-top:4px;
-      max-height:100%;
+      overflow-y:auto;
+      overflow-x:hidden;
+      background: var(--bg-main);
+      position: relative;
+    }
+
+    .kt-table-scroller {
+      width:100%;
+      overflow-x:auto;
     }
 
     table {
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
-      min-width:880px;
+      min-width: 800px;
     }
 
     thead {
       position:sticky;
       top:0;
-      background:linear-gradient(to bottom,#111111,#0b0b0b);
-      z-index:2;
+      background: #1a1a1a;
+      z-index:10;
+      box-shadow: 0 1px 0 var(--border-soft);
     }
 
     th, td {
-      padding:5px 4px;
+      padding:8px 8px;
       text-align:right;
       white-space:nowrap;
-    }
-
-    th:first-child, td:first-child {
-      text-align:left;
-    }
-
-    th:nth-child(2), td:nth-child(2) {
-      text-align:left;
+      border-bottom: 1px solid #1f1f1f;
     }
 
     th {
       font-size:var(--fs-small);
       font-weight:500;
       color:var(--text-muted);
-      border-bottom:1px solid var(--border-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    tbody tr:nth-child(even) {
-      background:#0d0d0d;
-    }
+    th:first-child, td:first-child { text-align:left; position:sticky; left:0; background:inherit; z-index:2; }
+    th:nth-child(2), td:nth-child(2) { text-align:left; }
 
-    tbody tr:nth-child(odd) {
-      background:#090909;
-    }
+    tbody tr:nth-child(even) td:first-child { background:#0d0d0d; }
+    tbody tr:nth-child(odd) td:first-child { background:#090909; }
+    tbody tr:hover td:first-child { background:#151515; }
 
-    tbody tr:hover {
-      background:#151515;
-    }
+    tbody tr:nth-child(even) { background:#0d0d0d; }
+    tbody tr:nth-child(odd) { background:#090909; }
+    tbody tr:hover { background:#151515; }
 
-    .text-up {
-      color:var(--green);
-    }
-
-    .text-down {
-      color:var(--red);
-    }
+    .text-up { color:var(--green); }
+    .text-down { color:var(--red); }
 
     .copy-btn {
-      border-radius:999px;
+      border-radius:4px;
       border:1px solid var(--border-soft);
       background:transparent;
       color:var(--text-muted);
-      font-size:var(--fs-small);
+      font-size:9px;
       padding:2px 6px;
       cursor:pointer;
-      white-space:nowrap;
-      transition:all 0.15s ease;
+      transition:0.2s;
     }
-
     .copy-btn:hover {
       border-color:var(--amber);
       color:var(--amber);
     }
 
-    @media (max-width:900px) {
-      .kt-page {
-        padding:12px;
-      }
-    }
+    .spark-cell svg { display:block; }
 
     @media (max-width:600px) {
-      :root {
-        --fs-title:13px;
-        --fs-subtitle:11px;
-        --fs-body:10px;
-        --fs-small:9px;
+      .kt-page {
+        padding: 8px;
+      }
+      
+      .kt-page-tabs {
+        margin-bottom: 8px;
+        gap: 6px;
+      }
+      
+      .kt-pill-page {
+        padding: 3px 10px;
+        font-size: 10px;
       }
 
-      .kt-title {
-        flex-direction:column;
-        align-items:flex-start;
-        gap:4px;
+      .kt-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px;
       }
 
-      .kt-card {
-        padding:10px 10px;
+      .kt-header-left {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .kt-toolbar {
+        width: 100%;
+      }
+      
+      .kt-search {
+        width: 100%;
       }
 
       th, td {
-        padding:4px 3px;
-      }
-
-      .kt-layout {
-        grid-template-columns:1fr;
-        height:auto;
-        max-height:none;
-      }
-
-      .kt-table-wrapper {
-        max-height:none;
+        padding: 6px 5px;
+        font-size: 10px;
       }
     }
   </style>
 </head>
 <body>
   <div class="kt-page">
-    <!-- PAGE SWITCHER -->
     <div class="kt-page-tabs">
       <div class="kt-pill-page active" data-page="energy">Energy</div>
       <div class="kt-pill-page" data-page="metals">Metals</div>
-      <div class="kt-pill-page" data-page="agri">Agriculture</div>
+      <div class="kt-pill-page" data-page="agriculture">Agriculture</div>
     </div>
 
     <div class="kt-layout">
@@ -327,38 +295,37 @@
         <section class="kt-card">
           <header class="kt-card-header">
             <div class="kt-header-left">
-              <div id="quotesTitle">Energy Commodities Market Quotes</div>
-              <div id="tickerMeta" class="subtitle">Tickers: 0</div>
+              <div id="quotesTitle">Energy Contracts</div>
+              <div id="tickerMeta" class="subtitle" style="font-size:9px; color:var(--text-muted); display:none;"></div>
             </div>
             <div class="kt-toolbar">
               <div class="kt-search">
-                <input id="searchInput" type="text" placeholder="Filter commodity (e.g. CL, NG)">
+                <input id="searchInput" type="text" placeholder="Search Symbol...">
               </div>
             </div>
           </header>
 
           <div class="kt-table-wrapper">
-            <table id="commoditiesTable">
-              <thead>
-                <tr>
-                  <th>Symbol</th>
-                  <th>Commodity</th>
-                  <th>Last</th>
-                  <th>Δ</th>
-                  <th>Δ%</th>
-                  <th>Open</th>
-                  <th>High</th>
-                  <th>Low</th>
-                  <th>Close</th>
-                  <th>%YTD</th>
-                  <th>Session</th>
-                  <th>Copy OHLC</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Filled by JS -->
-              </tbody>
-            </table>
+            <div class="kt-table-scroller">
+              <table id="comTable">
+                <thead>
+                  <tr>
+                    <th>Sym</th>
+                    <th>Name</th>
+                    <th>Trend (30D)</th>
+                    <th>Last</th>
+                    <th>Chg</th>
+                    <th>%Chg</th>
+                    <th>Open</th>
+                    <th>High</th>
+                    <th>Low</th>
+                    <th>%YTD</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
         </section>
       </div>
@@ -367,222 +334,277 @@
 
   <script>
     // ==========================
+    //  CONFIG
+    // ==========================
+    const BASE_URL = "https://cloudkuant-541614645905.us-central1.run.app";
+    const INTERVAL = "1D";
+    const BARS_COUNT = 30;
+    const MAX_CONCURRENT = 3;
+    const REFRESH_MS = 3000;
+
+    const COM_CONFIG = {
+      energy: [
+        { symbol:"USOIL",  name:"WTI Crude Oil",        apiSymbol:"TVC:USOIL" },
+        { symbol:"UKOIL",  name:"Brent Crude Oil",      apiSymbol:"TVC:UKOIL" },
+        { symbol:"NG1!",   name:"Natural Gas Futures",  apiSymbol:"NYMEX:NG1!" },
+        { symbol:"HO1!",   name:"Heating Oil Futures",  apiSymbol:"NYMEX:HO1!" },
+        { symbol:"RB1!",   name:"Gasoline Futures",     apiSymbol:"NYMEX:RB1!" }
+      ],
+      metals: [
+        { symbol:"XAUUSD", name:"Gold Spot",            apiSymbol:"OANDA:XAUUSD" },
+        { symbol:"XAGUSD", name:"Silver Spot",          apiSymbol:"OANDA:XAGUSD" },
+        { symbol:"GC1!",   name:"Gold Futures",         apiSymbol:"COMEX:GC1!" },
+        { symbol:"SI1!",   name:"Silver Futures",       apiSymbol:"COMEX:SI1!" },
+        { symbol:"HG1!",   name:"Copper Futures",       apiSymbol:"COMEX:HG1!" },
+        { symbol:"PL1!",   name:"Platinum Futures",     apiSymbol:"NYMEX:PL1!" },
+        { symbol:"PA1!",   name:"Palladium Futures",    apiSymbol:"NYMEX:PA1!" }
+      ],
+      agriculture: [
+        { symbol:"ZC1!",   name:"Corn Futures",         apiSymbol:"CBOT:ZC1!" },
+        { symbol:"ZW1!",   name:"Wheat Futures",        apiSymbol:"CBOT:ZW1!" },
+        { symbol:"ZS1!",   name:"Soybean Futures",      apiSymbol:"CBOT:ZS1!" },
+        { symbol:"KC1!",   name:"Coffee Futures",       apiSymbol:"ICEUS:KC1!" },
+        { symbol:"SB1!",   name:"Sugar Futures",        apiSymbol:"ICEUS:SB1!" },
+        { symbol:"CC1!",   name:"Cocoa Futures",        apiSymbol:"ICEUS:CC1!" },
+        { symbol:"CT1!",   name:"Cotton Futures",       apiSymbol:"ICEUS:CT1!" }
+      ]
+    };
+
+    // ==========================
     //  STATE
     // ==========================
-    const tableBody = document.querySelector("#commoditiesTable tbody");
+    const tableBody = document.querySelector("#comTable tbody");
     const searchInput = document.getElementById("searchInput");
     const quotesTitleEl = document.getElementById("quotesTitle");
     const tickerMetaEl = document.getElementById("tickerMeta");
     const pagePills = document.querySelectorAll(".kt-pill-page");
+    const tableWrapper = document.querySelector(".kt-table-wrapper");
 
     let latestQuotes = [];
     let currentPage = "energy";
+    let isRefreshing = false;
 
-    let mockEnergy = [];
-    let mockMetals = [];
-    let mockAgri = [];
+    const datasets = { energy: [], metals: [], agriculture: [] };
 
     // ==========================
-    //  RENDER TABLE
+    //  UTIL
     // ==========================
-    function updateQuotesTable(data) {
-      latestQuotes = Array.isArray(data) ? data : [];
-      renderQuotesTable();
-    }
-
-    function renderQuotesTable() {
-      const filter = (searchInput.value || "").trim().toLowerCase();
-      tableBody.innerHTML = "";
-
-      latestQuotes
-        .filter(row => {
-          if (!filter) return true;
-          const symbol = (row.symbol || "").toLowerCase();
-          const name = (row.name || "").toLowerCase();
-          return symbol.includes(filter) || name.includes(filter);
-        })
-        .forEach(row => {
-          const tr = document.createElement("tr");
-
-          const changePct = Number(row.changePct || 0);
-          const change = Number(row.change || 0);
-          const ytdPct = Number(row.ytdPct || 0);
-          const isUp = changePct > 0;
-          const isDown = changePct < 0;
-          const isYtdUp = ytdPct > 0;
-          const isYtdDown = ytdPct < 0;
-
-          tr.innerHTML = `
-            <td>${row.symbol || ""}</td>
-            <td>${row.name || ""}</td>
-            <td>${formatNumber(row.last)}</td>
-            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
-              ${formatSigned(change)}
-            </td>
-            <td class="${isUp ? "text-up" : isDown ? "text-down" : ""}">
-              ${formatSigned(changePct)}%
-            </td>
-            <td>${formatNumber(row.open)}</td>
-            <td>${formatNumber(row.high)}</td>
-            <td>${formatNumber(row.low)}</td>
-            <td>${formatNumber(row.close)}</td>
-            <td class="${isYtdUp ? "text-up" : isYtdDown ? "text-down" : ""}">
-              ${formatSigned(ytdPct)}%
-            </td>
-            <td>${row.session || ""}</td>
-          `;
-
-          const tdCopy = document.createElement("td");
-          const btn = document.createElement("button");
-          btn.className = "copy-btn";
-          btn.textContent = "Copy";
-          btn.title = "Copy OHLC";
-          btn.addEventListener("click", () => {
-            const text = [
-              `Symbol=${row.symbol || ""}`,
-              `O=${row.open}`,
-              `H=${row.high}`,
-              `L=${row.low}`,
-              `C=${row.close}`
-            ].join(" ");
-            copyTextToClipboard(text);
-          });
-          tdCopy.appendChild(btn);
-          tr.appendChild(tdCopy);
-
-          tableBody.appendChild(tr);
-        });
-    }
+    function sleep(ms) { return new Promise(res => setTimeout(res, ms)); }
 
     function formatNumber(value) {
       const num = Number(value);
       if (Number.isNaN(num)) return "";
-      if (Math.abs(num) >= 1000 && Number.isInteger(num)) {
-        return num.toLocaleString(undefined, { maximumFractionDigits: 0 });
-      }
-      if (Math.abs(num) >= 1000) {
-        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
-      }
-      return num.toFixed(2);
+      if (Math.abs(num) >= 1000) return num.toFixed(1);
+      if (Math.abs(num) >= 10) return num.toFixed(2);
+      return num.toFixed(3);
     }
 
     function formatSigned(value) {
       const num = Number(value);
       if (Number.isNaN(num)) return "";
-      if (num === 0) return num.toFixed(2);
+      if (num === 0) return "0.00";
       return (num > 0 ? "+" : "") + num.toFixed(2);
     }
 
     function copyTextToClipboard(text) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).catch(() => {
-          fallbackCopyText(text);
-        });
+        navigator.clipboard.writeText(text).catch(() => {});
       } else {
-        fallbackCopyText(text);
-      }
-    }
-
-    function fallbackCopyText(text) {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.style.position = "fixed";
-      textarea.style.opacity = "0";
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
         document.execCommand("copy");
-      } catch (e) {
-        console.warn("Copy failed", e);
+        document.body.removeChild(ta);
       }
-      document.body.removeChild(textarea);
     }
 
     function updateTickerMeta(count) {
-      tickerMetaEl.textContent = `Tickers: ${count}`;
-    }
-
-    searchInput.addEventListener("input", renderQuotesTable);
-
-    // ==========================
-    //  PAGE SWITCHING
-    // ==========================
-    function applyPageDataset() {
-      let title = "";
-      let placeholder = "";
-      let dataset = [];
-
-      if (currentPage === "energy") {
-        title = "Energy Commodities Market Quotes";
-        placeholder = "Filter energy (e.g. CL, NG, HO)";
-        dataset = mockEnergy;
-      } else if (currentPage === "metals") {
-        title = "Metals Commodities Market Quotes";
-        placeholder = "Filter metals (e.g. GC, SI, HG)";
-        dataset = mockMetals;
-      } else if (currentPage === "agri") {
-        title = "Agriculture Commodities Market Quotes";
-        placeholder = "Filter agriculture (e.g. ZC, ZS, KC)";
-        dataset = mockAgri;
+      if (tickerMetaEl) {
+        tickerMetaEl.style.display = "block";
+        tickerMetaEl.textContent = `${count} Contracts`;
       }
-
-      quotesTitleEl.textContent = title;
-      searchInput.placeholder = placeholder;
-
-      updateQuotesTable(dataset);
-      updateTickerMeta(dataset.length);
     }
 
-    pagePills.forEach(pill => {
-      pill.addEventListener("click", () => {
-        pagePills.forEach(p => p.classList.remove("active"));
-        pill.classList.add("active");
-        currentPage = pill.dataset.page;
-        applyPageDataset();
+    function drawSparkline(cell, values) {
+      if (!cell || !Array.isArray(values) || values.length < 2) return;
+      cell.innerHTML = "";
+      const w = 60, h = 20, pad = 2;
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const range = (max - min) || 1;
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", w);
+      svg.setAttribute("height", h);
+      svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+
+      let d = "";
+      values.forEach((v, i) => {
+        const x = pad + (i / (values.length - 1)) * (w - 2 * pad);
+        const norm = (v - min) / range;
+        const y = h - pad - norm * (h - 2 * pad);
+        d += (i === 0 ? "M" : "L") + x + " " + y + " ";
       });
-    });
 
-    // ==========================
-    //  DUMMY DATA
-    // ==========================
-    function loadMockData() {
-      // Energy
-      mockEnergy = [
-        { symbol:"CL",   name:"WTI Crude Oil",         open:78.50, high:79.80, low:77.90, last:79.20, close:79.20, change:0.70,  changePct:0.89,  ytdPct:6.40,  session:"New York" },
-        { symbol:"BRN",  name:"Brent Crude Oil",      open:82.10, high:83.40, low:81.60, last:83.05, close:83.05, change:0.95,  changePct:1.16,  ytdPct:5.80,  session:"London" },
-        { symbol:"NG",   name:"Natural Gas",          open:2.45,  high:2.54,  low:2.39,  last:2.51,  close:2.51,  change:0.06,  changePct:2.45,  ytdPct:-3.20, session:"New York" },
-        { symbol:"RB",   name:"RBOB Gasoline",        open:2.32,  high:2.38,  low:2.29,  last:2.36,  close:2.36,  change:0.04,  changePct:1.72,  ytdPct:4.90,  session:"New York" },
-        { symbol:"HO",   name:"Heating Oil",          open:2.80,  high:2.87,  low:2.76,  last:2.84,  close:2.84,  change:0.04,  changePct:1.43,  ytdPct:3.10,  session:"New York" }
-      ];
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", d.trim());
+      
+      const first = values[0];
+      const last = values[values.length - 1];
+      let color = "#9b9b9b";
+      if (last > first) color = "#22c55e";
+      else if (last < first) color = "#ef4444";
 
-      // Metals
-      mockMetals = [
-        { symbol:"GC",   name:"Gold",                 open:2405.0, high:2428.5, low:2395.2, last:2420.8, close:2420.8, change:15.8,  changePct:0.66,  ytdPct:14.20, session:"New York" },
-        { symbol:"SI",   name:"Silver",               open:29.10,  high:29.70,  low:28.90,  last:29.45,  close:29.45,  change:0.35,  changePct:1.20,  ytdPct:10.80, session:"New York" },
-        { symbol:"HG",   name:"Copper",               open:4.25,   high:4.32,   low:4.21,   last:4.29,   close:4.29,   change:0.04,  changePct:0.94,  ytdPct:7.35,  session:"London" },
-        { symbol:"PL",   name:"Platinum",             open:985.0,  high:998.5,  low:978.0,  last:994.2,  close:994.2,  change:9.2,   changePct:0.93,  ytdPct:3.50,  session:"London" },
-        { symbol:"PA",   name:"Palladium",            open:1025.0, high:1052.0, low:1018.0, last:1045.5, close:1045.5, change:20.5,  changePct:2.00,  ytdPct:-4.10, session:"New York" }
-      ];
-
-      // Agriculture
-      mockAgri = [
-        { symbol:"ZC",   name:"Corn",                 open:465.0,  high:472.0,  low:462.0,  last:469.5,  close:469.5,  change:4.5,   changePct:0.97,  ytdPct:-1.80, session:"Chicago" },
-        { symbol:"ZW",   name:"Wheat",                open:605.0,  high:615.5,  low:600.2,  last:612.8,  close:612.8,  change:7.8,   changePct:1.29,  ytdPct:2.60,  session:"Chicago" },
-        { symbol:"ZS",   name:"Soybeans",             open:1180.0, high:1195.0, low:1174.5, last:1189.2, close:1189.2, change:9.2,   changePct:0.78,  ytdPct:-0.90, session:"Chicago" },
-        { symbol:"KC",   name:"Coffee",               open:188.5,  high:193.2,  low:187.0,  last:191.8,  close:191.8,  change:3.3,   changePct:1.75,  ytdPct:8.40,  session:"New York" },
-        { symbol:"SB",   name:"Sugar",                open:19.80,  high:20.20,  low:19.60,  last:20.05,  close:20.05,  change:0.25,  changePct:1.26,  ytdPct:3.70,  session:"New York" }
-      ];
-
-      applyPageDataset();
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", color);
+      path.setAttribute("stroke-width", "1.5");
+      svg.appendChild(path);
+      cell.appendChild(svg);
     }
 
     // ==========================
-    //  INIT
+    //  API LOGIC
     // ==========================
-    document.addEventListener("DOMContentLoaded", () => {
-      loadMockData();
-    });
+    async function fetchOhlcvWithRetry(apiSymbol) {
+      try {
+        const url = `${BASE_URL}/api/tvohlc/ohlcv?symbol=${encodeURIComponent(apiSymbol)}&interval=${INTERVAL}&bars_count=${BARS_COUNT}`;
+        const res = await fetch(url, { cache: "no-store" });
+        if(!res.ok) throw new Error("Err");
+        const json = await res.json();
+        const r = (json.results || []).find(x => x.symbol === apiSymbol) || (json.results || [])[0];
+        if(!r || !r.bars) throw new Error("No bars");
+        return r.bars;
+      } catch(e) {
+        return null; 
+      }
+    }
+
+    function buildRowFromBars(cfg, bars) {
+      if(!bars) return { ...cfg, error:true };
+      const last = bars[bars.length - 1];
+      const prev = bars[bars.length - 2];
+      const first = bars[0];
+      const lastClose = Number(last.close);
+      const prevClose = Number(prev.close);
+      const chg = lastClose - prevClose;
+      const chgPct = (chg / prevClose) * 100;
+      const ytdPct = ((lastClose / Number(first.open)) - 1) * 100;
+
+      return {
+        ...cfg,
+        open: Number(last.open),
+        high: Number(last.high),
+        low: Number(last.low),
+        last: lastClose,
+        close: lastClose,
+        change: chg,
+        changePct: chgPct,
+        ytdPct: ytdPct,
+        closes: bars.map(b => Number(b.close))
+      };
+    }
+
+    async function loadCategoryData(pageKey) {
+      const list = COM_CONFIG[pageKey] || [];
+      const resultRows = [];
+      
+      let idx = 0;
+      while(idx < list.length) {
+        const slice = list.slice(idx, idx + MAX_CONCURRENT);
+        const chunk = await Promise.all(slice.map(async item => {
+          const bars = await fetchOhlcvWithRetry(item.apiSymbol);
+          return buildRowFromBars(item, bars);
+        }));
+        resultRows.push(...chunk);
+        idx += MAX_CONCURRENT;
+        if(idx < list.length) await sleep(100);
+      }
+      datasets[pageKey] = resultRows;
+    }
+
+    // ==========================
+    //  RENDER
+    // ==========================
+    function renderQuotesTable() {
+      const filter = (searchInput.value || "").trim().toLowerCase();
+      const scrollTop = tableWrapper.scrollTop;
+
+      tableBody.innerHTML = "";
+      
+      latestQuotes
+        .filter(r => {
+          if(r.error) return false;
+          if(!filter) return true;
+          return (r.symbol.toLowerCase().includes(filter) || r.name.toLowerCase().includes(filter));
+        })
+        .forEach(row => {
+          const tr = document.createElement("tr");
+          const isUp = row.changePct > 0;
+          const isDown = row.changePct < 0;
+          const isYtdUp = row.ytdPct > 0;
+          const isYtdDown = row.ytdPct < 0;
+
+          tr.innerHTML = `
+            <td><span style="font-weight:700; color:#fff;">${row.symbol}</span></td>
+            <td style="color:var(--text-muted)">${row.name}</td>
+            <td class="spark-cell"></td>
+            <td>${formatNumber(row.last)}</td>
+            <td class="${isUp?"text-up":isDown?"text-down":""}">${formatSigned(row.change)}</td>
+            <td class="${isUp?"text-up":isDown?"text-down":""}">${formatSigned(row.changePct)}%</td>
+            <td>${formatNumber(row.open)}</td>
+            <td>${formatNumber(row.high)}</td>
+            <td>${formatNumber(row.low)}</td>
+            <td class="${isYtdUp?"text-up":isYtdDown?"text-down":""}">${formatSigned(row.ytdPct)}%</td>
+            <td></td>
+          `;
+
+          drawSparkline(tr.querySelector(".spark-cell"), row.closes);
+
+          const btn = document.createElement("button");
+          btn.className = "copy-btn";
+          btn.textContent = "COPY";
+          btn.onclick = () => copyTextToClipboard(`${row.symbol} Price: ${row.last}`);
+          tr.lastElementChild.appendChild(btn);
+
+          tableBody.appendChild(tr);
+        });
+      
+      tableWrapper.scrollTop = scrollTop;
+    }
+
+    function switchPage(key) {
+      currentPage = key;
+      pagePills.forEach(p => {
+        p.classList.toggle("active", p.dataset.page === key);
+      });
+
+      if (key === "energy") quotesTitleEl.textContent = "Energy Contracts";
+      else if (key === "metals") quotesTitleEl.textContent = "Metals Contracts";
+      else quotesTitleEl.textContent = "Agriculture Contracts";
+
+      latestQuotes = datasets[key] || [];
+      renderQuotesTable();
+      updateTickerMeta(latestQuotes.length);
+      refreshCurrentPage();
+    }
+
+    async function refreshCurrentPage() {
+      if(isRefreshing) return;
+      isRefreshing = true;
+      await loadCategoryData(currentPage);
+      latestQuotes = datasets[currentPage];
+      renderQuotesTable();
+      updateTickerMeta(latestQuotes.length);
+      isRefreshing = false;
+    }
+
+    // INIT
+    pagePills.forEach(p => p.onclick = () => switchPage(p.dataset.page));
+    searchInput.oninput = renderQuotesTable;
+    
+    switchPage("energy");
+    setInterval(refreshCurrentPage, REFRESH_MS);
   </script>
 </body>
 </html>
