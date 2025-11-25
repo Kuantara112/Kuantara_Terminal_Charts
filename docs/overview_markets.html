@@ -1,1187 +1,708 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
-  <title>Markets Overview</title>
+  <title>Markets Overview - Pro Terminal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --amber:#ffbf00;
+      /* Kuantara Terminal Palette */
       --bg-root:#000000;
       --bg-main:#111111;
-      --border-soft:#2b2b2b;
+      --bg-card:#111111;
+      --bg-card-hover:#151515;
+      --bg-header:#111111;
+
+      --border-subtle:#2b2b2b;
+      --border-active:#ffbf00;
+
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --text-dim:#555555;
 
+      --accent-primary:#ffbf00;
+      --accent-primary-dim:rgba(255,191,0,0.1);
+
+      --color-up:#46c97f;
+      --color-up-bg:rgba(70,201,127,0.15);
+      --color-down:#ff4d4f;
+      --color-down-bg:rgba(255,77,79,0.15);
+      --color-neutral:#9b9b9b;
+
+      /* Spacing & Radius (Terminal Compact) */
+      --radius-sm:4px;
+      --radius-md:4px;
+      --spacing-sm:6px;
+      --spacing-md:16px;
+
+      /* Font sizes (9–14 px spec) */
       --fs-title:14px;
       --fs-subtitle:12px;
       --fs-body:11px;
       --fs-small:9.5px;
+
+      /* Font – Fira Code everywhere */
+      --font-ui:"Fira Code",monospace;
+      --font-mono:"Fira Code",monospace;
     }
 
     * {
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family:"Fira Code",monospace !important;
+      font-family:var(--font-ui);
+    }
+
+    /* Compact dark scrollbar */
+    ::-webkit-scrollbar {
+      width:6px;
+      height:6px;
+    }
+    ::-webkit-scrollbar-track {
+      background:#000000;
+    }
+    ::-webkit-scrollbar-thumb {
+      background:#2b2b2b;
+      border-radius:3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background:#3a3a3a;
     }
 
     html, body {
-      height:100%;
       width:100%;
+      height:100%;
     }
 
     body {
       background-color:var(--bg-root);
       color:var(--text-main);
+      /* Default desktop behavior: Full screen app */
+      height:100vh;
+      overflow:hidden; 
+      display:flex;
+      flex-direction:column;
     }
 
+    .font-mono { font-family:var(--font-mono)!important; }
+    .text-up { color:var(--color-up); }
+    .text-down { color:var(--color-down); }
+    .text-neutral { color:var(--color-neutral); }
+
+    /* === Page Layout === */
     .kt-page {
-      min-height:100vh;
-      padding:16px;
-      background:var(--bg-root);
-      color:var(--text-main);
+      flex:1;
       display:flex;
       flex-direction:column;
-      gap:12px;
+      padding:var(--spacing-md);
+      gap:var(--spacing-md);
+      height:100%;
+      background:var(--bg-main);
+      /* Ensure container respects parent overflow */
+      overflow:hidden;
     }
 
-    .kt-page-header {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-    }
-
-    .kt-page-header-left {
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-
-    .kt-page-title {
-      font-size:var(--fs-title);
-      font-weight:500;
-      letter-spacing:0.5px;
-    }
-
-    .kt-page-meta {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .kt-page-header-right {
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-shrink:0;
-    }
-
-    .kt-action-btn {
-      font-size:var(--fs-small);
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid var(--amber);
-      background:transparent;
-      color:var(--amber);
-      cursor:pointer;
-    }
-
-    .kt-action-btn:hover {
-      background:rgba(255,191,0,0.08);
-    }
-
-    /* === GRID: 2 atas, 3 bawah === */
+    /* === Grid Layout (Desktop Default) === */
     .kt-grid {
       flex:1;
       display:grid;
-      grid-template-columns:repeat(3, 1fr);
-      grid-template-rows:1fr 1fr;
+      /* 3 Columns equal width */
+      grid-template-columns:1fr 1fr 1fr;
+      /* Rows: Top takes slightly more space (55-60%), Bottom takes rest */
+      grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr);
       grid-template-areas:
         "ai ai headlines"
-        "risk calendar heatmap";
-      gap:10px;
-      min-height:0;
+        "risk heatmap heatmap";
+      gap:12px;
+      min-height:0; /* Important for grid overflow handling */
     }
 
+    /* === Card Component (Terminal style) === */
     .kt-card {
-      background:var(--bg-main);
-      border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:12px 14px;
+      background:var(--bg-card);
+      border:1px solid var(--border-subtle);
+      border-radius:var(--radius-md);
       display:flex;
       flex-direction:column;
-      gap:8px;
-      min-width:0;
-      min-height:0;
+      overflow:hidden;
+      box-shadow:none;
+      transition:border-color 0.15s ease, background-color 0.15s ease;
+      min-height: 0; /* Prevents flex items from overflowing container */
+    }
+
+    .kt-card:hover {
+      border-color:var(--border-active);
+      background-color:#121212;
     }
 
     .kt-card-header {
+      padding:8px 12px;
+      background:var(--bg-header);
+      border-bottom:1px solid var(--border-subtle);
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:6px;
-      margin-bottom:2px;
-    }
-
-    .kt-card-header-left {
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      min-width:0;
+      flex-shrink:0; /* Header size never shrinks */
     }
 
     .kt-card-title {
       font-size:var(--fs-subtitle);
-      font-weight:500;
+      font-weight:600;
+      color:var(--text-main);
+      text-transform:uppercase;
+      letter-spacing:0.6px;
     }
 
     .kt-card-subtitle {
       font-size:var(--fs-small);
       color:var(--text-muted);
-    }
-
-    .kt-card-body {
-      font-size:var(--fs-body);
-      line-height:1.4;
-      color:var(--text-main);
-      overflow:auto;
-      min-height:0;
+      margin-top:1px;
+      font-weight:400;
+      text-transform:none;
+      letter-spacing:0;
     }
 
     .kt-card-btn {
       font-size:var(--fs-small);
       padding:3px 8px;
-      border-radius:999px;
-      border:1px solid var(--amber);
-      background:transparent;
-      color:var(--amber);
+      border-radius:4px;
+      border:1px solid var(--border-subtle);
+      background:#000000;
+      color:var(--text-muted);
       cursor:pointer;
-      flex-shrink:0;
-      white-space:nowrap;
+      transition:0.15s;
     }
-
     .kt-card-btn:hover {
-      background:rgba(255,191,0,0.08);
+      color:var(--text-main);
+      border-color:var(--accent-primary);
+      background:var(--accent-primary-dim);
     }
 
-    /* === Layout areas === */
+    .kt-card-body {
+      padding:0;
+      flex:1;
+      overflow:hidden; /* Content scrolls inside body */
+      position:relative;
+      font-size:var(--fs-body);
+      line-height:1.5;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* === Grid Areas === */
     .ai-summary { grid-area:ai; }
-    .economic-calendar { grid-area:calendar; }
-    .market-heatmap { grid-area:heatmap; }
     .headline-bubbles { grid-area:headlines; }
     .risk-meter-card { grid-area:risk; }
+    .market-heatmap { grid-area:heatmap; }
 
-    /* === AI Market Summary + Trading Signals SPLIT === */
+    /* --- AI Summary Panel --- */
     .ai-summary-body {
       display:flex;
-      gap:10px;
+      flex-direction: row; /* Default Side by Side */
       height:100%;
-      min-height:0;
+      overflow: hidden;
     }
 
     .ai-summary-main {
-      flex:3;
-      overflow:auto;
-      min-width:0;
+      flex:7;
+      padding:12px;
+      overflow-y:auto;
+      border-right:1px solid var(--border-subtle);
     }
 
     .ai-summary-text {
-      font-size:var(--fs-body);
-      color:var(--text-main);
+      color:#d4d4d4;
       white-space:pre-wrap;
+      font-size:var(--fs-body);
+      line-height:1.6;
+    }
+    .ai-summary-text b,
+    .ai-summary-text strong {
+      color:var(--accent-primary);
+      font-weight:600;
     }
 
     .ai-signals-panel {
-      flex:1;
-      border-left:1px solid var(--border-soft);
-      padding-left:10px;
+      flex:3;
       display:flex;
       flex-direction:column;
-      gap:4px;
-      min-width:0;
-      min-height:0;
+      background:#0b0b0b;
+      min-width: 160px; /* Ensure table doesn't get too squished */
     }
 
     .ai-signals-header {
+      padding:8px 10px;
       font-size:var(--fs-small);
+      font-weight:600;
       color:var(--text-muted);
-      text-transform:uppercase;
-      letter-spacing:0.5px;
+      border-bottom:1px solid var(--border-subtle);
+      background:var(--bg-card);
+      flex-shrink: 0;
     }
 
-    .ai-signals-table {
-      width:100%;
-      border-collapse:collapse;
-      font-size:var(--fs-small);
+    .table-container {
+      flex:1;
+      overflow:auto;
     }
 
-    .ai-signals-table th,
-    .ai-signals-table td {
-      padding:3px 2px;
-      border-bottom:1px solid rgba(43,43,43,0.7);
-      white-space:nowrap;
-      text-align:right;
-    }
-
-    .ai-signals-table th:first-child,
-    .ai-signals-table td:first-child {
-      text-align:left;
-    }
-
-    .ai-signal-symbol {
-      font-weight:500;
-      color:var(--amber);
-    }
-
-    .ai-signal-bias.long {
-      color:#4caf50;
-    }
-
-    .ai-signal-bias.short {
-      color:#ff5252;
-    }
-
-    .ai-signal-bias.neutral {
-      color:var(--text-muted);
-    }
-
-    .ai-signal-conf {
-      color:var(--text-main);
-    }
-
-    /* === Economic Calendar === */
-    .calendar-table {
+    /* --- Generic Table Styles --- */
+    table {
       width:100%;
       border-collapse:collapse;
       font-size:var(--fs-body);
     }
-
-    .calendar-table thead {
-      font-size:var(--fs-small);
+    th {
+      position:sticky;
+      top:0;
+      background:#111111;
       color:var(--text-muted);
-    }
-
-    .calendar-table th,
-    .calendar-table td {
-      padding:3px 4px;
-      text-align:left;
-      border-bottom:1px solid rgba(43,43,43,0.7);
-      white-space:nowrap;
-    }
-
-    .calendar-table th:nth-child(4),
-    .calendar-table td:nth-child(4) {
+      font-weight:500;
+      font-size:9.5px;
+      text-transform:uppercase;
+      padding:6px 10px;
       text-align:right;
+      z-index:2;
+      border-bottom:1px solid var(--border-subtle);
+    }
+    th:first-child { text-align:left; }
+    td {
+      padding:6px 10px;
+      border-bottom:1px solid var(--border-subtle);
+      color:var(--text-main);
+      white-space:nowrap;
+      text-align:right;
+      font-size:var(--fs-body);
+    }
+    td:first-child { text-align:left; }
+    tr:hover td { background:var(--bg-card-hover); }
+
+    .ai-signal-symbol {
+      font-weight:600;
+      color:var(--accent-primary);
+      font-family:var(--font-mono);
+    }
+    .ai-signal-bias {
+      font-weight:600;
+      font-size:9.5px;
+      padding:2px 6px;
+      border-radius:4px;
+    }
+    .ai-signal-bias.long { background:var(--color-up-bg); color:var(--color-up); }
+    .ai-signal-bias.short { background:var(--color-down-bg); color:var(--color-down); }
+    .ai-signal-bias.neutral { background:#1a1a1a; color:var(--text-muted); }
+    .ai-signal-conf {
+      font-family:var(--font-mono);
+      opacity:0.8;
+      font-size:var(--fs-small);
     }
 
-    .cal-impact-low {
-      color:#4caf50;
-    }
-
-    .cal-impact-medium {
-      color:#ffbf00;
-    }
-
-    .cal-impact-high {
-      color:#ff5252;
-    }
-
-    /* === Core Catalyst → Bubble Chart === */
+    /* --- Bubble Chart --- */
     .headline-bubble-chart {
-      position:relative;
+      flex:1;
       width:100%;
-      height:100%;
-      min-height:0;
-      overflow:hidden;
+      position:relative;
+      background:#000000;
+      overflow: hidden;
+      min-height: 150px; /* Minimum height so bubbles aren't flat */
     }
 
     .headline-bubble {
       position:absolute;
-      border-radius:999px;
-      padding:6px 10px;
+      border-radius:50%;
       display:flex;
       flex-direction:column;
       justify-content:center;
-      align-items:flex-start;
-      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12), rgba(0,0,0,0.6));
-      border:1px solid rgba(255,255,255,0.06);
-      cursor:default;
-      overflow:hidden;
+      align-items:center;
+      text-align:center;
+      padding:6px;
+      cursor:pointer;
       transform:translate(-50%, -50%);
+      transition:transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      backdrop-filter:blur(4px);
+      border:1px solid rgba(255,255,255,0.08);
+      box-shadow:0 2px 8px rgba(0,0,0,0.5);
+      color:#ffffff;
+    }
+    .headline-bubble:hover {
+      transform:translate(-50%, -50%) scale(1.06);
+      z-index:10;
+      border-color:rgba(255,255,255,0.25);
     }
 
     .headline-bubble.low {
-      box-shadow:0 0 0 1px rgba(76,175,80,0.5);
+      background:radial-gradient(120% 120% at 30% 30%, rgba(70,201,127,0.3), #000000);
     }
-
     .headline-bubble.medium {
-      box-shadow:0 0 0 1px rgba(255,191,0,0.7);
+      background:radial-gradient(120% 120% at 30% 30%, rgba(255,191,0,0.35), #000000);
     }
-
     .headline-bubble.high {
-      box-shadow:0 0 0 1px rgba(255,82,82,0.8);
+      background:radial-gradient(120% 120% at 30% 30%, rgba(255,77,79,0.4), #000000);
     }
 
     .hb-title {
-      font-size:var(--fs-small);
-      color:var(--text-main);
-      white-space:nowrap;
-      text-overflow:ellipsis;
-      overflow:hidden;
+      font-size:9.5px;
+      font-weight:500;
+      line-height:1.2;
       max-width:100%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
     }
-
     .hb-meta {
-      font-size:8.5px;
-      color:var(--text-muted);
-      margin-top:2px;
-      white-space:nowrap;
+      font-size:8px;
+      margin-top:3px;
+      font-family:var(--font-mono);
+      opacity:0.7;
     }
 
     .headline-bubbles-legend {
+      position:absolute;
+      bottom:8px;
+      left:12px;
       display:flex;
-      justify-content:flex-start;
-      gap:8px;
-      font-size:8.5px;
+      gap:10px;
+      font-size:9px;
       color:var(--text-muted);
-      margin-top:4px;
+      background:rgba(0,0,0,0.7);
+      padding:3px 8px;
+      border-radius:999px;
+      backdrop-filter:blur(4px);
+      border:1px solid rgba(255,255,255,0.06);
     }
-
     .legend-dot {
-      display:inline-block;
-      width:7px;
-      height:7px;
+      width:6px;
+      height:6px;
       border-radius:50%;
+      display:inline-block;
       margin-right:4px;
     }
-
-    .legend-low { background:#4caf50; }
+    .legend-low { background:#46c97f; }
     .legend-medium { background:#ffbf00; }
-    .legend-high { background:#ff5252; }
+    .legend-high { background:#ff4d4f; }
 
-    /* === Market Heatmap (3 x 6) === */
-    .heatmap-grid {
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
-      grid-template-rows:repeat(6, 1fr);
-      gap:4px;
-      width:100%;
-      height:100%;
-      min-height:0;
-    }
-
-    .heatmap-cell {
-      border-radius:3px;
-      border:1px solid rgba(0,0,0,0.4);
-      background:#1a1a1a;
-      padding:4px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      font-size:var(--fs-small);
-      overflow:hidden;
-    }
-
-    .heatmap-symbol {
-      font-weight:500;
-      color:var(--text-main);
-      white-space:nowrap;
-      text-overflow:ellipsis;
-      overflow:hidden;
-    }
-
-    .heatmap-value {
-      font-size:var(--fs-small);
-      color:var(--text-main);
-    }
-
-    .heatmap-change {
-      font-size:var(--fs-small);
-    }
-
-    /* === Risk-On / Risk-Off – Horizontal Bar Meter + Quotes === */
+    /* --- Risk Meter --- */
     .risk-meter-wrapper {
-      display:flex;
-      flex-direction:column;
-      gap:6px;
+      padding:12px;
+      border-bottom:1px solid var(--border-subtle);
+      flex-shrink: 0;
     }
 
-    .risk-meter-bar {
+    .risk-meter-track {
       position:relative;
+      height:6px;
       width:100%;
-      height:18px;
-      border-radius:999px;
-      background:linear-gradient(90deg, #ff5252 0%, #ffbf00 50%, #4caf50 100%);
-      border:1px solid var(--border-soft);
-      overflow:hidden;
+      background:linear-gradient(90deg,#E53935 0%,#FFB74D 45%,#FFD600 50%,#81C784 55%,#43A047 100%);
+      border-radius:4px;
+      margin:8px 0;
     }
-
     .risk-meter-pointer {
       position:absolute;
-      top:50%;
-      width:2px;
-      height:26px;
+      top:-4px;
+      width:4px;
+      height:14px;
       background:#ffffff;
-      transform:translate(-50%, -50%);
-      box-shadow:0 0 4px rgba(0,0,0,0.8);
+      border:1px solid #000000;
+      transform:translateX(-50%);
+      box-shadow:0 0 6px rgba(0,0,0,0.5);
+      transition:left 0.5s cubic-bezier(0.4,0,0.2,1);
     }
-
-    .risk-meter-scale {
+    .risk-meter-labels {
       display:flex;
       justify-content:space-between;
-      font-size:var(--fs-small);
+      font-size:9px;
       color:var(--text-muted);
-      padding:0 2px;
+      margin-top:2px;
     }
 
-    .risk-meter-value {
-      font-size:var(--fs-body);
-      text-align:center;
+    .risk-score-display {
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
     }
-
-    .risk-meter-tag {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      text-align:center;
-      margin-bottom:4px;
+    .risk-val {
+      font-size:18px;
+      font-weight:700;
+      color:var(--text-main);
+      font-family:var(--font-mono);
     }
-
-    .quotes-table {
-      width:100%;
-      border-collapse:collapse;
-      font-size:var(--fs-body);
-      margin-top:4px;
-    }
-
-    .quotes-table thead {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .quotes-table th,
-    .quotes-table td {
-      padding:3px 4px;
-      text-align:right;
-      border-bottom:1px solid rgba(43,43,43,0.7);
-      white-space:nowrap;
-    }
-
-    .quotes-table th:first-child,
-    .quotes-table td:first-child {
-      text-align:left;
+    .risk-tag {
+      font-size:10px;
+      color:var(--accent-primary);
+      text-transform:uppercase;
+      font-weight:600;
+      letter-spacing:0.5px;
     }
 
     .quote-symbol {
-      color:var(--amber);
+      font-family:var(--font-mono);
+      font-weight:600;
+      color:var(--text-main);
+      font-size:var(--fs-body);
+    }
+    .quote-change {
+      font-family:var(--font-mono);
       font-weight:500;
+      font-size:var(--fs-body);
+    }
+    .quote-change.pos { color:var(--color-up); }
+    .quote-change.neg { color:var(--color-down); }
+
+    /* --- Heatmap --- */
+    .heatmap-grid {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      grid-template-rows:repeat(6,1fr);
+      gap:2px;
+      flex: 1; /* Take available space */
+      width:100%;
+      padding:2px;
     }
 
-    .quote-change.pos {
-      color:#4caf50;
+    .heatmap-cell {
+      background:#101010;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      padding:4px;
+      transition:opacity 0.15s ease, background-color 0.15s ease;
+      position:relative;
+      border:1px solid rgba(0,0,0,0.25);
+      /* Prevent overflow inside small cells */
+      overflow: hidden;
+    }
+    .heatmap-cell:hover { opacity:0.85; }
+
+    .heatmap-symbol {
+      font-size:9.5px;
+      font-weight:700;
+      color:#ffffff;
+      margin-bottom:2px;
+    }
+    .heatmap-change {
+      font-size:9.5px;
+      font-family:var(--font-mono);
+      font-weight:600;
+      color:#ffffff;
     }
 
-    .quote-change.neg {
-      color:#ff5252;
+    /* Bubble Overlay */
+    .hb-overlay {
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,0.7);
+      backdrop-filter:blur(2px);
+      z-index:50;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .hb-overlay-card {
+      background:var(--bg-card);
+      border:1px solid var(--border-active);
+      padding:16px;
+      width:80%;
+      max-width:380px;
+      border-radius:var(--radius-md);
+      box-shadow:0 10px 30px rgba(0,0,0,0.6);
+    }
+    .hb-overlay-title {
+      font-size:var(--fs-subtitle);
+      font-weight:600;
+      margin-bottom:8px;
+      color:#ffffff;
+    }
+    .hb-overlay-meta {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-bottom:10px;
+      border-bottom:1px solid var(--border-subtle);
+      padding-bottom:6px;
+    }
+    .hb-overlay-hint {
+      font-size:9px;
+      text-align:right;
+      color:var(--text-dim);
+      margin-top:8px;
+      cursor:pointer;
     }
 
-    .risk-meter-card .kt-card-body {
-      min-height:0;
-      overflow:auto;
-    }
-
-    /* === Scroll helpers === */
-    .ai-summary .kt-card-body,
-    .economic-calendar .kt-card-body {
-      min-height:0;
-    }
-
-    .market-heatmap .kt-card-body,
-    .headline-bubbles .kt-card-body {
-      flex:1;
-      min-height:0;
-      overflow:hidden;
-    }
-
-    /* Mobile tweaks */
-    @media (max-width:900px) {
+    /* =========================================
+       RESPONSIVE ADJUSTMENTS (The Fixes)
+       ========================================= */
+    
+    /* 1. Tablet / Small Laptop / Large Mobile */
+    @media (max-width:1024px) {
+      body { 
+        /* Enable scrolling on smaller screens */
+        height: auto; 
+        overflow-y: auto; 
+      }
+      .kt-page {
+        /* Remove full height restriction */
+        height: auto; 
+        min-height: 100vh;
+        overflow: visible;
+      }
       .kt-grid {
-        grid-template-columns:1fr;
-        grid-template-rows:auto;
-        grid-template-areas:
-          "ai"
-          "headlines"
-          "risk"
-          "calendar"
-          "heatmap";
+        display: flex; /* Stack vertically */
+        flex-direction: column;
+        gap: 16px;
       }
 
-      .headline-bubble-chart {
-        min-height:220px;
+      /* Set Minimum Heights so panels are not cut off */
+      .ai-summary {
+        min-height: 500px; /* Give AI room to breathe */
       }
+      .headline-bubbles {
+        min-height: 300px;
+      }
+      .risk-meter-card {
+        min-height: 300px;
+      }
+      .market-heatmap {
+        min-height: 400px; /* Ensure heatmap cells are square enough */
+      }
+    }
 
+    /* 2. Mobile Phones (Strict Vertical Stack) */
+    @media (max-width:768px) {
       .ai-summary-body {
-        flex-direction:column;
+        flex-direction:column; /* Stack Text top, Table bottom */
       }
-
+      .ai-summary-main {
+        border-right:none;
+        border-bottom:1px solid var(--border-subtle);
+        flex: none; /* Auto height based on content or fixed */
+        height: 250px; /* Fixed scrollable area for text */
+      }
       .ai-signals-panel {
-        border-left:none;
-        border-top:1px solid var(--border-soft);
-        padding-left:0;
-        padding-top:8px;
+        flex: none;
+        height: auto;
+        max-height: 300px; /* Prevent table from getting too long */
+      }
+      
+      .market-heatmap {
+        /* Taller heatmap on mobile so cells are touchable */
+        height: 450px; 
+      }
+      
+      .kt-card-title {
+        font-size: 13px; /* Slightly smaller headers */
       }
     }
   </style>
-<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 2147483647;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.immersive-translate-attach-loading::after {
-  content: " ";
-
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-2000%, -50%);
-  z-index: 100;
-}
-
-.immersive-translate-loading-spinner {
-  vertical-align: middle !important;
-  width: 10px !important;
-  height: 10px !important;
-  display: inline-block !important;
-  margin: 0 4px !important;
-  border: 2px rgba(221, 244, 255, 0.6) solid !important;
-  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-}
-
-@-webkit-keyframes immersive-translate-loading-animation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-
-@keyframes immersive-translate-loading-animation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.immersive-translate-input-loading {
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-}
-
-@keyframes immersiveTranslateShadowRolling {
-  0% {
-    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  12% {
-    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  25% {
-    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  36% {
-    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
-      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  50% {
-    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
-      110px 0 var(--loading-color), 100px 0 var(--loading-color);
-  }
-
-  62% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
-      120px 0 var(--loading-color), 110px 0 var(--loading-color);
-  }
-
-  75% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      130px 0 var(--loading-color), 120px 0 var(--loading-color);
-  }
-
-  87% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
-  }
-
-  100% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.immersive-translate-toast {
-  display: flex;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  right: 0;
-  top: 1%;
-  width: fit-content;
-  padding: 12px 20px;
-  margin: auto;
-  overflow: auto;
-  background: #fef6f9;
-  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
-  font-size: 15px;
-  border-radius: 8px;
-  color: #333;
-}
-
-.immersive-translate-toast-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.immersive-translate-toast-hidden {
-  margin: 0 20px 0 72px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.immersive-translate-toast-close {
-  color: #666666;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-toast {
-    top: 0;
-    padding: 12px 0px 0 10px;
-  }
-  .immersive-translate-toast-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .immersive-translate-toast-hidden {
-    margin: 10px auto;
-  }
-}
-
-.immersive-translate-dialog {
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  display: flex;
-  width: 300px;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: fit-content;
-  border-radius: 20px;
-  background-color: #fff;
-}
-
-.immersive-translate-modal {
-  display: none;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-}
-
-.immersive-translate-modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 40px 24px 24px;
-  border-radius: 12px;
-  width: 350px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
-    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-content {
-    margin: 25% auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .immersive-translate-modal-content {
-    width: 80vw !important;
-    margin: 20vh auto !important;
-    padding: 20px 12px 12px !important;
-  }
-
-  .immersive-translate-modal-title {
-    font-size: 14px !important;
-  }
-
-  .immersive-translate-modal-body {
-    font-size: 13px !important;
-    max-height: 60vh !important;
-  }
-
-  .immersive-translate-btn {
-    font-size: 13px !important;
-    padding: 8px 16px !important;
-    margin: 0 4px !important;
-  }
-
-  .immersive-translate-modal-footer {
-    gap: 6px !important;
-    margin-top: 16px !important;
-  }
-}
-
-.immersive-translate-modal .immersive-translate-modal-content-in-input {
-  max-width: 500px;
-}
-.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
-  text-align: left;
-  max-height: unset;
-}
-
-.immersive-translate-modal-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333333;
-}
-
-.immersive-translate-modal-body {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #333333;
-  margin-top: 24px;
-  word-break: break-all;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-body {
-    max-height: 250px;
-    overflow-y: auto;
-  }
-}
-
-.immersive-translate-close {
-  color: #666666;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.immersive-translate-close:hover,
-.immersive-translate-close:focus {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.immersive-translate-modal-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.immersive-translate-btn {
-  width: fit-content;
-  color: #fff;
-  background-color: #ea4c89;
-  border: none;
-  font-size: 14px;
-  margin: 0 8px;
-  padding: 9px 30px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.immersive-translate-btn-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.immersive-translate-btn:hover {
-  background-color: #f082ac;
-}
-.immersive-translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.immersive-translate-btn:disabled:hover {
-  background-color: #ea4c89;
-}
-
-.immersive-translate-link-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: none;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-}
-
-.immersive-translate-cancel-btn {
-  /* gray color */
-  background-color: rgb(89, 107, 120);
-}
-
-.immersive-translate-cancel-btn:hover {
-  background-color: hsl(205, 20%, 32%);
-}
-
-.immersive-translate-action-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: 1px solid #ea4c89;
-}
-
-.immersive-translate-btn svg {
-  margin-right: 5px;
-}
-
-.immersive-translate-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-primary-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-modal input[type="radio"] {
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.immersive-translate-modal label {
-  cursor: pointer;
-}
-
-.immersive-translate-close-action {
-  position: absolute;
-  top: 2px;
-  right: 0px;
-  cursor: pointer;
-}
-
-.imt-image-status {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 16px !important;
-}
-.imt-image-status img,
-.imt-image-status svg,
-.imt-img-loading {
-  width: 28px !important;
-  height: 28px !important;
-  margin: 0 0 8px 0 !important;
-  min-height: 28px !important;
-  min-width: 28px !important;
-  position: relative !important;
-}
-.imt-img-loading {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
-  background-size: 28px 28px;
-  animation: image-loading-rotate 1s linear infinite !important;
-}
-
-.imt-image-status span {
-  color: var(--bg-2, #fff) !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
-  font-weight: 500 !important;
-  font-family: "PingFang SC", Arial, sans-serif !important;
-}
-
-.imt-primary-button {
-  display: flex;
-  padding: 12px 80px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #ea4c89;
-  color: #fff;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.imt-retry-text {
-  color: #999;
-  text-align: center;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  cursor: pointer;
-}
-
-.imt-action-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.imt-modal-content-text {
-  text-align: left;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-@keyframes image-loading-rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.imt-linear-gradient-text {
-  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.imt-flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.imt-linear-black-btn {
-  border-radius: 50px;
-  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
-  height: 48px;
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
-</style></head>
+</head>
 <body>
   <div class="kt-page">
-    <div class="kt-page-header">
-      
-      <div class="kt-page-header-right">
-        <button class="kt-action-btn" onclick="generateMarketReport()">Generate Market Report</button>
-      </div>
-    </div>
-
     <div class="kt-grid">
-      <!-- AI Market Summary (TOP LEFT, spanning 2 columns) -->
-      <section class="kt-card ai-summary" data-section="ai-summary">
+      <section class="kt-card ai-summary">
         <div class="kt-card-header">
-          <div class="kt-card-header-left">
-            <div class="kt-card-title">AI Market Summary</div>
-            <div class="kt-card-subtitle">multi-asset | intraday view</div>
+          <div>
+            <div class="kt-card-title">AI Market Intelligence</div>
+            <div class="kt-card-subtitle">Synthesized Macro & Trade Ideas</div>
           </div>
-          <button class="kt-card-btn" onclick="generateSummary()">Generate Summary</button>
+          <button class="kt-card-btn" onclick="generateSummary()">Refresh AI</button>
         </div>
         <div class="kt-card-body ai-summary-body">
           <div class="ai-summary-main">
             <div id="ai-market-summary" class="ai-summary-text">
-No summary generated yet. Click “Generate Summary” to fetch AI view.
+              <span style="color:var(--text-muted)">Initialize AI to generate real-time macro analysis...</span>
             </div>
           </div>
           <div class="ai-signals-panel">
-            <div class="ai-signals-header">Trading Signals</div>
-            <table class="ai-signals-table" id="ai-signals-table">
+            <div class="ai-signals-header">Live Signals</div>
+            <div class="table-container">
+              <table id="ai-signals-table">
+                <thead>
+                  <tr>
+                    <th>Asset</th>
+                    <th>Bias</th>
+                    <th>Conf.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td colspan="3" style="text-align:center; color:var(--text-dim); padding:20px;">No signals active</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="kt-card headline-bubbles">
+        <div class="kt-card-header">
+          <div>
+            <div class="kt-card-title">Core Catalysts</div>
+            <div class="kt-card-subtitle">Impact-Weighted Event Map</div>
+          </div>
+        </div>
+        <div class="kt-card-body">
+          <div id="headline-bubble-chart" class="headline-bubble-chart"></div>
+          <div class="headline-bubbles-legend">
+            <div style="display:flex; align-items:center;"><span class="legend-dot legend-low"></span>Low</div>
+            <div style="display:flex; align-items:center;"><span class="legend-dot legend-medium"></span>Med</div>
+            <div style="display:flex; align-items:center;"><span class="legend-dot legend-high"></span>High</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="kt-card risk-meter-card">
+        <div class="kt-card-header">
+          <div>
+            <div class="kt-card-title">Risk Regime</div>
+            <div class="kt-card-subtitle">Sentiment & Key Levels</div>
+          </div>
+        </div>
+        <div class="kt-card-body" style="display:flex; flex-direction:column;">
+          <div class="risk-meter-wrapper">
+            <div class="risk-score-display">
+              <div id="risk-meter-value" class="risk-val">--/100</div>
+              <div id="risk-meter-tag" class="risk-tag">NEUTRAL</div>
+            </div>
+            <div class="risk-meter-track">
+              <div id="risk-meter-pointer" class="risk-meter-pointer" style="left:50%;"></div>
+            </div>
+            <div class="risk-meter-labels">
+              <span>Risk-Off</span>
+              <span>Neutral</span>
+              <span>Risk-On</span>
+            </div>
+          </div>
+          <div class="table-container">
+            <table id="risk-quotes-table">
               <thead>
                 <tr>
-                  <th>Tick</th>
-                  <th>Bias</th>
-                  <th>Conf</th>
+                  <th>Ticker</th>
+                  <th>Last</th>
+                  <th>% Chg</th>
                 </tr>
               </thead>
-              <tbody><tr><td><span class="ai-signal-symbol">SPX</span></td><td class="ai-signal-bias long">LONG</td><td class="ai-signal-conf">72%</td></tr><tr><td><span class="ai-signal-symbol">NDX</span></td><td class="ai-signal-bias long">LONG</td><td class="ai-signal-conf">80%</td></tr><tr><td><span class="ai-signal-symbol">RUT</span></td><td class="ai-signal-bias neutral">NEUTRAL</td><td class="ai-signal-conf">48%</td></tr></tbody>
+              <tbody>
+                <tr><td colspan="3" style="text-align:center; color:var(--text-dim);">Loading data...</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- Core Catalyst Bubble Chart (TOP RIGHT) -->
-      <section class="kt-card headline-bubbles" data-section="headline-bubbles">
+      <section class="kt-card market-heatmap">
         <div class="kt-card-header">
-          <div class="kt-card-header-left">
-            <div class="kt-card-title">Core Catalyst</div>
-            <div class="kt-card-subtitle">impact-weighted bubble map (%)</div>
+          <div>
+            <div class="kt-card-title">Cross-Asset Heatmap</div>
+            <div class="kt-card-subtitle">Performance (1D)</div>
           </div>
         </div>
         <div class="kt-card-body">
-          <div id="headline-bubble-chart" class="headline-bubble-chart"><div class="headline-bubble high" style="width: 100.1px; height: 100.1px; left: 190px; top: 104.667px;"><div class="hb-title">US CPI in focus as markets reassess timing of first Fed cut</div><div class="hb-meta">12:10 · Impact 82%</div></div><div class="headline-bubble high" style="width: 92.4px; height: 92.4px; left: 289.992px; top: 111.861px;"><div class="hb-title">Dollar consolidates; JPY under pressure on policy divergence</div><div class="hb-meta">11:55 · Impact 68%</div></div><div class="headline-bubble medium" style="width: 83.05px; height: 83.05px; left: 113.388px; top: 161.808px;"><div class="hb-title">Tech outperforms cyclicals as earnings revisions improve</div><div class="hb-meta">11:20 · Impact 51%</div></div><div class="headline-bubble medium" style="width: 79.2px; height: 79.2px; left: 84.0403px; top: 81.9023px;"><div class="hb-title">Crude pulls back after sharp rally; positioning remains crowded</div><div class="hb-meta">10:45 · Impact 44%</div></div><div class="headline-bubble medium" style="width: 73.15px; height: 73.15px; left: 149.982px; top: 42.575px;"><div class="hb-title">Credit spreads stay tight despite elevated yields</div><div class="hb-meta">10:05 · Impact 33%</div></div></div>
-          <div class="headline-bubbles-legend">
-            <span><span class="legend-dot legend-low"></span>Low</span>
-            <span><span class="legend-dot legend-medium"></span>Medium</span>
-            <span><span class="legend-dot legend-high"></span>High</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Risk-On / Risk-Off – Horizontal Meter + Market Quotes (BOTTOM LEFT) -->
-      <section class="kt-card risk-meter-card" data-section="risk-meter">
-        <div class="kt-card-header">
-          <div class="kt-card-header-left">
-            <div class="kt-card-title">Risk-On / Risk-Off</div>
-            <div class="kt-card-subtitle">composite sentiment &amp; key quotes</div>
-          </div>
-        </div>
-        <div class="kt-card-body">
-          <div class="risk-meter-wrapper">
-            <div class="risk-meter-bar">
-              <div id="risk-meter-pointer" class="risk-meter-pointer" style="left: 58%;"></div>
-            </div>
-            <div class="risk-meter-scale">
-              <span>Risk-Off</span>
-              <span>Neutral</span>
-              <span>Risk-On</span>
-            </div>
-            <div id="risk-meter-value" class="risk-meter-value">Score: 58 / 100</div>
-            <div id="risk-meter-tag" class="risk-meter-tag">Composite regime: neutral</div>
-          </div>
-
-          <table class="quotes-table" id="risk-quotes-table">
-            <thead>
-              <tr>
-                <th>Asset</th>
-                <th>Last</th>
-                <th>Chg</th>
-                <th>%</th>
-              </tr>
-            </thead>
-            <tbody><tr><td><span class="quote-symbol">SPX</span> <span style="color:var(--text-muted);font-size:9px;">S&amp;P 500</span></td><td>5,230.4</td><td class="quote-change pos">12.3</td><td class="quote-change pos">0.24%</td></tr><tr><td><span class="quote-symbol">NDX</span> <span style="color:var(--text-muted);font-size:9px;">Nasdaq 100</span></td><td>18,120</td><td class="quote-change pos">65.1</td><td class="quote-change pos">0.36%</td></tr><tr><td><span class="quote-symbol">DXY</span> <span style="color:var(--text-muted);font-size:9px;">US Dollar</span></td><td>105.2</td><td class="quote-change neg">-0.12</td><td class="quote-change neg">-0.11%</td></tr><tr><td><span class="quote-symbol">XAU</span> <span style="color:var(--text-muted);font-size:9px;">Gold</span></td><td>2,365</td><td class="quote-change neg">-8.5</td><td class="quote-change neg">-0.36%</td></tr><tr><td><span class="quote-symbol">WTI</span> <span style="color:var(--text-muted);font-size:9px;">Crude Oil</span></td><td>79.4</td><td class="quote-change pos">0.9</td><td class="quote-change pos">1.15%</td></tr><tr><td><span class="quote-symbol">BTC</span> <span style="color:var(--text-muted);font-size:9px;">Bitcoin</span></td><td>67,800</td><td class="quote-change pos">420</td><td class="quote-change pos">0.62%</td></tr></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Economic Calendar (BOTTOM MIDDLE) -->
-      <section class="kt-card economic-calendar" data-section="economic-calendar">
-        <div class="kt-card-header">
-          <div class="kt-card-header-left">
-            <div class="kt-card-title">Economic Calendar</div>
-            <div class="kt-card-subtitle">today's key releases &amp; impact</div>
-          </div>
-        </div>
-        <div class="kt-card-body">
-          <table class="calendar-table" id="calendar-table">
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Event</th>
-                <th>Currency</th>
-                <th>Impact</th>
-              </tr>
-            </thead>
-            <tbody><tr><td>19:30</td><td>US CPI YoY</td><td>USD</td><td class="cal-impact-high">85%</td></tr><tr><td>19:30</td><td>US Core CPI MoM</td><td>USD</td><td class="cal-impact-high">78%</td></tr><tr><td>21:00</td><td>Fed Chair Speech</td><td>USD</td><td class="cal-impact-high">90%</td></tr><tr><td>14:00</td><td>UK GDP MoM</td><td>GBP</td><td class="cal-impact-medium">55%</td></tr><tr><td>16:00</td><td>EZ Industrial Production</td><td>EUR</td><td class="cal-impact-medium">40%</td></tr></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Market Heatmap (BOTTOM RIGHT) -->
-      <section class="kt-card market-heatmap" data-section="market-heatmap">
-        <div class="kt-card-header">
-          <div class="kt-card-header-left">
-            <div class="kt-card-title">Market Heatmap</div>
-            <div class="kt-card-subtitle">3 × 6 grid | multi-asset</div>
-          </div>
-        </div>
-        <div class="kt-card-body">
-          <div class="heatmap-grid" id="heatmap-grid"><div class="heatmap-cell" style="background: rgb(35, 76, 57);"><div class="heatmap-symbol">SPX</div><div class="heatmap-value">5,230</div><div class="heatmap-change" style="color: rgb(197, 255, 176);">+0.24%</div></div><div class="heatmap-cell" style="background: rgb(36, 80, 62);"><div class="heatmap-symbol">NDX</div><div class="heatmap-value">18,120</div><div class="heatmap-change" style="color: rgb(197, 255, 176);">+0.36%</div></div><div class="heatmap-cell" style="background: rgb(74, 38, 41);"><div class="heatmap-symbol">RUT</div><div class="heatmap-value">2,080</div><div class="heatmap-change" style="color: rgb(255, 176, 176);">-0.15%</div></div><div class="heatmap-cell" style="background: rgb(51, 51, 51);"><div class="heatmap-symbol">DXY</div><div class="heatmap-value">105.2</div><div class="heatmap-change" style="color: rgb(255, 176, 176);">-0.11%</div></div><div class="heatmap-cell" style="background: rgb(39, 81, 63);"><div class="heatmap-symbol">EURUSD</div><div class="heatmap-value">1.085</div><div class="heatmap-change" style="color: rgb(197, 255, 176);">+0.18%</div></div><div class="heatmap-cell" style="background: rgb(74, 38, 41);"><div class="heatmap-symbol">USDJPY</div><div class="heatmap-value">152.3</div><div class="heatmap-change" style="color: rgb(197, 255, 176);">+0.22%</div></div><div class="heatmap-cell" style="background: rgb(74, 38, 41);"><div class="heatmap-symbol">XAUUSD</div><div class="heatmap-value">2,365</div><div class="heatmap-change" style="color: rgb(255, 176, 176);">-0.36%</div></div><div class="heatmap-cell" style="background: rgb(39, 81, 63);"><div class="heatmap-symbol">XAGUSD</div><div class="heatmap-value">28.1</div><div class="heatmap-change" style="color: rgb(197, 255, 176);">+0.45%</div></div><div class="heatmap-cell" style="background: rgb(43, 99, 68);"><div class="heatmap-symbol">WTI</div><div class="heatmap-value">79.4</div><div class="heatmap-change" style="color: rgb(197, 255, 176);">+1.15%</div></div><div class="heatmap-cell" style="background: rgb(41, 88, 64);"><div class="heatmap-symbol">BRENT</div><div class="heatmap-value">83.1</div><div class="heatmap-change" style="color: rgb(197, 255, 176);">+0.92%</div></div><div class="heatmap-cell" style="background: rgb(35, 76, 57);"><div class="heatmap-symbol">HYG</div><div class="heatmap-value">78.2</div><div class="heatmap-change" style="color: rgb(197, 255, 176);">+0.05%</div></div><div class="heatmap-cell" style="background: rgb(74, 38, 41);"><div class="heatmap-symbol">LQD</div><div class="heatmap-value">108.5</div><div class="heatmap-change" style="color: rgb(255, 176, 176);">-0.09%</div></div><div class="heatmap-cell" style="background: rgb(74, 38, 41);"><div class="heatmap-symbol">US10Y</div><div class="heatmap-value">4.28%</div><div class="heatmap-change" style="color: rgb(197, 255, 176);">+0.03%</div></div><div class="heatmap-cell" style="background: rgb(51, 51, 51);"><div class="heatmap-symbol">US2Y</div><div class="heatmap-value">4.71%</div><div class="heatmap-change" style="color: rgb(197, 255, 176);">+0.01%</div></div><div class="heatmap-cell" style="background: rgb(39, 81, 63);"><div class="heatmap-symbol">MOVE</div><div class="heatmap-value">98</div><div class="heatmap-change" style="color: rgb(255, 176, 176);">-1.8%</div></div><div class="heatmap-cell" style="background: rgb(39, 81, 63);"><div class="heatmap-symbol">VIX</div><div class="heatmap-value">16.2</div><div class="heatmap-change" style="color: rgb(255, 176, 176);">-0.6%</div></div><div class="heatmap-cell" style="background: rgb(39, 81, 63);"><div class="heatmap-symbol">EEM</div><div class="heatmap-value">42.1</div><div class="heatmap-change" style="color: rgb(197, 255, 176);">+0.3%</div></div><div class="heatmap-cell" style="background: rgb(35, 76, 57);"><div class="heatmap-symbol">EFA</div><div class="heatmap-value">82.4</div><div class="heatmap-change" style="color: rgb(197, 255, 176);">+0.12%</div></div></div>
+          <div class="heatmap-grid" id="heatmap-grid"></div>
         </div>
       </section>
     </div>
@@ -1189,49 +710,74 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
 
   <script>
     // ============================
-    // Helpers for integration
+    // CONFIG – TradingView backend (risk meter & heatmap)
     // ============================
+    const BASE_URL    = "https://cloudkuant-541614645905.us-central1.run.app";
+    const INTERVAL    = "1D";
+    const BARS_COUNT  = 2;          // only need last 2 bars
+    const MAX_CONCURRENT = 4;
 
+    // Cache data terakhir
+    let latestMarketData = {};    // key -> { last, change, changePct }
+
+    // Semua ticker yang dipakai di Risk Quotes + Heatmap
+    const SYMBOL_CONFIG = {
+      SPX:    { label:"SPX",    name:"S&P 500",              apiSymbol:"INDEX:SPX" },
+      NDX:    { label:"NDX",    name:"Nasdaq 100",           apiSymbol:"INDEX:NDX" },
+      RUT:    { label:"RUT",    name:"Russell 2000",         apiSymbol:"INDEX:RUT" },
+      DXY:    { label:"DXY",    name:"US Dollar Index",      apiSymbol:"INDEX:DXY" },
+      EURUSD: { label:"EURUSD", name:"EUR/USD",              apiSymbol:"FX:EURUSD" },
+      USDJPY: { label:"USDJPY", name:"USD/JPY",              apiSymbol:"FX:USDJPY" },
+      XAUUSD: { label:"XAU",    name:"Gold",                 apiSymbol:"OANDA:XAUUSD" },
+      XAGUSD: { label:"XAG",    name:"Silver",               apiSymbol:"OANDA:XAGUSD" },
+      WTI:    { label:"WTI",    name:"Crude Oil WTI",        apiSymbol:"TVC:USOIL" },
+      BRENT:  { label:"BRENT",  name:"Brent Crude",          apiSymbol:"TVC:UKOIL" },
+      HYG:    { label:"HYG",    name:"iShares High Yield",   apiSymbol:"AMEX:HYG" },
+      LQD:    { label:"LQD",    name:"iShares IG Credit",    apiSymbol:"NYSE:LQD" },
+      US10Y:  { label:"US10Y",  name:"US 10Y Yield",         apiSymbol:"TVC:US10Y" },
+      US2Y:   { label:"US2Y",   name:"US 2Y Yield",          apiSymbol:"TVC:US02Y" },
+      MOVE:   { label:"MOVE",   name:"MOVE Index",           apiSymbol:"INDEX:MOVE" },
+      VIX:    { label:"VIX",    name:"VIX Index",            apiSymbol:"INDEX:VIX" },
+      EEM:    { label:"EEM",    name:"EM Equities",          apiSymbol:"AMEX:EEM" },
+      EFA:    { label:"EFA",    name:"DM ex-US Equities",    apiSymbol:"AMEX:EFA" },
+      BTCUSD: { label:"BTC",    name:"Bitcoin",              apiSymbol:"CRYPTO:BTCUSD" }
+    };
+
+    // Risk-on snapshot table (bottom left)
+    const RISK_QUOTES_KEYS = ["SPX","NDX","DXY","XAUUSD","WTI","BTCUSD"];
+
+    // Heatmap 3x6
+    const HEATMAP_KEYS = [
+      "SPX","NDX","RUT",
+      "DXY","EURUSD","USDJPY",
+      "XAUUSD","XAGUSD","WTI",
+      "BRENT","HYG","LQD",
+      "US10Y","US2Y","MOVE",
+      "VIX","EEM","EFA"
+    ];
+
+    // Risk regime calc
+    const RISK_ON_UP_KEYS   = ["SPX","NDX","RUT","EEM","HYG","LQD","BTCUSD","WTI","BRENT"];
+    const RISK_ON_DOWN_KEYS = ["VIX","MOVE","DXY","XAUUSD","US10Y","US2Y"];
+
+    // ============================
+    // Basic helpers
+    // ============================
     function updateTimestamp(ts) {
       const el = document.getElementById("kt-timestamp");
       if (!el) return;
-      el.textContent = "last update: " + ts;
+      el.textContent = "Last update: " + ts;
     }
 
-    function generateMarketReport() {
-      console.log("Generate Market Report clicked");
-      alert("Generate Market Report – connect this button to your PDF backend.");
-    }
-
-    function generateSummary() {
-      console.log("Generate Summary clicked");
-      const demoSummary =
-        "AI Summary (demo):\n" +
-        "- Global equities trade mixed; US tech outperforms while value lags.\n" +
-        "- USD index stabilizes near recent highs; rates market keeps pricing fewer cuts.\n" +
-        "- Commodities show rotation from gold into energy and industrial metals.\n" +
-        "- Credit spreads remain tight, supporting a moderate risk-on tone despite elevated yields.";
-      updateAiSummary(demoSummary);
-
-      // Contoh: langsung isi Trading Signals dari 'summary' (di real-case, dari backend)
-      updateTradingSignals([
-        { symbol:"SPX",   bias:"long",    confidencePct:78 },
-        { symbol:"NDX",   bias:"long",    confidencePct:82 },
-        { symbol:"DXY",   bias:"neutral", confidencePct:55 },
-        { symbol:"XAU",   bias:"short",   confidencePct:60 },
-        { symbol:"WTI",   bias:"long",    confidencePct:73 }
-      ]);
-    }
-
-    // === 1) AI Market Summary ===
+    // ============================
+    // AI SUMMARY & TABLE HELPERS
+    // ============================
     function updateAiSummary(summaryText) {
       const el = document.getElementById("ai-market-summary");
       if (!el) return;
-      el.textContent = summaryText || "No summary generated yet. Click “Generate Summary”.";
+      el.innerHTML = summaryText || "No summary generated yet. Click “Refresh AI”.";
     }
 
-    // === Trading Signals (inside AI card) ===
-    // signals: [{ symbol, bias: "long|short|neutral", confidencePct }, ...]
     function updateTradingSignals(signals) {
       const tbody = document.querySelector("#ai-signals-table tbody");
       if (!tbody) return;
@@ -1244,6 +790,7 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
         td.colSpan = 3;
         td.textContent = "No signals.";
         td.style.color = "var(--text-muted)";
+        td.style.textAlign = "center";
         tr.appendChild(td);
         tbody.appendChild(tr);
         return;
@@ -1257,11 +804,11 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
 
         const tdBias = document.createElement("td");
         const bias = (sig.bias || "neutral").toLowerCase();
-        tdBias.className = "ai-signal-bias " + bias;
-        tdBias.textContent =
-          bias === "long" ? "LONG" :
-          bias === "short" ? "SHORT" :
-          "NEUTRAL";
+        
+        const spanBias = document.createElement("span");
+        spanBias.className = "ai-signal-bias " + bias;
+        spanBias.textContent = bias === "long" ? "LONG" : bias === "short" ? "SHORT" : "NEUT";
+        tdBias.appendChild(spanBias);
 
         const tdConf = document.createElement("td");
         const pct = Number(sig.confidencePct || sig.confidence || 0);
@@ -1275,52 +822,49 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
       });
     }
 
-    // === 2) Economic Calendar ===
-    function updateEconomicCalendar(events) {
-      const tbody = document.querySelector("#calendar-table tbody");
-      if (!tbody) return;
-      tbody.innerHTML = "";
+    // ============================
+    // Bubble Overlay Helpers
+    // ============================
+    function showBubbleOverlay(item) {
+      const container = document.getElementById("headline-bubble-chart");
+      if (!container) return;
 
-      (events || []).forEach(ev => {
-        const tr = document.createElement("tr");
+      let overlay = container.querySelector(".hb-overlay");
+      if (overlay) overlay.remove();
 
-        const tdTime = document.createElement("td");
-        tdTime.textContent = ev.time || "--";
-
-        const tdEvent = document.createElement("td");
-        tdEvent.textContent = ev.event || "";
-
-        const tdCurr = document.createElement("td");
-        tdCurr.textContent = ev.currency || "";
-
-        const tdImpact = document.createElement("td");
-        const pct = Number(ev.impactPct || ev.impact || 0);
-        let cls = "cal-impact-low";
-        if (pct >= 66) cls = "cal-impact-high";
-        else if (pct >= 33) cls = "cal-impact-medium";
-        tdImpact.className = cls;
-        tdImpact.textContent = pct ? pct.toFixed(0) + "%" : "--";
-
-        tr.appendChild(tdTime);
-        tr.appendChild(tdEvent);
-        tr.appendChild(tdCurr);
-        tr.appendChild(tdImpact);
-        tbody.appendChild(tr);
+      overlay = document.createElement("div");
+      overlay.className = "hb-overlay";
+      overlay.addEventListener("click", (e) => {
+        if(e.target === overlay) overlay.remove();
       });
+      container.appendChild(overlay);
 
-      if (!events || !events.length) {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = 4;
-        td.textContent = "No events received.";
-        td.style.color = "var(--text-muted)";
-        tr.appendChild(td);
-        tbody.appendChild(tr);
-      }
+      const card = document.createElement("div");
+      card.className = "hb-overlay-card";
+
+      const t = document.createElement("div");
+      t.className = "hb-overlay-title";
+      t.textContent = item.title || "No title";
+
+      const meta = document.createElement("div");
+      meta.className = "hb-overlay-meta";
+      meta.textContent = (item.time ? "Time: " + item.time : "Time: -") + " | Impact: " + (item.impact != null ? item.impact.toFixed(0) + "%" : "N/A");
+
+      const hint = document.createElement("div");
+      hint.className = "hb-overlay-hint";
+      hint.textContent = "Click outside to close";
+      hint.onclick = () => overlay.remove();
+
+      card.appendChild(t);
+      card.appendChild(meta);
+      card.appendChild(hint);
+
+      overlay.appendChild(card);
     }
 
-    // === 3) Core Catalyst → Bubble Chart (no sticking) ===
-    // items: [{ title, time, impactPct }, ...]
+    // ============================
+    // Core Catalyst → Bubble Chart
+    // ============================
     function updateHeadlines(items) {
       const container = document.getElementById("headline-bubble-chart");
       if (!container) return;
@@ -1329,7 +873,11 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
       const list = items || [];
       if (!list.length) {
         const dummy = document.createElement("div");
-        dummy.className = "hb-title";
+        dummy.style.position = "absolute";
+        dummy.style.top = "50%"; dummy.style.left="50%";
+        dummy.style.transform = "translate(-50%,-50%)";
+        dummy.style.color = "var(--text-muted)";
+        dummy.style.fontSize = "11px";
         dummy.textContent = "No headlines received.";
         container.appendChild(dummy);
         return;
@@ -1342,14 +890,14 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
       const cx = w / 2;
       const cy = h / 2;
 
-      const minSize = 55;
-      const maxSize = 110;
+      const minSize = 60;
+      const maxSize = 100;
       const sorted = list
         .map((it, idx) => ({ ...it, _idx: idx }))
         .sort((a, b) => (Number(b.impactPct || b.impact || 0) - Number(a.impactPct || a.impact || 0)));
 
       const maxRadius = Math.max(Math.min(w, h) / 2 - maxSize / 2 - 10, 30);
-      const placed = []; // {x,y,r}
+      const placed = [];
 
       sorted.forEach((item, order) => {
         const bubble = document.createElement("div");
@@ -1369,25 +917,19 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
         let x = cx;
         let y = cy;
 
-        if (n === 1) {
-          x = cx;
-          y = cy;
-        } else {
-          if (order === 0) {
-            x = cx;
-            y = cy;
-          } else {
+        if (n > 1) {
+           if (order > 0) {
             const idx = order - 1;
-            const ringCount = Math.max(1, Math.ceil((n - 1) / 6));
-            const ringIndex = Math.floor(idx / 6);
-            const inRingPos = idx % 6;
+            const ringCount = Math.max(1, Math.ceil((n - 1) / 5));
+            const ringIndex = Math.floor(idx / 5);
+            const inRingPos = idx % 5;
 
-            const radiusFactor = (ringIndex + 1) / (ringCount + 0.3);
-            const r = maxRadius * radiusFactor;
+            const radiusFactor = (ringIndex + 1) / (ringCount + 0.2);
+            const r = maxRadius * radiusFactor * 1.2;
 
-            const angleStep = (2 * Math.PI) / Math.min(6, n - 1);
+            const angleStep = (2 * Math.PI) / Math.min(5, n - 1);
             const baseAngle = inRingPos * angleStep + ringIndex * 0.4;
-            const jitter = (Math.random() - 0.5) * 0.4;
+            const jitter = (Math.random() - 0.5) * 0.5;
             const angle = baseAngle + jitter;
 
             x = cx + Math.cos(angle) * r;
@@ -1395,28 +937,28 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
           }
         }
 
-        const margin = radius + 6;
+        const margin = radius + 8;
         x = Math.max(margin, Math.min(w - margin, x));
         y = Math.max(margin, Math.min(h - margin, y));
 
-        // Simple collision avoidance: geser jika terlalu dekat bubble lain
+        // Simple Collision Resolution (Push apart)
         let safe = false;
         let attempts = 0;
-        while (!safe && attempts < 40) {
+        while (!safe && attempts < 20) {
           safe = true;
           for (const p of placed) {
             const dx = x - p.x;
             const dy = y - p.y;
-            const dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
-            const minDist = radius + p.r + 4; // jarak minimum antar bubble
+            const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+            const minDist = radius + p.r + 2;
 
             if (dist < minDist) {
               safe = false;
-              const angle = Math.atan2(dy, dx);
-              const push = (minDist - dist);
-              x += Math.cos(angle) * push;
-              y += Math.sin(angle) * push;
-
+              const ang = Math.atan2(dy, dx);
+              const push = (minDist - dist) + 2;
+              x += Math.cos(ang) * push;
+              y += Math.sin(ang) * push;
+              
               x = Math.max(margin, Math.min(w - margin, x));
               y = Math.max(margin, Math.min(h - margin, y));
             }
@@ -1433,221 +975,567 @@ No summary generated yet. Click “Generate Summary” to fetch AI view.
         title.className = "hb-title";
         title.textContent = item.title || ("Headline " + (item._idx + 1));
 
-        const meta = document.createElement("div");
-        meta.className = "hb-meta";
-        meta.textContent =
-          (item.time ? item.time + " · " : "") +
-          (impact ? ("Impact " + impact.toFixed(0) + "%") : "Impact N/A");
+        // Only show meta on larger bubbles
+        if(size > 70) {
+            const meta = document.createElement("div");
+            meta.className = "hb-meta";
+            meta.textContent = (impact ? impact.toFixed(0) + "%" : "");
+            bubble.appendChild(meta);
+        }
 
         bubble.appendChild(title);
-        bubble.appendChild(meta);
+
+        bubble.addEventListener("click", (e) => {
+          e.stopPropagation();
+          showBubbleOverlay({
+            title: item.title || ("Headline " + (item._idx + 1)),
+            time: item.time || "",
+            impact: impact
+          });
+        });
+
         container.appendChild(bubble);
       });
     }
 
-    // === 4) Market Heatmap 3 x 6 ===
-    function updateHeatmap(cells) {
-      const grid = document.getElementById("heatmap-grid");
-      if (!grid) return;
-      grid.innerHTML = "";
+    // ============================
+    // Heatmap + Risk Meter + Quotes (TradingView data)
+    // ============================
+    function formatNumberCompact(value) {
+      const num = Number(value);
+      if (Number.isNaN(num)) return "--";
+      if (Math.abs(num) >= 100000) return num.toFixed(0);
+      if (Math.abs(num) >= 1000)   return num.toFixed(1);
+      if (Math.abs(num) >= 100)    return num.toFixed(2);
+      return num.toFixed(3);
+    }
 
-      const totalCells = 18;
-      const data = cells || [];
+    async function fetchOhlcv(apiSymbol) {
+      try {
+        const url = `${BASE_URL}/api/tvohlc/ohlcv?symbol=${encodeURIComponent(apiSymbol)}&interval=${INTERVAL}&bars_count=${BARS_COUNT}`;
+        const res = await fetch(url, { cache:"no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const json = await res.json();
+        const r = (json.results || []).find(x => x.symbol === apiSymbol) || (json.results || [])[0];
+        if (!r || !r.bars || r.bars.length < 2) throw new Error("no bars");
+        const bars = r.bars;
+        const last = bars[bars.length - 1];
+        const prev = bars[bars.length - 2];
 
-      for (let i = 0; i < totalCells; i++) {
-        const cellData = data[i] || {};
-        const cell = document.createElement("div");
-        cell.className = "heatmap-cell";
+        const lastClose = Number(last.close);
+        const prevClose = Number(prev.close);
+        const chg = lastClose - prevClose;
+        const chgPct = prevClose ? (chg / prevClose) * 100 : 0;
 
-        if (cellData.color) {
-          cell.style.background = cellData.color;
-        }
-
-        const sym = document.createElement("div");
-        sym.className = "heatmap-symbol";
-        sym.textContent = cellData.symbol || ("ASSET-" + (i + 1));
-
-        const val = document.createElement("div");
-        val.className = "heatmap-value";
-        val.textContent = cellData.value != null ? cellData.value : "--";
-
-        const chg = document.createElement("div");
-        chg.className = "heatmap-change";
-        if (cellData.change != null) {
-          const prefix = cellData.change > 0 ? "+" : "";
-          chg.textContent = prefix + cellData.change + "%";
-          chg.style.color = cellData.change > 0 ? "#c5ffb0" :
-                            cellData.change < 0 ? "#ffb0b0" :
-                            "#e0e0e0";
-        } else {
-          chg.textContent = "";
-        }
-
-        cell.appendChild(sym);
-        cell.appendChild(val);
-        cell.appendChild(chg);
-        grid.appendChild(cell);
+        return {
+          last: lastClose,
+          change: chg,
+          changePct: chgPct
+        };
+      } catch (e) {
+        console.warn("fetchOhlcv error", apiSymbol, e);
+        return null;
       }
     }
 
-    // === 5) Risk-On / Risk-Off Meter ===
-    function updateRiskMeter(score) {
-      const pointer = document.getElementById("risk-meter-pointer");
-      const valueEl = document.getElementById("risk-meter-value");
-      const tagEl = document.getElementById("risk-meter-tag");
-      if (!pointer || !valueEl || !tagEl) return;
+    async function loadMarketDataOnce() {
+      const keys = Array.from(new Set([...RISK_QUOTES_KEYS, ...HEATMAP_KEYS]));
+      const nextMap = { ...latestMarketData };
 
-      const s = Math.max(0, Math.min(100, Number(score)));
-      const pct = s;
-      pointer.style.left = pct + "%";
+      let idx = 0;
+      while (idx < keys.length) {
+        const slice = keys.slice(idx, idx + MAX_CONCURRENT);
+        const resultChunk = await Promise.all(
+          slice.map(async key => {
+            const cfg = SYMBOL_CONFIG[key];
+            if (!cfg) return [key, null];
+            const d = await fetchOhlcv(cfg.apiSymbol);
+            return [key, d];
+          })
+        );
+        resultChunk.forEach(([k, v]) => {
+          if (v) nextMap[k] = v;
+        });
+        idx += MAX_CONCURRENT;
+      }
 
-      valueEl.textContent = "Score: " + s.toFixed(0) + " / 100";
+      latestMarketData = nextMap;
 
-      let label = "neutral";
-      if (s <= 33) label = "Risk-Off";
-      else if (s >= 67) label = "Risk-On";
+      const now = new Date();
+      updateTimestamp(now.toLocaleTimeString());
 
-      tagEl.textContent = "Composite regime: " + label;
+      updateQuotesFromMap(latestMarketData);
+      updateHeatmapFromMap(latestMarketData);
+      updateRiskMeterFromMap(latestMarketData);
     }
 
-    // === 6) Market Quotes (inside Risk Meter card) ===
-    function updateQuotes(rows) {
+    function updateQuotesFromMap(dataMap) {
       const tbody = document.querySelector("#risk-quotes-table tbody");
       if (!tbody) return;
       tbody.innerHTML = "";
 
-      (rows || []).forEach(row => {
+      RISK_QUOTES_KEYS.forEach(key => {
+        const cfg = SYMBOL_CONFIG[key];
+        const d = dataMap[key];
         const tr = document.createElement("tr");
 
         const tdAsset = document.createElement("td");
-        tdAsset.innerHTML =
-          '<span class="quote-symbol">' + (row.symbol || "") + "</span>" +
-          (row.name ? ' <span style="color:var(--text-muted);font-size:9px;">' + row.name + "</span>" : "");
+        const label = cfg ? cfg.label : key;
+        tdAsset.innerHTML = '<span class="quote-symbol">' + label + "</span>";
 
         const tdLast = document.createElement("td");
-        tdLast.textContent = row.last != null ? row.last : "--";
+        const tdPct  = document.createElement("td");
 
-        const tdChg = document.createElement("td");
-        const chg = row.change;
-        const sign = chg > 0 ? "pos" : chg < 0 ? "neg" : "";
-        tdChg.className = "quote-change " + sign;
-        tdChg.textContent = chg != null ? chg : "--";
+        if (!d) {
+          tdLast.textContent = "--";
+          tdPct.textContent  = "--";
+        } else {
+          tdLast.textContent = formatNumberCompact(d.last);
+          tdLast.className = "font-mono";
 
-        const tdPct = document.createElement("td");
-        const pct = row.changePct;
-        tdPct.className = "quote-change " + sign;
-        tdPct.textContent = pct != null ? (pct.toFixed(2) + "%") : "--";
+          const sign = d.changePct > 0 ? "pos" : d.changePct < 0 ? "neg" : "";
+          tdPct.className = "quote-change " + sign;
+          tdPct.textContent = (d.changePct > 0 ? "+" : "") + d.changePct.toFixed(2) + "%";
+        }
 
         tr.appendChild(tdAsset);
         tr.appendChild(tdLast);
-        tr.appendChild(tdChg);
         tr.appendChild(tdPct);
         tbody.appendChild(tr);
       });
     }
 
-    // ============================
-    // WebSocket / API skeleton
-    // ============================
-    // {
-    //   ts: "2025-11-15 13:05:00",
-    //   ai_summary: "...",
-    //   signals: [{symbol, bias, confidencePct}, ...],
-    //   calendar: [{time, event, currency, impactPct}, ...],
-    //   headlines: [{title, time, impactPct}, ...],
-    //   quotes: [{symbol, name, last, change, changePct}, ...],
-    //   heatmap: [{symbol, value, change, color}, ...],
-    //   risk_score: 58
-    // }
+    function colorForChange(chgPct) {
+      if (chgPct === null || chgPct === undefined || Number.isNaN(chgPct)) {
+        return "#101010";
+      }
+      const v = chgPct;
+      // Modern Heatmap gradient logic
+      if (v >= 1.5) return "#1b5e20"; // Dark Green
+      if (v >= 0.5) return "#2e7d32";
+      if (v > 0)    return "#388e3c";
+      if (v <= -1.5) return "#b71c1c"; // Dark Red
+      if (v <= -0.5) return "#c62828";
+      if (v < 0)    return "#d32f2f";
+      return "#262626"; // Neutral
+    }
 
-    function connectWebSocket() {
-      // const ws = new WebSocket("wss://your-websocket-endpoint");
-      // ws.onopen = () => console.log("WS connected");
-      // ws.onmessage = (event) => {
-      //   const payload = JSON.parse(event.data);
-      //
-      //   if (payload.ts) updateTimestamp(payload.ts);
-      //   if (payload.ai_summary) updateAiSummary(payload.ai_summary);
-      //   if (payload.signals) updateTradingSignals(payload.signals);
-      //   if (payload.calendar) updateEconomicCalendar(payload.calendar);
-      //   if (payload.headlines) updateHeadlines(payload.headlines);
-      //   if (payload.quotes) updateQuotes(payload.quotes);
-      //   if (payload.heatmap) updateHeatmap(payload.heatmap);
-      //   if (payload.risk_score != null) updateRiskMeter(payload.risk_score);
-      // };
-      // ws.onerror = (err) => console.error("WS error:", err);
-      // ws.onclose = () => console.log("WS closed");
+    function updateHeatmapFromMap(dataMap) {
+      const grid = document.getElementById("heatmap-grid");
+      if (!grid) return;
+      grid.innerHTML = "";
+
+      const totalCells = 18;
+
+      for (let i = 0; i < totalCells; i++) {
+        const key = HEATMAP_KEYS[i];
+        const cfg = SYMBOL_CONFIG[key];
+        const d   = dataMap[key];
+
+        const cell = document.createElement("div");
+        cell.className = "heatmap-cell";
+
+        const label = cfg ? cfg.label : (key || ("ASSET-" + (i+1)));
+        const name  = cfg && cfg.name ? cfg.name : "";
+
+        const sym = document.createElement("div");
+        sym.className = "heatmap-symbol";
+        sym.textContent = label;
+
+        const chg = document.createElement("div");
+        chg.className = "heatmap-change";
+
+        if (d) {
+          const prefix = d.changePct > 0 ? "+" : "";
+          chg.textContent = prefix + d.changePct.toFixed(2) + "%";
+          
+          cell.style.backgroundColor = colorForChange(d.changePct);
+        } else {
+          chg.textContent = "--";
+          cell.style.backgroundColor = "#101010";
+        }
+
+        cell.title = name ? (label + " – " + name) : label;
+        cell.appendChild(sym);
+        cell.appendChild(chg);
+        grid.appendChild(cell);
+      }
+    }
+
+    function updateRiskMeterFromMap(dataMap) {
+      const pointer = document.getElementById("risk-meter-pointer");
+      const valueEl = document.getElementById("risk-meter-value");
+      const tagEl   = document.getElementById("risk-meter-tag");
+      if (!pointer || !valueEl || !tagEl) return;
+
+      let scoreSum = 0;
+      let count    = 0;
+
+      RISK_ON_UP_KEYS.forEach(key => {
+        const d = dataMap[key];
+        if (!d) return;
+        if (d.changePct > 0) scoreSum += 1;
+        else if (d.changePct < 0) scoreSum -= 1;
+        count++;
+      });
+
+      RISK_ON_DOWN_KEYS.forEach(key => {
+        const d = dataMap[key];
+        if (!d) return;
+        if (d.changePct < 0) scoreSum += 1;
+        else if (d.changePct > 0) scoreSum -= 1;
+        count++;
+      });
+
+      const rawScore = 50 + scoreSum * 7;
+      const s = Math.max(0, Math.min(100, rawScore));
+
+      pointer.style.left = s.toFixed(0) + "%";
+      valueEl.textContent = s.toFixed(0);
+
+      let label = "NEUTRAL";
+      let color = "#757575";
+      if (s <= 35) { label = "RISK-OFF"; color = "var(--color-down)"; }
+      else if (s >= 65) { label = "RISK-ON"; color = "var(--color-up)"; }
+
+      tagEl.textContent = label;
+      tagEl.style.color = color;
     }
 
     // ============================
-    // Demo mock (bisa dihapus)
+    // Static non-market demo (headlines & initial signals)
     // ============================
-    function renderMockData() {
-      updateTimestamp("demo mode");
-
-      updateEconomicCalendar([
-        { time:"19:30", event:"US CPI YoY", currency:"USD", impactPct:85 },
-        { time:"19:30", event:"US Core CPI MoM", currency:"USD", impactPct:78 },
-        { time:"21:00", event:"Fed Chair Speech", currency:"USD", impactPct:90 },
-        { time:"14:00", event:"UK GDP MoM", currency:"GBP", impactPct:55 },
-        { time:"16:00", event:"EZ Industrial Production", currency:"EUR", impactPct:40 }
-      ]);
-
+    function renderStaticNonMarket() {
       updateHeadlines([
-        { title:"US CPI in focus as markets reassess timing of first Fed cut", time:"12:10", impactPct:82 },
-        { title:"Dollar consolidates; JPY under pressure on policy divergence", time:"11:55", impactPct:68 },
-        { title:"Tech outperforms cyclicals as earnings revisions improve", time:"11:20", impactPct:51 },
-        { title:"Crude pulls back after sharp rally; positioning remains crowded", time:"10:45", impactPct:44 },
-        { title:"Credit spreads stay tight despite elevated yields", time:"10:05", impactPct:33 }
+        { title:"US CPI in focus as markets reassess timing of first Fed cut",          time:"12:10", impactPct:82 },
+        { title:"Dollar consolidates; JPY under pressure on policy divergence",         time:"11:55", impactPct:68 },
+        { title:"Tech outperforms cyclicals as earnings revisions improve",             time:"11:20", impactPct:51 },
+        { title:"Crude pulls back after sharp rally; positioning remains crowded",      time:"10:45", impactPct:44 },
+        { title:"Credit spreads stay tight despite elevated yields",                    time:"10:05", impactPct:33 }
       ]);
 
-      updateQuotes([
-        { symbol:"SPX",   name:"S&P 500",    last:"5,230.4", change:+12.3, changePct:+0.24 },
-        { symbol:"NDX",   name:"Nasdaq 100", last:"18,120",  change:+65.1, changePct:+0.36 },
-        { symbol:"DXY",   name:"US Dollar",  last:"105.2",   change:-0.12, changePct:-0.11 },
-        { symbol:"XAU",   name:"Gold",       last:"2,365",   change:-8.5,  changePct:-0.36 },
-        { symbol:"WTI",   name:"Crude Oil",  last:"79.4",    change:+0.9,  changePct:+1.15 },
-        { symbol:"BTC",   name:"Bitcoin",    last:"67,800",  change:+420,  changePct:+0.62 }
-      ]);
-
-      updateHeatmap([
-        { symbol:"SPX",  value:"5,230", change:+0.24, color:"#234c39" },
-        { symbol:"NDX",  value:"18,120", change:+0.36, color:"#24503e" },
-        { symbol:"RUT",  value:"2,080", change:-0.15, color:"#4a2629" },
-        { symbol:"DXY",  value:"105.2", change:-0.11, color:"#333333" },
-        { symbol:"EURUSD", value:"1.085", change:+0.18, color:"#27513f" },
-        { symbol:"USDJPY", value:"152.3", change:+0.22, color:"#4a2629" },
-        { symbol:"XAUUSD", value:"2,365", change:-0.36, color:"#4a2629" },
-        { symbol:"XAGUSD", value:"28.1", change:+0.45, color:"#27513f" },
-        { symbol:"WTI", value:"79.4", change:+1.15, color:"#2b6344" },
-        { symbol:"BRENT", value:"83.1", change:+0.92, color:"#295840" },
-        { symbol:"HYG", value:"78.2", change:+0.05, color:"#234c39" },
-        { symbol:"LQD", value:"108.5", change:-0.09, color:"#4a2629" },
-        { symbol:"US10Y", value:"4.28%", change:+0.03, color:"#4a2629" },
-        { symbol:"US2Y", value:"4.71%", change:+0.01, color:"#333333" },
-        { symbol:"MOVE", value:"98", change:-1.8, color:"#27513f" },
-        { symbol:"VIX", value:"16.2", change:-0.6, color:"#27513f" },
-        { symbol:"EEM", value:"42.1", change:+0.30, color:"#27513f" },
-        { symbol:"EFA", value:"82.4", change:+0.12, color:"#234c39" }
-      ]);
-
-      updateRiskMeter(58);
-
-      // Demo Trading Signals default (kalau belum klik Generate Summary)
       updateTradingSignals([
-        { symbol:"SPX", bias:"long", confidencePct:72 },
-        { symbol:"NDX", bias:"long", confidencePct:80 },
+        { symbol:"SPX", bias:"long",    confidencePct:72 },
+        { symbol:"NDX", bias:"long",    confidencePct:80 },
         { symbol:"RUT", bias:"neutral", confidencePct:48 }
       ]);
     }
 
+    // ============================
+    // AI CONFIG (Sider AI)
+    // ============================
+    const API_BASE = "https://sider.ai/api/chat/v1";
+    const TIMEZONE = "Asia/Makassar";
+    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyMTgzNzM0NiwicmVnaXN0ZXJfdHlwZSI6Im9hdXRoMiIsImFwcF9uYW1lIjoiQ2hpdENoYXRfQ2hyb21lX0V4dCIsInRva2VuX2lkIjoiZTZlOGIwZGUtN2Q3Zi00NTZkLTkxNGQtNzUwNDQ0ZjkyZTNjIiwiaXNzIjoic2lkZXIuYWkiLCJhdWQiOlsiIl0sImV4cCI6MTc4ODY5NjUxMCwibmJmIjoxNzU3NTkyNTEwLCJpYXQiOjE3NTc1OTI1MTB9.mcq86TwFwPtql3S77_vhnJRGj08878Ej5WGkvY3OxWI";
+
+    const AI_STRUCTURED_PROMPT = `Bertindak sebagai **macro strategist** dan **trader multi-aset**.
+
+Tugasmu:
+1. Jelaskan kondisi global makro **terbaru (<= 5 hari terakhir)** mencakup: 
+   - headlines berita utama,
+   - speech/komentar bank sentral,
+   - informasi suku bunga dan probabilitas hikes/cuts/hold,
+   - kondisi inflasi,
+   - data ekonomi kunci,
+   - sentimen risk-on/risk-off,
+   - kekuatan dolar AS,
+   - faktor geopolitik utama **(pilih hanya yang betul-betul relevan & terbaru)**.
+2. Buat ide trade **hari ini** untuk 4 kelompok aset:
+   - Forex – 3–5 pasangan mayor/cross,
+   - Komoditas utama – emas, perak, minyak, dsb,
+   - Indeks saham global utama,
+   - Kripto besar.
+   Untuk **setiap aset** berikan:
+   - \`symbol\` (ticker),
+   - \`bias\` salah satu dari: LONG, SHORT, NEUTRAL,
+   - \`confidence\` angka 0–100 (seberapa yakin),
+   - \`reason\` 1–2 kalimat singkat **berbasis narasi makro** (bukan teknikal).
+3. Dari narasi makro dan ide trade di atas, rangkum **katalis utama** yang sedang menggerakkan pasar
+   (misalnya: rilis CPI, surprise payrolls, statement dovish/hawkish, eskalasi geopolitik, dll)
+   dan beri penilaian \`impact\` 0–100 untuk bobot pengaruhnya terhadap market saat ini.
+4. Berikan \`risk_score\` 0–100 dimana 0 = sangat Risk-Off, 50 = netral, 100 = sangat Risk-On.
+
+**Aturan Penting:**
+- Gunakan **hanya informasi yang wajar terjadi dalam 5 hari terakhir**; jika ragu, buat asumsi yang realistis.
+- **Jangan** tampilkan harga, level teknikal, atau timeframe spesifik.
+- Fokus pada **bias** & **alasan makro**.
+- Jawab dalam **Bahasa Indonesia**.
+
+Output **WAJIB** hanya satu objek JSON valid **tanpa teks lain**, tanpa backticks, tanpa penjelasan tambahan.
+
+Struktur JSON yang HARUS kamu ikuti:
+
+{
+  "summary": "Satu paragraf ringkas (Bahasa Indonesia) menjelaskan kondisi global makro terbaru. Gunakan <b>bold</b> untuk poin penting.",
+  "risk_score": 58,
+  "trades": {
+    "forex": [
+      {
+        "symbol": "EURUSD",
+        "bias": "LONG",
+        "confidence": 78,
+        "reason": "Alasan makro singkat berbasis data / narasi fundamental."
+      }
+      // 3–5 aset
+    ],
+    "commodities": [
+      {
+        "symbol": "XAUUSD",
+        "bias": "SHORT",
+        "confidence": 65,
+        "reason": "Alasan makro (misalnya pergeseran ekspektasi suku bunga, dsb)."
+      }
+      // 3–5 aset
+    ],
+    "indices": [
+      {
+        "symbol": "SPX",
+        "bias": "LONG",
+        "confidence": 75,
+        "reason": "Alasan makro terkait earnings, likuiditas, policy, dsb."
+      }
+      // 3–5 aset
+    ],
+    "crypto": [
+      {
+        "symbol": "BTCUSD",
+        "bias": "LONG",
+        "confidence": 70,
+        "reason": "Alasan makro terkait likuiditas USD, adopsi institusional, regulasi, dsb."
+      }
+      // 3–5 aset
+    ]
+  },
+  "catalysts": [
+    {
+      "title": "Judul katalis singkat, misalnya 'US CPI melambat di bawah ekspektasi'",
+      "time": "label singkat, misal 'Hari ini', 'Semalam', atau 'Beberapa hari terakhir'",
+      "impact": 85
+    }
+    // 4–8 katalis utama
+  ]
+}`;
+
+    let isGenerating = false;
+
+    function baseHeadersChat() {
+      return {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit(537.36) Chrome/140.0.0.0 Safari/537.36",
+        "Content-Type": "application/json",
+        "Accept": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"",
+        "authorization": `Bearer ${TOKEN}`,
+        "x-app-name": "ChitChat_Web",
+        "x-time-zone": TIMEZONE,
+        "sec-ch-ua-mobile": "?0",
+        "x-app-version": "1.0.0",
+        "origin": "https://sider.ai",
+        "sec-fetch-site": "same-origin",
+        "sec-fetch-dest": "empty",
+        "referer": "https://sider.ai/chat",
+        "accept-language": "en-US,en;q=0.9,id;q=0.8"
+      };
+    }
+
+    async function callAiMarketSummary() {
+      const payload = {
+        model: "gpt-5.1",
+        from: "chat",
+        multi_content: [
+          {
+            type: "text",
+            text: AI_STRUCTURED_PROMPT,
+            user_input_text: "Generate macro market summary & trades"
+          }
+        ],
+        tools: { auto: ["search"] },
+        stream: true,
+        output_language: "id"
+      };
+
+      const resp = await fetch(`${API_BASE}/completions`, {
+        method: "POST",
+        headers: baseHeadersChat(),
+        body: JSON.stringify(payload),
+        mode: "cors",
+        credentials: "omit"
+      });
+
+      if (!resp.ok || !resp.body) {
+        const txt = await resp.text().catch(()=>"");
+        throw new Error(`HTTP ${resp.status} ${resp.statusText}${txt ? " – " + txt.slice(0,300) : ""}`);
+      }
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let fullText = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        let idx;
+        while ((idx = buffer.indexOf("\n")) >= 0) {
+          const rawLine = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 1);
+
+          const line = (rawLine || "").trim();
+          if (!line) continue;
+          if (line === "[DONE]") continue;
+
+          let dataLine = line;
+          if (dataLine.startsWith("data:")) dataLine = dataLine.slice(5).trim();
+          if (!dataLine || dataLine === "[DONE]") continue;
+
+          try {
+            const obj = JSON.parse(dataLine);
+            const payload = obj?.data || {};
+            const type = payload?.type;
+
+            if (type === "text") {
+              const piece = payload?.text;
+              if (typeof piece === "string") fullText += piece;
+            } else {
+              for (const k of ["text","token","content","output","message"]) {
+                const v = payload?.[k];
+                if (typeof v === "string" && v) {
+                  fullText += v;
+                  break;
+                }
+              }
+            }
+          } catch (e) {
+            if (dataLine && dataLine !== "[DONE]") fullText += dataLine;
+          }
+        }
+      }
+
+      if (!fullText.trim()) {
+        throw new Error("AI response kosong");
+      }
+
+      let jsonStr = fullText.trim();
+
+      if (jsonStr.startsWith("```")) {
+        jsonStr = jsonStr.replace(/^```json/i,"")
+                         .replace(/^```/i,"")
+                         .replace(/```$/,"")
+                         .trim();
+      }
+
+      try {
+        return JSON.parse(jsonStr);
+      } catch (e) {
+        console.error("Failed to parse JSON:", jsonStr);
+        throw new Error("Gagal parse JSON dari AI: " + e.message);
+      }
+    }
+
+    function applyAiMarketResult(result) {
+      if (!result || typeof result !== "object") {
+        updateAiSummary("Gagal membaca hasil AI.");
+        return;
+      }
+
+      const summary = result.summary || "AI tidak mengembalikan summary.";
+      const trades = result.trades || {};
+      
+      // Build HTML for Summary
+      let summaryHtml = `<div style="margin-bottom:12px; font-size:14px; color:#fff;">${summary}</div>`;
+      
+      updateAiSummary(summaryHtml);
+
+      // Trading signals table (flatten)
+      const sectionOrder = [
+        ["forex", "Forex"],
+        ["commodities", "Komoditas"],
+        ["indices", "Indeks Saham"],
+        ["crypto", "Kripto"]
+      ];
+      
+      const signals = [];
+      sectionOrder.forEach(([key]) => {
+        const arr = Array.isArray(trades[key]) ? trades[key] : [];
+        arr.forEach(t => {
+          signals.push({
+            symbol: t.symbol || "",
+            bias: (t.bias || "neutral").toLowerCase(),
+            confidencePct: t.confidence != null ? Number(t.confidence) : null
+          });
+        });
+      });
+      updateTradingSignals(signals);
+
+      // Core catalysts -> bubble map
+      let catalysts = Array.isArray(result.catalysts) ? result.catalysts : [];
+
+      if (!catalysts.length && signals.length) {
+        sectionOrder.forEach(([key, label]) => {
+          const arr = Array.isArray(trades[key]) ? trades[key] : [];
+          arr.slice(0,2).forEach(t => {
+            catalysts.push({
+              title: `${label} – ${t.symbol || ""} ${(t.bias || "").toUpperCase()}`,
+              time: "Dari ide trade",
+              impact: t.confidence != null ? Number(t.confidence) : 50
+            });
+          });
+        });
+      }
+
+      const bubbles = catalysts.map(c => ({
+        title: c.title || "",
+        time: c.time || "",
+        impactPct: c.impact != null ? Number(c.impact) : 50
+      }));
+      updateHeadlines(bubbles);
+    }
+
+    async function generateSummary() {
+      if (isGenerating) return;
+      isGenerating = true;
+
+      const btn = document.querySelector('.ai-summary .kt-card-btn');
+      const oldLabel = btn ? btn.textContent : null;
+      if (btn) {
+        btn.textContent = "Processing...";
+        btn.disabled = true;
+        btn.style.opacity = "0.7";
+      }
+
+      updateAiSummary("Fetching real-time macro data & analyzing market structure...");
+      updateTradingSignals([]);
+      updateHeadlines([]);
+
+      try {
+        const result = await callAiMarketSummary();
+        applyAiMarketResult(result);
+      } catch (err) {
+        console.error(err);
+        updateAiSummary("Failed to load AI Summary:\n" + (err?.message || err));
+      } finally {
+        isGenerating = false;
+        if (btn) {
+          btn.textContent = oldLabel || "Refresh AI";
+          btn.disabled = false;
+          btn.style.opacity = "1";
+        }
+      }
+    }
+
+    // ============================
+    // Init
+    // ============================
     function initDashboard() {
-      renderMockData();
-      // connectWebSocket();
+      renderStaticNonMarket();  // dummy headlines & signals
+      loadMarketDataOnce();     // risk meter + heatmap + quotes dari TradingView (1x saat page dibuka)
     }
 
     window.addEventListener("DOMContentLoaded", initDashboard);
   </script>
-
-
-</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
+</body>
+</html>
