@@ -585,12 +585,12 @@
             <div class="kt-card-title">AI Macro Summary</div>
             <div class="kt-card-subtitle">Synthesized Macro &amp; Trade Ideas</div>
           </div>
-          <button class="kt-card-btn" onclick="generateSummary()">Refresh AI</button>
+          <button class="kt-card-btn" onclick="generateSummary()">REFRESH AI</button>
         </div>
         <div class="kt-card-body ai-summary-body">
           <div class="ai-summary-main">
             <div id="ai-market-summary" class="ai-summary-text">
-              Klik tombol Refreh AI untuk ringkasan makro terkini dan ide trade multi-aset...
+              Klik tombol "REFRESH AI" untuk ringkasan makro terkini dan ide trade multi-aset...
             </div>
           </div>
           <div class="ai-signals-panel">
@@ -746,7 +746,7 @@
     function updateAiSummary(summaryText) {
       const el = document.getElementById("ai-market-summary");
       if (!el) return;
-      el.innerHTML = summaryText || "No summary generated yet. Click “Refresh AI”.";
+      el.innerHTML = summaryText || "No summary generated yet. Click “REFRESH AI”.";
     }
 
     function updateTradingSignals(signals) {
@@ -1490,7 +1490,7 @@ Struktur JSON yang HARUS kamu ikuti:
       } finally {
         isGenerating = false;
         if (btn) {
-          btn.textContent = oldLabel || "Refresh AI";
+          btn.textContent = oldLabel || "REFRESH AI";
           btn.disabled = false;
           btn.style.opacity = "1";
         }
