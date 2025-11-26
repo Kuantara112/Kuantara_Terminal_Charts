@@ -125,12 +125,12 @@
       flex-direction:column;
       overflow:hidden;
       box-shadow:none;
-      transition:border-color 0.15s ease, background-color 0.15s ease;
+      transition:background-color 0.15s ease;
       min-height:0;
     }
 
+    /* Hapus efek border kuning, hanya darken background */
     .kt-card:hover {
-      border-color:var(--border-active);
       background-color:#121212;
     }
 
@@ -690,7 +690,7 @@
     // ============================
     // CONFIG – TradingView backend
     // ============================
-    const BASE_URL    = "https://cloudkuant-541614645905.us-central1.run.app";
+    const BASE_URL    = "http://kuancloud.loclx.io";
     const INTERVAL    = "1D";
     const BARS_COUNT  = 2;
     const MAX_CONCURRENT = 4;
@@ -1190,7 +1190,7 @@
     const AI_STRUCTURED_PROMPT = `Bertindak sebagai **macro strategist** dan **trader multi-aset**.
 
 Tugasmu:
-1. Jelaskan kondisi global makro **terbaru (<= 5 hari terakhir)** mencakup: 
+1. Jelaskan kondisi global makro **terbaru (<= 3 hari terakhir,WAJIB UPDATE!) dari sumber Reuters,Bloomberg,Invesinglive,Livesquawk,atau sebagainya** mencakup: 
    - headlines berita utama,
    - speech/komentar bank sentral,
    - informasi suku bunga dan probabilitas hikes/cuts/hold,
