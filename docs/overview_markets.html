@@ -590,7 +590,7 @@
         <div class="kt-card-body ai-summary-body">
           <div class="ai-summary-main">
             <div id="ai-market-summary" class="ai-summary-text">
-              Memuat ringkasan makro terkini dan ide trade multi-aset...
+              Klik tombol Refreh AI untuk ringkasan makro terkini dan ide trade multi-aset...
             </div>
           </div>
           <div class="ai-signals-panel">
@@ -1477,7 +1477,7 @@ Struktur JSON yang HARUS kamu ikuti:
         btn.style.opacity = "0.7";
       }
 
-      updateAiSummary("Fetching real-time macro data & analyzing market structure...");
+      updateAiSummary("Tunggu sebentar, harap bersabar...");
       updateTradingSignals([]);
       updateHeadlines([]);
 
@@ -1486,7 +1486,7 @@ Struktur JSON yang HARUS kamu ikuti:
         applyAiMarketResult(result);
       } catch (err) {
         console.error(err);
-        updateAiSummary("Failed to load AI Summary:\n" + (err?.message || err));
+        updateAiSummary("Gagal memuat AI Summary, coba sekali lagi:\n" + (err?.message || err));
       } finally {
         isGenerating = false;
         if (btn) {
