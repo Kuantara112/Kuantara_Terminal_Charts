@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="preconnect" href="https://cloudkuant-541614645905.us-central1.run.app">
+  <link rel="preconnect" href="http://kuancloud.loclx.io">
   <link rel="preconnect" href="https://api.dataflash.news">
   <link rel="preconnect" href="https://liveprodusphoenixeast.global.ssl.fastly.net">
 
@@ -102,6 +102,15 @@
       }
       .panel{
         min-height:260px;
+      }
+      /* batasi tinggi konten panel di mobile: scroll di dalam list-shell / caption-feed */
+      .panel-body{
+        max-height:380px;
+        overflow:hidden;
+      }
+      .list-shell,
+      .caption-feed{
+        max-height:100%;
       }
     }
 
@@ -255,6 +264,7 @@
       background:rgba(255,191,0,0.05);
       border-color:rgba(255,191,0,0.3);
     }
+
     .item-title{
       font-size:var(--fs-body);
       margin-bottom:4px;
@@ -273,6 +283,24 @@
       font-size:var(--fs-small);
       color:#cccccc;
       line-height:1.5;
+    }
+
+    /* LIST ITEM + THUMBNAIL */
+    .item-main{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .item-text{
+      flex:1;
+    }
+    .item-thumb{
+      width:80px;
+      height:80px;
+      border-radius:4px;
+      object-fit:cover;
+      flex-shrink:0;
+      border:1px solid rgba(255,255,255,0.08);
     }
 
     /* LIVE TV */
@@ -420,6 +448,18 @@
       color:var(--accent);
     }
 
+    /* X FEED MEDIA */
+    .x-feed-media{
+      margin-top:6px;
+    }
+    .x-feed-img{
+      width:100%;
+      max-height:220px;
+      border-radius:6px;
+      object-fit:cover;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
     /* MODAL READER (NON-AI) */
     .modal-overlay{
       position:fixed;
@@ -561,9 +601,9 @@
   <script>
     /** KONFIGURASI API (NON-AI) */
     const CONFIG = {
-      API_PIQ: "https://kuantcloud.loophole.site//api/piq/insights",
-      API_FX: "https://kuantcloud.loophole.site/api/efxdata/insights",
-      API_REFRESH_CT: "https://kuantcloud.loophole.site/api/efxdata/refresh-ct",
+      API_PIQ: "http://kuancloud.loclx.io/api/piq/insights",
+      API_FX: "http://kuancloud.loclx.io/api/efxdata/insights",
+      API_REFRESH_CT: "http://kuancloud.loclx.io/api/efxdata/refresh-ct",
       API_XFEED: "https://api.dataflash.news/api/headlines",
       API_XREADER: (id) => `https://api.dataflash.news/api/headlines/${id}`,
       STREAM_SRC: "https://liveprodusphoenixeast.global.ssl.fastly.net/USPhx-HD/Channel-TX-USPhx-AWS-virginia-1/Source-USPhx-16k-1-s6lk2-BP-07-02-81ykIWnsMsg_live.m3u8",
@@ -607,6 +647,28 @@
            : `${Math.floor(m/1440)}d`;
     };
 
+    const resolveImage = (obj, fallback) => {
+      if (!obj) return fallback || null;
+      const cand =
+        obj.image ||
+        obj.image_url ||
+        obj.imageUrl ||
+        obj.thumbnail ||
+        obj.thumbnail_url ||
+        obj.thumb ||
+        obj.banner ||
+        obj.cover ||
+        obj.cover_image ||
+        obj.coverImage ||
+        fallback ||
+        null;
+      if (!cand) return null;
+      if (typeof cand === 'string' && cand.startsWith('//')) {
+        return 'https:' + cand;
+      }
+      return cand;
+    };
+
     /** MODULE 1: RESEARCH */
     async function fetchResearch(mode) {
       if (STATE.research.loading) return;
@@ -630,7 +692,8 @@
             body: Array.isArray(i.body) ? i.body.join(' ') : i.summary,
             source: 'FX Analysis',
             time: i.timestamp,
-            url: i.url
+            url: i.url,
+            image: resolveImage(i, null)
           }));
         } else {
           items = (data.sources || []).flatMap(s =>
@@ -638,7 +701,8 @@
               title: it.title,
               source: s.source,
               time: it.published_at,
-              url: it.url
+              url: it.url,
+              image: resolveImage(it, s.image)
             }))
           );
           // Populate Source Dropdown
@@ -680,15 +744,21 @@
       filtered.forEach(item => {
         const div = document.createElement('div');
         div.className = 'item';
+        const safeImg = item.image;
         div.innerHTML = `
-          <div class="item-title">${item.title}</div>
-          <div class="item-meta">
-            <span>${item.source}</span>
-            <span>${fmtTime(item.time)}</span>
+          <div class="item-main">
+            <div class="item-text">
+              <div class="item-title">${item.title}</div>
+              <div class="item-meta">
+                <span>${item.source}</span>
+                <span>${fmtTime(item.time)}</span>
+              </div>
+              ${mode === 'fxcmd' && item.body
+                ? `<div class="item-body">${item.body.substring(0,180)}...</div>`
+                : ''}
+            </div>
+            ${safeImg ? `<img class="item-thumb" src="${safeImg}" loading="lazy" onerror="this.style.display='none'">` : ''}
           </div>
-          ${mode === 'fxcmd' && item.body
-            ? `<div class="item-body">${item.body.substring(0,180)}...</div>`
-            : ''}
         `;
         div.onclick = () => window.open(item.url, '_blank');
         frag.appendChild(div);
@@ -705,15 +775,21 @@
         const res = await fetch(CONFIG.API_XFEED);
         const data = await res.json();
         STATE.xfeed.items = (data.items || [])
-          .map(i => ({
-            id: i.id,
-            name: i.name || i.screenName,
-            avatar: i.avatar,
-            text: i.text,
-            time: i.ts || i.timestamp,
-            link: i.link || i.url,
-            titleUrl: i.titleUrl
-          }))
+          .map(i => {
+            const mediaImage =
+              i.media && i.media[0] &&
+              (i.media[0].url || i.media[0].image || i.media[0].image_url || i.media[0].imageUrl);
+            return {
+              id: i.id,
+              name: i.name || i.screenName,
+              avatar: i.avatar,
+              text: i.text,
+              time: i.ts || i.timestamp,
+              link: i.link || i.url,
+              titleUrl: i.titleUrl,
+              image: resolveImage(i, mediaImage)
+            };
+          })
           .filter(i => i.id);
         renderXFeed();
         D.xStatus.textContent = 'Live';
@@ -729,17 +805,25 @@
     function renderXFeed() {
       const frag = document.createDocumentFragment();
       STATE.xfeed.items.slice(0, 40).forEach(item => {
+        const safeImg = item.image;
         const li = document.createElement('div');
         li.className = 'x-feed-card';
         li.innerHTML = `
           <div class="x-feed-header">
-            <img class="x-feed-avatar" src="${item.avatar || CONFIG.IMG_DEFAULT}" loading="lazy">
+            <img class="x-feed-avatar" src="${item.avatar || CONFIG.IMG_DEFAULT}" loading="lazy" onerror="this.src='${CONFIG.IMG_DEFAULT}'">
             <div style="flex:1">
               <div class="x-feed-name">${item.name}</div>
             </div>
             <div class="x-feed-time">${relTime(item.time)}</div>
           </div>
           <div class="x-feed-text">${item.text || item.titleUrl}</div>
+          ${
+            safeImg
+              ? `<div class="x-feed-media">
+                   <img class="x-feed-img" src="${safeImg}" loading="lazy" onerror="this.style.display='none'">
+                 </div>`
+              : ''
+          }
           <div class="x-feed-buttons">
             <button class="x-feed-action" onclick="openReader('${item.id}')">READ</button>
             <button class="x-feed-action" onclick="window.open('${item.link}','_blank')">LINK</button>
