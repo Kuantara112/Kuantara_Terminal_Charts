@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuantara – DS Chart & TV Chart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .chart-wrapper {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .chart-wrapper.hidden {
+      display: none;
+    }
+
+    /* Floating toggle menu */
+    .chart-toggle {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 9999;
+      display: flex;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid #333;
+      border-radius: 999px;
+      padding: 4px;
+      backdrop-filter: blur(6px);
+    }
+
+    .chart-toggle button {
+      border: none;
+      padding: 6px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      border-radius: 999px;
+      background: #111;
+      color: #ccc;
+      outline: none;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+      border: 1px solid transparent;
+    }
+
+    .chart-toggle button.active {
+      background: #ffbf00;
+      color: #000;
+      border-color: #ffbf00;
+      font-weight: 600;
+    }
+
+    /* Ensure inner widgets stretch properly */
+    #dsChart iframe,
+    #dsChart > div,
+    #tvChart iframe,
+    #tvChart > div {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating toggle menu -->
+  <div class="chart-toggle">
+    <button id="btnDS" class="active" onclick="showChart('ds')">DS Chart</button>
+    <button id="btnTV" onclick="showChart('tv')">TV Chart</button>
+  </div>
+
+  <!-- Dukascopy Chart (DS Chart) -->
+  <div id="dsChart" class="chart-wrapper">
+    <!-- Widget akan muncul di sini -->
+    <script type="text/javascript">
+      DukascopyApplet = {
+        "type": "chart",
+        "params": {
+          "showUI": true,
+          "showTabs": true,
+          "showParameterToolbar": true,
+          "showOfferSide": true,
+          "allowInstrumentChange": true,
+          "allowPeriodChange": true,
+          "allowOfferSideChange": true,
+          "showAdditionalToolbar": true,
+          "showExportImportWorkspace": true,
+          "allowSocialSharing": true,
+          "showUndoRedoButtons": true,
+          "showDetachButton": false,
+          "presentationType": "candle",
+          "axisX": true,
+          "axisY": true,
+          "legend": true,
+          "timeline": true,
+          "showDateSeparators": true,
+          "showZoom": true,
+          "showScrollButtons": true,
+          "showAutoShiftButton": true,
+          "crosshair": true,
+          "borders": false,
+          "freeMode": false,
+          "theme": "DarkIOs",
+          "uiColor": "#000",
+          "availableInstruments": "l:",
+          "instrument": "EUR/USD",
+          "period": "11",
+          "offerSide": "BID",
+          "timezone": 1,
+          "live": true,
+          "allowPan": true,
+          "indicators": "sDYURGRBVBCMBgvAnIDgCjpTCLOcLjECDsADqAYQQGmURs8ARVlcz9kBDaAsl57hBVAFgKxnXiRAKQ..",
+          "width": "100%",
+          "height": "100%",   // full container height
+          "adv": "popup",
+          "lang": "en"
+        }
+      };
+    </script>
+    <script type="text/javascript" src="https://freeserv-static.dukascopy.com/2.0/core.js"></script>
+  </div>
+
+  <!-- TradingView Chart (TV Chart) -->
+  <div id="tvChart" class="chart-wrapper hidden">
+    <div class="tradingview-widget-container" style="height:100%;width:100%">
+      <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+      {
+        "allow_symbol_change": true,
+        "calendar": false,
+        "details": false,
+        "hide_side_toolbar": true,
+        "hide_top_toolbar": false,
+        "hide_legend": false,
+        "hide_volume": false,
+        "hotlist": false,
+        "interval": "D",
+        "locale": "en",
+        "save_image": true,
+        "style": "1",
+        "symbol": "IDX:BBCA",
+        "theme": "dark",
+        "timezone": "Asia/Jakarta",
+        "backgroundColor": "rgba(24, 24, 24, 1)",
+        "gridColor": "rgba(41, 41, 41, 1)",
+        "watchlist": [],
+        "withdateranges": false,
+        "compareSymbols": [],
+        "studies": [],
+        "autosize": true
+      }
+      </script>
+    </div>
+  </div>
+
+  <script>
+    function showChart(which) {
+      const ds = document.getElementById('dsChart');
+      const tv = document.getElementById('tvChart');
+      const btnDS = document.getElementById('btnDS');
+      const btnTV = document.getElementById('btnTV');
+
+      if (which === 'ds') {
+        ds.classList.remove('hidden');
+        tv.classList.add('hidden');
+        btnDS.classList.add('active');
+        btnTV.classList.remove('active');
+      } else {
+        ds.classList.add('hidden');
+        tv.classList.remove('hidden');
+        btnDS.classList.remove('active');
+        btnTV.classList.add('active');
+      }
+    }
+  </script>
+
+</body>
+</html>
