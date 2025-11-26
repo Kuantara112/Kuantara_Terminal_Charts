@@ -721,6 +721,27 @@
     return emaPrev;
   }
 
+  // MA untuk chart: rolling window, null sebelum data cukup
+  function calcMA(period, values) {
+    const result = new Array(values.length).fill(null);
+    let sum = 0;
+    for (let i = 0; i < values.length; i++) {
+      const v = Number(values[i]);
+      if (Number.isNaN(v)) {
+        result[i] = null;
+        continue;
+      }
+      sum += v;
+      if (i >= period) {
+        sum -= Number(values[i - period]);
+      }
+      if (i >= period - 1) {
+        result[i] = sum / period;
+      }
+    }
+    return result;
+  }
+
   function rsi(values, period = 14) {
     if (values.length <= period) return null;
     let gains = 0;
@@ -933,6 +954,7 @@
           data:ma20Arr,
           smooth:true,
           showSymbol:false,
+          connectNulls:true,
           lineStyle:{ color:'#ffbf00', width:1 }
         },
         {
@@ -941,6 +963,7 @@
           data:ma50Arr,
           smooth:true,
           showSymbol:false,
+          connectNulls:true,
           lineStyle:{ color:'#38bdf8', width:1 }
         },
         {
@@ -1246,17 +1269,9 @@
 
       if (!closes.length) throw new Error("No close data");
 
-      function maArray(values, period) {
-        const out = new Array(values.length).fill("-");
-        for (let i = period - 1; i < values.length; i++) {
-          let sum = 0;
-          for (let j = 0; j < period; j++) sum += values[i - j];
-          out[i] = (sum / period).toFixed(2);
-        }
-        return out;
-      }
-      const ma20Arr = maArray(closes, 20);
-      const ma50Arr = maArray(closes, 50);
+      // MA chart pakai calcMA => hasil numeric + null
+      const ma20Arr = calcMA(20, closes);
+      const ma50Arr = calcMA(50, closes);
 
       renderMainChart(norm.dates, norm.values, norm.volumes, ma20Arr, ma50Arr);
 
