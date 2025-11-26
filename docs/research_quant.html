@@ -1,868 +1,564 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Kuantara – Quantitative Lab (Extended)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Kuantara – Quant Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Fira Code (Kuantara Standard) -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
-
-  <!-- ECharts -->
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
     :root {
-      /* Kuantara Terminal Palette */
       --bg-root:#000000;
       --bg-main:#111111;
-      --bg-panel:#111111;
+      --bg-elevated:#141414;
       --border-soft:#2b2b2b;
+      --border-strong:#3b3b3b;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
       --accent:#ffbf00;
-      --danger:#ff4d4f;
-      --ok:#46c97f;
-      --info:#3399ff;
+      --accent-soft:rgba(255,191,0,0.12);
 
-      /* Font sizes 9–14px */
       --fs-title:14px;
       --fs-subtitle:12px;
       --fs-body:11px;
       --fs-small:9.5px;
+
+      --radius-sm:6px;
+      --radius-md:10px;
+      --shadow-soft:0 0 0 1px rgba(0,0,0,0.7), 0 20px 40px rgba(0,0,0,0.8);
     }
 
-    *{
+    * {
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family:"Fira Code",monospace!important;
+      font-family:"Fira Code", monospace;
     }
 
-    html, body{
+    html, body {
       width:100%;
       height:100%;
-    }
-
-    body{
-      background:var(--bg-root);
+      background-color:var(--bg-root);
       color:var(--text-main);
     }
 
-    #app{
-      width:100%;
-      max-width:1360px;
-      margin:0 auto;
-      padding:16px;
-      min-height:100vh;
-    }
-
-    /* QUANT LAB NAV */
-    .quant-menu{
-      margin-top:0;
-      margin-bottom:8px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-    }
-    .quant-menu-btn{
-      border-radius:16px;
-      border:1px solid var(--border-soft);
-      padding:4px 10px;
-      font-size:var(--fs-small);
-      background:#050505;
-      color:var(--text-muted);
-      cursor:pointer;
-      text-transform:uppercase;
-      letter-spacing:0.06em;
-      flex-shrink:0;
-      transition: all 0.2s;
-    }
-    .quant-menu-btn:hover{
-      border-color:#555;
-      color:#ddd;
-    }
-    .quant-menu-btn.active{
-      border-color:var(--accent);
-      background:var(--accent);
-      color:#111;
-      font-weight:600;
-    }
-
-    .quant-description{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      margin-top:4px;
-      margin-bottom:6px;
-      border-left:2px solid var(--border-soft);
-      padding-left:8px;
-    }
-
-    /* Control bar */
-    .control-bar{
-      margin-top:10px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:flex-end;
-      background:var(--bg-main);
-      border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:10px 12px;
-    }
-
-    .field-group{
+    body {
       display:flex;
       flex-direction:column;
-      gap:3px;
-      min-width:120px;
-      flex:1 1 120px;
     }
 
-    .field-label{
+    .app-root {
+      min-height:100vh;
+      padding:8px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      background:
+        radial-gradient(circle at top left, rgba(255,191,0,0.05), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(255,255,255,0.02), transparent 55%);
+    }
+
+    /* TOP STRIP – super minimal */
+    .top-strip {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
+      padding:6px 8px;
+      background:rgba(15,15,15,0.96);
+      border-radius:var(--radius-md);
+      border:1px solid var(--border-soft);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .top-left {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:0;
+    }
+
+    .status-dot {
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:#22c55e;
+      box-shadow:0 0 10px rgba(34,197,94,0.85);
+    }
+
+    .status-text {
       font-size:var(--fs-small);
       color:var(--text-muted);
     }
 
-    .field-input,
-    .field-select{
-      background:#050505;
-      border:1px solid #262626;
-      border-radius:4px;
-      padding:5px 8px;
-      font-size:var(--fs-body);
-      color:var(--text-main);
-      outline:none;
-    }
-    .field-input:focus,
-    .field-select:focus{
-      border-color:var(--accent);
+    .top-right {
+      display:flex;
+      align-items:center;
+      gap:6px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
 
-    .field-inline{
+    .btn {
+      font-size:var(--fs-small);
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#181818;
+      color:var(--text-muted);
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      transition:background 0.15s ease,border-color 0.15s ease,transform 0.05s ease;
+      white-space:nowrap;
+    }
+
+    .btn:hover:not(:disabled) {
+      background:#222222;
+      border-color:var(--accent-soft);
+      color:var(--text-main);
+    }
+
+    .btn-primary {
+      border-color:var(--accent);
+      background:var(--accent);
+      color:#000;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background:#ffd95e;
+      border-color:#ffd95e;
+    }
+
+    .btn:disabled {
+      opacity:0.6;
+      cursor:default;
+      transform:none;
+    }
+
+    /* MAIN LAYOUT */
+    .main-layout {
+      flex:1;
+      display:grid;
+      gap:8px;
+      grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+      min-height:0;
+      margin-top:2px;
+    }
+
+    .panel {
+      display:flex;
+      flex-direction:column;
+      background:var(--bg-main);
+      border-radius:var(--radius-md);
+      border:1px solid var(--border-soft);
+      box-shadow:var(--shadow-soft);
+      min-height:0;
+      overflow:hidden;
+    }
+
+    .panel-header {
+      padding:6px 8px;
+      border-bottom:1px solid rgba(43,43,43,0.95);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .panel-title {
+      font-size:var(--fs-subtitle);
+      color:var(--text-muted);
       display:flex;
       align-items:center;
       gap:6px;
     }
 
-    .btn-run{
+    .panel-tag {
+      font-size:var(--fs-small);
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.08);
+      color:var(--text-muted);
+    }
+
+    .editor-wrapper {
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      padding:6px;
+      gap:6px;
+      min-height:0;
+    }
+
+    .editor-meta {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .pill-soft {
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.06);
+      background:rgba(255,255,255,0.02);
+      font-size:var(--fs-small);
+    }
+
+    .editor-container {
+      flex:1;
+      position:relative;
+      border-radius:var(--radius-md);
+      border:1px solid var(--border-soft);
+      background:radial-gradient(circle at top left, rgba(255,191,0,0.05), transparent 55%);
+      min-height:200px;
+      overflow:hidden;
+    }
+
+    .editor-gutter {
+      position:absolute;
+      inset:0 auto 0 0;
+      width:28px;
+      background:rgba(0,0,0,0.8);
+      border-right:1px solid var(--border-soft);
+      color:var(--text-muted);
+      font-size:var(--fs-small);
+      padding:6px 3px;
+      text-align:right;
+      pointer-events:none;
+      overflow:hidden;
+    }
+
+    .editor-gutter-line {
+      height:1.4em;
+    }
+
+    #code-editor {
+      width:100%;
+      height:100%;
       border:none;
       outline:none;
-      border-radius:4px;
-      padding:7px 16px;
+      resize:none;
+      background:transparent;
+      color:var(--text-main);
+      padding:6px 10px 6px 34px;
       font-size:var(--fs-body);
-      text-transform:uppercase;
-      letter-spacing:0.08em;
-      cursor:pointer;
-      background:var(--accent);
-      color:#111;
-      font-weight:600;
-      display:flex;
-      align-items:center;
-      gap:6px;
-      flex-shrink:0;
-    }
-    .btn-run:active{
-      transform:translateY(1px);
-    }
-    .btn-run[disabled]{
-      opacity:0.6;
-      cursor:not-allowed;
+      line-height:1.4;
+      tab-size:2;
+      white-space:pre;
+      overflow:auto;
     }
 
-    .status-bar{
-      margin-top:8px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .status-left,
-    .status-right{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .status-dot{
-      width:6px;
-      height:6px;
-      border-radius:999px;
-      background:#555;
-    }
-    .status-dot.live{ background:var(--ok); }
-    .status-dot.error{ background:var(--danger); }
-    .status-dot.processing{ background:var(--info); animation: blink 1s infinite; }
-
-    @keyframes blink { 50% { opacity:0.4; } }
-
-    /* Layout grid */
-    .grid{
-      margin-top:10px;
-      display:grid;
-      grid-template-columns:1fr;
-      grid-auto-rows:minmax(240px, auto);
-      gap:10px;
-    }
-
-    @media (min-width:900px){
-      .grid{
-        grid-template-columns:1fr 1fr;
-      }
-    }
-
-    .panel{
-      background:var(--bg-panel);
-      border-radius:4px;
-      border:1px solid var(--border-soft);
-      padding:12px;
+    /* OUTPUT PANEL */
+    .output-wrapper {
       display:flex;
       flex-direction:column;
-      min-height:240px;
+      min-height:0;
     }
 
-    .panel-wide{
-      min-height:220px;
+    .output-body {
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      padding:6px;
+      gap:6px;
+      min-height:0;
     }
-    @media (min-width:900px){
-      .panel-wide{
-        grid-column:1 / -1;
+
+    .output-panel {
+      flex:1;
+      border-radius:var(--radius-md);
+      border:1px solid var(--border-soft);
+      background:var(--bg-elevated);
+      overflow:auto;
+      padding:8px;
+      min-height:120px;
+      position:relative;
+    }
+
+    .output-panel + .output-panel {
+      margin-top:4px;
+    }
+
+    .panel-label {
+      position:absolute;
+      top:6px;
+      left:8px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      opacity:0.85;
+    }
+
+    .panel-content {
+      margin-top:14px;
+      font-size:var(--fs-body);
+    }
+
+    #plot-area img {
+      max-width:100%;
+      height:auto;
+      border-radius:var(--radius-sm);
+      border:1px solid rgba(255,255,255,0.06);
+      display:block;
+    }
+
+    #console-output {
+      background:transparent;
+      border:none;
+      color:var(--text-main);
+      font-size:var(--fs-small);
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    .placeholder {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width:8px;
+      height:8px;
+    }
+    ::-webkit-scrollbar-track {
+      background:rgba(0,0,0,0.7);
+    }
+    ::-webkit-scrollbar-thumb {
+      background:rgba(40,40,40,0.9);
+      border-radius:999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background:rgba(70,70,70,1);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .main-layout {
+        grid-template-columns:minmax(0,1fr);
       }
     }
 
-    .panel-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:4px;
-      gap:8px;
-    }
-
-    .panel-title{
-      font-size:var(--fs-subtitle);
-      font-weight:500;
-    }
-
-    .panel-meta{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      display:flex;
-      align-items:center;
-      gap:6px;
-      flex-wrap:wrap;
-    }
-
-    .badge{
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      padding:1px 6px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .badge-accent{
-      border-color:var(--accent);
-      color:var(--accent);
-    }
-
-    .chart-container{
-      flex:1 1 auto;
-      min-height:220px;
-      width:100%;
-    }
-
-    .hint{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      margin-top:3px;
-    }
-
-    .report-body{
-      margin-top:6px;
-      padding:8px;
-      background:#050505;
-      border:1px solid #262626;
-      border-radius:4px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      line-height:1.5;
-      white-space:pre-wrap;
-      overflow-y:auto;
-      max-height:260px;
-    }
-
-    .panel-body-text{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      line-height:1.5;
-      white-space:pre-wrap;
+    @media (max-width: 600px) {
+      .app-root {
+        padding:6px;
+      }
+      .top-strip {
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .editor-container {
+        min-height:180px;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="app">
-    <div class="quant-menu">
-      <button class="quant-menu-btn active" data-tab="sentiment">Options Sentiment</button>
-      <button class="quant-menu-btn" data-tab="forecast">Forecasting (ARIMA/LSTM)</button>
-      <button class="quant-menu-btn" data-tab="montecarlo">Monte Carlo</button>
-      <button class="quant-menu-btn" data-tab="portfolio">Portfolio Opt</button>
-      <button class="quant-menu-btn" data-tab="perf">Performance Metrics</button>
-      <button class="quant-menu-btn" data-tab="sigma">Sigma Deviation</button>
-    </div>
-
-    <div class="quant-description">
-      <span id="desc-text">Analisa sentimen pasar options secara real-time.</span>
-    </div>
-
-    <!-- TAB: OPTIONS SENTIMENT -->
-    <div id="tab-sentiment" style="display:block;">
-      <div class="control-bar">
-        <div class="field-group">
-          <label class="field-label">Ticker</label>
-          <input id="input-ticker" class="field-input" placeholder="SPY" value="SPY">
-          <div class="hint">Contoh: SPY, QQQ, AAPL.</div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Expiration (YYYY-MM-DD)</label>
-          <input id="input-expiry" class="field-input" placeholder="2025-12-19">
-          <div class="hint">Harus valid di Yahoo Finance.</div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">% OTM Range</label>
-          <div class="field-inline">
-            <input id="input-pct-otm" class="field-input" type="number" step="0.5" min="1" max="30" value="5" style="max-width:90px;">
-            <span class="field-label">%</span>
-          </div>
-          <div class="hint">Default 5%.</div>
-        </div>
-
-        <button id="btn-run" class="btn-run">
-          <span>RUN</span>
+  <div class="app-root">
+    <!-- Minimal Top Strip -->
+    <div class="top-strip">
+      <div class="top-left">
+        <div class="status-dot"></div>
+        <div class="status-text" id="status-text">engine: idle</div>
+      </div>
+      <div class="top-right">
+        <button class="btn" id="btn-template" type="button">
+          📎 template
+        </button>
+        <button class="btn btn-primary" id="btn-run" type="button">
+          ▶ run
         </button>
       </div>
-
-      <div class="status-bar">
-        <div class="status-left">
-          <span id="status-dot" class="status-dot error"></span>
-          <span id="status-text">Expiration wajib diisi!</span>
-        </div>
-        <div class="status-right" id="status-summary"></div>
-      </div>
-
-      <div class="grid">
-        <div class="panel panel-wide">
-          <div class="panel-header">
-            <div class="panel-title">Options Sentiment Narrative</div>
-            <div class="panel-meta"><span class="badge-accent">Report</span></div>
-          </div>
-          <div id="text-report" class="report-body">Waiting for data...</div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">Composite Scores</div>
-          </div>
-          <div id="chart-sentiment" class="chart-container"></div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">Volume &amp; OI</div>
-          </div>
-          <div id="chart-volume" class="chart-container"></div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">IV Curve</div>
-          </div>
-          <div id="chart-ivcurve" class="chart-container"></div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">IV Heatmap</div>
-          </div>
-          <div id="chart-heatmap" class="chart-container"></div>
-        </div>
-      </div>
     </div>
 
-    <!-- TAB: FORECAST -->
-    <div id="tab-forecast" style="display:none;">
-      <div class="control-bar">
-        <div class="field-group">
-          <label class="field-label">Ticker</label>
-          <input id="fc-ticker" class="field-input" value="NVDA">
+    <!-- Main Layout -->
+    <main class="main-layout">
+      <!-- Editor -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            editor.py
+          </div>
+          <div class="panel-tag" id="last-run-label">never run</div>
         </div>
-
-        <div class="field-group">
-          <label class="field-label">Model Type</label>
-          <select id="fc-model" class="field-select">
-            <option value="arima">ARIMA (Statistical)</option>
-            <option value="lstm">LSTM (Deep Learning)</option>
-          </select>
+        <div class="editor-wrapper">
+          <div class="editor-meta">
+            <span class="pill-soft">Shift+Enter = run</span>
+          </div>
+          <div class="editor-container">
+            <div id="editor-gutter" class="editor-gutter"></div>
+            <textarea id="code-editor" spellcheck="false"></textarea>
+          </div>
         </div>
+      </section>
 
-        <div class="field-group">
-          <label class="field-label">Lookback (Days)</label>
-          <input id="fc-lookback" class="field-input" type="number" value="365">
-          <div class="hint">Data latih historis.</div>
+      <!-- Output -->
+      <section class="panel output-wrapper">
+        <div class="panel-header">
+          <div class="panel-title">output</div>
+          <div class="panel-tag" id="run-status-pill">status: idle</div>
         </div>
-
-        <div class="field-group">
-          <label class="field-label">Horizon (Days)</label>
-          <input id="fc-horizon" class="field-input" type="number" value="30">
-          <div class="hint">Prediksi ke depan.</div>
-        </div>
-
-        <button id="btn-run-forecast" class="btn-run">
-          <span>PREDICT</span>
-        </button>
-      </div>
-
-      <div class="status-bar">
-        <div class="status-left">
-          <span id="fc-status-dot" class="status-dot"></span>
-          <span id="fc-status-text">Ready to model.</span>
-        </div>
-      </div>
-
-      <div class="grid">
-        <div class="panel panel-wide">
-          <div class="panel-header">
-            <div class="panel-title">Price Forecast &amp; Confidence Intervals</div>
-            <div class="panel-meta">
-              <span class="badge" id="fc-badge-model">ARIMA</span>
-              <span class="badge-accent" id="fc-badge-horizon">30 Days</span>
+        <div class="output-body">
+          <div class="output-panel">
+            <div class="panel-label">chart</div>
+            <div class="panel-content" id="plot-area">
+              <div class="placeholder">jalankan script untuk menghasilkan grafik.</div>
             </div>
           </div>
-          <div id="chart-forecast-main" class="chart-container" style="min-height:350px;"></div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">Model Diagnostics</div>
-            <div class="panel-meta"><span class="badge">Summary</span></div>
-          </div>
-          <div id="fc-report" class="report-body">
-            Silakan jalankan prediksi untuk melihat detail model (AIC/BIC untuk ARIMA, Loss untuk LSTM).
+          <div class="output-panel">
+            <div class="panel-label">console</div>
+            <div class="panel-content">
+              <pre id="console-output" class="placeholder">logs eksekusi akan muncul di sini.</pre>
+            </div>
           </div>
         </div>
-
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">Training Loss / Residuals</div>
-            <div class="panel-meta"><span class="badge">Error Metric</span></div>
-          </div>
-          <div id="chart-forecast-loss" class="chart-container"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: MONTE CARLO -->
-    <div id="tab-montecarlo" style="display:none;">
-      <div class="grid">
-        <div class="panel panel-wide">
-          <div class="panel-header">
-            <div class="panel-title">Monte Carlo Simulation</div>
-          </div>
-          <div class="panel-body-text">
-            Modul ini akan mensimulasikan ribuan path harga berdasarkan drift dan volatilitas historis
-            untuk menghitung probabilitas harga mencapai strike tertentu (Probability of Touch).<br><br>
-            <i>Backend endpoint required: /api/quant/monte-carlo</i>
-          </div>
-          <div id="chart-montecarlo" class="chart-container" style="margin-top:10px;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: PORTFOLIO OPT -->
-    <div id="tab-portfolio" style="display:none;">
-      <div class="grid">
-        <div class="panel panel-wide">
-          <div class="panel-header">
-            <div class="panel-title">Portfolio Optimisation</div>
-          </div>
-          <div class="panel-body-text">
-            Menggunakan Modern Portfolio Theory (Markowitz) atau Risk Parity untuk menemukan alokasi aset yang optimal.<br><br>
-            <i>Backend endpoint required: /api/quant/portfolio-opt</i>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: PERFORMANCE -->
-    <div id="tab-perf" style="display:none;">
-      <div class="grid">
-        <div class="panel panel-wide">
-          <div class="panel-header">
-            <div class="panel-title">Performance Metrics</div>
-          </div>
-          <div class="panel-body-text">
-            Analisis kinerja strategi: Sharpe Ratio, Sortino, Max Drawdown, Calmar Ratio,
-            dan visualisasi Equity Curve.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: SIGMA -->
-    <div id="tab-sigma" style="display:none;">
-      <div class="grid">
-        <div class="panel panel-wide">
-          <div class="panel-header">
-            <div class="panel-title">Sigma Deviation &amp; Tail Risk</div>
-          </div>
-          <div class="panel-body-text">
-            Analisis Z-Score, Value at Risk (VaR), dan Expected Shortfall (ES) untuk mengukur risiko ekstrem pasar.
-          </div>
-        </div>
-      </div>
-    </div>
-
+      </section>
+    </main>
   </div>
 
   <script>
-    const API_SENTIMENT = "/api/options-sentiment";
-    const API_FORECAST  = "/api/quant/forecast"; 
+    // GANTI DENGAN ENDPOINT BACKEND KAMU
+    const API_URL = "https://kuancloud.loclx.io/api/quant/execute";
 
-    let chartSentiment, chartVolume, chartIvCurve, chartHeatmap;
-    let chartForecastMain, chartForecastLoss, chartMonteCarlo;
+    const codeEditor = document.getElementById("code-editor");
+    const gutter = document.getElementById("editor-gutter");
+    const btnRun = document.getElementById("btn-run");
+    const btnTemplate = document.getElementById("btn-template");
+    const statusText = document.getElementById("status-text");
+    const runStatusPill = document.getElementById("run-status-pill");
+    const lastRunLabel = document.getElementById("last-run-label");
+    const plotArea = document.getElementById("plot-area");
+    const consoleOutput = document.getElementById("console-output");
 
-    function setStatus(dotId, textId, type, text){
-      const dot = document.getElementById(dotId);
-      const txt = document.getElementById(textId);
-      if(!dot || !txt) return;
+    function setDefaultTemplate() {
+      const template = `import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 
-      dot.className = "status-dot";
-      if(type === "live") dot.classList.add("live");
-      else if(type === "error") dot.classList.add("error");
-      else if(type === "processing") dot.classList.add("processing");
+# Contoh data dummy untuk correlation (ganti dengan kuantara_data.load_prices)
+assets = ["SPX", "NDX", "XAUUSD", "CL1!", "DXY"]
+np.random.seed(42)
+data = np.random.normal(size=(250, len(assets)))
+df = pd.DataFrame(data, columns=assets)
 
-      txt.textContent = text;
+returns = df.pct_change().dropna()
+corr = returns.corr()
+
+print("Correlation matrix:")
+print(corr.round(2))
+
+fig, ax = plt.subplots(figsize=(6, 4))
+cax = ax.imshow(corr, vmin=-1, vmax=1, cmap="RdBu")
+ax.set_xticks(range(len(assets)))
+ax.set_yticks(range(len(assets)))
+ax.set_xticklabels(assets, rotation=45, ha="right")
+ax.set_yticklabels(assets)
+ax.set_title("Dummy Cross-Asset Correlation")
+fig.colorbar(cax, ax=ax, fraction=0.046, pad=0.04)
+plt.tight_layout()
+`;
+      codeEditor.value = template;
+      updateGutter();
     }
 
-    function initCharts(){
-      const baseOption = {
-        title: { text:"Waiting for data…", left:"center", top:"center", textStyle:{ fontSize:11, color:"#777" } },
-        xAxis:{show:false}, yAxis:{show:false}, series:[]
-      };
-
-      chartSentiment = echarts.init(document.getElementById("chart-sentiment"));
-      chartVolume    = echarts.init(document.getElementById("chart-volume"));
-      chartIvCurve   = echarts.init(document.getElementById("chart-ivcurve"));
-      chartHeatmap   = echarts.init(document.getElementById("chart-heatmap"));
-      [chartSentiment, chartVolume, chartIvCurve, chartHeatmap].forEach(c => c.setOption(baseOption));
-
-      chartForecastMain = echarts.init(document.getElementById("chart-forecast-main"));
-      chartForecastLoss = echarts.init(document.getElementById("chart-forecast-loss"));
-      [chartForecastMain, chartForecastLoss].forEach(c => c.setOption(baseOption));
-
-      chartMonteCarlo = echarts.init(document.getElementById("chart-montecarlo"));
-      chartMonteCarlo.setOption(baseOption);
-
-      window.addEventListener("resize", () => {
-        chartSentiment.resize();
-        chartVolume.resize();
-        chartIvCurve.resize();
-        chartHeatmap.resize();
-        chartForecastMain.resize();
-        chartForecastLoss.resize();
-        chartMonteCarlo.resize();
-      });
-    }
-
-    async function runSentiment(){
-      const btn = document.getElementById("btn-run");
-      const ticker = document.getElementById("input-ticker").value.trim() || "SPY";
-      const expiry = document.getElementById("input-expiry").value.trim();
-      const pctOtm = document.getElementById("input-pct-otm").value.trim();
-
-      if(!expiry){
-        setStatus("status-dot", "status-text", "error", "Expiration wajib diisi!");
-        return;
+    function updateGutter() {
+      const lines = codeEditor.value.split("\n").length || 1;
+      let html = "";
+      for (let i = 1; i <= lines; i++) {
+        html += '<div class="editor-gutter-line">' + i + '</div>';
       }
+      gutter.innerHTML = html;
+    }
 
-      btn.disabled = true;
-      setStatus("status-dot", "status-text", "processing", `Fetching options for ${ticker}...`);
+    codeEditor.addEventListener("input", updateGutter);
+
+    function setRunningState(isRunning) {
+      btnRun.disabled = isRunning;
+      statusText.textContent = isRunning ? "engine: running…" : "engine: idle";
+      runStatusPill.textContent = isRunning ? "status: running…" : "status: idle";
+      runStatusPill.style.color = isRunning ? "#ffd95e" : "var(--text-muted)";
+    }
+
+    function updateLastRun() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      const ss = String(now.getSeconds()).padStart(2, "0");
+      lastRunLabel.textContent = "last: " + hh + ":" + mm + ":" + ss;
+    }
+
+    async function runScript() {
+      const code = codeEditor.value.trim();
+      if (!code) return;
+
+      setRunningState(true);
+      consoleOutput.classList.remove("placeholder");
+      consoleOutput.textContent = "running...\n";
+      plotArea.innerHTML = "<div class='placeholder'>menghasilkan grafik…</div>";
 
       try {
-        const url = new URL(API_SENTIMENT, window.location.origin);
-        url.searchParams.set("ticker", ticker);
-        url.searchParams.set("expiration", expiry);
-        url.searchParams.set("pct_otm", pctOtm);
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: code,
+            user_id: "demo-user",
+            project_id: "quant-lab"
+          })
+        });
 
-        await new Promise(r => setTimeout(r, 1000));
-        const data = {
-          pc_score: -10, iv_score: 20, vol_score: -5, composite: 1.5,
-          interpretation: "Neutral Leaning Bullish", quality_score: 5,
-          total_call_vol: 15000, total_put_vol: 12000,
-          total_call_oi: 50000, total_put_oi: 45000,
-          iv_curve_calls: [[100,20],[105,18],[110,19]],
-          iv_curve_puts: [[100,22],[95,25],[90,30]],
-          heatmap_strikes: ["90","95","100","105","110"],
-          heatmap_iv: [[0,0,30],[0,1,0],[1,0,25],[1,1,0],[2,0,22],[2,1,0],[3,0,18],[3,1,0],[4,0,19],[4,1,0]],
-          text_report: "Simulated Report: Data backend belum terkoneksi.\nNamun UI sudah siap menerima format JSON standar."
-        };
-
-        applySentimentData(data);
-        setStatus("status-dot", "status-text", "live", "Data loaded successfully.");
-        document.getElementById("status-summary").textContent =
-          `Score: ${data.composite} · ${data.interpretation}`;
-
-      } catch(err){
-        console.error(err);
-        setStatus("status-dot", "status-text", "error", "Error: " + err.message);
-      } finally{
-        btn.disabled = false;
-      }
-    }
-
-    function applySentimentData(data){
-      chartSentiment.setOption({
-        title:{text:"Sentiment Component Scores", textStyle:{color:"#ddd", fontSize:12}, top:5, left:"center"},
-        grid:{left:"15%", right:"10%", top:40, bottom:20},
-        tooltip:{trigger:"axis"},
-        xAxis:{type:"value", min:-100, max:100, splitLine:{lineStyle:{color:"#333"}}},
-        yAxis:{type:"category", data:["P/C Ratio","IV Skew","Vol Bias","Composite"], axisLabel:{color:"#aaa"}},
-        series:[{
-          type:"bar",
-          data:[data.pc_score, data.iv_score, data.vol_score, data.composite],
-          itemStyle:{ color: p => p.value > 0 ? "#46c97f" : "#ff4d4f" }
-        }]
-      });
-
-      chartVolume.setOption({
-        title:{text:"Call vs Put Volume/OI", textStyle:{color:"#ddd", fontSize:12}, top:5, left:"center"},
-        tooltip:{trigger:"axis"},
-        legend:{top:25, textStyle:{color:"#aaa"}},
-        grid:{left:"12%", right:"5%", bottom:25},
-        xAxis:{type:"category", data:["Volume", "Open Interest"], axisLabel:{color:"#aaa"}},
-        yAxis:{type:"value", splitLine:{lineStyle:{color:"#333"}}, axisLabel:{color:"#aaa"}},
-        series:[
-          {name:"Calls", type:"bar", data:[data.total_call_vol, data.total_call_oi], itemStyle:{color:"#46c97f"}},
-          {name:"Puts", type:"bar", data:[data.total_put_vol, data.total_put_oi], itemStyle:{color:"#ff4d4f"}}
-        ]
-      });
-
-      document.getElementById("text-report").textContent = data.text_report;
-    }
-
-    async function runForecast(){
-      const btn = document.getElementById("btn-run-forecast");
-      const ticker = document.getElementById("fc-ticker").value;
-      const model = document.getElementById("fc-model").value;
-      const lookback = document.getElementById("fc-lookback").value;
-      const horizon = document.getElementById("fc-horizon").value;
-
-      btn.disabled = true;
-      setStatus("fc-status-dot", "fc-status-text", "processing", `Running ${model.toUpperCase()} on ${ticker}...`);
-
-      try {
-        const url = new URL(API_FORECAST, window.location.origin);
-        await new Promise(r => setTimeout(r, 1500));
-
-        let date = new Date();
-        date.setDate(date.getDate() - parseInt(lookback));
-        let price = 100;
-        const historyDates = [];
-        const historyPrices = [];
-        for(let i=0; i<parseInt(lookback); i++){
-          date.setDate(date.getDate() + 1);
-          price = price + (Math.random() - 0.5) * 2;
-          historyDates.push(date.toISOString().split('T')[0]);
-          historyPrices.push(price.toFixed(2));
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status + " – " + res.statusText);
         }
 
-        const forecastDates = [];
-        const forecastPrices = [];
-        const lowerBound = [];
-        const upperBound = [];
-        let fPrice = parseFloat(historyPrices[historyPrices.length-1]);
-        
-        for(let i=0; i<parseInt(horizon); i++){
-          date.setDate(date.getDate() + 1);
-          fPrice = fPrice + (Math.random() - 0.48) * 2;
-          forecastDates.push(date.toISOString().split('T')[0]);
-          forecastPrices.push(fPrice.toFixed(2));
-          const spread = (i+1) * 0.5; 
-          lowerBound.push((fPrice - spread).toFixed(2));
-          upperBound.push((fPrice + spread).toFixed(2));
+        const data = await res.json();
+
+        const logs = (data.logs || "").trim();
+        consoleOutput.textContent = logs || "(no logs)";
+
+        if (data.plot_png) {
+          plotArea.innerHTML =
+            '<img src="data:image/png;base64,' + data.plot_png + '" alt="quant plot">';
+        } else if (data.html_plot) {
+          plotArea.innerHTML = data.html_plot;
+        } else {
+          plotArea.innerHTML =
+            "<div class='placeholder'>tidak ada grafik yang dikembalikan.</div>";
         }
-        
-        const mockResponse = {
-          model: model,
-          ticker: ticker,
-          history_dates: historyDates,
-          history_prices: historyPrices,
-          forecast_dates: forecastDates,
-          forecast_prices: forecastPrices,
-          conf_lower: lowerBound,
-          conf_upper: upperBound,
-          metrics: {
-             rmse: 1.25,
-             mae: 0.98,
-             details: model === 'arima'
-               ? "ARIMA(5,1,0) AIC: 1240.5"
-               : "LSTM (2 Layers, 50 Neurons) Epochs: 50"
-          },
-          loss_history: [0.5, 0.4, 0.35, 0.32, 0.30, 0.29, 0.28, 0.28]
-        };
 
-        applyForecastData(mockResponse);
-        setStatus("fc-status-dot", "fc-status-text", "live", `Prediction complete.`);
-
-      } catch(e){
-        setStatus("fc-status-dot", "fc-status-text", "error", "Error: " + e.message);
+        updateLastRun();
+        runStatusPill.textContent = "status: success";
+        runStatusPill.style.color = "#22c55e";
+      } catch (err) {
+        consoleOutput.textContent += "\nERROR: " + err.message;
+        plotArea.innerHTML = "<div class='placeholder'>terjadi error saat eksekusi.</div>";
+        runStatusPill.textContent = "status: error";
+        runStatusPill.style.color = "#ef4444";
       } finally {
-        btn.disabled = false;
+        setRunningState(false);
       }
     }
 
-    function applyForecastData(data){
-      document.getElementById("fc-badge-model").textContent = data.model.toUpperCase();
-      document.getElementById("fc-badge-horizon").textContent =
-        data.forecast_dates.length + " Days";
-      document.getElementById("fc-report").textContent = 
-        `Model: ${data.metrics.details}\n` +
-        `RMSE: ${data.metrics.rmse}\n` +
-        `MAE: ${data.metrics.mae}\n\n` +
-        `Forecast Start: ${data.forecast_dates[0]}\n` +
-        `Forecast End: ${data.forecast_dates[data.forecast_dates.length-1]}\n` +
-        `Last Historical Price: ${data.history_prices[data.history_prices.length-1]}`;
-
-      const fullDates = [...data.history_dates, ...data.forecast_dates];
-      const plotHistory = data.history_prices.concat(new Array(data.forecast_dates.length).fill(null));
-      
-      const connectionNulls = new Array(data.history_dates.length - 1).fill(null);
-      const lastHist = data.history_prices[data.history_prices.length-1];
-      const plotForecast = [...connectionNulls, lastHist, ...data.forecast_prices];
-      
-      const nullsForBounds = new Array(data.history_dates.length).fill(null);
-      const plotLower = [...nullsForBounds, ...data.conf_lower];
-      const plotUpper = [...nullsForBounds, ...data.conf_upper];
-
-      chartForecastMain.setOption({
-        title: { text:`Forecast: ${data.ticker}`, textStyle:{ color:"#fff", fontSize:14 } },
-        tooltip: { trigger:'axis' },
-        legend: { data:['History','Forecast','Confidence'], textStyle:{color:"#aaa"}, top:25 },
-        grid: { left:'3%', right:'4%', bottom:'3%', containLabel:true },
-        xAxis: { type:'category', data:fullDates, boundaryGap:false },
-        yAxis: { type:'value', scale:true, splitLine:{lineStyle:{color:"#333"}} },
-        series: [
-          {
-            name:'History',
-            type:'line',
-            data:plotHistory,
-            itemStyle:{ color:'#ccc' },
-            showSymbol:false
-          },
-          {
-            name:'Confidence',
-            type:'line',
-            data:plotUpper,
-            lineStyle:{ opacity:0 },
-            stack:'confidence-band',
-            symbol:'none'
-          },
-          {
-            name:'Confidence',
-            type:'line',
-            data:plotLower,
-            lineStyle:{ opacity:0 },
-            areaStyle:{ color:'#3399ff', opacity:0.2 },
-            stack:'confidence-band',
-            symbol:'none'
-          },
-          {
-            name:'Forecast',
-            type:'line',
-            data:plotForecast,
-            itemStyle:{ color:'#ffbf00' },
-            lineStyle:{ type:'dashed' }
-          }
-        ]
-      });
-
-      if(data.model === 'lstm'){
-        chartForecastLoss.setOption({
-          title: { text:'Training Loss History', left:'center', textStyle:{color:'#aaa', fontSize:12} },
-          tooltip: { trigger:'axis' },
-          xAxis: { type:'category', data:data.loss_history.map((_,i)=> "Ep "+(i+1)) },
-          yAxis: { type:'value', splitLine:{lineStyle:{color:"#333"}} },
-          series: [{ type:'line', data:data.loss_history, smooth:true, lineStyle:{color:'#ff4d4f'} }]
-        });
-      } else {
-        const residuals = data.history_prices.map(()=> (Math.random()-0.5).toFixed(3));
-        chartForecastLoss.setOption({
-           title: { text:'Model Residuals', left:'center', textStyle:{color:'#aaa', fontSize:12} },
-           tooltip: { trigger:'axis' },
-           xAxis: { type:'category', show:false },
-           yAxis: { type:'value', splitLine:{lineStyle:{color:"#333"}} },
-           series: [{ type:'bar', data:residuals, itemStyle:{color:'#3399ff'} }]
-        });
+    // Shortcut Shift+Enter
+    codeEditor.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && e.shiftKey) {
+        e.preventDefault();
+        runScript();
       }
-    }
+    });
 
-    function switchTab(tabId){
-      const contents = document.querySelectorAll("#app > div[id^='tab-']");
-      contents.forEach(el => el.style.display = "none");
-      
-      const selected = document.getElementById("tab-" + tabId);
-      if(selected) selected.style.display = "block";
+    btnRun.addEventListener("click", runScript);
+    btnTemplate.addEventListener("click", setDefaultTemplate);
 
-      document.querySelectorAll(".quant-menu-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.tab === tabId);
-      });
-
-      const descMap = {
-        sentiment: "Analisa sentimen pasar options secara real-time.",
-        forecast: "Prediksi harga time-series menggunakan Statistical (ARIMA) atau Deep Learning (LSTM).",
-        montecarlo: "Simulasi ribuan skenario path harga untuk probability mapping.",
-        portfolio: "Optimasi alokasi aset (Efficient Frontier).",
-        perf: "Evaluasi kinerja strategi trading.",
-        sigma: "Analisis distribusi risiko dan tail risk."
-      };
-      document.getElementById("desc-text").textContent = descMap[tabId] || "";
-
-      setTimeout(() => {
-        if(tabId === 'sentiment') {
-          chartSentiment.resize();
-          chartVolume.resize();
-          chartIvCurve.resize();
-          chartHeatmap.resize();
-        }
-        if(tabId === 'forecast') {
-          chartForecastMain.resize();
-          chartForecastLoss.resize();
-        }
-        if(tabId === 'montecarlo') {
-          chartMonteCarlo.resize();
-        }
-      }, 100);
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      initCharts();
-      
-      const btnSent = document.getElementById("btn-run");
-      if(btnSent) btnSent.addEventListener("click", runSentiment);
-
-      const btnFore = document.getElementById("btn-run-forecast");
-      if(btnFore) btnFore.addEventListener("click", runForecast);
-
-      document.querySelectorAll(".quant-menu-btn").forEach(btn => {
-        btn.addEventListener("click", () => switchTab(btn.dataset.tab));
-      });
-
-      switchTab("sentiment");
+    window.addEventListener("DOMContentLoaded", () => {
+      setDefaultTemplate();
+      updateGutter();
     });
   </script>
 </body>
