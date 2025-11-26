@@ -1190,7 +1190,7 @@
     const AI_STRUCTURED_PROMPT = `Bertindak sebagai **macro strategist** dan **trader multi-aset**.
 
 Tugasmu:
-1. Jelaskan kondisi global makro **terbaru (<= 3 hari terakhir,WAJIB UPDATE!) dari sumber Reuters,Bloomberg,Invesinglive,Livesquawk,atau sebagainya** mencakup: 
+1. Jelaskan kondisi global makro **terbaru (<= 2 hari terakhir,WAJIB INFORMASI TERBARU!) dari sumber Reuters,Bloomberg,Invesinglive,Livesquawk,Yahoo Finance atau sebagainya** mencakup: 
    - headlines berita utama,
    - speech/komentar bank sentral,
    - informasi suku bunga dan probabilitas hikes/cuts/hold,
@@ -1477,7 +1477,7 @@ Struktur JSON yang HARUS kamu ikuti:
         btn.style.opacity = "0.7";
       }
 
-      updateAiSummary("Tunggu sebentar, harap bersabar...");
+      updateAiSummary("Memahami kondisi market sekitar 20 detik, harap bersabar...");
       updateTradingSignals([]);
       updateHeadlines([]);
 
@@ -1486,7 +1486,7 @@ Struktur JSON yang HARUS kamu ikuti:
         applyAiMarketResult(result);
       } catch (err) {
         console.error(err);
-        updateAiSummary("Gagal memuat AI Summary, coba sekali lagi:\n" + (err?.message || err));
+        updateAiSummary("Gagal memuat AI Summary, coba Refresh lagi");
       } finally {
         isGenerating = false;
         if (btn) {
