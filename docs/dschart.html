@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dukascopy Chart Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Widget akan muncul di sini -->
+  <script type="text/javascript">
+    DukascopyApplet = {
+      "type":"chart",
+      "params":{
+        "showUI":true,
+        "showTabs":true,
+        "showParameterToolbar":true,
+        "showOfferSide":true,
+        "allowInstrumentChange":true,
+        "allowPeriodChange":true,
+        "allowOfferSideChange":true,
+        "showAdditionalToolbar":true,
+        "showExportImportWorkspace":true,
+        "allowSocialSharing":true,
+        "showUndoRedoButtons":true,
+        "showDetachButton":false,
+        "presentationType":"candle",
+        "axisX":true,
+        "axisY":true,
+        "legend":true,
+        "timeline":true,
+        "showDateSeparators":true,
+        "showZoom":true,
+        "showScrollButtons":true,
+        "showAutoShiftButton":true,
+        "crosshair":true,
+        "borders":false,
+        "freeMode":false,
+        "theme":"DarkIOs",
+        "uiColor":"#000",
+        "availableInstruments":"l:",
+        "instrument":"EUR/USD",
+        "period":"11",
+        "offerSide":"BID",
+        "timezone":1,
+        "live":true,
+        "allowPan":true,
+        "indicators":"sDYURGRBVBCMBgvAnIDgCjpTCLOcLjECDsADqAYQQGmURs8ARVlcz9kBDaAsl57hBVAFgKxnXiRAKQ..",
+        "width":"100%",
+        "height":"600",   <!-- kalau mau full page nanti bisa diakalin, ini dulu 600px -->
+        "adv":"popup",
+        "lang":"en"
+      }
+    };
+  </script>
+
+  <script type="text/javascript" src="https://freeserv-static.dukascopy.com/2.0/core.js"></script>
+</body>
+</html>
