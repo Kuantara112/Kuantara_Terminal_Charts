@@ -2,189 +2,244 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Kuantara – Live Channels</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuantara – Live Channels (Robust)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-  <!-- Fira Code (Kuantara Standard) -->
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
     :root {
-      --bg-root:#000000;
-      --bg-main:#111111;
-      --border-soft:#2b2b2b;
-      --text-main:#f5f5f5;
-      --text-muted:#9b9b9b;
-      --accent:#ffbf00;
+      --bg-root: #000000;
+      --bg-main: #111111;
+      --border-soft: #2b2b2b;
+      --text-main: #f5f5f5;
+      --text-muted: #9b9b9b;
+      --accent: #ffbf00;
+      --accent-hover: #e6ac00;
 
-      --fs-title:14px;
-      --fs-subtitle:12px;
-      --fs-body:10.5px;
-      --fs-small:9.5px;
+      --fs-title: 14px;
+      --fs-subtitle: 12px;
+      --fs-body: 10.5px;
+      --fs-small: 9.5px;
     }
 
     * {
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:"Fira Code",monospace !important;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Fira Code", monospace !important;
+      -webkit-font-smoothing: antialiased;
     }
 
     html, body {
-      width:100%;
-      height:100%;
-      background-color:var(--bg-root);
-      color:var(--text-main);
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-root);
+      color: var(--text-main);
+      overflow: hidden; /* Mencegah scroll ganda */
     }
 
     body {
-      display:flex;
-      flex-direction:column;
+      display: flex;
+      flex-direction: column;
     }
 
     .page {
-      flex:1 1 auto;
-      padding:12px;
-      background-color:var(--bg-root);
-      display:flex;
-      flex-direction:column;
-      height:100%;
+      flex: 1;
+      padding: 12px;
+      background-color: var(--bg-root);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto; /* Scroll di dalam page jika konten panjang */
     }
 
     .card {
-      background-color:var(--bg-main);
-      border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:14px 16px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      width:100%;
-      flex:1 1 auto;
-      min-height:0;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-soft);
+      border-radius: 6px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      max-width: 1200px;
+      margin: 0 auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
 
-    /* BAR KONTROL: dropdown + mode + now playing sejajar */
+    /* --- CONTROLS AREA --- */
     .controls-row {
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px 18px;
-      align-items:center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-soft);
     }
 
-    /* Label & dropdown sejajar */
     .field-group {
-      display:flex;
-      flex-direction:row;
-      align-items:center;
-      gap:6px;
-      min-width:220px;
-      flex:1 1 260px;
-      max-width:420px;
+      display: flex;
+      flex-direction: column; /* Ubah ke column di mobile agar rapi */
+      gap: 4px;
+      flex: 1 1 200px;
+    }
+
+    @media(min-width: 600px) {
+      .field-group {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+      }
     }
 
     .field-label {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      white-space:nowrap;
+      font-size: var(--fs-small);
+      color: var(--text-muted);
+      white-space: nowrap;
     }
 
     .select-wrap {
-      position:relative;
-      display:flex;
-      align-items:center;
-      flex:1 1 auto;
+      position: relative;
+      display: flex;
+      align-items: center;
+      flex: 1;
+      width: 100%;
     }
 
     select {
-      width:100%;
-      font-size:var(--fs-body);
-      color:var(--text-main);
-      background-color:#000000;
-      border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:6px 26px 6px 8px;
-      outline:none;
-      appearance:none;
-      -webkit-appearance:none;
-      -moz-appearance:none;
+      width: 100%;
+      font-size: var(--fs-body);
+      color: var(--text-main);
+      background-color: #050505;
+      border: 1px solid var(--border-soft);
+      border-radius: 4px;
+      padding: 8px 30px 8px 10px;
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+      transition: border 0.2s;
     }
 
     select:focus {
-      border-color:var(--accent);
+      border-color: var(--accent);
     }
 
     .select-caret {
-      position:absolute;
-      right:8px;
-      pointer-events:none;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
+      position: absolute;
+      right: 10px;
+      pointer-events: none;
+      font-size: 8px;
+      color: var(--text-muted);
     }
 
-    .meta-row {
-      display:flex;
-      gap:6px;
-      white-space:nowrap;
-      color:var(--text-muted);
-      font-size:var(--fs-small);
-      flex:0 0 auto;
+    .btn-reload {
+      background-color: var(--border-soft);
+      color: var(--text-main);
+      border: none;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: var(--fs-small);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .btn-reload:hover {
+      background-color: #444;
+      color: var(--accent);
+    }
+    .btn-reload:active {
+      transform: translateY(1px);
+    }
+
+    .meta-info {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      font-size: var(--fs-small);
+      color: var(--text-muted);
+      margin-left: auto; /* Dorong ke kanan */
+    }
+    
+    .meta-item {
+      display: flex;
+      gap: 6px;
     }
 
     .meta-value {
-      color:var(--accent);
-      font-weight:500;
+      color: var(--accent);
+      font-weight: 500;
     }
 
-    .now-playing {
-      display:flex;
-      gap:6px;
-      white-space:nowrap;
-      font-size:var(--fs-small);
-      flex:0 0 auto;
-    }
-
-    .now-playing-name {
-      color:var(--accent);
-      font-size:var(--fs-body);
-      font-weight:500;
+    /* --- PLAYER AREA --- */
+    .player-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #000;
+      border-radius: 4px;
+      border: 1px solid var(--border-soft);
+      position: relative;
+      overflow: hidden;
+      min-height: 200px;
     }
 
     .player-shell {
-      margin-top:8px;
-      width:100%;
-      border-radius:4px;
-      border:1px solid var(--border-soft);
-      background-color:#000000;
-      overflow:hidden;
-      flex:1 1 auto;
-      position:relative;
-      min-height:0;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      /* Jika ingin rasio 16:9 fix, gunakan padding-bottom: 56.25% dan hapus flex:1 di container */
+    }
+    
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
     }
 
-    .player-shell iframe {
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      border:0;
+    /* Loading Indicator */
+    .loader-overlay {
+      position: absolute;
+      inset: 0;
+      background-color: #080808;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .loader-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid var(--border-soft);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
 
-    /* Scrollbar minimal */
-    ::-webkit-scrollbar {
-      width:6px;
-      height:6px;
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
-    ::-webkit-scrollbar-track {
-      background:#000000;
-    }
-    ::-webkit-scrollbar-thumb {
-      background:#2b2b2b;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background:#444444;
-    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: #2b2b2b; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #444; }
   </style>
 </head>
 
@@ -193,151 +248,168 @@
     <section class="card">
 
       <div class="controls-row">
-        <!-- Dropdown + Label sejajar -->
+        
         <div class="field-group">
-          <label class="field-label" for="channelSelect">Pilih kanal live</label>
+          <label class="field-label" for="channelSelect">LIVE FEED</label>
           <div class="select-wrap">
             <select id="channelSelect"></select>
             <span class="select-caret">▼</span>
           </div>
         </div>
 
-        <!-- Mode -->
-        <div class="meta-row">
-          <span>Mode:</span>
-          <span class="meta-value">24/7 Live News</span>
-        </div>
+        <button id="reloadBtn" class="btn-reload" title="Muat ulang player jika macet">
+          <span>↻</span> RELOAD
+        </button>
 
-        <!-- Now Playing -->
-        <div class="now-playing">
-          <span>Now Playing:</span>
-          <span id="currentChannelName" class="now-playing-name">—</span>
+        <div class="meta-info">
+           <div class="meta-item">
+             <span>Playing:</span>
+             <span id="currentChannelName" class="meta-value">—</span>
+           </div>
+           <div class="meta-item" style="display:none;" id="statusIndicator">
+             <span style="color:#00ff00; font-size:14px;">•</span> LIVE
+           </div>
         </div>
       </div>
 
-      <!-- Player -->
-      <div class="player-shell">
-        <iframe id="channelPlayer"
-          src=""
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen></iframe>
+      <div class="player-container">
+        <div id="loader" class="loader-overlay">
+          <div class="spinner"></div>
+        </div>
+        
+        <div class="player-shell">
+          <iframe id="channelPlayer"
+            src=""
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>
+        </div>
       </div>
 
     </section>
   </div>
 
   <script>
-    /* CHANNEL LIST — dengan NHK & ABC terbaru */
+    /**
+     * Konfigurasi Channel
+     * Catatan: YouTube Live ID bersifat dinamis. Jika ada channel yang error (grey screen),
+     * berarti ID videonya sudah berubah dari pihak penyiar.
+     */
     const CHANNELS = [
-      {
-        key: "yahoo",
-        name: "Yahoo Finance Live",
-        url: "https://www.youtube.com/embed/KQp-e_XQnDE?si=ldjAF1YlBY7bg5wG"
-      },
-      {
-        key: "cnbc",
-        name: "CNBC Television",
-        url: "https://www.youtube.com/embed/9NyxcX3rhQs?si=p9e_fXAge4zH215U"
-      },
-      {
-        key: "bloomberg",
-        name: "Bloomberg Global News",
-        url: "https://www.youtube.com/embed/f39oHo6vFLg?si=7twwBXGse3R3Xqvh"
-      },
-      {
-        key: "cna",
-        name: "CNA",
-        url: "https://www.youtube.com/embed/XWq5kBlakcQ?si=lgwvLgV68waHGmJJ"
-      },
-      {
-        key: "idx",
-        name: "IDX Channel",
-        url: "https://www.youtube.com/embed/zsJnPbgbqhg?si=Ngg6t-GOnK9KTNxr"
-      },
-      {
-        key: "cgtn",
-        name: "CGTN",
-        url: "https://www.youtube.com/embed/_6dRRfnYJws?si=3Sj5jDvYKXRwTvSB"
-      },
-      {
-        key: "dw",
-        name: "DW News",
-        url: "https://www.youtube.com/embed/LuKwFajn37U?si=DAR2Y9FPyXH5AObL"
-      },
-      {
-        key: "ndtv",
-        name: "NDTV",
-        url: "https://www.youtube.com/embed/ydiWklMUhcQ?si=5DbYpHsCld4A39FL"
-      },
-      {
-        key: "sky",
-        name: "Sky News",
-        url: "https://www.youtube.com/embed/YDvsBbKfLPA?si=AEd0hjTCIbCzfNR9"
-      },
-      {
-        key: "france24",
-        name: "France 24",
-        url: "https://www.youtube.com/embed/Ap-UM1O9RBU?si=jHvQMUDQNoloHRIM"
-      },
-      {
-        key: "nhk",
-        name: "NHK World",
-        url: "https://www.youtube.com/embed/f0lYkdA-Gtw?si=YvBDoKWgGJCAk5VO"
-      },
-      {
-        key: "aljazeera",
-        name: "Al Jazeera English",
-        url: "https://www.youtube.com/embed/gCNeDWCI0vo?si=pH2MeP0J91EI9sgf"
-      },
-      {
-        key: "trt",
-        name: "TRT World",
-        url: "https://www.youtube.com/embed/nuunj2Gpcrg?si=xbXF4TxM89F9Aov1"
-      },
-      {
-        key: "gbnews",
-        name: "GB News",
-        url: "https://www.youtube.com/embed/QliL4CGc7iY?si=fVnw9uKfLvz7tbDw"
-      },
-      {
-        key: "abc",
-        name: "ABC News",
-        url: "https://www.youtube.com/embed/vOTiJkg1voo?si=MQF3klEmpQSOanTj"
-      }
+      { key: "yahoo", name: "Yahoo Finance Live", url: "https://www.youtube.com/embed/KQp-e_XQnDE" },
+      { key: "cnbc", name: "CNBC Television", url: "https://www.youtube.com/embed/9NyxcX3rhQs" },
+      { key: "bloomberg", name: "Bloomberg Global", url: "https://www.youtube.com/embed/f39oHo6vFLg" },
+      { key: "cna", name: "CNA Singapore", url: "https://www.youtube.com/embed/XWq5kBlakcQ" },
+      { key: "idx", name: "IDX Channel", url: "https://www.youtube.com/embed/zsJnPbgbqhg" },
+      { key: "cgtn", name: "CGTN News", url: "https://www.youtube.com/embed/_6dRRfnYJws" },
+      { key: "dw", name: "DW News", url: "https://www.youtube.com/embed/LuKwFajn37U" },
+      { key: "ndtv", name: "NDTV India", url: "https://www.youtube.com/embed/ydiWklMUhcQ" },
+      { key: "sky", name: "Sky News UK", url: "https://www.youtube.com/embed/YDvsBbKfLPA" },
+      { key: "france24", name: "France 24 English", url: "https://www.youtube.com/embed/Ap-UM1O9RBU" },
+      { key: "nhk", name: "NHK World Japan", url: "https://www.youtube.com/embed/f0lYkdA-Gtw" },
+      { key: "aljazeera", name: "Al Jazeera English", url: "https://www.youtube.com/embed/gCNeDWCI0vo" },
+      { key: "trt", name: "TRT World", url: "https://www.youtube.com/embed/nuunj2Gpcrg" },
+      { key: "gbnews", name: "GB News", url: "https://www.youtube.com/embed/QliL4CGc7iY" },
+      { key: "abc", name: "ABC News US", url: "https://www.youtube.com/embed/vOTiJkg1voo" },
+      { key: "nasa", name: "NASA Live", url: "https://www.youtube.com/embed/21X5lGlDOfg" } // Tambahan bonus
     ];
 
-    const selectEl = document.getElementById("channelSelect");
-    const playerIframe = document.getElementById("channelPlayer");
-    const currentNameEl = document.getElementById("currentChannelName");
+    document.addEventListener("DOMContentLoaded", () => {
+      // Mengambil elemen dengan aman
+      const els = {
+        select: document.getElementById("channelSelect"),
+        iframe: document.getElementById("channelPlayer"),
+        nameDisplay: document.getElementById("currentChannelName"),
+        reloadBtn: document.getElementById("reloadBtn"),
+        loader: document.getElementById("loader"),
+        status: document.getElementById("statusIndicator")
+      };
 
-    // Populate dropdown
-    CHANNELS.forEach((ch, i) => {
-      const opt = document.createElement("option");
-      opt.value = ch.key;
-      opt.textContent = ch.name;
-      if (i === 0) opt.selected = true;
-      selectEl.appendChild(opt);
+      // Jika ada elemen vital yang hilang, hentikan eksekusi untuk mencegah crash
+      if (!els.select || !els.iframe) {
+        console.error("Critical DOM elements missing.");
+        return;
+      }
+
+      // Populate Dropdown
+      const frag = document.createDocumentFragment();
+      CHANNELS.forEach((ch, index) => {
+        const opt = document.createElement("option");
+        opt.value = ch.key;
+        opt.textContent = ch.name;
+        // Pilih Yahoo secara default
+        if (index === 0) opt.selected = true;
+        frag.appendChild(opt);
+      });
+      els.select.appendChild(frag);
+
+      let currentKey = CHANNELS[0].key;
+
+      // Fungsi Inti: Mengganti Channel
+      function loadChannel(key) {
+        // Tampilkan loader
+        showLoader();
+
+        const ch = CHANNELS.find(c => c.key === key);
+        if (!ch) {
+          hideLoader();
+          return;
+        }
+
+        currentKey = key;
+        
+        // Update UI Text
+        if (els.nameDisplay) els.nameDisplay.textContent = ch.name;
+        if (els.status) els.status.style.display = "flex";
+
+        // Konstruksi URL yang aman
+        // Menambahkan parameter autoplay, mute, dan rel=0 (agar tidak menampilkan video random setelahnya)
+        const baseUrl = ch.url;
+        const separator = baseUrl.includes("?") ? "&" : "?";
+        const finalUrl = `${baseUrl}${separator}autoplay=1&mute=1&rel=0&modestbranding=1`;
+
+        // Set src iframe
+        els.iframe.src = finalUrl;
+
+        // Iframe onload event (untuk mematikan loader setelah iframe dimuat)
+        els.iframe.onload = () => {
+          hideLoader();
+        };
+        
+        // Fallback: Jika onload tidak tertrigger dalam 3 detik, matikan loader
+        setTimeout(hideLoader, 3000);
+      }
+
+      // Helper: Loader UI
+      function showLoader() {
+        if (els.loader) els.loader.classList.add("active");
+      }
+      function hideLoader() {
+        if (els.loader) els.loader.classList.remove("active");
+      }
+
+      // Event Listener: Ganti Channel
+      els.select.addEventListener("change", (e) => {
+        loadChannel(e.target.value);
+      });
+
+      // Event Listener: Tombol Reload
+      if (els.reloadBtn) {
+        els.reloadBtn.addEventListener("click", () => {
+          // Efek visual klik
+          els.reloadBtn.textContent = "Loading...";
+          loadChannel(currentKey);
+          
+          // Kembalikan teks tombol setelah sebentar
+          setTimeout(() => {
+            els.reloadBtn.innerHTML = "<span>↻</span> RELOAD";
+          }, 1000);
+        });
+      }
+
+      // Inisialisasi awal
+      loadChannel(currentKey);
     });
-
-    // Set player
-    function setChannel(key) {
-      const ch = CHANNELS.find(c => c.key === key);
-      if (!ch) return;
-
-      const url = ch.url.includes("?")
-        ? ch.url + "&autoplay=1&mute=1"
-        : ch.url + "?autoplay=1&mute=1";
-
-      playerIframe.src = url;
-      currentNameEl.textContent = ch.name;
-    }
-
-    // On change
-    selectEl.addEventListener("change", e => setChannel(e.target.value));
-
-    // Default: Yahoo
-    setChannel("yahoo");
   </script>
 </body>
 </html>
