@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart IDX:BBCA</title>
+    <style>
+        /* CSS ini memastikan grafik mengisi seluruh layar browser */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* Mencegah scrollbar ganda */
+            background-color: #181818; /* Menyesuaikan dengan tema gelap */
+        }
+    </style>
+</head>
+<body>
+
+<div class="tradingview-widget-container" style="height:100%;width:100%">
+  <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+  
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+  {
+  "allow_symbol_change": true,
+  "calendar": false,
+  "details": false,
+  "hide_side_toolbar": true,
+  "hide_top_toolbar": false,
+  "hide_legend": false,
+  "hide_volume": false,
+  "hotlist": false,
+  "interval": "D",
+  "locale": "en",
+  "save_image": true,
+  "style": "1",
+  "symbol": "IDX:BBCA",
+  "theme": "dark",
+  "timezone": "Asia/Jakarta",
+  "backgroundColor": "rgba(24, 24, 24, 1)",
+  "gridColor": "rgba(41, 41, 41, 1)",
+  "watchlist": [],
+  "withdateranges": false,
+  "compareSymbols": [],
+  "studies": [],
+  "autosize": true
+}
+  </script>
+</div>
+</body>
+</html>
