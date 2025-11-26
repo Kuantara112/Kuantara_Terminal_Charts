@@ -124,7 +124,7 @@
     .earnings-controls {
       display:flex;
       align-items:center;
-      gap:8px;
+      gap:6px;
     }
 
     #searchInput {
@@ -140,6 +140,22 @@
 
     #searchInput::placeholder {
       color:var(--text-muted);
+    }
+
+    #toggleScopeBtn {
+      padding:7px 10px;
+      font-size:10px;
+      background:#111111;
+      border:1px solid var(--border-soft);
+      color:var(--text-main);
+      border-radius:6px;
+      cursor:pointer;
+      white-space:nowrap;
+      line-height:1;
+    }
+
+    #toggleScopeBtn:hover {
+      border-color:var(--accent);
     }
 
     .earnings-table-wrapper {
@@ -236,6 +252,11 @@
       margin-top:4px;
     }
 
+    .today-badge {
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
     @media (max-width: 900px) {
       .page {
         flex-direction:column;
@@ -298,8 +319,10 @@
         <h2 class="panel-title">Earnings Calendar</h2>
         <div class="earnings-controls">
           <input id="searchInput" placeholder="Search ticker or company..." />
+          <button id="toggleScopeBtn">Show All</button>
         </div>
       </div>
+      <div class="today-badge" id="todayInfo"></div>
     </div>
 
     <div id="earningsTable" class="earnings-table-wrapper">
@@ -317,10 +340,25 @@
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDc2WUdEFucZDJdEuYXtF9GVGv1cxKxNQqJv9lXPx10KHE98mUyVDoW14K6TglVINbKeF9hx1BwqWz/pub?gid=0&single=true&output=csv";
 
-  let allRows = [];
-  let tableData = [];
+  let fullRows = [];      // semua baris data
+  let todayRows = [];     // hanya baris hari ini
+  let tableData = [];     // baris yang sedang ditampilkan (setelah search)
   let tableHeaders = [];
-  let sortState = {}; // { headerKey: "asc" | "desc" }
+  let sortState = {};     // { headerKey: "asc" | "desc" }
+  let dateColIndex = -1;
+  let showAllMode = false; // false = today only (default)
+
+  function setTodayBadge() {
+    const el = document.getElementById("todayInfo");
+    if (!el) return;
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    el.textContent = `Showing earnings for today (local time): ${y}-${m}-${d}`;
+  }
+
+  setTodayBadge();
 
   async function loadCSV() {
     try {
@@ -336,26 +374,50 @@
       }
 
       tableHeaders = parsed[0];
-      allRows = parsed.slice(1);
-      tableData = [...allRows];
+      dateColIndex = detectDateColumn(tableHeaders);
 
-      renderTable(tableHeaders, tableData);
+      fullRows = parsed.slice(1);
+
+      // filter hari ini
+      if (dateColIndex !== -1) {
+        const today = new Date();
+        const ty = today.getFullYear();
+        const tm = today.getMonth();
+        const td = today.getDate();
+
+        todayRows = fullRows.filter(r => {
+          const dateStr = (r[dateColIndex] ?? "").toString();
+          const d = parseDateFlexible(dateStr);
+          if (!d) return false;
+          return (
+            d.getFullYear() === ty &&
+            d.getMonth() === tm &&
+            d.getDate() === td
+          );
+        });
+      } else {
+        console.warn("Kolom tanggal tidak ditemukan, tidak dilakukan filter hari ini.");
+        todayRows = [...fullRows];
+      }
+
+      // default mode: today only
+      showAllMode = false;
+      updateToggleButtonLabel();
+      recomputeTableData();
 
       const searchInput = document.getElementById("searchInput");
       if (searchInput) {
-        searchInput.addEventListener("input", (e) => {
-          const q = e.target.value.trim().toLowerCase();
-          if (!q) {
-            tableData = [...allRows];
-          } else {
-            tableData = allRows.filter(row =>
-              row.some(cell =>
-                (cell ?? "").toString().toLowerCase().includes(q)
-              )
-            );
-          }
-          sortState = {}; // reset sort ketika search berubah
-          renderTable(tableHeaders, tableData);
+        searchInput.addEventListener("input", () => {
+          recomputeTableData();
+        });
+      }
+
+      const toggleBtn = document.getElementById("toggleScopeBtn");
+      if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+          showAllMode = !showAllMode;
+          updateToggleButtonLabel();
+          recomputeTableData();
         });
       }
     } catch (err) {
@@ -369,6 +431,49 @@
         `;
       }
     }
+  }
+
+  function updateToggleButtonLabel() {
+    const btn = document.getElementById("toggleScopeBtn");
+    if (!btn) return;
+    btn.textContent = showAllMode ? "Today Only" : "Show All";
+  }
+
+  // Rebuild tableData based on mode (today/all) + search query
+  function recomputeTableData() {
+    const baseRows = showAllMode ? fullRows : todayRows;
+    const tableContainer = document.getElementById("earningsTable");
+
+    if (!baseRows || baseRows.length === 0) {
+      if (tableContainer) {
+        tableContainer.innerHTML = `
+          <div class="earnings-scroll">
+            <div style="padding:10px;font-size:11px;color:var(--text-muted);">
+              ${showAllMode
+                ? "No earnings data available."
+                : "No earnings found for today (based on your local time)."}
+            </div>
+          </div>
+        `;
+      }
+      return;
+    }
+
+    const searchInput = document.getElementById("searchInput");
+    const q = searchInput ? searchInput.value.trim().toLowerCase() : "";
+
+    let rows = baseRows;
+    if (q) {
+      rows = baseRows.filter(row =>
+        row.some(cell =>
+          (cell ?? "").toString().toLowerCase().includes(q)
+        )
+      );
+    }
+
+    tableData = [...rows];
+    sortState = {};
+    renderTable(tableHeaders, tableData);
   }
 
   // Robust CSV parser, aman untuk commas & quotes
@@ -417,9 +522,63 @@
     return rows.map(r => r.map(v => v.trim()));
   }
 
+  function detectDateColumn(headers) {
+    if (!headers) return -1;
+    const candidates = [
+      "date",
+      "earnings date",
+      "report date",
+      "release date",
+      "release_day",
+      "day"
+    ];
+    const lower = headers.map(h => (h ?? "").toString().trim().toLowerCase());
+
+    let idx = lower.findIndex(h => candidates.includes(h));
+    if (idx !== -1) return idx;
+
+    // fallback: cari header yang mengandung "date"
+    idx = lower.findIndex(h => h.includes("date"));
+    return idx !== -1 ? idx : -1;
+  }
+
+  function parseDateFlexible(str) {
+    if (!str) return null;
+    const s = str.trim();
+    if (!s) return null;
+
+    // coba native Date dulu (mendukung format ISO, "24 Nov 2025", dsb)
+    const d1 = new Date(s);
+    if (!isNaN(d1.getTime())) return d1;
+
+    // dd/mm/yyyy atau dd-mm-yyyy
+    const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+    if (m) {
+      let day = parseInt(m[1], 10);
+      let month = parseInt(m[2], 10) - 1;
+      let year = parseInt(m[3], 10);
+      if (year < 100) year += 2000;
+      const d2 = new Date(year, month, day);
+      if (!isNaN(d2.getTime())) return d2;
+    }
+
+    return null;
+  }
+
   function renderTable(headers, rows) {
     const tableContainer = document.getElementById("earningsTable");
     if (!tableContainer) return;
+
+    if (!rows.length) {
+      tableContainer.innerHTML = `
+        <div class="earnings-scroll">
+          <div style="padding:10px;font-size:11px;color:var(--text-muted);">
+            No earnings match the current filters.
+          </div>
+        </div>
+      `;
+      return;
+    }
 
     const theadHTML = `
       <tr>
