@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Kuantara – Economic Calendar</title>
+  <title>Kuantara – Economic & Earnings Calendar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
@@ -12,6 +12,9 @@
       --bg-root:#000000;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --border-soft:#2b2b2b;
+      --accent:#ffbf00;
+      --row-hover:#1c1c1c;
     }
 
     * {
@@ -30,21 +33,58 @@
 
     body {
       display:flex;
-      flex-direction:column;
+      min-height:100vh;
     }
 
+    .page {
+      display:flex;
+      flex-direction:row;
+      width:100%;
+      height:100vh;
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    .panel {
+      flex:1 1 50%;
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+
+    .left-panel {
+      border-right:1px solid #1a1a1a;
+    }
+
+    .right-panel {
+      border-left:1px solid #1a1a1a;
+    }
+
+    .panel-title {
+      font-size:14px;
+      color:var(--accent);
+      margin-bottom:8px;
+    }
+
+    .panel-subtitle {
+      font-size:10.5px;
+      color:var(--text-muted);
+      margin-bottom:8px;
+    }
+
+    /* Economic Calendar widget layout */
     #economicCalendarWidget {
       flex:1 1 auto;
       width:100%;
-      height:100%;
-      padding:0;
+      min-height:0;
     }
 
     .tradingview-widget-container {
       width:100%;
       height:100%;
-      position:relative;      /* untuk stack overlay */
-      overflow:hidden;        /* biar bagian bawah benar-benar tertutup */
+      position:relative;
+      overflow:hidden;
     }
 
     .tradingview-widget-container__widget {
@@ -52,45 +92,442 @@
       height:100%;
     }
 
-    /* Stack penutup bagian bawah iframe (50px) */
     .bottom-stack {
       position:absolute;
       left:0;
       right:0;
       bottom:0;
       height:50px;
-      background:#000000;          /* hitam pekat */
-      pointer-events:none;         /* biar nggak ganggu scroll/click widget */
+      background:#000000;
+      pointer-events:none;
     }
 
-    /* Hide TradingView copyright (extra safety) */
     .tradingview-widget-copyright {
       display:none !important;
+    }
+
+    /* Earnings table layout */
+    .earnings-header {
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      margin-bottom:8px;
+    }
+
+    .earnings-title-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .earnings-controls {
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    #searchInput {
+      padding:8px;
+      width:260px;
+      font-size:11px;
+      background:#111111;
+      border:1px solid var(--border-soft);
+      color:#ffffff;
+      border-radius:6px;
+      outline:none;
+    }
+
+    #searchInput::placeholder {
+      color:var(--text-muted);
+    }
+
+    .earnings-table-wrapper {
+      flex:1 1 auto;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .earnings-scroll {
+      flex:1 1 auto;
+      min-height:0;
+      overflow:auto;
+      border:1px solid var(--border-soft);
+      border-radius:8px;
+      background:#050505;
+      /* Scrollbar (Firefox) */
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.6) transparent;
+    }
+
+    /* Scrollbar hitam transparan (WebKit) */
+    .earnings-scroll::-webkit-scrollbar {
+      width:8px;
+      height:8px;
+    }
+
+    .earnings-scroll::-webkit-scrollbar-track {
+      background:transparent;
+    }
+
+    .earnings-scroll::-webkit-scrollbar-thumb {
+      background:rgba(0,0,0,0.6);
+      border-radius:4px;
+    }
+
+    .earnings-scroll::-webkit-scrollbar-thumb:hover {
+      background:rgba(0,0,0,0.8);
+    }
+
+    table.earnings {
+      width:100%;
+      border-collapse:collapse;
+      background:#000;
+      color:white;
+      font-family:"Fira Code",monospace;
+      font-size:11px;
+    }
+
+    table.earnings th {
+      position:sticky;
+      top:0;
+      z-index:2;
+      cursor:pointer;
+      background:#111;
+      padding:6px 8px;
+      border-bottom:1px solid var(--border-soft);
+      text-align:left;
+      white-space:nowrap;
+      font-weight:500;
+      font-size:11px;
+    }
+
+    table.earnings td {
+      padding:5px 8px;
+      border-bottom:1px solid var(--border-soft);
+      white-space:nowrap;
+      font-size:11px;
+    }
+
+    table.earnings tr:hover td {
+      background:var(--row-hover);
+    }
+
+    .positive {
+      color:#22c55e;
+      font-weight:bold;
+    }
+
+    .negative {
+      color:#ef4444;
+      font-weight:bold;
+    }
+
+    .sort-indicator {
+      margin-left:4px;
+      font-size:9px;
+      opacity:0.7;
+    }
+
+    .earnings-footer {
+      font-size:10px;
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        flex-direction:column;
+        height:auto;
+      }
+      .panel {
+        height:50vh;
+      }
+      .left-panel,
+      .right-panel {
+        border-right:none;
+        border-left:none;
+        border-bottom:1px solid #1a1a1a;
+      }
+      .right-panel {
+        border-bottom:none;
+      }
+      .earnings-title-row {
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      #searchInput {
+        width:100%;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div id="economicCalendarWidget">
-    <div class="tradingview-widget-container">
-      <div class="tradingview-widget-container__widget"></div>
+<div class="page">
+  <!-- LEFT: ECONOMIC CALENDAR (TRADINGVIEW) -->
+  <div class="panel left-panel">
+    <h2 class="panel-title">Economic Calendar</h2>
 
-      <!-- Stack penutup bawah -->
-      <div class="bottom-stack"></div>
-      
-      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
-      {
-        "colorTheme": "dark",
-        "isTransparent": true,
-        "locale": "id",
-        "countryFilter": "ar,au,br,ca,cn,fr,de,in,id,it,jp,kr,mx,ru,sa,za,tr,gb,us,eu",
-        "importanceFilter": "-1,0,1",
-        "width": "100%",
-        "height": "100%"
-      }
-      </script>
+    <div id="economicCalendarWidget">
+      <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+
+        <div class="bottom-stack"></div>
+
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+        {
+          "colorTheme": "dark",
+          "isTransparent": true,
+          "locale": "id",
+          "countryFilter": "ar,au,br,ca,cn,fr,de,in,id,it,jp,kr,mx,ru,sa,za,tr,gb,us,eu",
+          "importanceFilter": "-1,0,1",
+          "width": "100%",
+          "height": "100%"
+        }
+        </script>
+      </div>
     </div>
   </div>
+
+  <!-- RIGHT: EARNINGS CALENDAR (CSV) -->
+  <div class="panel right-panel">
+    <div class="earnings-header">
+      <div class="earnings-title-row">
+        <h2 class="panel-title">Earnings Calendar</h2>
+        <div class="earnings-controls">
+          <input id="searchInput" placeholder="Search ticker or company..." />
+        </div>
+      </div>
+    </div>
+
+    <div id="earningsTable" class="earnings-table-wrapper">
+      <div style="font-size:11px;color:var(--text-muted);padding:8px 2px;">
+        Loading earnings data from CSV…
+      </div>
+    </div>
+
+    <div class="earnings-footer">
+      Tips: klik header kolom untuk sort ↑↓ · gunakan search untuk filter ticker / nama perusahaan.
+    </div>
+  </div>
+</div>
+
+<script>
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDc2WUdEFucZDJdEuYXtF9GVGv1cxKxNQqJv9lXPx10KHE98mUyVDoW14K6TglVINbKeF9hx1BwqWz/pub?gid=0&single=true&output=csv";
+
+  let allRows = [];
+  let tableData = [];
+  let tableHeaders = [];
+  let sortState = {}; // { headerKey: "asc" | "desc" }
+
+  async function loadCSV() {
+    try {
+      const res = await fetch(CSV_URL);
+      if (!res.ok) {
+        throw new Error("HTTP " + res.status);
+      }
+      const rawText = await res.text();
+      const parsed = parseCSV(rawText);
+
+      if (!parsed || !parsed.length) {
+        throw new Error("CSV kosong atau tidak terbaca");
+      }
+
+      tableHeaders = parsed[0];
+      allRows = parsed.slice(1);
+      tableData = [...allRows];
+
+      renderTable(tableHeaders, tableData);
+
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+          const q = e.target.value.trim().toLowerCase();
+          if (!q) {
+            tableData = [...allRows];
+          } else {
+            tableData = allRows.filter(row =>
+              row.some(cell =>
+                (cell ?? "").toString().toLowerCase().includes(q)
+              )
+            );
+          }
+          sortState = {}; // reset sort ketika search berubah
+          renderTable(tableHeaders, tableData);
+        });
+      }
+    } catch (err) {
+      console.error("Gagal memuat CSV:", err);
+      const el = document.getElementById("earningsTable");
+      if (el) {
+        el.innerHTML = `
+          <div style="font-size:11px;color:#ef4444;padding:10px 4px;">
+            Failed to load earnings data (CSV error / network issue). Please check the sheet or connection.
+          </div>
+        `;
+      }
+    }
+  }
+
+  // Robust CSV parser, aman untuk commas & quotes
+  function parseCSV(text) {
+    const rows = [];
+    let current = "";
+    let row = [];
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+
+      if (char === '"') {
+        // handle double quotes ("") inside quoted field
+        if (inQuotes && text[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (char === "," && !inQuotes) {
+        row.push(current);
+        current = "";
+      } else if ((char === "\n" || char === "\r") && !inQuotes) {
+        if (current !== "" || row.length) {
+          row.push(current);
+          rows.push(row);
+          row = [];
+          current = "";
+        }
+        // handle CRLF
+        if (char === "\r" && text[i + 1] === "\n") {
+          i++;
+        }
+      } else {
+        current += char;
+      }
+    }
+
+    if (current !== "" || row.length) {
+      row.push(current);
+      rows.push(row);
+    }
+
+    // trim setiap cell
+    return rows.map(r => r.map(v => v.trim()));
+  }
+
+  function renderTable(headers, rows) {
+    const tableContainer = document.getElementById("earningsTable");
+    if (!tableContainer) return;
+
+    const theadHTML = `
+      <tr>
+        ${headers.map((h, idx) => {
+          const safeHeader = h.replace(/"/g, "&quot;");
+          return `<th data-col="${idx}" data-header="${safeHeader}">
+                    ${h}<span class="sort-indicator"></span>
+                  </th>`;
+        }).join("")}
+      </tr>
+    `;
+
+    const tbodyHTML = rows.map(r => `
+      <tr>
+        ${r.map((c, idx) => formatCell(c, headers[idx])).join("")}
+      </tr>
+    `).join("");
+
+    tableContainer.innerHTML = `
+      <div class="earnings-scroll">
+        <table class="earnings">
+          <thead>${theadHTML}</thead>
+          <tbody>${tbodyHTML}</tbody>
+        </table>
+      </div>
+    `;
+
+    // Bind click handler untuk sorting
+    const ths = tableContainer.querySelectorAll("th");
+    ths.forEach(th => {
+      th.addEventListener("click", () => {
+        const colIndex = parseInt(th.getAttribute("data-col"), 10);
+        const headerName = th.getAttribute("data-header");
+        sortTable(colIndex, headerName);
+      });
+    });
+
+    updateSortIndicators();
+  }
+
+  function formatCell(value, header) {
+    const valStr = (value ?? "").toString();
+    const headerLower = (header ?? "").toLowerCase();
+
+    // highlight numeric estimate/eps
+    if ((headerLower.includes("estimate") || headerLower.includes("eps")) && valStr !== "") {
+      const num = parseFloat(valStr.replace(/,/g, ""));
+      if (!isNaN(num)) {
+        const cls = num >= 0 ? "positive" : "negative";
+        return `<td class="${cls}">${valStr}</td>`;
+      }
+    }
+
+    return `<td>${valStr}</td>`;
+  }
+
+  function sortTable(colIndex, headerName) {
+    if (!tableHeaders || tableHeaders.length === 0) return;
+
+    const key = headerName || tableHeaders[colIndex] || String(colIndex);
+    const currentDir = sortState[key] || "desc";
+    const newDir = currentDir === "asc" ? "desc" : "asc";
+
+    // hanya satu kolom aktif
+    sortState = { [key]: newDir };
+
+    tableData.sort((a, b) => {
+      const aRaw = (a[colIndex] ?? "").toString();
+      const bRaw = (b[colIndex] ?? "").toString();
+
+      const aNum = parseFloat(aRaw.replace(/,/g, ""));
+      const bNum = parseFloat(bRaw.replace(/,/g, ""));
+
+      if (!isNaN(aNum) && !isNaN(bNum)) {
+        return newDir === "asc" ? aNum - bNum : bNum - aNum;
+      }
+      return newDir === "asc"
+        ? aRaw.localeCompare(bRaw)
+        : bRaw.localeCompare(aRaw);
+    });
+
+    renderTable(tableHeaders, tableData);
+  }
+
+  function updateSortIndicators() {
+    const tableContainer = document.getElementById("earningsTable");
+    if (!tableContainer) return;
+
+    const ths = tableContainer.querySelectorAll("th");
+    ths.forEach(th => {
+      const span = th.querySelector(".sort-indicator");
+      if (!span) return;
+
+      const headerName = th.getAttribute("data-header");
+      const dir = sortState[headerName];
+
+      if (dir === "asc") {
+        span.textContent = "▲";
+      } else if (dir === "desc") {
+        span.textContent = "▼";
+      } else {
+        span.textContent = "";
+      }
+    });
+  }
+
+  loadCSV();
+</script>
 
 </body>
 </html>
