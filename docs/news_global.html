@@ -1,9 +1,10 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
-  <title>Kuantara – Global News</title>
+  <title>Kuantara – Global News (Optimized & Tagged)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Fira Code (Kuantara Standard) -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
 
   <style>
@@ -16,1876 +17,582 @@
       --text-muted:#9b9b9b;
       --accent:#ffbf00;
 
-      /* Font sizes (9–14px spec) */
-      --fs-title:14px;     /* Page title / key labels */
-      --fs-subtitle:12px;  /* Section title */
-      --fs-body:10.5px;    /* Body text */
-      --fs-small:9.5px;    /* Meta / hints */
-    }
-
-    * {
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:"Fira Code",monospace !important;
-    }
-
-    /* Global scrollbar – Kuantara style */
-    * {
-      scrollbar-width:thin;
-      scrollbar-color:#2b2b2b #000000;
-    }
-    *::-webkit-scrollbar {
-      width:6px;
-      height:6px;
-    }
-    *::-webkit-scrollbar-track {
-      background:#000000;
-    }
-    *::-webkit-scrollbar-thumb {
-      background:#2b2b2b;
-      border-radius:999px;
-    }
-
-    html, body {
-      width:100%;
-      height:100%;
-      background-color:var(--bg-root);
-      color:var(--text-main);
-    }
-
-    body {
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-start;
-      align-items:stretch;
-    }
-
-    .page {
-      width:100%;
-      max-width:1200px;
-      margin:0 auto;
-      padding:16px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      min-height:100%;
-    }
-
-    .page-title {
-      font-size:var(--fs-title);
-      font-weight:600;
-      letter-spacing:0.04em;
-      text-transform:uppercase;
-      color:var(--text-main);
-    }
-
-    .page-subtitle {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      margin-top:4px;
-    }
-
-    .card {
-      background-color:var(--bg-main);
-      border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:12px 14px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      min-height:0;
-    }
-
-    .card-header-row {
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:8px;
-    }
-
-    .badge {
-      display:inline-flex;
-      align-items:center;
-      padding:2px 6px;
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      font-size:var(--fs-small);
-      color:var(--accent);
-      background:rgba(255,191,0,0.06);
-    }
-
-    .dot-live {
-      width:6px;
-      height:6px;
-      border-radius:999px;
-      background:var(--accent);
-      margin-right:6px;
-      box-shadow:0 0 8px rgba(255,191,0,0.8);
-    }
-
-    .core-title {
-      font-size:var(--fs-subtitle);
-      font-weight:500;
-    }
-
-    .core-headline {
-      font-size:var(--fs-title);
-      font-weight:600;
-      line-height:1.3;
-    }
-
-    .core-card {
-      position:relative;
-      overflow:hidden;
-      cursor:default;
-      transition:border-color 0.12s ease, background-color 0.12s ease;
-    }
-
-    .core-card.clickable {
-      cursor:pointer;
-    }
-
-    .core-card.clickable:hover {
-      border-color:var(--accent);
-      background:#141414;
-    }
-
-    .core-body {
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      align-items:stretch;
-      margin-top:6px;
-    }
-
-    .core-thumb {
-      width:100%;
-      height:160px;
-      border-radius:4px;
-      overflow:hidden;
-      background:#0a0a0a;
-      border:1px solid var(--border-soft);
-      flex:0 0 auto;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-
-    .core-thumb img {
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-
-    .core-body-content {
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      min-width:0;
-      flex:1;
-    }
-
-    /* Shimmer loading */
-    .shimmer {
-      position:relative;
-      overflow:hidden;
-      background:#0d0d0d;
-    }
-    .shimmer::after {
-      content:"";
-      position:absolute;
-      top:0;
-      left:-150%;
-      width:50%;
-      height:100%;
-      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-      animation:shimmer 1.2s infinite;
-    }
-    @keyframes shimmer {
-      0% { left:-150%; }
-      50% { left:150%; }
-      100% { left:150%; }
-    }
-
-    .core-meta {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-
-    .core-meta span {
-      opacity:0.9;
-    }
-
-    .core-summary {
-      font-size:var(--fs-body);
-      color:var(--text-main);
-      line-height:1.45;
-    }
-
-    .pill-row {
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      margin-top:2px;
-    }
-
-    .pill {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      padding:2px 6px;
-      border-radius:999px;
-      border:1px dashed var(--border-soft);
-      opacity:0.85;
-    }
-
-    .pill-bull {
-      border-color:#22c55e;
-      color:#22c55e;
-    }
-
-    .pill-bear {
-      border-color:#ef4444;
-      color:#ef4444;
-    }
-
-    .pill-neutral {
-      border-color:var(--text-muted);
-      color:var(--text-muted);
-    }
-
-    .panel-title {
-      font-size:var(--fs-subtitle);
-      font-weight:500;
-    }
-
-    .panel-subtitle {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      margin-top:2px;
-    }
-
-    .filter-panel {
-      flex-direction:column;
-      gap:8px;
-    }
-
-    .filter-header {
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:8px;
-    }
-
-    .active-filter-label {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      text-align:right;
-    }
-
-    .active-filter-label span {
-      color:var(--accent);
-    }
-
-    /* Horizontal filter row (terminal chip rail) */
-    .filter-grid {
-      display:flex;
-      flex-wrap:nowrap;
-      gap:6px;
-      overflow-x:auto;
-      overflow-y:hidden;
-      padding-top:2px;
-      padding-bottom:4px;
-      -webkit-overflow-scrolling:touch;
-    }
-
-    .filter-grid::-webkit-scrollbar {
-      height:4px;
-    }
-
-    .filter-btn {
-      font-size:var(--fs-small);
-      padding:5px 9px;
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      background:#111111;
-      color:var(--text-muted);
-      cursor:pointer;
-      white-space:nowrap;
-      flex:0 0 auto;
-      transition:
-        background-color 0.12s ease,
-        border-color 0.12s ease,
-        color 0.12s ease,
-        transform 0.05s ease;
-    }
-
-    .filter-btn:hover {
-      border-color:var(--accent);
-      color:var(--text-main);
-      transform:translateY(-0.5px);
-    }
-
-    .filter-btn.is-active {
-      background:rgba(255,191,0,0.14);
-      border-color:var(--accent);
-      color:var(--text-main);
-    }
-
-    .news-list {
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      max-height:260px;
-      overflow-y:auto;
-      padding-right:4px;
-      margin-top:4px;
-    }
-
-    .news-item {
-      padding:8px 8px;
-      border-radius:4px;
-      border:1px solid rgba(43,43,43,0.9);
-      background:#101010;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      cursor:default;
-      transition:border-color 0.12s ease, background-color 0.12s ease;
-    }
-
-    .news-item.clickable {
-      cursor:pointer;
-    }
-
-    .news-item.clickable:hover {
-      border-color:var(--accent);
-      background:#141414;
-    }
-
-    .news-item-header {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-    }
-
-    .news-ticker {
-      font-size:var(--fs-small);
-      color:var(--accent);
-    }
-
-    .news-time {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .news-headline {
-      font-size:var(--fs-body);
-      font-weight:500;
-    }
-
-    .news-body {
-      display:flex;
-      gap:8px;
-      align-items:flex-start;
-    }
-
-    .news-thumb {
-      width:72px;
-      height:56px;
-      border-radius:4px;
-      overflow:hidden;
-      background:#0a0a0a;
-      border:1px solid var(--border-soft);
-      flex:0 0 auto;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-
-    .news-thumb img {
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-
-    .news-body-content {
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width:0;
-      flex:1;
-    }
-
-    .news-tags {
-      display:flex;
-      flex-wrap:wrap;
-      gap:4px;
-      margin-top:2px;
-    }
-
-    .news-tag {
-      font-size:var(--fs-small);
-      padding:2px 5px;
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      color:var(--text-muted);
-    }
-
-    .news-tag-bull {
-      border-color:#22c55e;
-      color:#22c55e;
-    }
-
-    .news-tag-bear {
-      border-color:#ef4444;
-      color:#ef4444;
-    }
-
-    .news-tag-neutral {
-      border-color:var(--text-muted);
-      color:var(--text-muted);
-    }
-
-    .news-footer {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-      margin-top:2px;
-    }
-
-    .news-source {
-      opacity:0.85;
-    }
-
-    .news-sentiment {
-      display:flex;
-      align-items:center;
-      gap:4px;
-    }
-
-    .sentiment-chip {
-      font-size:var(--fs-small);
-      padding:2px 6px;
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      color:var(--text-main);
-    }
-
-    .sentiment-bull {
-      border-color:#22c55e;
-      color:#22c55e;
-    }
-
-    .sentiment-bear {
-      border-color:#ef4444;
-      color:#ef4444;
-    }
-
-    .sentiment-neutral {
-      border-color:var(--text-muted);
-      color:var(--text-muted);
-    }
-
-    .hint {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      margin-top:2px;
-    }
-
-    .hint code {
-      font-size:var(--fs-small);
-      color:var(--accent);
-      background:#000000;
-      padding:1px 4px;
-      border-radius:3px;
-      border:1px solid var(--border-soft);
-    }
-
-    /* Layout – compact terminal grid */
-    .layout-top {
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-
-    @media (min-width:768px) {
-      .page {
-        padding:16px;
-        gap:14px;
-      }
-      .news-list {
-        max-height:280px;
-      }
-    }
-
-    @media (min-width:1024px) {
-      .layout-top {
-        display:grid;
-        grid-template-columns:minmax(0,2fr) minmax(0,2.2fr);
-        gap:16px;
-        align-items:stretch;
-      }
-
-      .layout-top > .card {
-        height:100%;
-      }
-
-      .news-list {
-        max-height:320px;
-      }
-    }
+      /* Font sizes */
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:10.5px;
+      --fs-small:9.5px;
+    }
+
+    * { box-sizing:border-box; margin:0; padding:0; font-family:"Fira Code",monospace !important; }
+
+    /* Scrollbar */
+    * { scrollbar-width:thin; scrollbar-color:#2b2b2b #000000; }
+    *::-webkit-scrollbar { width:6px; height:6px; }
+    *::-webkit-scrollbar-track { background:#000000; }
+    *::-webkit-scrollbar-thumb { background:#2b2b2b; border-radius:999px; }
+
+    html, body { width:100%; height:100%; background-color:var(--bg-root); color:var(--text-main); }
+    body { display:flex; flex-direction:column; justify-content:flex-start; align-items:stretch; }
+
+    .page { width:100%; max-width:1200px; margin:0 auto; padding:16px; display:flex; flex-direction:column; gap:12px; min-height:100%; }
+
+    .card { background-color:var(--bg-main); border:1px solid var(--border-soft); border-radius:4px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; min-height:0; }
+    .card-header-row { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+
+    .badge { display:inline-flex; align-items:center; padding:2px 6px; border-radius:999px; border:1px solid var(--border-soft); font-size:var(--fs-small); color:var(--accent); background:rgba(255,191,0,0.06); }
+    .dot-live { width:6px; height:6px; border-radius:999px; background:var(--accent); margin-right:6px; box-shadow:0 0 8px rgba(255,191,0,0.8); }
+
+    .core-title { font-size:var(--fs-subtitle); font-weight:500; }
+    .core-headline { font-size:var(--fs-title); font-weight:600; line-height:1.3; }
+
+    .core-card { position:relative; overflow:hidden; cursor:default; transition:border-color 0.12s ease, background-color 0.12s ease; }
+    .core-card.clickable { cursor:pointer; }
+    .core-card.clickable:hover { border-color:var(--accent); background:#141414; }
+
+    .core-body { display:flex; flex-direction:column; gap:10px; align-items:stretch; margin-top:6px; }
+    
+    .core-thumb { width:100%; height:160px; border-radius:4px; overflow:hidden; background:#0a0a0a; border:1px solid var(--border-soft); flex:0 0 auto; display:flex; align-items:center; justify-content:center; }
+    .core-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .core-body-content { display:flex; flex-direction:column; gap:6px; min-width:0; flex:1; }
+
+    /* Shimmer */
+    .shimmer { position:relative; overflow:hidden; background:#0d0d0d; border-radius:2px; }
+    .shimmer::after { content:""; position:absolute; top:0; left:-150%; width:50%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); animation:shimmer 1.2s infinite; }
+    @keyframes shimmer { 0% { left:-150%; } 50% { left:150%; } 100% { left:150%; } }
+
+    .core-meta { font-size:var(--fs-small); color:var(--text-muted); display:flex; flex-wrap:wrap; gap:8px; }
+    .core-summary { font-size:var(--fs-body); color:var(--text-main); line-height:1.45; }
+
+    .pill-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
+    .pill { font-size:var(--fs-small); color:var(--text-muted); padding:2px 6px; border-radius:999px; border:1px dashed var(--border-soft); opacity:0.85; }
+    .pill-bull { border-color:#22c55e; color:#22c55e; }
+    .pill-bear { border-color:#ef4444; color:#ef4444; }
+    .pill-neutral { border-color:var(--text-muted); color:var(--text-muted); }
+
+    .panel-title { font-size:var(--fs-subtitle); font-weight:500; }
+    .filter-panel { flex-direction:column; gap:8px; }
+    .filter-header { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+    .active-filter-label { font-size:var(--fs-small); color:var(--text-muted); text-align:right; }
+    .active-filter-label span { color:var(--accent); }
+
+    .filter-grid { display:flex; flex-wrap:nowrap; gap:6px; overflow-x:auto; padding-top:2px; padding-bottom:4px; }
+    .filter-btn { font-size:var(--fs-small); padding:5px 9px; border-radius:999px; border:1px solid var(--border-soft); background:#111111; color:var(--text-muted); cursor:pointer; white-space:nowrap; flex:0 0 auto; transition:all 0.12s ease; }
+    .filter-btn:hover { border-color:var(--accent); color:var(--text-main); transform:translateY(-0.5px); }
+    .filter-btn.is-active { background:rgba(255,191,0,0.14); border-color:var(--accent); color:var(--text-main); }
+
+    .news-list { display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; padding-right:4px; margin-top:4px; }
+    .news-item { padding:8px 8px; border-radius:4px; border:1px solid rgba(43,43,43,0.9); background:#101010; display:flex; flex-direction:column; gap:6px; cursor:default; transition:all 0.12s ease; }
+    .news-item.clickable { cursor:pointer; }
+    .news-item.clickable:hover { border-color:var(--accent); background:#141414; }
+
+    .news-item-header { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .news-ticker { font-size:var(--fs-small); color:var(--accent); }
+    .news-time { font-size:var(--fs-small); color:var(--text-muted); }
+    .news-headline { font-size:var(--fs-body); font-weight:500; }
+
+    .news-body { display:flex; gap:8px; align-items:flex-start; }
+    .news-thumb { width:72px; height:56px; border-radius:4px; overflow:hidden; background:#0a0a0a; border:1px solid var(--border-soft); flex:0 0 auto; display:flex; align-items:center; justify-content:center; }
+    .news-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .news-body-content { display:flex; flex-direction:column; gap:4px; min-width:0; flex:1; }
+    .news-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:2px; }
+    
+    .news-tag { font-size:var(--fs-small); padding:2px 5px; border-radius:999px; border:1px solid var(--border-soft); color:var(--text-muted); }
+    .news-tag-bull { border-color:#22c55e; color:#22c55e; }
+    .news-tag-bear { border-color:#ef4444; color:#ef4444; }
+    .news-tag-neutral { border-color:var(--text-muted); color:var(--text-muted); }
+
+    .news-footer { font-size:var(--fs-small); color:var(--text-muted); display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:2px; }
+    
+    .sentiment-chip { font-size:var(--fs-small); padding:2px 6px; border-radius:999px; border:1px solid var(--border-soft); color:var(--text-main); }
+    .sentiment-bull { border-color:#22c55e; color:#22c55e; }
+    .sentiment-bear { border-color:#ef4444; color:#ef4444; }
+    .sentiment-neutral { border-color:var(--text-muted); color:var(--text-muted); }
+    
+    .hint { font-size:var(--fs-small); color:var(--text-muted); text-align:center; }
+
+    .layout-top { display:flex; flex-direction:column; gap:12px; }
+    @media (min-width:768px) { .page { padding:16px; gap:14px; } .news-list { max-height:280px; } }
+    @media (min-width:1024px) { .layout-top { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,2.2fr); gap:16px; align-items:stretch; } .layout-top > .card { height:100%; } .news-list { max-height:320px; } }
   </style>
-<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 2147483647;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.immersive-translate-attach-loading::after {
-  content: " ";
-
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-2000%, -50%);
-  z-index: 100;
-}
-
-.immersive-translate-loading-spinner {
-  vertical-align: middle !important;
-  width: 10px !important;
-  height: 10px !important;
-  display: inline-block !important;
-  margin: 0 4px !important;
-  border: 2px rgba(221, 244, 255, 0.6) solid !important;
-  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-}
-
-@-webkit-keyframes immersive-translate-loading-animation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-
-@keyframes immersive-translate-loading-animation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.immersive-translate-input-loading {
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-}
-
-@keyframes immersiveTranslateShadowRolling {
-  0% {
-    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  12% {
-    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  25% {
-    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  36% {
-    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
-      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  50% {
-    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
-      110px 0 var(--loading-color), 100px 0 var(--loading-color);
-  }
-
-  62% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
-      120px 0 var(--loading-color), 110px 0 var(--loading-color);
-  }
-
-  75% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      130px 0 var(--loading-color), 120px 0 var(--loading-color);
-  }
-
-  87% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
-  }
-
-  100% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.immersive-translate-toast {
-  display: flex;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  right: 0;
-  top: 1%;
-  width: fit-content;
-  padding: 12px 20px;
-  margin: auto;
-  overflow: auto;
-  background: #fef6f9;
-  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
-  font-size: 15px;
-  border-radius: 8px;
-  color: #333;
-}
-
-.immersive-translate-toast-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.immersive-translate-toast-hidden {
-  margin: 0 20px 0 72px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.immersive-translate-toast-close {
-  color: #666666;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-toast {
-    top: 0;
-    padding: 12px 0px 0 10px;
-  }
-  .immersive-translate-toast-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .immersive-translate-toast-hidden {
-    margin: 10px auto;
-  }
-}
-
-.immersive-translate-dialog {
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  display: flex;
-  width: 300px;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: fit-content;
-  border-radius: 20px;
-  background-color: #fff;
-}
-
-.immersive-translate-modal {
-  display: none;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-}
-
-.immersive-translate-modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 40px 24px 24px;
-  border-radius: 12px;
-  width: 350px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
-    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-content {
-    margin: 25% auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .immersive-translate-modal-content {
-    width: 80vw !important;
-    margin: 20vh auto !important;
-    padding: 20px 12px 12px !important;
-  }
-
-  .immersive-translate-modal-title {
-    font-size: 14px !important;
-  }
-
-  .immersive-translate-modal-body {
-    font-size: 13px !important;
-    max-height: 60vh !important;
-  }
-
-  .immersive-translate-btn {
-    font-size: 13px !important;
-    padding: 8px 16px !important;
-    margin: 0 4px !important;
-  }
-
-  .immersive-translate-modal-footer {
-    gap: 6px !important;
-    margin-top: 16px !important;
-  }
-}
-
-.immersive-translate-modal .immersive-translate-modal-content-in-input {
-  max-width: 500px;
-}
-.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
-  text-align: left;
-  max-height: unset;
-}
-
-.immersive-translate-modal-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333333;
-}
-
-.immersive-translate-modal-body {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #333333;
-  margin-top: 24px;
-  word-break: break-all;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-body {
-    max-height: 250px;
-    overflow-y: auto;
-  }
-}
-
-.immersive-translate-close {
-  color: #666666;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.immersive-translate-close:hover,
-.immersive-translate-close:focus {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.immersive-translate-modal-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.immersive-translate-btn {
-  width: fit-content;
-  color: #fff;
-  background-color: #ea4c89;
-  border: none;
-  font-size: 14px;
-  margin: 0 8px;
-  padding: 9px 30px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.immersive-translate-btn-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.immersive-translate-btn:hover {
-  background-color: #f082ac;
-}
-.immersive-translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.immersive-translate-btn:disabled:hover {
-  background-color: #ea4c89;
-}
-
-.immersive-translate-link-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: none;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-}
-
-.immersive-translate-cancel-btn {
-  /* gray color */
-  background-color: rgb(89, 107, 120);
-}
-
-.immersive-translate-cancel-btn:hover {
-  background-color: hsl(205, 20%, 32%);
-}
-
-.immersive-translate-action-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: 1px solid #ea4c89;
-}
-
-.immersive-translate-btn svg {
-  margin-right: 5px;
-}
-
-.immersive-translate-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-primary-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-modal input[type="radio"] {
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.immersive-translate-modal label {
-  cursor: pointer;
-}
-
-.immersive-translate-close-action {
-  position: absolute;
-  top: 2px;
-  right: 0px;
-  cursor: pointer;
-}
-
-.imt-image-status {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 16px !important;
-}
-.imt-image-status img,
-.imt-image-status svg,
-.imt-img-loading {
-  width: 28px !important;
-  height: 28px !important;
-  margin: 0 0 8px 0 !important;
-  min-height: 28px !important;
-  min-width: 28px !important;
-  position: relative !important;
-}
-.imt-img-loading {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
-  background-size: 28px 28px;
-  animation: image-loading-rotate 1s linear infinite !important;
-}
-
-.imt-image-status span {
-  color: var(--bg-2, #fff) !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
-  font-weight: 500 !important;
-  font-family: "PingFang SC", Arial, sans-serif !important;
-}
-
-.imt-primary-button {
-  display: flex;
-  padding: 12px 80px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #ea4c89;
-  color: #fff;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.imt-retry-text {
-  color: #999;
-  text-align: center;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  cursor: pointer;
-}
-
-.imt-action-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.imt-modal-content-text {
-  text-align: left;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-@keyframes image-loading-rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.imt-linear-gradient-text {
-  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.imt-flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.imt-linear-black-btn {
-  border-radius: 50px;
-  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
-  height: 48px;
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
-</style></head>
+</head>
 <body>
   <div class="page">
-    <!-- PAGE TITLE -->
-    
-
-    <!-- TOP LAYOUT: CORE NEWS (LEFT) + NEWS UNIVERSE + HEADLINE STREAM (RIGHT) -->
     <div class="layout-top">
-      <!-- CORE NEWS HEADER -->
-      <section class="card core-card clickable" id="coreNewsHeader">
+      <section class="card core-card" id="coreNewsHeader">
         <div class="card-header-row">
-          <div>
-            <div class="badge">
-              <span class="dot-live"></span>CORE NEWS
-            </div>
-          </div>
+          <div><div class="badge"><span class="dot-live"></span>CORE NEWS</div></div>
           <div class="core-meta">
-            <span id="coreUpdated">Updated: 11:15 UTC</span>
-            <span id="coreSource">Source: Economic Times India</span>
+            <span id="coreUpdated">Updated: --:--</span>
+            <span id="coreSource">Source: –</span>
           </div>
         </div>
-
         <div class="core-body">
-          <div class="core-thumb" id="coreThumb"><img src="https://img.etimg.com/thumb/msid-125518143,width-1200,height-630,imgsize-133172,overlay-economictimes/articleshow.jpg" alt="PM Modi holds talks with S African President Ramaphosa, discusses cooperation in trade, critical minerals"></div>
+          <div class="core-thumb" id="coreThumb"></div>
           <div class="core-body-content">
             <div class="core-title">Global Macro Focus</div>
-            <div class="core-headline" id="coreHeadline">PM Modi holds talks with S African President Ramaphosa, discusses cooperation in trade, critical minerals</div>
-
-            <p class="core-summary" id="coreSummary">At the G20 Summit, Prime Minister Narendra Modi engaged in a fruitful dialogue with South African President Cyril Ramaphosa. Their agenda revolved around enhancing trade and investment opportunities while also diving deep into the realms of techno...</p>
-
-            <div class="pill-row" id="coreTags"><span class="pill pill-bear">Macro Topics</span><span class="pill pill-bear">President</span><span class="pill pill-bear">Prime Minister</span><span class="pill pill-bull">Cyril Ramaphosa</span><span class="pill pill-bull">Other Events</span><span class="pill pill-bear">Africa</span><span class="pill pill-bear">Southern Africa</span><span class="pill pill-bear">Trade</span><span class="pill pill-bull">South Africa</span><span class="pill pill-bear">Intelligent Technologies</span><span class="pill pill-bear">Artificial Intelligence</span><span class="pill pill-bear">Technology</span><span class="pill pill-bear">Financial Topics</span><span class="pill pill-bear">Events</span><span class="pill pill-bull">People</span><span class="pill pill-bear">Macro Topics</span><span class="pill pill-bull">Summits</span><span class="pill pill-bear">Partnerships</span><span class="pill pill-bull">Narendra Modi</span><span class="pill pill-bear">Technology</span><span class="pill pill-bear">Internet Services &amp; Infrastructure</span><span class="pill pill-bear">IT Services</span><span class="pill pill-bear">IT Consulting &amp; Other Services</span><span class="pill pill-bear">Technology</span><span class="pill pill-bear">Artificial Intelligence</span></div>
+            <div class="core-headline" id="coreHeadline">Loading Intelligence...</div>
+            <p class="core-summary" id="coreSummary"></p>
+            <div class="pill-row" id="coreTags"></div>
           </div>
         </div>
       </section>
 
-      <!-- COMBINED PANEL: NEWS UNIVERSE + HEADLINE STREAM -->
       <section class="card filter-panel">
-        <!-- HEADER + ACTIVE FILTER -->
         <div class="filter-header">
-          <div>
-            <div class="panel-title">News Universe &amp; Headline Stream</div>
-          </div>
-          <div class="active-filter-label">
-            Active filter:<br>
-            <span id="activeFilterLabel">All Assets</span>
-          </div>
+          <div><div class="panel-title">News Universe &amp; Stream</div></div>
+          <div class="active-filter-label">Active filter:<br><span id="activeFilterLabel">All Assets</span></div>
         </div>
-
-        <!-- HORIZONTAL BUTTON ROW -->
         <div class="filter-grid" id="filterGrid">
-          <!-- Main asset & topic filters -->
           <button class="filter-btn is-active" data-filter="all-assets">All Assets</button>
           <button class="filter-btn" data-filter="stocks">Stocks</button>
           <button class="filter-btn" data-filter="commodities">Commodities</button>
-          <button class="filter-btn" data-filter="fx">Foreign Exchange and Currencies</button>
+          <button class="filter-btn" data-filter="fx">Forex &amp; Currencies</button>
           <button class="filter-btn" data-filter="indices">Indices</button>
-          <button class="filter-btn" data-filter="private-companies">
-            Private Companies and Brands
-          </button>
-          <button class="filter-btn" data-filter="macro-topics">Macro Topics</button>
-          <button class="filter-btn" data-filter="etfs">
-            Exchange Traded Funds (ETFs)
-          </button>
           <button class="filter-btn" data-filter="crypto">Cryptocurrencies</button>
+          <button class="filter-btn" data-filter="macro-topics">Macro Topics</button>
+          <button class="filter-btn" data-filter="etfs">ETFs</button>
+          <button class="filter-btn" data-filter="private-companies">Private Cos</button>
           <button class="filter-btn" data-filter="organisations">Organisations</button>
           <button class="filter-btn" data-filter="people">People</button>
-          <button class="filter-btn" data-filter="state-owned">
-            State-Owned Companies
-          </button>
-          <button class="filter-btn" data-filter="technical-analysis">
-            Technical Analysis
-          </button>
-          <button class="filter-btn" data-filter="closed-end-funds">
-            Closed-End Funds
-          </button>
-          <button class="filter-btn" data-filter="other-topics">
-            Other Topics
-          </button>
           <button class="filter-btn" data-filter="events">Events</button>
           <button class="filter-btn" data-filter="property">Property</button>
-          <button class="filter-btn" data-filter="fundamental-analysis">
-            Fundamental Analysis
-          </button>
-          <button class="filter-btn" data-filter="fin-regulation">
-            Financial Regulation and Related Topics
-          </button>
-          <button class="filter-btn" data-filter="other-events">
-            Other Events
-          </button>
-          <button class="filter-btn" data-filter="preferred-stocks">
-            Preferred Stocks
-          </button>
-          <button class="filter-btn" data-filter="alternative-data">
-            Alternative Data
-          </button>
-          <button class="filter-btn" data-filter="mutual-funds">
-            Mutual Funds
-          </button>
-          <button class="filter-btn" data-filter="financial-topics">
-            Financial Topics
-          </button>
-          <button class="filter-btn" data-filter="corporate-bonds">
-            Corporate Bonds
-          </button>
+          <button class="filter-btn" data-filter="financial-topics">Finance Topics</button>
           <button class="filter-btn" data-filter="products">Products</button>
-          <button class="filter-btn" data-filter="ratings-research">
-            Ratings and Research Firms
-          </button>
-          <button class="filter-btn" data-filter="sovereign-bonds">
-            Sovereign and Government Bonds
-          </button>
+          <button class="filter-btn" data-filter="sovereign-bonds">Gov Bonds</button>
         </div>
-
-        <!-- HEADLINE STREAM -->
-        <div class="news-list" id="newsList"><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:03 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.malaymail.com/malaymail/uploads/images/2025/11/23/311156.jpg" alt="Stormy skies with low chance of cyclone: MetMalaysia warns strong winds and heavy rains to continue till Tuesday"></div><div class="news-body-content"><div class="news-headline">Stormy skies with low chance of cyclone: MetMalaysia warns strong winds and heavy rains to continue till Tuesday</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Asia</span><span class="news-tag news-tag-bear">South Eastern Asia</span><span class="news-tag news-tag-bear">Malaysia</span><span class="news-tag news-tag-bear">Kuala Lumpur</span><span class="news-tag news-tag-bear">Kuala Lumpur</span></div></div></div><div class="news-footer"><span class="news-source">Source: Malay Mail</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:03 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://s.france24.com/media/display/40c026d8-c859-11f0-a890-005056bf30b7/w:1024/p:16x9/EN-20251123-110739-110946-CS.jpg" alt="Bosnia’s autonomous Serb Republic votes for new president after Dodik's removal"></div><div class="news-body-content"><div class="news-headline">Bosnia’s autonomous Serb Republic votes for new president after Dodik's removal</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">President</span><span class="news-tag news-tag-bear">Voters</span><span class="news-tag news-tag-bull">Europe</span><span class="news-tag news-tag-bull">Southern Europe</span><span class="news-tag news-tag-bull">Bosnia and Herzegovina</span><span class="news-tag news-tag-bull">Financial Topics</span><span class="news-tag news-tag-bear">Events</span><span class="news-tag news-tag-bear">Elections</span></div></div></div><div class="news-footer"><span class="news-source">Source: FRANCE 24</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:03 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://mlavawteztbj.i.optimole.com/w:1280/h:295/q:mauto/f:best/https://antiguanewsroom.com/wp-content/uploads/2024/12/backyard.jpeg" alt="Diamonds to Become Agro-Industrial Hub; Christian Valley Chosen for Eco-Park, Cabinet Spokesman Says"></div><div class="news-body-content"><div class="news-headline">Diamonds to Become Agro-Industrial Hub; Christian Valley Chosen for Eco-Park, Cabinet Spokesman Says</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Financial Topics</span><span class="news-tag news-tag-bull">Government</span><span class="news-tag news-tag-bull">Consumer Goods &amp; Services</span><span class="news-tag news-tag-bull">Technologies in Consumer Good &amp; Services</span><span class="news-tag news-tag-bull">Technologies in Consumer Good &amp; Services</span><span class="news-tag news-tag-bull">Food Safety &amp; Quality Control Technology</span><span class="news-tag news-tag-bull">Diamonds</span><span class="news-tag news-tag-bull">Commodities</span></div></div></div><div class="news-footer"><span class="news-source">Source: Antigua News Room</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:02 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://globalnews.ca/wp-content/uploads/2025/11/bf3d0c28e977aff6be91a8835367057ce671fba2a36bb3970bf68c11203b9d88.jpg?quality=65&amp;strip=all" alt="Berube laments ‘inexcusable’ Leafs performance"></div><div class="news-body-content"><div class="news-headline">Berube laments ‘inexcusable’ Leafs performance</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: Global News Canada</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:02 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i2-prod.gazettelive.co.uk/incoming/article32927799.ece/ALTERNATES/s615/0_imagemaker-2025-11-23T104118319.jpg" alt="'Mansion massacre' killer dies in Yorkshire prison after 37 years behind bars"></div><div class="news-body-content"><div class="news-headline">'Mansion massacre' killer dies in Yorkshire prison after 37 years behind bars</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: Teesside Live</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.iomtoday.co.im/tindle-static/image/2025/11/18/12/33/Jordan-Kirk-with-fellow-band-member-Kieran-Brown-presenting-the-cheque-to-Hospice.jpeg?width=1200&amp;auto=webp&amp;trim=175%2C0%2C177%2C0" alt="Guitarist's charity gig in honor of late father raises over £1,000 for Hospice Isle of Man"></div><div class="news-body-content"><div class="news-headline">Guitarist's charity gig in honor of late father raises over £1,000 for Hospice Isle of Man</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: Isle of Man Today</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://theshillongtimes.com/wp-content/uploads/2023/08/Tst-logo.png" alt="New Labour Code on Wages aims to safeguard workers, boost growth and jobs"></div><div class="news-body-content"><div class="news-headline">New Labour Code on Wages aims to safeguard workers, boost growth and jobs</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Economic Growth</span><span class="news-tag news-tag-bear">Consumer Discretionary</span><span class="news-tag news-tag-bear">Industrials</span><span class="news-tag news-tag-bear">Diversified Consumer Services</span><span class="news-tag news-tag-bear">Specialized Consumer Services</span><span class="news-tag news-tag-bear">Commercial Services &amp; Supplies</span><span class="news-tag news-tag-bear">Diversified Support Services</span><span class="news-tag news-tag-bull">Jobs</span><span class="news-tag news-tag-bear">Asia</span><span class="news-tag news-tag-bear">Southern Asia</span><span class="news-tag news-tag-bear">India</span><span class="news-tag news-tag-bear">Labour Market</span><span class="news-tag news-tag-bear">Social Security</span><span class="news-tag news-tag-bull">Workers</span><span class="news-tag news-tag-bear">Employee</span><span class="news-tag news-tag-bear">Stocks</span><span class="news-tag news-tag-bull">Financial Topics</span><span class="news-tag news-tag-bull">Macro Topics</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Shillong Times</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.donegallive.ie/resizer/300/200/true/2025_11_21/INDD_-_27-11-25_Drumhalla_House_Cropped-1763726578824.jpg--donegal_wedding_venue_granted_permission_to_remove_limited_season_for_business.jpg?1763726578865" alt="Donegal wedding venue granted permission to remove limited season for business"></div><div class="news-body-content"><div class="news-headline">Donegal wedding venue granted permission to remove limited season for business</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Specialized Consumer Services</span><span class="news-tag news-tag-bull">Weddings</span><span class="news-tag news-tag-bull">Europe</span><span class="news-tag news-tag-bull">Consumer Discretionary</span><span class="news-tag news-tag-bull">Ireland</span><span class="news-tag news-tag-bull">Donegal</span><span class="news-tag news-tag-bull">Northern Europe</span><span class="news-tag news-tag-bull">Diversified Consumer Services</span></div></div></div><div class="news-footer"><span class="news-source">Source: Donegal Live</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://assets.finbold.com/uploads/2025/11/Find-Out-Why-XRP-Tundras-Dual-Chain-Protocol-Is-Attracting-Former-Solana-Investors.jpeg" alt="Find Out Why XRP Tundra’s Dual-Chain Protocol Is Attracting Former Solana Investors"></div><div class="news-body-content"><div class="news-headline">Find Out Why XRP Tundra’s Dual-Chain Protocol Is Attracting Former Solana Investors</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Solana</span><span class="news-tag news-tag-bear">Investors</span><span class="news-tag news-tag-bear">Cryptocurrencies</span><span class="news-tag news-tag-bear">Financial Topics</span></div></div></div><div class="news-footer"><span class="news-source">Source: Finbold</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://ml.globenewswire.com/Resource/Download/46758e47-4e5d-4da5-945c-e049069b7ade" alt="New DeFi Crypto Mutuum Finance (MUTM) Moves Into Phase 2 Development as Phase 6 Passes 90%"></div><div class="news-body-content"><div class="news-headline">New DeFi Crypto Mutuum Finance (MUTM) Moves Into Phase 2 Development as Phase 6 Passes 90%</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Mutuum Finance</span><span class="news-tag news-tag-bull">Asia</span><span class="news-tag news-tag-bull">Cryptocurrencies</span><span class="news-tag news-tag-bull">United Arab Emirates</span><span class="news-tag news-tag-bull">Dubai</span><span class="news-tag news-tag-bull">Dubai</span><span class="news-tag news-tag-bull">Western Asia</span><span class="news-tag news-tag-bear">Events</span><span class="news-tag news-tag-bear">Products &amp; Projects Launches</span></div></div></div><div class="news-footer"><span class="news-source">Source: GlobeNewswire</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.stratford-herald.com/_media/img/330x0/Q5MP78RF1NF7MHWZUH7P.jpg" alt="King’s Award for Tysoe dementia support charity"></div><div class="news-body-content"><div class="news-headline">King’s Award for Tysoe dementia support charity</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Heather Morgan</span><span class="news-tag news-tag-bear">People</span></div></div></div><div class="news-footer"><span class="news-source">Source: Stratford Herald</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i2-prod.mirror.co.uk/incoming/article36271233.ece/ALTERNATES/s615/0_-jpeg.jpg" alt="Boy, 6, hangs out of sunroof then bashes head on barrier in appalling video"></div><div class="news-body-content"><div class="news-headline">Boy, 6, hangs out of sunroof then bashes head on barrier in appalling video</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Mirror</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-body-content"><div class="news-headline">Pit bulls welcomed back to this Maryland county after 29-year ban</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">British Royal Family</span><span class="news-tag news-tag-bear">People</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Washington Post</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">11:00 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.al.com/resizer/v2/WE6KVBNVFZDDJBYYYFEHYBSVEQ.jpg?auth=e33bda937c3cf74d7d31b9d411c6017ee35993bffdcec3caf12a8630de1fab27&amp;smart=true&amp;height=1200" alt="Extra thoughts and notes from Alabama’s dominant win over EIU"></div><div class="news-body-content"><div class="news-headline">Extra thoughts and notes from Alabama’s dominant win over EIU</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-neutral">North America</span><span class="news-tag news-tag-neutral">Northern America</span><span class="news-tag news-tag-bear">Illinois</span><span class="news-tag news-tag-bull">Alabama</span><span class="news-tag news-tag-neutral">United States of America</span></div></div></div><div class="news-footer"><span class="news-source">Source: Alabama Local News</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:59 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i.dailymail.co.uk/1s/2025/11/23/09/104116531-0-image-a-2_1763889909771.jpg" alt="Vinnie Jones clashes with bird lovers over plans to build luxury shooting retreat on his 2,000-acre farm"></div><div class="news-body-content"><div class="news-headline">Vinnie Jones clashes with bird lovers over plans to build luxury shooting retreat on his 2,000-acre farm</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">United Kingdom of Great Britain</span><span class="news-tag news-tag-bear">England</span><span class="news-tag news-tag-bear">Europe</span><span class="news-tag news-tag-bear">Northern Europe</span><span class="news-tag news-tag-bear">Greater London</span><span class="news-tag news-tag-bear">Wimbledon</span><span class="news-tag news-tag-bear">Farming</span><span class="news-tag news-tag-bear">Agriculture &amp; Farming</span></div></div></div><div class="news-footer"><span class="news-source">Source: Daily Mail Online</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:59 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.qatar-tribune.com/watanqatartribune/uploads/images/2025/11/23/320079.jpg" alt="Qatar, Kazakhstan sign agreements on transfer of sentenced persons and public prosecution cooperation"></div><div class="news-body-content"><div class="news-headline">Qatar, Kazakhstan sign agreements on transfer of sentenced persons and public prosecution cooperation</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Asia</span><span class="news-tag news-tag-bull">Central Asia</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bull">Kazakhstan</span><span class="news-tag news-tag-bull">Qatar</span><span class="news-tag news-tag-bear">Doha</span><span class="news-tag news-tag-bull">Western Asia</span><span class="news-tag news-tag-bull">Events</span><span class="news-tag news-tag-bull">Partnerships</span><span class="news-tag news-tag-bear">Attorney General</span></div></div></div><div class="news-footer"><span class="news-source">Source: Qatar Tribune</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:58 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.thearabianstories.com/wp-content/uploads/2021/09/expats-websize.jpg" alt="Oman launches new body to regulate expatriate recruitment sector"></div><div class="news-body-content"><div class="news-headline">Oman launches new body to regulate expatriate recruitment sector</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Asia</span><span class="news-tag news-tag-bull">Western Asia</span><span class="news-tag news-tag-bull">Oman</span><span class="news-tag news-tag-bull">Events</span><span class="news-tag news-tag-bull">Products &amp; Projects Launches</span><span class="news-tag news-tag-bull">Regulatory Changes and Issues</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Arabian Stories</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:57 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://softpower.ug/wp-content/uploads/2025/11/Amb-Fred-Mwesigye-delivering-his-remarks-at-the-first-Uganda-Malawi-business-forum-2-300x200.jpeg" alt="Uganda, Malawi Deepen Economic Ties at Second Trade and Business Forum"></div><div class="news-body-content"><div class="news-headline">Uganda, Malawi Deepen Economic Ties at Second Trade and Business Forum</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Africa</span><span class="news-tag news-tag-bull">Eastern Africa</span><span class="news-tag news-tag-bull">Malawi</span><span class="news-tag news-tag-bull">Uganda</span><span class="news-tag news-tag-bull">Financial Topics</span><span class="news-tag news-tag-bull">Lilongwe</span><span class="news-tag news-tag-bull">Dar es Salaam</span><span class="news-tag news-tag-bull">Tanzania</span><span class="news-tag news-tag-bull">Government</span></div></div></div><div class="news-footer"><span class="news-source">Source: SoftPower News</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:56 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://cdn.dimsumdaily.hk/wp-content/uploads/2025/11/23185405/Wong-Chuk-Street-1-1-1.webp" alt="Burglars target Sham Shui Po flat, steal over HK$100,000 in valuables"></div><div class="news-body-content"><div class="news-headline">Burglars target Sham Shui Po flat, steal over HK$100,000 in valuables</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Residential REITs</span><span class="news-tag news-tag-bear">Equity Real Estate Investment Trusts</span><span class="news-tag news-tag-bear">Residential Real Estate</span><span class="news-tag news-tag-bear">Asia</span><span class="news-tag news-tag-bear">Eastern Asia</span><span class="news-tag news-tag-bear">Hong Kong</span><span class="news-tag news-tag-bear">Property</span><span class="news-tag news-tag-bear">Wan Chai</span><span class="news-tag news-tag-bear">Hong Kong</span><span class="news-tag news-tag-bear">Sham Shui Po</span><span class="news-tag news-tag-bear">Sweden Property Market</span><span class="news-tag news-tag-bear">Real Estate</span></div></div></div><div class="news-footer"><span class="news-source">Source: Dimsumdaily Hong Kong</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:55 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i2.wp.com/see.news/images/2023/06/sudan-war-1687033865-0.jpg?w=750" alt="UN Warns of Escalating Humanitarian Catastrophe as Displacement from El Fasher Exceeds 100,000"></div><div class="news-body-content"><div class="news-headline">UN Warns of Escalating Humanitarian Catastrophe as Displacement from El Fasher Exceeds 100,000</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">United Nations (UN)</span><span class="news-tag news-tag-bear">Northern Africa</span><span class="news-tag news-tag-bear">Sudan</span><span class="news-tag news-tag-bear">El Fasher</span><span class="news-tag news-tag-bear">North Darfur</span><span class="news-tag news-tag-bear">Africa</span><span class="news-tag news-tag-bear">Organisations</span></div></div></div><div class="news-footer"><span class="news-source">Source: Sada ElBalad English</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:55 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i0.wp.com/www.webpronews.com/wp-content/uploads/2025/11/article-2205-1763895656.jpeg?fit=300%2C300&amp;#038;ssl=1" alt="Penn Medicine’s AI Fax Killer: Tripling Speed, Slashing Onboarding Delays in Healthcare’s Analog Holdout"></div><div class="news-body-content"><div class="news-headline">Penn Medicine’s AI Fax Killer: Tripling Speed, Slashing Onboarding Delays in Healthcare’s Analog Holdout</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Health Care</span><span class="news-tag news-tag-bull">IT Services</span><span class="news-tag news-tag-bull">Health Care Services</span><span class="news-tag news-tag-bull">Health Care Providers &amp; Services</span><span class="news-tag news-tag-bull">Artificial Intelligence</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Health Care</span><span class="news-tag news-tag-bull">Intelligent Technologies</span><span class="news-tag news-tag-bull">Artificial Intelligence</span><span class="news-tag news-tag-bull">Healthcare &amp; Pharmaceuticals</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Internet Services &amp; Infrastructure</span></div></div></div><div class="news-footer"><span class="news-source">Source: WebProNews</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:55 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://static.gurufocus.com/logos/0C00004EP4.png?20" alt="Tesla (TSLA) Aims for AI Chip Dominance with Annual Design Cycle"></div><div class="news-body-content"><div class="news-headline">Tesla (TSLA) Aims for AI Chip Dominance with Annual Design Cycle</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Consumer Discretionary</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Materials</span><span class="news-tag news-tag-bull">Metals &amp; Mining</span><span class="news-tag news-tag-bull">Utilities</span><span class="news-tag news-tag-bull">Diversified Metals &amp; Mining</span><span class="news-tag news-tag-bull">Clean Energy</span><span class="news-tag news-tag-bull">Automobile Manufacturers</span><span class="news-tag news-tag-bull">Technology Distributors</span><span class="news-tag news-tag-bull">Renewable Electricity</span><span class="news-tag news-tag-bull">Automobiles</span><span class="news-tag news-tag-bull">Electronic Equipment, Instruments &amp; Components</span><span class="news-tag news-tag-bull">Independent Power and Renewable Electricity Producers</span><span class="news-tag news-tag-bull">Big Tech</span><span class="news-tag news-tag-bull">Lithium Industry</span><span class="news-tag news-tag-bull">Autonomous Vehicles</span><span class="news-tag news-tag-bull">Electronics Instruments &amp; Components</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Semiconductors</span><span class="news-tag news-tag-bull">Electric Vehicles</span><span class="news-tag news-tag-bull">Integrated Circuits</span><span class="news-tag news-tag-bull">Stocks</span><span class="news-tag news-tag-bull">Tesla Inc</span></div></div></div><div class="news-footer"><span class="news-source">Source: GuruFocus</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:55 UTC</div></div><div class="news-body"><div class="news-body-content"><div class="news-headline">NAIMOS officials injured in crash fully recovered</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: Ghana MMA</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:54 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://images.jpost.com/image/upload/f_auto,fl_lossy/q_auto/c_fill,g_faces:center,h_720,w_1280/691370" alt="Azerbaijan’s economy minister visits Israel to deepen bilateral cooperation"></div><div class="news-body-content"><div class="news-headline">Azerbaijan’s economy minister visits Israel to deepen bilateral cooperation</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Energy &amp; Resources</span><span class="news-tag news-tag-bull">Economies</span><span class="news-tag news-tag-bull">Energy</span><span class="news-tag news-tag-bull">Asia</span><span class="news-tag news-tag-bull">Western Asia</span><span class="news-tag news-tag-bull">Azerbaijan</span><span class="news-tag news-tag-bull">Israel</span><span class="news-tag news-tag-bull">Jerusalem</span><span class="news-tag news-tag-bull">Events</span><span class="news-tag news-tag-bull">Macro Topics</span><span class="news-tag news-tag-bull">Partnerships</span><span class="news-tag news-tag-bull">Energy</span><span class="news-tag news-tag-bull">Energy Equipment &amp; Services</span><span class="news-tag news-tag-bull">Oil &amp; Gas Equipment &amp; Services</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Jerusalem Post</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:54 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i2-prod.mirror.co.uk/incoming/article36292532.ece/ALTERNATES/s615/1_Two-child-benefit-cap.jpg" alt="Two-child benefit limit 'set to be scrapped' at Budget - fighting poverty in 'Labour's DNA'"></div><div class="news-body-content"><div class="news-headline">Two-child benefit limit 'set to be scrapped' at Budget - fighting poverty in 'Labour's DNA'</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Government</span><span class="news-tag news-tag-bull">Labour Party</span><span class="news-tag news-tag-bull">Budget</span><span class="news-tag news-tag-bear">Chancellor</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bull">Organisations</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Mirror</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:54 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://s.w.org/images/core/emoji/16.0.1/72x72/1f91d.png" alt="Cache Wallet and Funton.ai Partner to Boost Secure Web3 Gaming"></div><div class="news-body-content"><div class="news-headline">Cache Wallet and Funton.ai Partner to Boost Secure Web3 Gaming</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Web 3.0</span><span class="news-tag news-tag-bull">Events</span><span class="news-tag news-tag-bull">Partnerships</span></div></div></div><div class="news-footer"><span class="news-source">Source: CoinTrust.com</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:54 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.theborneopost.com/newsimages/2025/11/Zaini-Tiksun.jpg" alt="Gagasan Rakyat Youth backs BN candidate in Sungai Manila"></div><div class="news-body-content"><div class="news-headline">Gagasan Rakyat Youth backs BN candidate in Sungai Manila</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-neutral">Stocks</span><span class="news-tag news-tag-neutral">Consumer Discretionary</span><span class="news-tag news-tag-neutral">Diversified Consumer Services</span><span class="news-tag news-tag-neutral">Specialized Consumer Services</span><span class="news-tag news-tag-neutral">Consumer Staples</span><span class="news-tag news-tag-neutral">Danone</span><span class="news-tag news-tag-neutral">Food &amp; Staples Retailing</span><span class="news-tag news-tag-neutral">Food Retail</span><span class="news-tag news-tag-neutral">Food Products</span><span class="news-tag news-tag-neutral">Agricultural Products</span><span class="news-tag news-tag-neutral">Packaged Foods &amp; Meats</span><span class="news-tag news-tag-neutral">Consumer Goods</span><span class="news-tag news-tag-neutral">FoodTech</span><span class="news-tag news-tag-neutral">Packaged &amp; Canned Food</span><span class="news-tag news-tag-neutral">Asia</span><span class="news-tag news-tag-neutral">South Eastern Asia</span><span class="news-tag news-tag-neutral">Malaysia</span><span class="news-tag news-tag-neutral">Staples</span><span class="news-tag news-tag-neutral">Sabah</span><span class="news-tag news-tag-neutral">Sandakan</span><span class="news-tag news-tag-neutral">Food and Beverages</span><span class="news-tag news-tag-neutral">Food Products</span></div></div></div><div class="news-footer"><span class="news-source">Source: BorneoPost Online</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:54 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://dailynewshungary.b-cdn.net/wp-content/uploads/2025/11/eindhoven-airport-shut-down-drone.webp" alt="Traffic halted at major European airport after multiple drone sightings"></div><div class="news-body-content"><div class="news-headline">Traffic halted at major European airport after multiple drone sightings</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Specialized Consumer Services</span><span class="news-tag news-tag-bear">Drones</span><span class="news-tag news-tag-bear">Airlines</span><span class="news-tag news-tag-bear">Transportation Infrastructure</span><span class="news-tag news-tag-bear">Airport Services</span><span class="news-tag news-tag-bear">Airlines</span><span class="news-tag news-tag-bear">Airlines &amp; Aviation</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bear">Airports</span><span class="news-tag news-tag-bear">Military Drones</span><span class="news-tag news-tag-bear">Air Transportation</span><span class="news-tag news-tag-bear">Aviation</span><span class="news-tag news-tag-bear">Consumer Goods &amp; Services</span><span class="news-tag news-tag-bear">Consumer Durables</span><span class="news-tag news-tag-bear">Transportation &amp; Logistics</span><span class="news-tag news-tag-bear">Consumer Electronics</span><span class="news-tag news-tag-bear">Drones</span><span class="news-tag news-tag-bear">US Government Shutdown</span><span class="news-tag news-tag-bear">Consumer Discretionary</span><span class="news-tag news-tag-bear">Industrials</span><span class="news-tag news-tag-bear">Diversified Consumer Services</span></div></div></div><div class="news-footer"><span class="news-source">Source: Daily News Hungary</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:53 UTC</div></div><div class="news-body"><div class="news-body-content"><div class="news-headline">29 NPP youth organizers endorse Bawumia as party’s next presidential candidate</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: Ghana MMA</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:53 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i0.wp.com/www.webpronews.com/wp-content/uploads/2025/11/article-2204-1763895695.jpeg?fit=300%2C300&amp;#038;ssl=1" alt="Lumen’s AI Gambit: Sentinel Security and Networking Alliances Reshape Enterprise Battleground"></div><div class="news-body-content"><div class="news-headline">Lumen’s AI Gambit: Sentinel Security and Networking Alliances Reshape Enterprise Battleground</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Internet Services &amp; Infrastructure</span><span class="news-tag news-tag-bull">Industrials</span><span class="news-tag news-tag-bull">Diversified Telecommunication Services</span><span class="news-tag news-tag-bull">Integrated Telecommunication Services</span><span class="news-tag news-tag-bull">Infrastructure</span><span class="news-tag news-tag-bull">IT Services</span><span class="news-tag news-tag-bull">IT Consulting &amp; Other Services</span><span class="news-tag news-tag-bull">Construction &amp; Engineering</span><span class="news-tag news-tag-bull">Construction &amp; Engineering</span><span class="news-tag news-tag-bull">Cybersecurity</span><span class="news-tag news-tag-bull">Internet Security</span><span class="news-tag news-tag-bull">Artificial Intelligence</span><span class="news-tag news-tag-bull">Black Lotus</span><span class="news-tag news-tag-bull">Lumen Technologies Inc</span><span class="news-tag news-tag-bull">Intelligent Technologies</span><span class="news-tag news-tag-bull">Artificial Intelligence</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Stocks</span><span class="news-tag news-tag-bull">Private Companies and Brands</span><span class="news-tag news-tag-bull">Communications</span><span class="news-tag news-tag-bull">Technology</span></div></div></div><div class="news-footer"><span class="news-source">Source: WebProNews</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:53 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.winnipegfreepress.com/wp-content/uploads/sites/2/2025/11/93c4791d216e2045691383c278fcbb2b995298bc8fef0e3e89921fd1fea26e43.jpg" alt="Hamilton: ‘Terrible’ season continues with eighth-place finish in Las Vegas"></div><div class="news-body-content"><div class="news-headline">Hamilton: ‘Terrible’ season continues with eighth-place finish in Las Vegas</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">North America</span><span class="news-tag news-tag-bear">Northern America</span><span class="news-tag news-tag-bear">Central America</span><span class="news-tag news-tag-bear">Canada</span><span class="news-tag news-tag-bear">Honduras</span><span class="news-tag news-tag-bear">Santa Barbara</span><span class="news-tag news-tag-bear">Las Vegas</span></div></div></div><div class="news-footer"><span class="news-source">Source: Winnipeg Free Press</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:53 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://images.news9live.com/wp-content/uploads/2025/11/Paul-Pogba.jpg" alt="‘Football Isn’t Over For Me’: Paul Pogba makes his long-awaited comeback after two years"></div><div class="news-body-content"><div class="news-headline">‘Football Isn’t Over For Me’: Paul Pogba makes his long-awaited comeback after two years</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Western Europe</span><span class="news-tag news-tag-bear">Monaco</span><span class="news-tag news-tag-bull">Sports</span><span class="news-tag news-tag-bull">Football &amp; Soccer</span><span class="news-tag news-tag-bear">Europe</span></div></div></div><div class="news-footer"><span class="news-source">Source: News9</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:52 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://iol-prod.appspot.com/image/a13771292d2e0fcabd857de1f682b171e959b6bb/1000/jpeg" alt="The Zumas: Nkosazana lays charges against sister Duduzile over South Africans stranded in Ukraine"></div><div class="news-body-content"><div class="news-headline">The Zumas: Nkosazana lays charges against sister Duduzile over South Africans stranded in Ukraine</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Allegations</span><span class="news-tag news-tag-bear">Other Events</span><span class="news-tag news-tag-bear">Europe</span><span class="news-tag news-tag-bear">Eastern Europe</span><span class="news-tag news-tag-bear">Africa</span><span class="news-tag news-tag-bear">Southern Africa</span><span class="news-tag news-tag-bear">South Africa</span><span class="news-tag news-tag-bear">Ukraine</span><span class="news-tag news-tag-bear">Events</span><span class="news-tag news-tag-bear">Criminal Activity</span></div></div></div><div class="news-footer"><span class="news-source">Source: Independent on Saturday</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:52 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://miro.medium.com/v2/da:true/resize:fit:1200/0*nyjBX8OdCSpged1I" alt="Don’t Let Their Noise Drag You Into Trouble"></div><div class="news-body-content"><div class="news-headline">Don’t Let Their Noise Drag You Into Trouble</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: Medium</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:52 UTC</div></div><div class="news-body"><div class="news-body-content"><div class="news-headline">War in Ukraine: Europe's race against time to try to rewrite Trump's plan</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">United States of America</span><span class="news-tag news-tag-bear">Europe</span><span class="news-tag news-tag-bear">Northern Europe</span><span class="news-tag news-tag-bear">Eastern Europe</span><span class="news-tag news-tag-bear">Western Europe</span><span class="news-tag news-tag-bear">Africa</span><span class="news-tag news-tag-bear">Southern Africa</span><span class="news-tag news-tag-bear">North America</span><span class="news-tag news-tag-bear">Northern America</span><span class="news-tag news-tag-bear">South Africa</span><span class="news-tag news-tag-bear">France</span><span class="news-tag news-tag-bear">Germany</span><span class="news-tag news-tag-bear">Isle of Man</span><span class="news-tag news-tag-bear">Russian Federation</span><span class="news-tag news-tag-bear">Ukraine</span><span class="news-tag news-tag-bear">German</span><span class="news-tag news-tag-bear">Military Conflicts</span><span class="news-tag news-tag-bear">Glenfaba</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bear">People</span><span class="news-tag news-tag-bear">Trump Family</span><span class="news-tag news-tag-bear">President</span><span class="news-tag news-tag-bear">Other Events</span><span class="news-tag news-tag-bear">United Kingdom of Great Britain</span></div></div></div><div class="news-footer"><span class="news-source">Source: EIN News World</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:52 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://cassette.sphdigital.com.sg/image/straitstimes/b131577443f4658cd6f1d485591b1e8024991bc7a34249f9c171a8407dbfb02e" alt="Trump’s Ukraine ‘deal’ deserves the Chamberlain Peace Prize"></div><div class="news-body-content"><div class="news-headline">Trump’s Ukraine ‘deal’ deserves the Chamberlain Peace Prize</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Trump Family</span><span class="news-tag news-tag-bull">Europe</span><span class="news-tag news-tag-bull">Eastern Europe</span><span class="news-tag news-tag-bull">Ukraine</span><span class="news-tag news-tag-bear">Values</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bull">People</span></div></div></div><div class="news-footer"><span class="news-source">Source: The Straits Times</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.nationalaccordnewspaper.com/wp-content/uploads/2025/11/Borno-Governor-Babagana-Zulum.jpg" alt="Borno Govt raises alarm over fake Facebook account impersonating Governor Zulum"></div><div class="news-body-content"><div class="news-headline">Borno Govt raises alarm over fake Facebook account impersonating Governor Zulum</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Governor</span><span class="news-tag news-tag-bear">Western Africa</span><span class="news-tag news-tag-bear">Nigeria</span><span class="news-tag news-tag-bear">Borno</span><span class="news-tag news-tag-bear">Africa</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bear">Events</span><span class="news-tag news-tag-bear">Fraud</span><span class="news-tag news-tag-bear">Government</span></div></div></div><div class="news-footer"><span class="news-source">Source: National Accord Newspaper</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-body-content"><div class="news-headline">Trump says Ukraine plan ‘not my final offer’ after EU leaders warn deal needs work</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Washington D.C.</span><span class="news-tag news-tag-bear">United States of America</span><span class="news-tag news-tag-bear">Europe</span><span class="news-tag news-tag-bear">Eastern Europe</span><span class="news-tag news-tag-bear">North America</span><span class="news-tag news-tag-bear">Northern America</span><span class="news-tag news-tag-bear">Ukraine</span><span class="news-tag news-tag-bear">European Union</span><span class="news-tag news-tag-bear">People</span><span class="news-tag news-tag-bear">Kiev</span><span class="news-tag news-tag-bear">Trump Family</span></div></div></div><div class="news-footer"><span class="news-source">Source: POLITICO Europe</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.livemint.com/lm-img/img/2025/11/23/1600x900/logo/The-Ministry-of-Home-Affairs-issued-the-public-not_1763887554580_1763887560993.jpg" alt="MHA reacts to proposal to ‘simplify law-making’ in Chandigarh, says ‘no final decision’"></div><div class="news-body-content"><div class="news-headline">MHA reacts to proposal to ‘simplify law-making’ in Chandigarh, says ‘no final decision’</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Asia</span><span class="news-tag news-tag-bear">Southern Asia</span><span class="news-tag news-tag-bear">Chandigarh</span><span class="news-tag news-tag-bear">Chandigarh</span><span class="news-tag news-tag-bear">India</span></div></div></div><div class="news-footer"><span class="news-source">Source: Livemint</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://images.euronews.com/articles/stories/09/55/82/16/1200x675_cmsv2_c6d3ec71-896a-5b4c-9209-93e276bc4ac8-9558216.jpg" alt="Hawaii’s Kilauea volcano has been erupting since last year as lava fountains rise hundreds of metres"></div><div class="news-body-content"><div class="news-headline">Hawaii’s Kilauea volcano has been erupting since last year as lava fountains rise hundreds of metres</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">United States of America</span><span class="news-tag news-tag-bear">North America</span><span class="news-tag news-tag-bear">Northern America</span><span class="news-tag news-tag-bear">Hawaii</span><span class="news-tag news-tag-bear">Hawaii</span></div></div></div><div class="news-footer"><span class="news-source">Source: Euronews</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i0.wp.com/www.webpronews.com/wp-content/uploads/2025/11/article-2203-1763895085.jpeg?fit=300%2C300&amp;#038;ssl=1" alt="UAE’s $1 Billion AI Push into Africa: Betting Big on the Continent’s Tech Frontier"></div><div class="news-body-content"><div class="news-headline">UAE’s $1 Billion AI Push into Africa: Betting Big on the Continent’s Tech Frontier</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bear">Education Services</span><span class="news-tag news-tag-bear">Education</span><span class="news-tag news-tag-bull">Artificial Intelligence</span><span class="news-tag news-tag-bull">United States of America</span><span class="news-tag news-tag-bull">Asia</span><span class="news-tag news-tag-bull">Western Asia</span><span class="news-tag news-tag-bull">Oceania/Australia</span><span class="news-tag news-tag-bull">Melanesia</span><span class="news-tag news-tag-bull">North America</span><span class="news-tag news-tag-bull">Northern America</span><span class="news-tag news-tag-bull">Papua New Guinea</span><span class="news-tag news-tag-bull">United Arab Emirates</span><span class="news-tag news-tag-bull">Gulf</span><span class="news-tag news-tag-bull">Florida</span><span class="news-tag news-tag-bull">Gulf</span><span class="news-tag news-tag-bear">Education</span><span class="news-tag news-tag-bear">Education</span><span class="news-tag news-tag-bull">Artificial Intelligence</span><span class="news-tag news-tag-bear">Healthcare &amp; Pharmaceuticals</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Intelligent Technologies</span><span class="news-tag news-tag-bull">Events</span><span class="news-tag news-tag-bull">Partnerships</span><span class="news-tag news-tag-bear">Consumer Discretionary</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Internet Services &amp; Infrastructure</span><span class="news-tag news-tag-bear">Diversified Consumer Services</span><span class="news-tag news-tag-bull">IT Services</span><span class="news-tag news-tag-bull">IT Consulting &amp; Other Services</span></div></div></div><div class="news-footer"><span class="news-source">Source: WebProNews</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://greaterkashmir.imagibyte.sortdcdn.net/wp-content/uploads/2025/11/Modi-.jpg" alt="‘No place for any double standards in fight against terrorism’: PM Modi at IBSA meet"></div><div class="news-body-content"><div class="news-headline">‘No place for any double standards in fight against terrorism’: PM Modi at IBSA meet</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">IT Consulting &amp; Other Services</span><span class="news-tag news-tag-bear">Technology</span><span class="news-tag news-tag-bear">Prime Minister</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bear">Southern Asia</span><span class="news-tag news-tag-bear">India</span><span class="news-tag news-tag-bear">Jammu and Kashmir</span><span class="news-tag news-tag-bear">Technology</span><span class="news-tag news-tag-bear">Asia</span><span class="news-tag news-tag-bear">Technology</span><span class="news-tag news-tag-bear">IT Services</span></div></div></div><div class="news-footer"><span class="news-source">Source: Greater Kashmir</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:51 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://akm-img-a-in.tosshub.com/indiatoday/images/breaking_story_image/202511/smritipalash13.jpeg%3FVersionId%3Da1rBeB_6uhw_U13dbccWqPo0ivBPTyBG?VersionId=nfmxSpsGeJarNAEKMLgsjVJ8PZo6Qoyv" alt="Smriti Mandhana's wedding postponed indefinitely after her father falls ill, says manager"></div><div class="news-body-content"><div class="news-headline">Smriti Mandhana's wedding postponed indefinitely after her father falls ill, says manager</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span></div></div></div><div class="news-footer"><span class="news-source">Source: India Today</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://cdn.dimsumdaily.hk/wp-content/uploads/2025/11/23184928/Ariana-Grande-in-SIngapore2-2-1.webp" alt="Australian man deported and banned from Singapore after Ariana Grande premiere incident"></div><div class="news-body-content"><div class="news-headline">Australian man deported and banned from Singapore after Ariana Grande premiere incident</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Asia</span><span class="news-tag news-tag-bear">South Eastern Asia</span><span class="news-tag news-tag-bear">Oceania/Australia</span><span class="news-tag news-tag-bear">Australasia</span><span class="news-tag news-tag-bear">Australia</span><span class="news-tag news-tag-bear">Singapore</span><span class="news-tag news-tag-bear">Central Region</span><span class="news-tag news-tag-bear">Singapore</span></div></div></div><div class="news-footer"><span class="news-source">Source: Dimsumdaily Hong Kong</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://www.capitalfm.co.ke/news/files/2025/06/Maraga-says-buck-stops-with-President-Ruto-in-Albert-Ojwang-murder.jpg" alt="Maraga calls Ruto’s bluff as he releases five point economy revamp plan"></div><div class="news-body-content"><div class="news-headline">Maraga calls Ruto’s bluff as he releases five point economy revamp plan</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Macro Topics</span><span class="news-tag news-tag-bull">Economies</span></div></div></div><div class="news-footer"><span class="news-source">Source: Capital FM Kenya</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://static.seekingalpha.com/cdn/s3/uploads/getty_images/2196897625/image_2196897625.jpg?io=getty-c-w1536" alt="Mayville Engineering's Surge Has Been Well Justified"></div><div class="news-body-content"><div class="news-headline">Mayville Engineering's Surge Has Been Well Justified</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">Data</span><span class="news-tag news-tag-bull">Industrial Conglomerates</span><span class="news-tag news-tag-bull">Industrial Conglomerates</span><span class="news-tag news-tag-bull">Valuation</span><span class="news-tag news-tag-bull">Industrials</span><span class="news-tag news-tag-bull">Analyst Strong Buy Rating</span><span class="news-tag news-tag-bull">Price Movement</span><span class="news-tag news-tag-bull">Mayville Engineering</span><span class="news-tag news-tag-bull">IT Services</span><span class="news-tag news-tag-bull">IT Services</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Data Centre</span><span class="news-tag news-tag-bull">Technical Analysis</span><span class="news-tag news-tag-bull">Stocks</span><span class="news-tag news-tag-bull">Financial Topics</span><span class="news-tag news-tag-bull">Events</span><span class="news-tag news-tag-bull">Analyst Ratings</span><span class="news-tag news-tag-bull">Technology</span><span class="news-tag news-tag-bull">Industrials</span><span class="news-tag news-tag-bull">IT Services</span><span class="news-tag news-tag-bull">Data Processing &amp; Outsourced Services</span></div></div></div><div class="news-footer"><span class="news-source">Source: Seeking Alpha</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i0.wp.com/www.webpronews.com/wp-content/uploads/2025/11/article-2202-1763895033.jpeg?fit=300%2C300&amp;#038;ssl=1" alt="Deutsche Bank’s AI Warning: Boom or Bust for the U.S. Economy?"></div><div class="news-body-content"><div class="news-headline">Deutsche Bank’s AI Warning: Boom or Bust for the U.S. Economy?</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">Internet Services &amp; Infrastructure</span><span class="news-tag news-tag-bear">Diversified Financial Services</span><span class="news-tag news-tag-bear">Diversified Capital Markets</span><span class="news-tag news-tag-bear">Financials</span><span class="news-tag news-tag-bear">IT Services</span><span class="news-tag news-tag-bear">IT Consulting &amp; Other Services</span><span class="news-tag news-tag-bear">Other Diversified Financial Services</span><span class="news-tag news-tag-bear">Financials</span><span class="news-tag news-tag-bear">Banks &amp; Banking</span><span class="news-tag news-tag-bear">Data Processing &amp; Outsourced Services</span><span class="news-tag news-tag-bear">Technology</span><span class="news-tag news-tag-bear">Data</span><span class="news-tag news-tag-bear">Artificial Intelligence</span><span class="news-tag news-tag-bear">Capital Markets</span><span class="news-tag news-tag-bear">Economies</span><span class="news-tag news-tag-bear">United States of America</span><span class="news-tag news-tag-bear">North America</span><span class="news-tag news-tag-bear">Northern America</span><span class="news-tag news-tag-bear">Data &amp; Analytics</span><span class="news-tag news-tag-bear">Intelligent Technologies</span><span class="news-tag news-tag-bear">Analysis</span><span class="news-tag news-tag-bear">Data &amp; Analytics</span><span class="news-tag news-tag-bear">Technology</span><span class="news-tag news-tag-bear">Equity &amp; Debt Capital Markets</span><span class="news-tag news-tag-bear">Artificial Intelligence</span><span class="news-tag news-tag-bear">Stocks</span><span class="news-tag news-tag-bear">Financial Topics</span><span class="news-tag news-tag-bear">Macro Topics</span><span class="news-tag news-tag-bear">Ratings and Research Firms</span><span class="news-tag news-tag-bear">Deutsche Bank Group</span><span class="news-tag news-tag-bear">Deutsche Bank Research</span><span class="news-tag news-tag-bear">Technology</span></div></div></div><div class="news-footer"><span class="news-source">Source: WebProNews</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://i2-prod.belfastlive.co.uk/incoming/article32924746.ece/ALTERNATES/s615/0_IMG_4590jpeg.jpg" alt="Meet the Northern Ireland nanny paving the way for wedding childcare"></div><div class="news-body-content"><div class="news-headline">Meet the Northern Ireland nanny paving the way for wedding childcare</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bull">United Kingdom of Great Britain</span><span class="news-tag news-tag-bull">Northern Ireland</span><span class="news-tag news-tag-bull">Europe</span><span class="news-tag news-tag-bull">Northern Europe</span></div></div></div><div class="news-footer"><span class="news-source">Source: Belfast Live</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://blog.tipranks.com/wp-content/uploads/2025/11/shutterstock_2637727779-1-192x192.jpg" alt="‘A Tool to Leverage,’ Says Top Investor About Microsoft Stock"></div><div class="news-body-content"><div class="news-headline">‘A Tool to Leverage,’ Says Top Investor About Microsoft Stock</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-neutral">Technology</span><span class="news-tag news-tag-neutral">Internet Services &amp; Infrastructure</span><span class="news-tag news-tag-neutral">Casinos &amp; Gaming</span><span class="news-tag news-tag-neutral">Media</span><span class="news-tag news-tag-neutral">Advertising</span><span class="news-tag news-tag-neutral">IT Services</span><span class="news-tag news-tag-neutral">IT Consulting &amp; Other Services</span><span class="news-tag news-tag-neutral">Web Services</span><span class="news-tag news-tag-neutral">Software</span><span class="news-tag news-tag-neutral">Application Software</span><span class="news-tag news-tag-neutral">Technology</span><span class="news-tag news-tag-neutral">Systems Software</span><span class="news-tag news-tag-neutral">Cybersecurity</span><span class="news-tag news-tag-neutral">Network Security</span><span class="news-tag news-tag-neutral">Technology Distributors</span><span class="news-tag news-tag-neutral">Hotels, Restaurants &amp; Leisure</span><span class="news-tag news-tag-neutral">Electronic Equipment, Instruments &amp; Components</span><span class="news-tag news-tag-neutral">Software as a Service</span><span class="news-tag news-tag-neutral">Big Tech</span><span class="news-tag news-tag-neutral">Software</span><span class="news-tag news-tag-neutral">DroneTech</span><span class="news-tag news-tag-neutral">Online Gaming</span><span class="news-tag news-tag-neutral">Mobile Gaming</span><span class="news-tag news-tag-neutral">Systems Software</span><span class="news-tag news-tag-neutral">Cloud Computing</span><span class="news-tag news-tag-bear">Stocks</span><span class="news-tag news-tag-neutral">AdTech</span><span class="news-tag news-tag-neutral">Microsoft Corp</span><span class="news-tag news-tag-neutral">Communications</span><span class="news-tag news-tag-neutral">Consumer Discretionary</span></div></div></div><div class="news-footer"><span class="news-source">Source: TipRanks</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article><article class="news-item clickable"><div class="news-item-header"><div class="news-time">10:50 UTC</div></div><div class="news-body"><div class="news-thumb"><img src="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/7456/live/343fe270-c856-11f0-8c06-f5d460985095.jpg" alt="I'd be licking my lips bowling to England - McGrath"></div><div class="news-body-content"><div class="news-headline">I'd be licking my lips bowling to England - McGrath</div><div class="news-tags"><span class="news-tag news-tag-neutral">All Assets</span><span class="news-tag news-tag-bear">United Kingdom of Great Britain</span><span class="news-tag news-tag-bear">England</span><span class="news-tag news-tag-bear">Europe</span><span class="news-tag news-tag-bear">Northern Europe</span><span class="news-tag news-tag-bear">Oceania/Australia</span><span class="news-tag news-tag-bear">Australasia</span><span class="news-tag news-tag-bear">Australia</span></div></div></div><div class="news-footer"><span class="news-source">Source: BBC</span><div class="news-sentiment"><span class="sentiment-chip sentiment-bear">Negative</span></div></div></article></div>
-
+        <div class="news-list" id="newsList"></div>
       </section>
     </div>
   </div>
 
   <script>
-    // CityFalcon integration (JS-only, no UI changes)
     (function() {
-      const FRONT_SIGNAL_ASSET_CLASS = "163"; // Macro Topics
-      const FRONT_SIGNAL_ROTATE_MS = 12000;
-      const AUTO_REFRESH_INTERVAL = 15000;
+      // Always clear cached news on each full page load,
+      // so setiap user refresh page -> data baru di-fetch
+      try {
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const key = sessionStorage.key(i);
+          if (key && key.startsWith("kn_")) {
+            sessionStorage.removeItem(key);
+          }
+        }
+      } catch (e) {}
 
-      // CORS proxy (override with ?cf_proxy=...)
+      // CONFIG
+      const CONFIG = {
+        ASSET_CLASS_MACRO: "163",
+        CACHE_DURATION: 3 * 60 * 1000,
+        AUTO_REFRESH_INTERVAL: 60000,
+        DEBOUNCE_DELAY: 300,
+        CITYFALCON_LIMIT: 40
+      };
+
       const USER_PROXY = new URLSearchParams(location.search).get("cf_proxy");
-      const PROXY_CHAIN = [
-        USER_PROXY,
-        "https://cors-anywhere-proxy-six.vercel.app/",
-        "",
-      ].filter(Boolean);
-
+      const PROXY_CHAIN = [USER_PROXY, "https://cors-anywhere-proxy-six.vercel.app/", ""].filter(Boolean);
 
       const ASSET_CLASSES = [
         { id: "all", label: "All Assets" },
         { id: "1", label: "Stocks" },
         { id: "61", label: "Commodities" },
-        { id: "73", label: "Foreign Exchange and Currencies" },
+        { id: "73", label: "Forex & Currencies" },
         { id: "72", label: "Indices" },
-        { id: "68", label: "Private Companies and Brands" },
         { id: "163", label: "Macro Topics" },
-        { id: "26", label: "Exchange Traded Funds (ETFs)" },
         { id: "152", label: "Cryptocurrencies" },
+        { id: "26", label: "ETFs" },
+        { id: "68", label: "Private Companies" },
         { id: "156", label: "Organisations" },
         { id: "158", label: "People" },
-        { id: "165", label: "State-Owned Companies" },
-        { id: "172", label: "Technical Analysis" },
-        { id: "155", label: "Closed-End Funds" },
-        { id: "162", label: "Other Topics" },
         { id: "157", label: "Events" },
         { id: "151", label: "Property" },
-        { id: "173", label: "Fundamental Analysis" },
-        { id: "167", label: "Financial Regulation and Related Topics" },
-        { id: "182", label: "Other Events" },
-        { id: "181", label: "Preferred Stocks" },
-        { id: "183", label: "Alternative Data" },
-        { id: "159", label: "Mutual Funds" },
         { id: "153", label: "Financial Topics" },
-        { id: "166", label: "Corporate Bonds" },
         { id: "169", label: "Products" },
-        { id: "168", label: "Ratings and Research Firms" },
-        { id: "65", label: "Sovereign and Government Bonds" },
+        { id: "65", label: "Sovereign Bonds" }
       ];
 
       const CITYFALCON_BASE = "https://www.cityfalcon.com/webapi/v1/stories";
-      const CITYFALCON_LIMIT = Number(
-        new URLSearchParams(location.search).get("CITYFALCON_LIMIT") || "50"
-      );
-      const SAMPLE_STORIES = [
-        {
-          id: 101444814,
-          title: "Airlines cut Venezuela flights after US warning",
-          description:
-            "Several international airlines have halted flights from Venezuela. This follows a warning from U.S. aviation authorities about potential dangers in the country's airspace.",
-          category: "mp",
-          url: "https://economictimes.indiatimes.com/industry/transportation/airlines-/-aviation/several-international-airlines-cancel-their-flights-in-venezuela-after-us-warning/articleshow/125514271.cms",
-          imageUrls: [
-            "https://img.etimg.com/thumb/msid-125514274,width-1200,height-630,imgsize-18302,overlay-economictimes/articleshow.jpg",
-          ],
-          publishTime: "2025-11-23T00:53:47.000Z",
-          domain_name: "Economic Times India",
-        },
-        {
-          id: 101436531,
-          title: "FAA warns pilots flying over Venezuela to 'exercise caution' amid military turmoil",
-          description:
-            "The FAA has warned pilots to exercise caution when operating in the region around Venezuela because of heightened military activity.",
-          category: "mp",
-          url: "https://thehill.com/regulation/transportation/5619121-faa-warns-venezuela-flights/",
-          imageUrls: [
-            "https://thehill.com/wp-content/uploads/sites/2/2025/11/dca_110725gn19_w.jpg?w=900",
-          ],
-          publishTime: "2025-11-22T23:27:52.000Z",
-          domain_name: "The Hill",
-        },
-        {
-          id: 101436495,
-          title: "Trump says 28-point Ukraine peace plan isn’t his ‘final offer’",
-          description:
-            "President Donald Trump said his 28-point Russia-Ukraine peace plan is not his final offer after giving a deadline to Ukraine.",
-          category: "mp",
-          url: "https://www.nbcnews.com/video/trump-says-28-point-ukraine-peace-plan-isn-t-his-final-offer-252686917955",
-          imageUrls: [
-            "https://media-cldnry.s-nbcnews.com/image/upload/t_fit_1500w/mpx/2704722219/2025_11/2247364506_Cropped-pc7ovc.jpg",
-          ],
-          publishTime: "2025-11-22T22:18:28.000Z",
-          domain_name: "NBC News",
-        },
-        {
-          id: 101424252,
-          title: "TAP cancela voos para a Venezuela por razões de segurança",
-          description:
-            "A TAP cancelou voos para a Venezuela após alerta das autoridades aeronáuticas dos EUA sobre segurança no espaço aéreo do país.",
-          category: "mp",
-          url: "https://www.noticiasaominuto.com/economia/2892952/tap-cancela-voos-para-a-venezuela-por-razoes-de-seguranca",
-          imageUrls: [
-            "https://media-manager.noticiasaominuto.com/960/naom_67f929a3246ba.webp",
-          ],
-          publishTime: "2025-11-22T21:26:33.000Z",
-          domain_name: "Notícias ao Minuto",
-        },
-      ];
-
-      const filterButtons = Array.from(document.querySelectorAll(".filter-btn"));
-      const activeLabel = document.getElementById("activeFilterLabel");
-      const coreHeadline = document.getElementById("coreHeadline");
-      const coreSummary = document.getElementById("coreSummary");
-      const coreTags = document.getElementById("coreTags");
-      const coreUpdated = document.getElementById("coreUpdated");
-      const coreSource = document.getElementById("coreSource");
-      const coreThumb = document.getElementById("coreThumb");
-      const coreCard = document.getElementById("coreNewsHeader");
+      
+      const UI = {
+        filterButtons: document.querySelectorAll(".filter-btn"),
+        activeLabel: document.getElementById("activeFilterLabel"),
+        newsList: document.getElementById("newsList"),
+        core: {
+          headline: document.getElementById("coreHeadline"),
+          summary: document.getElementById("coreSummary"),
+          tags: document.getElementById("coreTags"),
+          updated: document.getElementById("coreUpdated"),
+          source: document.getElementById("coreSource"),
+          thumb: document.getElementById("coreThumb"),
+          card: document.getElementById("coreNewsHeader")
+        }
+      };
 
       const FILTER_TO_ASSET_CLASS = {
         "all-assets": null,
-        stocks: "1",
-        commodities: "61",
-        fx: "73",
-        indices: "72",
-        "private-companies": "68",
+        "stocks": "1",
+        "commodities": "61",
+        "fx": "73",
+        "indices": "72",
         "macro-topics": "163",
-        etfs: "26",
-        crypto: "152",
-        organisations: "156",
-        people: "158",
-        "state-owned": "165",
-        "technical-analysis": "172",
-        "closed-end-funds": "155",
-        "other-topics": "162",
-        events: "157",
-        property: "151",
-        "fundamental-analysis": "173",
-        "fin-regulation": "167",
-        "other-events": "182",
-        "preferred-stocks": "181",
-        "alternative-data": "183",
-        "mutual-funds": "159",
+        "crypto": "152",
+        "etfs": "26",
+        "private-companies": "68",
+        "organisations": "156",
+        "people": "158",
+        "events": "157",
+        "property": "151",
         "financial-topics": "153",
-        "corporate-bonds": "166",
-        products: "169",
-        "ratings-research": "168",
-        "sovereign-bonds": "65",
-        "asset-class-insight": FRONT_SIGNAL_ASSET_CLASS,
-        news: null
+        "products": "169",
+        "sovereign-bonds": "65"
       };
 
       let currentFilter = "all-assets";
-      let frontStories = [];
-      let frontIndex = 0;
-      let rotateTimer = null;
       let refreshTimer = null;
+      let debounceTimer = null;
 
-      const renderCoreShimmer = () => {
-        if (!coreHeadline || !coreSummary || !coreTags || !coreThumb) return;
-        coreHeadline.textContent = "";
-        coreSummary.textContent = "";
-        coreTags.innerHTML = "";
-        coreSource.textContent = "Source: –";
-        coreUpdated.textContent = "Updated: --:--";
-
-        coreThumb.innerHTML = "";
-        const thumb = document.createElement("div");
-        thumb.className = "shimmer";
-        thumb.style.width = "100%";
-        thumb.style.height = "160px";
-        coreThumb.appendChild(thumb);
-
-        const blocks = [
-          { width: "80%", height: "14px", marginBottom: "8px" },
-          { width: "100%", height: "12px", marginBottom: "6px" },
-          { width: "70%", height: "12px", marginBottom: "10px" },
-          { width: "40%", height: "10px", marginBottom: "0px" },
-        ];
-        coreSummary.innerHTML = "";
-        blocks.forEach(b => {
-          const div = document.createElement("div");
-          div.className = "shimmer";
-          div.style.width = b.width;
-          div.style.height = b.height;
-          div.style.marginBottom = b.marginBottom;
-          coreSummary.appendChild(div);
-        });
-      };
-
-      const renderStreamShimmer = (count = 5) => {
-        const list = document.getElementById("newsList");
-        if (!list) return;
-        list.innerHTML = "";
-        for (let i = 0; i < count; i++) {
-          const article = document.createElement("article");
-          article.className = "news-item";
-          const header = document.createElement("div");
-          header.className = "news-item-header";
-
-          const t1 = document.createElement("div");
-          t1.className = "shimmer";
-          t1.style.width = "80px";
-          t1.style.height = "10px";
-          header.appendChild(t1);
-
-          const t2 = document.createElement("div");
-          t2.className = "shimmer";
-          t2.style.width = "50px";
-          t2.style.height = "10px";
-          header.appendChild(t2);
-
-          const body = document.createElement("div");
-          body.className = "news-body";
-
-          const thumb = document.createElement("div");
-          thumb.className = "news-thumb shimmer";
-          body.appendChild(thumb);
-
-          const bodyContent = document.createElement("div");
-          bodyContent.className = "news-body-content";
-
-          const hline = document.createElement("div");
-          hline.className = "shimmer";
-          hline.style.width = "90%";
-          hline.style.height = "12px";
-          hline.style.marginBottom = "6px";
-          bodyContent.appendChild(hline);
-
-          const tags = document.createElement("div");
-          tags.className = "news-tags";
-          for (let j = 0; j < 3; j++) {
-            const tag = document.createElement("span");
-            tag.className = "news-tag shimmer";
-            tag.style.width = "60px";
-            tag.style.height = "10px";
-            tag.style.border = "none";
-            tags.appendChild(tag);
+      const cacheService = {
+        get: (key) => {
+          try {
+            const item = JSON.parse(sessionStorage.getItem(`kn_${key}`));
+            if (!item) return null;
+            if (Date.now() - item.timestamp > CONFIG.CACHE_DURATION) {
+              sessionStorage.removeItem(`kn_${key}`);
+              return null;
+            }
+            return item.data;
+          } catch (e) {
+            return null;
           }
-          bodyContent.appendChild(tags);
-
-          body.appendChild(bodyContent);
-
-          const footer = document.createElement("div");
-          footer.className = "news-footer";
-          const s1 = document.createElement("span");
-          s1.className = "news-source shimmer";
-          s1.style.width = "70px";
-          s1.style.height = "10px";
-          footer.appendChild(s1);
-
-          const s2wrap = document.createElement("div");
-          s2wrap.className = "news-sentiment";
-          const s2 = document.createElement("span");
-          s2.className = "sentiment-chip shimmer";
-          s2.style.width = "70px";
-          s2.style.height = "10px";
-          s2wrap.appendChild(s2);
-          footer.appendChild(s2wrap);
-
-          article.appendChild(header);
-          article.appendChild(body);
-          article.appendChild(footer);
-          list.appendChild(article);
+        },
+        set: (key, data) => {
+          try {
+            sessionStorage.setItem(`kn_${key}`, JSON.stringify({ timestamp: Date.now(), data: data }));
+          } catch (e) {}
+        }
+      };
+      
+      const renderShimmer = (target) => {
+        if (target === 'core') {
+          UI.core.headline.innerHTML = '<div class="shimmer" style="width:90%; height:20px;"></div>';
+          UI.core.summary.innerHTML =
+            '<div class="shimmer" style="width:100%; height:12px; margin-bottom:8px;"></div>' +
+            '<div class="shimmer" style="width:70%; height:12px;"></div>';
+        } else if (target === 'list') {
+          UI.newsList.innerHTML = "";
+          const frag = document.createDocumentFragment();
+          for (let i = 0; i < 5; i++) {
+            const div = document.createElement('div');
+            div.className = "news-item";
+            div.innerHTML = `
+              <div class="news-body">
+                <div class="news-thumb shimmer"></div>
+                <div class="news-body-content">
+                  <div class="shimmer" style="width:80%; height:12px; margin-bottom:6px;"></div>
+                  <div class="shimmer" style="width:40%; height:10px;"></div>
+                </div>
+              </div>`;
+            frag.appendChild(div);
+          }
+          UI.newsList.appendChild(frag);
         }
       };
 
-      const buildCityFalconUrl = (assetClassId, { limit = CITYFALCON_LIMIT, page } = {}) => {
-        const params = {
-          categories: "mp,op,r",
-          domains_filtering_mode: "all",
-          fold_similar_stories: "false",
-          languages: "en",
-          limit: String(limit),
-          min_score: "5",
-          order_by: "latest",
-          selected_time_filter: "predefined",
-          time_filter: "month1",
-          with_sentiments: "true",
-        };
-        if (assetClassId) params.asset_classes = String(assetClassId);
-        if (page && page > 1) params.page = String(page);
-        const query = new URLSearchParams(params);
-        return `${CITYFALCON_BASE}?${query.toString()}`;
+      // Helper untuk warna chip/tag berdasarkan berbagai skala skor
+      const getTagClass = (score) => {
+        if (score == null) return "news-tag-neutral";
+
+        // Jika numeric
+        if (typeof score === "number") {
+          const abs = Math.abs(score);
+          // Skala -1 s/d 1 (umum untuk sentiment)
+          if (abs <= 1) {
+            if (score > 0.15) return "news-tag-bull";
+            if (score < -0.15) return "news-tag-bear";
+            return "news-tag-neutral";
+          }
+          // Skala 0–100
+          if (score >= 60) return "news-tag-bull";
+          if (score <= 40) return "news-tag-bear";
+          return "news-tag-neutral";
+        }
+
+        // String sentiment
+        const val = String(score).toLowerCase();
+        if (val.includes("pos") || val.includes("bull")) return "news-tag-bull";
+        if (val.includes("neg") || val.includes("bear")) return "news-tag-bear";
+        return "news-tag-neutral";
       };
 
-      const formatTime = (ts) => {
-        if (!ts) return "";
-        const d = new Date(ts);
-        if (Number.isNaN(d.getTime())) return "";
-        return d.toISOString().slice(11, 16) + " UTC";
+      // Ambil skor sentiment utama untuk chip kanan atas (Positive / Negative / Neutral)
+      const extractSentimentScore = (story) => {
+        // Berbagai kemungkinan field dari CityFalcon / API lainnya
+        if (typeof story.sentiment_score === "number") return story.sentiment_score;
+        if (typeof story.sentiment === "number") return story.sentiment;
+        if (story.sentiment && typeof story.sentiment.value === "number") return story.sentiment.value;
+
+        // Rata-rata sentiment dari analytics jika ada
+        if (Array.isArray(story.analytics) && story.analytics.length) {
+          const vals = story.analytics
+            .map(a => (typeof a.sentiment_score === "number"
+              ? a.sentiment_score
+              : (typeof a.sentiment === "number" ? a.sentiment : null)))
+            .filter(v => v != null);
+          if (vals.length) {
+            return vals.reduce((a, b) => a + b, 0) / vals.length;
+          }
+        }
+
+        // String-based sentiment
+        if (typeof story.sentiment === "string") {
+          const v = story.sentiment.toLowerCase();
+          if (v.includes("pos")) return 0.7;
+          if (v.includes("neg")) return -0.7;
+          if (v.includes("neu")) return 0;
+        }
+
+        return null;
       };
 
-      const sentimentValue = (s) => {
-        if (s == null) return "";
-        if (Array.isArray(s)) return sentimentValue(s[0]);
-        if (typeof s === "object") return sentimentValue(s.label || s.text || s.name);
-        return String(s);
-      };
+      const normalizeStory = (story) => {
+        const pickImage = (s) => (s.imageUrls?.[0] || s.image_url || s.lead_image_url || "");
+        
+        // Sentiment chip (pojok kanan bawah)
+        let sentimentClass = "sentiment-neutral";
+        let sentimentLabel = "Neutral";
+        const sScore = extractSentimentScore(story);
 
-      const extractScore = (story) => {
-        const raw =
-          story.score ??
-          (story.dynamic_cfscore && story.dynamic_cfscore.value) ??
-          story.dynamic_cfscore ??
-          story.old_score ??
-          null;
-        const num = Number(raw);
-        return Number.isFinite(num) ? num : null;
-      };
+        if (sScore != null && typeof sScore === "number") {
+          const abs = Math.abs(sScore);
+          // Jika -1..1
+          if (abs <= 1) {
+            if (sScore > 0.15) {
+              sentimentClass = "sentiment-bull";
+              sentimentLabel = "Positive";
+            } else if (sScore < -0.15) {
+              sentimentClass = "sentiment-bear";
+              sentimentLabel = "Negative";
+            }
+          } else {
+            // Skala 0–100 atau -100..100
+            if (sScore >= 60 || sScore >= 20) {
+              sentimentClass = "sentiment-bull";
+              sentimentLabel = "Positive";
+            } else if (sScore <= 40 || sScore <= -20) {
+              sentimentClass = "sentiment-bear";
+              sentimentLabel = "Negative";
+            }
+          }
+        }
 
-      const sentimentLabel = (s) => {
-        const val = sentimentValue(s).toLowerCase();
-        if (val.includes("bull")) return "Bullish";
-        if (val.includes("bear")) return "Bearish";
-        return "Neutral";
-      };
+        // 1. Asset Classes (biasanya Neutral)
+        const assetTags = (story.asset_class_names || []).map(t => ({
+          label: t,
+          cls: "news-tag-neutral"
+        }));
 
-      const sentimentClass = (s) => {
-        const val = sentimentValue(s).toLowerCase();
-        if (val.includes("bull")) return "sentiment-chip sentiment-bull";
-        if (val.includes("bear")) return "sentiment-chip sentiment-bear";
-        return "sentiment-chip sentiment-neutral";
-      };
+        // 2. Analytics/Entities (dengan warna sentiment masing-masing)
+        const analyticsTags = (story.analytics || []).map(a => ({
+          label: a.entity_name || a.name || "Entity",
+          cls: getTagClass(a.sentiment_score ?? a.sentiment)
+        }));
 
-      const scoreToClass = (score) => {
-        if (score == null) return "sentiment-chip sentiment-neutral";
-        if (score >= 60) return "sentiment-chip sentiment-bull";
-        if (score <= 40) return "sentiment-chip sentiment-bear";
-        return "sentiment-chip sentiment-neutral";
-      };
-
-      const scoreToTagClass = (score) => {
-        if (score == null) return "news-tag news-tag-neutral";
-        if (score >= 60) return "news-tag news-tag-bull";
-        if (score <= 40) return "news-tag news-tag-bear";
-        return "news-tag news-tag-neutral";
-      };
-
-      const scoreToLabel = (score) => {
-        if (score == null) return "Neutral";
-        if (score >= 60) return "Positive";
-        if (score <= 40) return "Negative";
-        return "Neutral";
-      };
-
-      const isTrustedSource = (story) => {
-        const src =
-          story.source_name ||
-          story.source ||
-          story.provider ||
-          story.publisher ||
-          story.domain_name ||
-          story.domain_host ||
-          "";
-        if (!src) return false;
-        return !/blog|wordpress|medium|substack|feedburner/i.test(String(src));
-      };
-
-      const pickImage = (story) => {
-        if (Array.isArray(story.imageUrls) && story.imageUrls.length) return story.imageUrls[0];
-        if (Array.isArray(story.images) && story.images.length) return story.images[0];
-        return (
-          story.image_url ||
-          story.lead_image_url ||
-          story.thumbnail ||
-          story.hero_image_url ||
-          story.main_image_url ||
-          ""
-        );
-      };
-
-      const normalizeStory = (story, fallbackTag) => {
-        const tags =
-          story.asset_class_names ||
-          story.asset_classes_names ||
-          story.asset_classes ||
-          story.asset_class_ids ||
-          [];
-        const tagList = Array.isArray(tags) && tags.length
-          ? tags.map(String)
-          : fallbackTag
-          ? [fallbackTag]
-          : story.category
-          ? [story.category]
-          : [];
-
-        const analyticsTags = Array.isArray(story.analytics)
-          ? story.analytics.map(a => ({
-              label: a.entity_name || a.name || a.entity || "Tag",
-              className: scoreToTagClass(a.sentiment != null ? Number(a.sentiment) : null),
-            }))
-          : [];
-
-        const sentiments = story.sentiments || story.sentiment || story.overall_sentiment_label;
-        const sentimentText = Array.isArray(sentiments)
-          ? sentiments[0]?.label || sentiments[0] || ""
-          : sentiments || "";
-        const scoreVal = extractScore(story);
-        const sentimentLabelText = scoreVal != null ? scoreToLabel(scoreVal) : sentimentLabel(sentimentText);
-        const sentimentClassName = scoreVal != null ? scoreToClass(scoreVal) : sentimentClass(sentimentText);
-
-        const sourceVal =
-          story.source_name ||
-          story.source ||
-          story.provider ||
-          story.publisher ||
-          story.domain_name ||
-          story.domain_host ||
-          "";
+        let allTags = [...assetTags, ...analyticsTags];
+        if (allTags.length === 0) {
+          allTags.push({ label: story.category || "General", cls: "news-tag-neutral" });
+        }
 
         return {
           headline: story.title || story.headline || "Untitled",
-          ticker:
-            (story.tickers && story.tickers[0]) ||
-            (story.symbols && story.symbols[0]) ||
-            (story.securities && story.securities[0]?.symbol) ||
-            "",
-          time: formatTime(
-            story.publishTime ||
-            story.published_at ||
-            story.time_published ||
-            story.time
-          ),
-          tags: tagList,
-          analyticsTags,
-          source: sourceVal && sourceVal !== "CityFalcon" ? sourceVal : "—",
-          sentiment: sentimentLabelText,
-          sentimentClass: sentimentClassName,
-          summary: story.summary || story.description || "",
-          url:
-            story.url ||
-            story.link ||
-            story.canonical_url ||
-            story.story_url ||
-            story.share_url ||
-            "",
+          ticker: story.tickers?.[0] || story.symbols?.[0] || "",
+          time: story.publishTime
+            ? new Date(story.publishTime).toISOString().slice(11, 16) + " UTC"
+            : "",
+          source: story.source_name || story.domain_name || "Unknown",
+          summary: story.description || story.summary || "",
+          url: story.url || story.link || "",
           image: pickImage(story),
+          sentiment: sentimentLabel,
+          sentimentClass: `sentiment-chip ${sentimentClass}`,
+          tags: allTags
         };
       };
 
-      const renderCoreStory = (story) => {
-        if (coreCard) {
-          coreCard.classList.remove("clickable");
-          coreCard.onclick = null;
-        }
-        if (!story) {
-          coreHeadline.textContent = "Waiting for API…";
-          coreSummary.textContent = "No macro headline available yet.";
-          coreTags.innerHTML = "<span class='pill'>Macro</span>";
-          coreSource.textContent = "Source: –";
-          if (coreThumb) coreThumb.innerHTML = "";
-          return;
-        }
-        coreHeadline.textContent = story.headline || "Untitled";
-        coreSummary.textContent =
-          story.summary ||
-          "Macro cross-asset headline pulled from CityFalcon feed.";
-        coreSource.textContent = "Source: " + (story.source || "—");
-
-        if (coreTags) {
-          coreTags.innerHTML = "";
-          const tagList = [];
-          (story.tags && story.tags.length ? story.tags : ["Macro Topics"]).forEach(t => {
-            tagList.push({ label: t, className: story.sentimentClass });
-          });
-          (story.analyticsTags || []).forEach(t => tagList.push(t));
-          tagList.forEach(t => {
-            const pill = document.createElement("span");
-            const cls = t.className || "";
-            const sentimentCls =
-              cls.includes("bull") ? "pill pill-bull" :
-              cls.includes("bear") ? "pill pill-bear" :
-              "pill pill-neutral";
-            pill.className = sentimentCls;
-            pill.textContent = t.label || t;
-            coreTags.appendChild(pill);
-          });
-        }
-
-        if (coreThumb) {
-          coreThumb.innerHTML = "";
-          if (story.image) {
-            const img = document.createElement("img");
-            img.src = story.image;
-            img.alt = story.headline || "thumbnail";
-            coreThumb.appendChild(img);
-          }
-        }
-
-        if (coreCard && story.url) {
-          coreCard.classList.add("clickable");
-          coreCard.onclick = () => window.open(story.url, "_blank", "noopener");
-        }
-      };
-
-      // Update Headline Stream from API
-      window.updateNewsStream = function(payload) {
-        const list = document.getElementById("newsList");
-        if (!list || !Array.isArray(payload)) return;
-
-        list.innerHTML = "";
-        payload.forEach(item => {
-          const article = document.createElement("article");
-          article.className = "news-item";
-          if (item.url) {
-            article.classList.add("clickable");
-            article.addEventListener("click", () => {
-              window.open(item.url, "_blank", "noopener");
-            });
-          }
-
-          const header = document.createElement("div");
-          header.className = "news-item-header";
-
-          if (item.ticker && item.ticker !== "—") {
-            const ticker = document.createElement("div");
-            ticker.className = "news-ticker";
-            ticker.textContent = item.ticker;
-            header.appendChild(ticker);
-          }
-
-          const time = document.createElement("div");
-          time.className = "news-time";
-          time.textContent = item.time || "";
-          header.appendChild(time);
-
-          const body = document.createElement("div");
-          body.className = "news-body";
-
-          if (item.image) {
-            const thumb = document.createElement("div");
-            thumb.className = "news-thumb";
-            const img = document.createElement("img");
-            img.src = item.image;
-            img.alt = item.headline || "thumbnail";
-            thumb.appendChild(img);
-            body.appendChild(thumb);
-          }
-
-          const bodyContent = document.createElement("div");
-          bodyContent.className = "news-body-content";
-
-          const headline = document.createElement("div");
-          headline.className = "news-headline";
-          headline.textContent = item.headline || "";
-
-          const tags = document.createElement("div");
-          tags.className = "news-tags";
-          const tagList = [
-            ...(item.tags || []),
-            ...(item.analyticsTags || []),
-          ];
-
-          tagList.forEach(t => {
-            const label = typeof t === "object" ? t.label : t;
-            const cls = typeof t === "object" && t.className ? t.className : "news-tag news-tag-neutral";
-            const tag = document.createElement("span");
-            tag.className = cls.includes("news-tag") ? cls : `news-tag ${cls}`;
-            tag.textContent = label;
-            tags.appendChild(tag);
-          });
-
-          bodyContent.appendChild(headline);
-          bodyContent.appendChild(tags);
-          body.appendChild(bodyContent);
-
-          const footer = document.createElement("div");
-          footer.className = "news-footer";
-
-          const source = document.createElement("span");
-          source.className = "news-source";
-          source.textContent = "Source: " + (item.source || "—");
-
-          const sentimentWrap = document.createElement("div");
-          sentimentWrap.className = "news-sentiment";
-
-          const sentChip = document.createElement("span");
-          sentChip.className = item.sentimentClass || "sentiment-chip sentiment-neutral";
-          sentChip.textContent = item.sentiment || "Neutral";
-          sentimentWrap.appendChild(sentChip);
-
-          footer.appendChild(source);
-          footer.appendChild(sentimentWrap);
-
-          article.appendChild(header);
-          article.appendChild(body);
-          article.appendChild(footer);
-
-          list.appendChild(article);
+      const buildUrl = (assetId) => {
+        const params = new URLSearchParams({
+          categories: "mp,op,r",
+          languages: "en",
+          limit: String(CONFIG.CITYFALCON_LIMIT),
+          min_score: "5",
+          order_by: "latest",
+          time_filter: "month1",
+          with_sentiments: "true"
         });
+        if (assetId) params.append("asset_classes", assetId);
+        return `${CITYFALCON_BASE}?${params.toString()}`;
       };
 
-      const fetchStories = async (assetClassId) => {
-        const url = buildCityFalconUrl(assetClassId);
-        let lastError = null;
+      const fetchStories = async (assetId) => {
+        const cacheKey = assetId || 'all';
+        const cached = cacheService.get(cacheKey);
+        if (cached) return { stories: cached, error: null };
 
+        const url = buildUrl(assetId);
         for (const proxy of PROXY_CHAIN) {
-          const cleanUrl = url.replace(/^https?:\/\//, "");
-          const target = proxy.endsWith("/")
-            ? `${proxy}${cleanUrl}`
-            : proxy
-            ? `${proxy}/${cleanUrl}`
-            : url;
           try {
+            const target = proxy
+              ? (proxy.endsWith("/")
+                  ? proxy + url.replace(/^https?:\/\//, "")
+                  : proxy + "/" + url.replace(/^https?:\/\//, ""))
+              : url;
             const res = await fetch(target);
-            if (!res.ok) {
-              lastError = new Error(`CityFalcon error ${res.status} via ${proxy || "direct"}`);
-              // Try next proxy on any non-OK status.
-              continue;
-            }
+            if (!res.ok) continue;
             const data = await res.json();
-            return { stories: Array.isArray(data.stories) ? data.stories : [], error: null };
+            const stories = Array.isArray(data.stories) ? data.stories : [];
+            if (stories.length > 0) cacheService.set(cacheKey, stories);
+            return { stories, error: null };
           } catch (err) {
-            lastError = err;
             continue;
           }
         }
-
-        return { stories: null, error: lastError || new Error("CityFalcon unreachable") };
+        return { stories: [], error: "Fail" };
       };
 
-      const loadFrontSignal = async () => {
-        renderCoreShimmer();
-        const { stories, error } = await fetchStories(FRONT_SIGNAL_ASSET_CLASS);
-        if (error) console.warn("Front signal error", error);
+      const updateCoreNews = (stories) => {
+        const topStoryRaw =
+          stories.find(s => (s.score > 50 && (s.imageUrls?.length || s.image_url))) ||
+          stories[0];
+        if (!topStoryRaw) return;
+        const story = normalizeStory(topStoryRaw);
 
-        const sourcePool = stories && stories.length ? stories : [];
-        const filtered = sourcePool.filter(s => {
-          const sc = extractScore(s);
-          return (sc == null || sc > 30) && isTrustedSource(s);
+        UI.core.headline.textContent = story.headline;
+        UI.core.summary.textContent = story.summary
+          ? story.summary.substring(0, 180) + (story.summary.length > 180 ? "..." : "")
+          : "";
+        UI.core.source.textContent = `Source: ${story.source}`;
+        UI.core.updated.textContent = story.time ? `Updated: ${story.time}` : "Updated: –";
+        
+        UI.core.tags.innerHTML = "";
+        const tagFrag = document.createDocumentFragment();
+        story.tags.slice(0, 8).forEach(t => {
+          const span = document.createElement("span");
+          let pillClass = "pill-neutral";
+          if (t.cls.includes("bull")) pillClass = "pill-bull";
+          if (t.cls.includes("bear")) pillClass = "pill-bear";
+          span.className = `pill ${pillClass}`;
+          span.textContent = t.label;
+          tagFrag.appendChild(span);
         });
+        UI.core.tags.appendChild(tagFrag);
 
-        frontStories = (filtered.length ? filtered : sourcePool).map((s) =>
-          normalizeStory(s, "Macro Topics")
-        );
-        if (!frontStories.length) {
-          renderCoreStory(null);
-          return;
+        UI.core.thumb.innerHTML = "";
+        if (story.image) {
+          const img = document.createElement("img");
+          img.src = story.image;
+          img.loading = "eager";
+          UI.core.thumb.appendChild(img);
         }
+        UI.core.card.classList.add("clickable");
+        UI.core.card.onclick = () => {
+          if (story.url) window.open(story.url, "_blank");
+        };
+      };
 
-        frontIndex = 0;
-        renderCoreStory(frontStories[frontIndex]);
-        coreUpdated.textContent = "Updated: " + formatTime(Date.now());
-        if (rotateTimer) {
-          clearInterval(rotateTimer);
-          rotateTimer = null;
+      const updateNewsStream = (stories) => {
+        UI.newsList.innerHTML = "";
+        const fragment = document.createDocumentFragment();
+
+        stories.forEach(raw => {
+          const item = normalizeStory(raw);
+          const article = document.createElement("article");
+          article.className = "news-item clickable";
+          if (item.url) {
+            article.onclick = () => window.open(item.url, "_blank");
+          }
+
+          const imgHTML = item.image
+            ? `<div class="news-thumb"><img src="${item.image}" alt="img" loading="lazy" decoding="async"></div>`
+            : '';
+          
+          const tagsHTML = item.tags.slice(0, 4).map(t =>
+            `<span class="news-tag ${t.cls}">${t.label}</span>`
+          ).join("");
+
+          article.innerHTML = `
+            <div class="news-item-header">
+              ${item.ticker ? `<div class="news-ticker">${item.ticker}</div>` : ''}
+              <div class="news-time">${item.time}</div>
+            </div>
+            <div class="news-body">
+              ${imgHTML}
+              <div class="news-body-content">
+                <div class="news-headline">${item.headline}</div>
+                <div class="news-tags">${tagsHTML}</div>
+              </div>
+            </div>
+            <div class="news-footer">
+              <span class="news-source">Source: ${item.source}</span>
+              <div class="news-sentiment">
+                <span class="${item.sentimentClass}">${item.sentiment}</span>
+              </div>
+            </div>
+          `;
+          fragment.appendChild(article);
+        });
+        UI.newsList.appendChild(fragment);
+      };
+
+      const loadContent = async (filterKey) => {
+        const assetId = FILTER_TO_ASSET_CLASS[filterKey] ?? FILTER_TO_ASSET_CLASS[currentFilter] ?? null;
+        let label = "All Assets";
+        if (assetId) {
+          const found = ASSET_CLASSES.find(a => a.id === assetId);
+          if (found) label = found.label;
+        }
+        UI.activeLabel.textContent = label;
+
+        const cacheKey = assetId || 'all';
+        const isCached = cacheService.get(cacheKey);
+        if (!isCached) renderShimmer('list');
+        
+        const { stories } = await fetchStories(assetId);
+        
+        if (stories && stories.length) {
+          updateNewsStream(stories);
+          if (filterKey === 'all-assets' || filterKey === 'macro-topics') {
+            updateCoreNews(stories);
+          }
+        } else {
+          UI.newsList.innerHTML = `<div class="hint" style="padding:20px;">No stories found.</div>`;
         }
       };
 
-      const loadStream = async (filterKey) => {
-        const assetClassId = FILTER_TO_ASSET_CLASS[filterKey] || null;
-        activeLabel.textContent =
-          ASSET_CLASSES.find(a => a.id === String(assetClassId))?.label ||
-          ASSET_CLASSES.find(a => a.id === "all")?.label ||
-          "All Assets";
-        renderStreamShimmer();
-        const { stories, error } = await fetchStories(assetClassId);
-        if (error) console.warn("Stream error", error);
-
-        if (!stories || !stories.length) {
-          updateNewsStream([
-            {
-              headline: "Failed to load feed",
-              ticker: "",
-              time: formatTime(Date.now()),
-              tags: ["Error"],
-              source: "Client",
-              sentiment: "Neutral",
-              sentimentClass: "sentiment-chip sentiment-neutral",
-            },
-          ]);
-          return;
-        }
-
-        const payload = stories.slice(0, 50).map((s) => normalizeStory(s, activeLabel.textContent));
-        updateNewsStream(payload);
-        coreUpdated.textContent = "Updated: " + formatTime(Date.now());
-      };
-
-      const setFilter = (filterKey) => {
+      const handleFilterClick = (btn) => {
+        const filterKey = btn.dataset.filter;
+        if (filterKey === currentFilter) return;
+        UI.filterButtons.forEach(b => b.classList.toggle("is-active", b === btn));
         currentFilter = filterKey;
-        filterButtons.forEach(b => b.classList.toggle("is-active", b.dataset.filter === filterKey));
-        loadStream(filterKey);
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => { loadContent(filterKey); }, CONFIG.DEBOUNCE_DELAY);
       };
 
-      filterButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
-          const key = btn.dataset.filter;
-          setFilter(key);
-        });
-      });
+      UI.filterButtons.forEach(btn =>
+        btn.addEventListener("click", () => handleFilterClick(btn))
+      );
 
-      const startAutoRefresh = () => {
-        refreshTimer && clearInterval(refreshTimer);
-        refreshTimer = setInterval(() => {
-          loadStream(currentFilter);
-          loadFrontSignal();
-        }, AUTO_REFRESH_INTERVAL);
-      };
-
-      // Init
-      setFilter("all-assets");
-      loadFrontSignal();
-      startAutoRefresh();
+      renderShimmer('core');
+      loadContent("all-assets");
+      
+      // Auto-refresh dengan invalidasi cache per filter yang sedang aktif
+      refreshTimer = setInterval(() => {
+        const assetId = FILTER_TO_ASSET_CLASS[currentFilter];
+        const cacheKey = assetId || 'all';
+        try {
+          sessionStorage.removeItem(`kn_${cacheKey}`);
+        } catch (e) {}
+        loadContent(currentFilter);
+      }, CONFIG.AUTO_REFRESH_INTERVAL);
     })();
   </script>
 </body>
