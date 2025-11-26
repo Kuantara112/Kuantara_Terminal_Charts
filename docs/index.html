@@ -64,7 +64,6 @@
       background-color: var(--bg-root);  
       color: var(--text-main);  
       overflow: hidden;  
-      /* Subtle noise texture di background jika diinginkan, tapi kita keep pure black untuk kontras */
     }  
     @media (max-width: 768px){  
       body{ overflow: auto; -webkit-overflow-scrolling: touch; }  
@@ -183,11 +182,9 @@
     .kt-mainmenu-btn{  
       flex: 0 0 auto; padding: 4px 8px; border-radius: 4px;  
       border: 1px solid var(--border-soft);  
-      /* Gradient halus untuk efek cembung sangat tipis */
       background: linear-gradient(180deg, rgba(30,30,30,0.5) 0%, rgba(10,10,10,0.8) 100%);
       color: var(--text-muted); font-size: 11px; display: inline-flex; align-items: center; gap: 4px;  
       cursor: pointer; white-space: nowrap; touch-action: manipulation;  
-      /* Top highlight untuk efek 3D */
       box-shadow: var(--shadow-tactile);
       transition: all 0.15s ease;  
     }  
@@ -280,7 +277,6 @@
       transition: all 0.2s ease;  
       position: relative;
     }  
-    /* Efek sorotan dari atas */
     .kt-bottom-item::before {
       content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
       width: 40px; height: 1px; background: var(--amber); opacity: 0; transition: opacity 0.2s;
@@ -310,14 +306,14 @@
     .kt-profile-title{ font-size: 12px; color: var(--amber); font-weight: 600; text-shadow: 0 0 5px var(--amber-glow); }  
     .kt-profile-name{ font-size: 13px; color: var(--text-main); font-weight: 600; margin-top: 4px; }  
     .kt-profile-meta{ font-size: 10px; color: var(--text-muted); margin-top: 4px; }  
-    
+      
     .kt-badge{  
       display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 999px;  
       border: 1px solid var(--amber); background: rgba(255,191,0,0.1);  
       font-size: 10px; color: var(--amber); gap: 4px; box-shadow: 0 0 5px var(--amber-glow);
     }  
     .kt-profile-grid{ display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 10px; margin-top: 8px; }  
-    
+      
     .kt-profile-card{  
       border-radius: 8px; border: 1px solid var(--border-soft);  
       background: linear-gradient(145deg, rgba(20,20,20,1), rgba(10,10,10,1));
@@ -337,7 +333,7 @@
     }  
     .kt-profile-menu-btn:hover{ background: rgba(50,50,50,0.5); border-color: var(--border-highlight); }  
     .kt-profile-menu-btn:active{ transform: translateY(1px); box-shadow: var(--shadow-active); border-color: transparent;}  
-    
+      
     .kt-profile-footer{ margin-top: 14px; padding-top: 8px; border-top: 1px solid var(--border-soft); font-size: 9px; color: var(--text-muted); line-height: 1.4; opacity: 0.7; }  
   
     /* WORKSPACE */  
@@ -346,7 +342,7 @@
       display: none; background: #050505; overflow: hidden; box-sizing: border-box;  
     }  
     .kt-workspace-toolbar{ position: absolute; top: 10px; left: 10px; display: flex; flex-wrap: wrap; gap: 6px; z-index: 3; }  
-    
+      
     .kt-workspace-btn{  
       padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border-soft);  
       background: linear-gradient(180deg, rgba(30,30,30,0.8), rgba(10,10,10,0.9));
@@ -357,11 +353,10 @@
     .kt-workspace-btn.secondary{ background: linear-gradient(180deg, rgba(20,20,20,0.8), rgba(5,5,5,0.9)); color: var(--text-muted); }  
     .kt-workspace-btn:hover{ border-color: var(--border-highlight); color: #fff; }  
     .kt-workspace-btn:active{ transform: translateY(1px); box-shadow: var(--shadow-active); }  
-    
+      
     .kt-workspace-board{  
       position: absolute; inset: 0; border-radius: 0; border: none; background: #000;  
       overflow: auto; box-sizing: border-box; padding-top: 36px;  
-      /* Dot pattern subtle */
       background-image: radial-gradient(rgba(40, 40, 40, 0.3) 1px, transparent 1px);
       background-size: 20px 20px;
     }  
@@ -370,12 +365,12 @@
     .kt-workspace-window{  
       position: absolute; min-width: 220px; min-height: 140px; width: 360px; height: 220px;  
       background: #0d0d0d; border: 1px solid var(--border-soft); border-radius: 8px;  
-      box-shadow: var(--shadow-depth), 0 0 0 1px rgba(255,255,255,0.05) inset; /* Glass edge */
+      box-shadow: var(--shadow-depth), 0 0 0 1px rgba(255,255,255,0.05) inset; 
       overflow: hidden; max-width: 100%; touch-action: none;  
       transition: box-shadow 0.15s ease, border-color 0.15s ease;  
     }  
     .kt-workspace-window:hover{ border-color: var(--border-highlight); }
-    
+      
     .kt-workspace-window-header{  
       height: 28px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px;  
       font-size: 10px; background: linear-gradient(to right, rgba(20,20,20,0.95), rgba(10,10,10,0.95)); 
@@ -389,7 +384,7 @@
     }  
     .kt-workspace-window-close:hover{ color: var(--amber); text-shadow: 0 0 5px var(--amber-glow); }  
     .kt-workspace-window-close:active{ transform: scale(0.9); }  
-    
+      
     .kt-workspace-window-body{ position: absolute; top: 28px; left: 0; right: 0; bottom: 0; background: #000; }  
     .kt-workspace-window-body iframe{ width: 100%; height: 100%; border: 0; display: block; }  
     .kt-workspace-resizer{  
@@ -412,7 +407,7 @@
     .kt-ai-fab:active{ transform: translateY(1px) scale(0.95); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }  
   
     .kt-ai-menu{ position: fixed; right: 16px; bottom: 150px; display: none; flex-direction: column; gap: 6px; z-index: 3000; }  
-    
+      
     .kt-ai-menu-btn{  
       padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border-soft);  
       background: rgba(18, 18, 18, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -445,7 +440,7 @@
     .kt-ai-panel-body{ padding: 0; font-size: 11px; color: var(--text-muted); display: flex; flex-direction: column; gap: 0; flex: 1; min-height: 0; overflow: hidden; }  
   
     .kt-ai-footer{ padding: 0; border-top: none; display: none; justify-content: flex-end; gap: 6px; flex: 0 0 auto; }  
-    
+      
     .kt-ai-btn{  
       padding: 4px 10px; border-radius: 3px; font-size: 11px; border: 1px solid var(--border-soft);  
       background: linear-gradient(180deg, #222, #111); color: var(--text-muted); cursor: pointer;  
@@ -464,7 +459,7 @@
       box-shadow: var(--shadow-depth), inset 0 1px 0 rgba(255,255,255,0.05);  
     }  
     .kt-card-title{ color: var(--amber); font-size: 12px; margin-bottom: 8px; text-shadow: 0 0 8px rgba(255,191,0,0.2); }  
-    
+      
     .kt-search-input{  
       width: 100%; padding: 10px; border-radius: 6px;  
       border: 1px solid var(--border-soft); background: rgba(0,0,0,0.6);  
@@ -473,7 +468,7 @@
       transition: border-color 0.2s ease, box-shadow 0.2s ease;  
     }  
     .kt-search-input:focus{ border-color: var(--amber); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 5px rgba(255,191,0,0.2); }  
-    
+      
     .kt-close-btn{  
       margin-top: 10px; padding: 6px 10px; font-size: 11px; border-radius: 4px;  
       border: 1px solid var(--border-soft); background: linear-gradient(180deg, #222, #111);  
@@ -490,7 +485,7 @@
       border: 1px solid var(--border-soft); background: rgba(5,5,5,0.5); padding: 4px 0; font-size: 11px;  
     }  
     .kt-search-suggestions.hidden{ display: none; }  
-    
+      
     .kt-search-suggestion-item{ padding: 4px 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 6px; transition: background 0.1s ease; }  
     .kt-search-suggestion-item:hover{ background: rgba(255,255,255,0.06); }  
     .kt-search-suggestion-main{ color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px; }  
@@ -597,11 +592,11 @@
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="5">Indonesia</button>  
     </div>  
 
+    <!-- Macroeconomic: US Macro removed, order: Central Bank - G10+ - All Countries -->
     <div class="kt-submenu-group" data-menu-sub="2">  
-      <button class="kt-submenu-btn" data-menu="2" data-sub-index="0">US Macro</button>  
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="0">Central Bank</button>  
       <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">G10+</button>  
-      <button class="kt-submenu-btn" data-menu="2" data-sub-index="2">Central Bank</button>  
-      <button class="kt-submenu-btn" data-menu="2" data-sub-index="3">All Countries</button>  
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="2">All Countries</button>  
     </div>  
 
     <div class="kt-submenu-group" data-menu-sub="3">  
@@ -628,29 +623,33 @@
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="2">Blockchain Projects</button>  
     </div>  
 
+    <!-- Charts: add Real-Time -->
     <div class="kt-submenu-group" data-menu-sub="6">  
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="0">Technical</button>  
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="1">Fundamental</button>  
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="2">Economy</button>  
+      <button class="kt-submenu-btn" data-menu="6" data-sub-index="3">Real-Time</button>  
     </div>  
 
+    <!-- Screener: merge US + ID Stocks → Stocks, then Crypto, Custom -->
     <div class="kt-submenu-group" data-menu-sub="7">  
-      <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">US Stocks</button>  
-      <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">ID Stocks</button>  
-      <button class="kt-submenu-btn" data-menu="7" data-sub-index="2">Crypto</button>  
-      <button class="kt-submenu-btn" data-menu="7" data-sub-index="3">Custom</button>  
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">Stocks</button>  
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">Crypto</button>  
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="2">Custom</button>  
     </div>  
 
+    <!-- Research: swap Reports & Quantitative -->
     <div class="kt-submenu-group" data-menu-sub="8">  
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Institutions</button>  
-      <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Reports</button>  
-      <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Quantitative</button>  
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Quantitative</button>  
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Reports</button>  
     </div>  
 
+    <!-- Tools: swap Education & Calculator -->
     <div class="kt-submenu-group" data-menu-sub="9">  
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Trading Journal</button>  
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Education</button>  
-      <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Calculator</button>  
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Calculator</button>  
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Education</button>  
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Others</button>  
     </div>  
   </nav>  
@@ -862,11 +861,10 @@
         "1:4":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_channel.html",  
         "1:5":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_indonesia.html",  
   
-        // Macroeconomic  
-        "2:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/usmacro.html",  
+        // Macroeconomic (US Macro removed, indices realigned)
+        "2:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_centralbank.html",  
         "2:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_majorcountry.html",  
-        "2:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_centralbank.html",  
-        "2:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_countries.html",  
+        "2:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_countries.html",  
   
         // Geo-Economic  
         "3:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_georisk.html",  
@@ -889,26 +887,26 @@
         "5:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_indo.html",  
         "5:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_blockchain.html",  
   
-        // Charts  
+        // Charts (+ Real-Time)
         "6:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/technical_charts.html",  
         "6:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_fundamental.html",  
         "6:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_economy.html",  
+        "6:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_realtime.html",  
   
-        // Screener  
-        "7:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_us.html",  
-        "7:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_indo.html",  
-        "7:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_crypto.html",  
-        "7:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_custom.html",  
+        // Screener (Stocks merged)
+        "7:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_stocks.html",  
+        "7:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_crypto.html",  
+        "7:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_custom.html",  
   
-        // Research  
+        // Research (Reports and Quant swapped)
         "8:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_institutions.html",  
-        "8:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_reports.html",  
-        "8:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_quant.html",  
+        "8:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_quant.html",  
+        "8:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_reports.html",  
   
-        // Tools  
+        // Tools (Education and Calculator swapped)
         "9:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_journal.html",  
-        "9:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_edu.html",  
-        "9:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_calc.html",  
+        "9:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_calc.html",  
+        "9:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_edu.html",  
         "9:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_others.html"  
       };  
   
@@ -918,7 +916,6 @@
           return;  
         }  
 
-        // tampilkan loader + iframe  
         iframeLayer.innerHTML = `  
           <div class="kt-iframe-loading" id="kt-iframe-loading">  
             <div class="kt-iframe-spinner"></div>  
