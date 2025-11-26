@@ -56,7 +56,7 @@
       min-height:100vh;
     }
 
-    /* ====== HEADER ====== */
+    /* ====== HEADER (tidak dipakai di layout, tapi style dibiarkan) ====== */
     .kt-title-row {
       display:flex;
       align-items:flex-start;
@@ -419,16 +419,7 @@
 </head>
 <body>
   <div class="kt-root">
-    <!-- HEADER -->
-    <div class="kt-title-row">
-      <div class="kt-title-icon">≡</div>
-      <div class="kt-title-text">
-        <h1>Kuantara – Terminal Kalkulator</h1>
-        <p>Margin, Pivot Points, Risk Management, Kelly, Compounding &amp; Valuasi.</p>
-      </div>
-    </div>
-
-    <!-- TOP MENU -->
+    <!-- TOP MENU (HEADER DIHAPUS) -->
     <div class="kt-main-menu" id="toolMenu">
       <button class="kt-main-tab" data-tool="margin">Margin</button>
       <button class="kt-main-tab kt-main-active" data-tool="pivot">Pivot Points</button>
@@ -533,8 +524,7 @@
               <table class="kt-pivot-table">
                 <tr><td class="kt-pivot-label p-res">Resistance</td><td class="kt-pivot-val" id="pd_r1">-</td></tr>
                 <tr style="background:rgba(255,255,255,0.02);">
-                  <td class="kt-pivot-label p-piv">PIVOT</td><td class="kt-pivot-val p-piv" id="pd_p">-</td>
-                </tr>
+                  <td class="kt-pivot-label p-piv">PIVOT</td><td class="kt-pivot-val p-piv" id="pd_p">-</td></tr>
                 <tr><td class="kt-pivot-label p-sup">Support</td><td class="kt-pivot-val" id="pd_s1">-</td></tr>
               </table>
               <div style="margin-top:6px; font-size:9px; opacity:0.8;">
