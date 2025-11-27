@@ -1,3690 +1,426 @@
-<html lang="en"><head>
-<meta charset="UTF-8">
-<title>Kuantara – Economic Atlas (Multi-Country v3)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-  body {
-    font-family: "Fira Code", monospace;
-    background:#000;
-    color:#f5f5f5;
-    padding:20px;
-  }
-
-  h1 {
-    font-size: 20px;
-    margin-bottom: 14px;
-    color:#ffbf00;
-  }
-
-  #top-bar {
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    align-items:center;
-    margin-bottom:10px;
-  }
-
-  #status {
-    font-size: 12px;
-    margin-top:4px;
-    margin-bottom: 10px;
-    color:#9b9b9b;
-  }
-
-  select, input[type="text"] {
-    background:#111;
-    color:#f5f5f5;
-    padding:6px 10px;
-    border:1px solid #2b2b2b;
-    border-radius:4px;
-    font-family:"Fira Code", monospace;
-    font-size:11px;
-  }
-
-  input[type="text"] {
-    min-width:220px;
-  }
-
-  table {
-    width:100%;
-    border-collapse: collapse;
-    font-size: 11px;
-    margin-top:6px;
-  }
-
-  th {
-    background:#111;
-    color:#ffbf00;
-    padding:8px;
-    border-bottom:1px solid #2b2b2b;
-    text-align:left;
-    cursor:pointer;
-    user-select:none;
-  }
-
-  th[data-sort-key="none"] {
-    cursor:default;
-  }
-
-  td {
-    padding:6px 8px;
-    border-bottom:1px solid #1f1f1f;
-    color:#ddd;
-    white-space:nowrap;
-  }
-
-  tr:nth-child(even){ background:#090909; }
-  tr:hover { background:#1b1b1b; }
-
-  .num { text-align:right; }
-  .up  { color:#22c55e; font-weight:600; }
-  .down{ color:#ef4444; font-weight:600; }
-  .flat{ color:#9b9b9b; }
-</style>
-<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 2147483647;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.immersive-translate-attach-loading::after {
-  content: " ";
-
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-2000%, -50%);
-  z-index: 100;
-}
-
-.immersive-translate-loading-spinner {
-  vertical-align: middle !important;
-  width: 10px !important;
-  height: 10px !important;
-  display: inline-block !important;
-  margin: 0 4px !important;
-  border: 2px rgba(221, 244, 255, 0.6) solid !important;
-  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-}
-
-@-webkit-keyframes immersive-translate-loading-animation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-
-@keyframes immersive-translate-loading-animation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.immersive-translate-input-loading {
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-}
-
-@keyframes immersiveTranslateShadowRolling {
-  0% {
-    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  12% {
-    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  25% {
-    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  36% {
-    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
-      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  50% {
-    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
-      110px 0 var(--loading-color), 100px 0 var(--loading-color);
-  }
-
-  62% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
-      120px 0 var(--loading-color), 110px 0 var(--loading-color);
-  }
-
-  75% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      130px 0 var(--loading-color), 120px 0 var(--loading-color);
-  }
-
-  87% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
-  }
-
-  100% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.immersive-translate-toast {
-  display: flex;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  right: 0;
-  top: 1%;
-  width: fit-content;
-  padding: 12px 20px;
-  margin: auto;
-  overflow: auto;
-  background: #fef6f9;
-  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
-  font-size: 15px;
-  border-radius: 8px;
-  color: #333;
-}
-
-.immersive-translate-toast-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.immersive-translate-toast-hidden {
-  margin: 0 20px 0 72px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.immersive-translate-toast-close {
-  color: #666666;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-toast {
-    top: 0;
-    padding: 12px 0px 0 10px;
-  }
-  .immersive-translate-toast-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .immersive-translate-toast-hidden {
-    margin: 10px auto;
-  }
-}
-
-.immersive-translate-dialog {
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  display: flex;
-  width: 300px;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: fit-content;
-  border-radius: 20px;
-  background-color: #fff;
-}
-
-.immersive-translate-modal {
-  display: none;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-}
-
-.immersive-translate-modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 40px 24px 24px;
-  border-radius: 12px;
-  width: 350px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
-    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-content {
-    margin: 25% auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .immersive-translate-modal-content {
-    width: 80vw !important;
-    margin: 20vh auto !important;
-    padding: 20px 12px 12px !important;
-  }
-
-  .immersive-translate-modal-title {
-    font-size: 14px !important;
-  }
-
-  .immersive-translate-modal-body {
-    font-size: 13px !important;
-    max-height: 60vh !important;
-  }
-
-  .immersive-translate-btn {
-    font-size: 13px !important;
-    padding: 8px 16px !important;
-    margin: 0 4px !important;
-  }
-
-  .immersive-translate-modal-footer {
-    gap: 6px !important;
-    margin-top: 16px !important;
-  }
-}
-
-.immersive-translate-modal .immersive-translate-modal-content-in-input {
-  max-width: 500px;
-}
-.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
-  text-align: left;
-  max-height: unset;
-}
-
-.immersive-translate-modal-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333333;
-}
-
-.immersive-translate-modal-body {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #333333;
-  margin-top: 24px;
-  word-break: break-all;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-body {
-    max-height: 250px;
-    overflow-y: auto;
-  }
-}
-
-.immersive-translate-close {
-  color: #666666;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.immersive-translate-close:hover,
-.immersive-translate-close:focus {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.immersive-translate-modal-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.immersive-translate-btn {
-  width: fit-content;
-  color: #fff;
-  background-color: #ea4c89;
-  border: none;
-  font-size: 14px;
-  margin: 0 8px;
-  padding: 9px 30px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.immersive-translate-btn-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.immersive-translate-btn:hover {
-  background-color: #f082ac;
-}
-.immersive-translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.immersive-translate-btn:disabled:hover {
-  background-color: #ea4c89;
-}
-
-.immersive-translate-link-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: none;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-}
-
-.immersive-translate-cancel-btn {
-  /* gray color */
-  background-color: rgb(89, 107, 120);
-}
-
-.immersive-translate-cancel-btn:hover {
-  background-color: hsl(205, 20%, 32%);
-}
-
-.immersive-translate-action-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: 1px solid #ea4c89;
-}
-
-.immersive-translate-btn svg {
-  margin-right: 5px;
-}
-
-.immersive-translate-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-primary-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-modal input[type="radio"] {
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.immersive-translate-modal label {
-  cursor: pointer;
-}
-
-.immersive-translate-close-action {
-  position: absolute;
-  top: 2px;
-  right: 0px;
-  cursor: pointer;
-}
-
-.imt-image-status {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 16px !important;
-}
-.imt-image-status img,
-.imt-image-status svg,
-.imt-img-loading {
-  width: 28px !important;
-  height: 28px !important;
-  margin: 0 0 8px 0 !important;
-  min-height: 28px !important;
-  min-width: 28px !important;
-  position: relative !important;
-}
-.imt-img-loading {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
-  background-size: 28px 28px;
-  animation: image-loading-rotate 1s linear infinite !important;
-}
-
-.imt-image-status span {
-  color: var(--bg-2, #fff) !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
-  font-weight: 500 !important;
-  font-family: "PingFang SC", Arial, sans-serif !important;
-}
-
-.imt-primary-button {
-  display: flex;
-  padding: 12px 80px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #ea4c89;
-  color: #fff;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.imt-retry-text {
-  color: #999;
-  text-align: center;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  cursor: pointer;
-}
-
-.imt-action-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.imt-modal-content-text {
-  text-align: left;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-@keyframes image-loading-rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.imt-linear-gradient-text {
-  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.imt-flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.imt-linear-black-btn {
-  border-radius: 50px;
-  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
-  height: 48px;
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
-</style></head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuantara – Economic Atlas (Multi-Country v3)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    :root {
+      --bg-root:#000000;
+      --bg-main:#000000;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+      --border-soft:#2b2b2b;
+      --panel-bg:#050505;
+    }
+
+    * {
+      box-sizing:border-box;
+      font-family:"Fira Code", monospace;
+      margin:0;
+      padding:0;
+      /* Firefox scrollbars – black thumb, transparent track */
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.6) transparent;
+    }
+
+    html, body {
+      width:100%;
+      height:100%;
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    body {
+      padding:20px;
+      /* semua scroll ditangani di dalam panel tabel */
+      overflow:hidden;
+    }
+
+    /* WebKit scrollbars – black transparent look (global) */
+    *::-webkit-scrollbar {
+      width:8px;
+      height:8px; /* penting untuk scroll horizontal */
+    }
+    *::-webkit-scrollbar-track {
+      background:transparent;
+    }
+    *::-webkit-scrollbar-thumb {
+      background:rgba(0,0,0,0.6);
+      border-radius:4px;
+    }
+
+    #top-bar {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin-bottom:10px;
+    }
+
+    #status {
+      font-size:12px;
+      margin-top:4px;
+      margin-bottom:10px;
+      color:var(--text-muted);
+    }
+
+    select,
+    input[type="text"] {
+      background:#111111;
+      color:var(--text-main);
+      padding:6px 10px;
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      font-size:11px;
+      outline:none;
+    }
+
+    input[type="text"] {
+      min-width:220px;
+    }
+
+    /* PANEL FIXED SIZE – vertical + horizontal scroll di dalam panel */
+    .table-panel {
+      width:100%;
+      max-width:100%;
+      border:1px solid var(--border-soft);
+      border-radius:8px;
+      background:var(--panel-bg);
+      padding:4px 0 2px;
+
+      /* tinggi fixed relatif ke viewport */
+      height:calc(100vh - 120px);
+
+      /* scroll di dalam panel */
+      overflow-x:auto;  /* scroll bar bawah untuk geser tabel */
+      overflow-y:auto;  /* scroll bar kanan untuk geser vertikal isi tabel */
+    }
+
+    table {
+      border-collapse:collapse;
+      font-size:11px;
+      margin-top:2px;
+      /* tabel boleh lebih lebar dari panel -> memicu scroll horizontal */
+      width:max-content;
+      min-width:1200px;
+    }
+
+    th {
+      background:#111111;
+      color:var(--accent);
+      padding:8px;
+      border-bottom:1px solid var(--border-soft);
+      text-align:left;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    th[data-sort-key="none"] {
+      cursor:default;
+    }
+
+    td {
+      padding:6px 8px;
+      border-bottom:1px solid #1f1f1f;
+      color:#dddddd;
+      white-space:nowrap;
+    }
+
+    tr:nth-child(even) {
+      background:#090909;
+    }
+
+    tr:hover {
+      background:#1b1b1b;
+    }
+
+    .num { text-align:right; }
+    .up  { color:#22c55e; font-weight:600; }
+    .down{ color:#ef4444; font-weight:600; }
+    .flat{ color:var(--text-muted); }
+
+    @media (max-width:768px) {
+      body {
+        padding:12px;
+      }
+      .table-panel {
+        height:calc(100vh - 110px);
+      }
+      table {
+        font-size:10px;
+        min-width:900px;
+      }
+    }
+  </style>
+</head>
 <body>
 
+  <div id="top-bar">
+    <select id="countrySelect">
+      <option value="32">🇺🇸 United States (32)</option>
+      <option value="6">🇨🇳 China (6)</option>
+      <option value="11">🇨🇦 Canada (11)</option>
+    </select>
 
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search (CPI, PCE, GDP, NFP, keyword...)"
+    >
+  </div>
 
-<div id="top-bar">
-  <select id="countrySelect">
-    <option value="32">🇺🇸 United States (32)</option>
-    <option value="6">🇨🇳 China (6)</option>
-    <option value="11">🇨🇦 Canada (11)</option>
-  </select>
+  <div id="status">Loading indicators…</div>
 
-  <input type="text" id="searchInput" placeholder="Search (CPI, PCE, GDP, NFP, keyword...)">
-</div>
+  <div class="table-panel">
+    <table>
+      <thead>
+        <tr>
+          <th data-sort-key="category" data-label="Category">Category</th>
+          <th data-sort-key="indicator" data-label="Indicator">Indicator</th>
+          <th data-sort-key="current" data-label="Current" class="num">Current</th>
+          <th data-sort-key="currentTime" data-label="Current Time">Current Time</th>
+          <th data-sort-key="previous" data-label="Previous" class="num">Previous</th>
+          <th data-sort-key="previousTime" data-label="Previous Time">Previous Time</th>
+          <th data-sort-key="delta" data-label="Δ" class="num">Δ</th>
+          <th data-sort-key="description" data-label="Description">Description</th>
+        </tr>
+      </thead>
+      <tbody id="atlas-body">
+        <!-- diisi dinamis oleh script -->
+      </tbody>
+    </table>
+  </div>
 
-<div id="status">Loaded 314 indicators, showing 314 matching "all".</div>
+  <script>
+    const CATEGORIES = {
+      1: "Prices",
+      2: "Population & Labor",
+      3: "National Accounts",
+      4: "Commodities",
+      5: "Government Sector",
+      6: "External Sector",
+      7: "Industry Sector",
+      8: "Money & Finance"
+    };
 
-<table>
-  <thead>
-    <tr>
-      <th data-sort-key="category" data-label="Category">Category</th>
-      <th data-sort-key="indicator" data-label="Indicator">Indicator</th>
-      <th data-sort-key="current" data-label="Current" class="num">Current</th>
-      <th data-sort-key="currentTime" data-label="Current Time">Current Time</th>
-      <th data-sort-key="previous" data-label="Previous" class="num">Previous</th>
-      <th data-sort-key="previousTime" data-label="Previous Time">Previous Time</th>
-      <th data-sort-key="delta" data-label="Δ" class="num">Δ</th>
-      <th data-sort-key="description" data-label="Description">Description</th>
-    </tr>
-  </thead>
-  <tbody id="atlas-body"><tr>
-      <td>Prices</td>
-      <td>Core CPI, Standardized</td>
-      <td class="num">149.45750023154787</td>
-      <td>Sep 2025</td>
-      <td class="num">149.08069839362236</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.377</td>
-      <td>Not SA, 2010=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>Core PCE Price Index, Actual</td>
-      <td class="num">2.9</td>
-      <td>Aug 2025</td>
-      <td class="num">2.9</td>
-      <td>Jul 2025</td>
-      <td class="num flat">0.000</td>
-      <td>Chg Y/Y, SA, %</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI</td>
-      <td class="num">324.8</td>
-      <td>Sep 2025</td>
-      <td class="num">323.976</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.824</td>
-      <td>1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Commodities</td>
-      <td class="num">227.312</td>
-      <td>Sep 2025</td>
-      <td class="num">226.364</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.948</td>
-      <td>1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Commodities Less Food</td>
-      <td class="num">179.68</td>
-      <td>Sep 2025</td>
-      <td class="num">178.83</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.850</td>
-      <td>1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Durables</td>
-      <td class="num">124.402</td>
-      <td>Sep 2025</td>
-      <td class="num">124.57</td>
-      <td>Aug 2025</td>
-      <td class="num down">-0.168</td>
-      <td>1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Energy</td>
-      <td class="num">281.12</td>
-      <td>Sep 2025</td>
-      <td class="num">276.936</td>
-      <td>Aug 2025</td>
-      <td class="num up">+4.184</td>
-      <td>SA, 1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Excluding Energy</td>
-      <td class="num">331.609</td>
-      <td>Sep 2025</td>
-      <td class="num">330.737</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.872</td>
-      <td>1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Excluding Energy &amp; Food</td>
-      <td class="num">330.542</td>
-      <td>Sep 2025</td>
-      <td class="num">329.793</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.749</td>
-      <td>SA, 1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Excluding Food</td>
-      <td class="num">322.068</td>
-      <td>Sep 2025</td>
-      <td class="num">321.287</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.781</td>
-      <td>1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Food</td>
-      <td class="num">342.405</td>
-      <td>Sep 2025</td>
-      <td class="num">341.295</td>
-      <td>Aug 2025</td>
-      <td class="num up">+1.110</td>
-      <td>1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Food &amp; Beverages</td>
-      <td class="num">339.115</td>
-      <td>Sep 2025</td>
-      <td class="num">338.285</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.830</td>
-      <td>SA, 1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Gasoline</td>
-      <td class="num">285.595</td>
-      <td>Sep 2025</td>
-      <td class="num">282.358</td>
-      <td>Aug 2025</td>
-      <td class="num up">+3.237</td>
-      <td>1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Housing</td>
-      <td class="num">349.516</td>
-      <td>Sep 2025</td>
-      <td class="num">348.967</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.549</td>
-      <td>SA, 1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Less Shelter</td>
-      <td class="num">291.663</td>
-      <td>Sep 2025</td>
-      <td class="num">290.784</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.879</td>
-      <td>1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Nondurables</td>
-      <td class="num">282.993</td>
-      <td>Sep 2025</td>
-      <td class="num">281.139</td>
-      <td>Aug 2025</td>
-      <td class="num up">+1.854</td>
-      <td>1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Services</td>
-      <td class="num">421.102</td>
-      <td>Sep 2025</td>
-      <td class="num">420.424</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.678</td>
-      <td>1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Standardized</td>
-      <td class="num">148.7406922810608</td>
-      <td>Sep 2025</td>
-      <td class="num">148.28030267712273</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.460</td>
-      <td>SA, 2010=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>CPI, Transport</td>
-      <td class="num">273.892</td>
-      <td>Sep 2025</td>
-      <td class="num">271.635</td>
-      <td>Aug 2025</td>
-      <td class="num up">+2.257</td>
-      <td>SA, 1982-1984=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>Export Price Index</td>
-      <td class="num">153.2</td>
-      <td>Aug 2025</td>
-      <td class="num">152.8</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.400</td>
-      <td>2000=100, Index</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>Export Price Index, Standardized</td>
-      <td class="num">123.61421319796953</td>
-      <td>Q2 2025</td>
-      <td class="num">123.64128595600677</td>
-      <td>Q1 2025</td>
-      <td class="num down">-0.027</td>
-      <td>2010=100, Index, Q1 1989 ~ Q2 2025</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>House Price Index, FHFA</td>
-      <td class="num">703.91</td>
-      <td>Q2 2025</td>
-      <td class="num">693.7</td>
-      <td>Q1 2025</td>
-      <td class="num up">+10.210</td>
-      <td>1980Q1=100, Index, Q1 1975 ~ Q2 2025</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>Import Prices Index, Standardized</td>
-      <td class="num">111.31120604666448</td>
-      <td>Q2 2025</td>
-      <td class="num">111.86329280315476</td>
-      <td>Q1 2025</td>
-      <td class="num down">-0.552</td>
-      <td>2010=100, Index, Q1 1989 ~ Q2 2025</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>Inflation Target Rate</td>
-      <td class="num">2.0</td>
-      <td>2024</td>
-      <td class="num">2.0</td>
-      <td>2023</td>
-      <td class="num flat">0.000</td>
-      <td>%, 2012 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE</td>
-      <td class="num">16445685000000.000</td>
-      <td>Q2 2025</td>
-      <td class="num">16345793000000.000</td>
-      <td>Q1 2025</td>
-      <td class="num up">+99892000000.000</td>
-      <td>SA, Constant Prices, AR, 2012 chnd prices, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Clothing &amp; Footwear</td>
-      <td class="num">0.7</td>
-      <td>2024</td>
-      <td class="num">2.5</td>
-      <td>2023</td>
-      <td class="num down">-1.800</td>
-      <td>Chg P/P, %, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Durable Goods</td>
-      <td class="num">2265729000000.000</td>
-      <td>Q2 2025</td>
-      <td class="num">2235819000000.000</td>
-      <td>Q1 2025</td>
-      <td class="num up">+29910000000.000</td>
-      <td>SA, Current Prices, AR, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Energy Goods &amp; Services</td>
-      <td class="num">757566000000.000</td>
-      <td>2024</td>
-      <td class="num">768216000000.000</td>
-      <td>2023</td>
-      <td class="num down">-10650000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Excluding Food &amp; Energy</td>
-      <td class="num">2.9</td>
-      <td>2024</td>
-      <td class="num">4.2</td>
-      <td>2023</td>
-      <td class="num down">-1.300</td>
-      <td>Chg P/P, 2009=100, %, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Garments</td>
-      <td class="num">410901000000.000</td>
-      <td>2024</td>
-      <td class="num">396065000000.000</td>
-      <td>2023</td>
-      <td class="num up">+14836000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Goods</td>
-      <td class="num">5705582000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">5668015000000.0</td>
-      <td>Jul 2025</td>
-      <td class="num up">+37567000000.000</td>
-      <td>SA, Constant Prices, AR, 2012 chnd prices, USD</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Household Appliances</td>
-      <td class="num">88069000000.000</td>
-      <td>2024</td>
-      <td class="num">86309000000.000</td>
-      <td>2023</td>
-      <td class="num up">+1760000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Household Consumption Expenditures</td>
-      <td class="num">19282897000000.000</td>
-      <td>2024</td>
-      <td class="num">18279069000000.000</td>
-      <td>2023</td>
-      <td class="num up">+1003828000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Household Supplies</td>
-      <td class="num">191130000000.00</td>
-      <td>2024</td>
-      <td class="num">184395000000.000</td>
-      <td>2023</td>
-      <td class="num up">+6735000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Motor Vehicle Parts &amp; Accessories</td>
-      <td class="num">126385000000.000</td>
-      <td>2024</td>
-      <td class="num">121240000000.00</td>
-      <td>2023</td>
-      <td class="num up">+5145000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, New Motor Vehicles</td>
-      <td class="num">394880000000.00</td>
-      <td>2024</td>
-      <td class="num">402413000000.000</td>
-      <td>2023</td>
-      <td class="num down">-7533000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Nondurable Goods</td>
-      <td class="num">4205380000000.00</td>
-      <td>Q2 2025</td>
-      <td class="num">4196483000000.000</td>
-      <td>Q1 2025</td>
-      <td class="num up">+8897000000.000</td>
-      <td>SA, Current Prices, AR, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Personal Care Products</td>
-      <td class="num">203421000000.000</td>
-      <td>2024</td>
-      <td class="num">194998000000.000</td>
-      <td>2023</td>
-      <td class="num up">+8423000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Services</td>
-      <td class="num">14533139000000</td>
-      <td>Aug 2025</td>
-      <td class="num">14455922000000</td>
-      <td>Jul 2025</td>
-      <td class="num up">+77217000000.000</td>
-      <td>SA, Current Prices, AR, USD</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE, Services, Household Consumption Expenditures</td>
-      <td class="num">4.0</td>
-      <td>2024</td>
-      <td class="num">4.9</td>
-      <td>2023</td>
-      <td class="num down">-0.900</td>
-      <td>Chg P/P, %, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE % of GDP</td>
-      <td class="num">2.0</td>
-      <td>2024</td>
-      <td class="num">1.74</td>
-      <td>2023</td>
-      <td class="num up">+0.260</td>
-      <td>%, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE % of GDP, Durable Goods</td>
-      <td class="num">7.4</td>
-      <td>2024</td>
-      <td class="num">7.7</td>
-      <td>2023</td>
-      <td class="num down">-0.300</td>
-      <td>% of GDP, %, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE % of GDP, Goods</td>
-      <td class="num">21.4</td>
-      <td>2024</td>
-      <td class="num">22.0</td>
-      <td>2023</td>
-      <td class="num down">-0.600</td>
-      <td>% of GDP, %, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE % of GDP, Nondurable Goods</td>
-      <td class="num">13.9</td>
-      <td>2024</td>
-      <td class="num">14.3</td>
-      <td>2023</td>
-      <td class="num down">-0.400</td>
-      <td>% of GDP, %, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE % of GDP, Services</td>
-      <td class="num">46.5</td>
-      <td>2024</td>
-      <td class="num">45.7</td>
-      <td>2023</td>
-      <td class="num up">+0.800</td>
-      <td>% of GDP, %, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE % of GDP Price Index</td>
-      <td class="num">1.77</td>
-      <td>2024</td>
-      <td class="num">2.57</td>
-      <td>2023</td>
-      <td class="num down">-0.800</td>
-      <td>%, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE % of GDP Price Index, Durable Goods</td>
-      <td class="num">-0.16</td>
-      <td>2024</td>
-      <td class="num">-0.06</td>
-      <td>2023</td>
-      <td class="num down">-0.100</td>
-      <td>%, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE Price Index, Actual</td>
-      <td class="num">2.7</td>
-      <td>Aug 2025</td>
-      <td class="num">2.6</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.100</td>
-      <td>Chg Y/Y, SA, %</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCE Price Index, Household Consumption Expenditures</td>
-      <td class="num">123.072</td>
-      <td>2024</td>
-      <td class="num">120.044</td>
-      <td>2023</td>
-      <td class="num up">+3.028</td>
-      <td>2009=100, Index, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Prices</td>
-      <td>PCEs, Household Consumption Expenditures, USD</td>
-      <td class="num">121.512</td>
-      <td>2024</td>
-      <td class="num">118.091</td>
-      <td>2023</td>
-      <td class="num up">+3.421</td>
-      <td>Volume, 2009=100, Index, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Average Hourly Earnings, Producion Workers, Durable Goods</td>
-      <td class="num">31.1</td>
-      <td>Sep 2025</td>
-      <td class="num">30.71</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.390</td>
-      <td>Not SA, USD</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Average Hourly Earnings, Producion Workers, Manufacturing</td>
-      <td class="num">29.31</td>
-      <td>Sep 2025</td>
-      <td class="num">29.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.310</td>
-      <td>Not SA, USD</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Average Hourly Earnings, Producion Workers, Nondurable Goods</td>
-      <td class="num">26.59</td>
-      <td>Sep 2025</td>
-      <td class="num">26.41</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.180</td>
-      <td>Not SA, USD</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Average Hours, Producion Workers, Durable Goods</td>
-      <td class="num">41.4</td>
-      <td>Sep 2025</td>
-      <td class="num">41.3</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.100</td>
-      <td>Not SA, Hour</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Average Hours, Producion Workers, Manufacturing</td>
-      <td class="num">41.4</td>
-      <td>Sep 2025</td>
-      <td class="num">41.2</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.200</td>
-      <td>Not SA, Hour</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Average Hours, Producion Workers, Nondurable Goods</td>
-      <td class="num">41.2</td>
-      <td>Sep 2025</td>
-      <td class="num">41.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.200</td>
-      <td>Not SA, Hour</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Average Producion Workers, Durable Goods</td>
-      <td class="num">1287.54</td>
-      <td>Sep 2025</td>
-      <td class="num">1268.32</td>
-      <td>Aug 2025</td>
-      <td class="num up">+19.220</td>
-      <td>Not SA, USD</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Average Producion Workers, Manufacturing</td>
-      <td class="num">1213.43</td>
-      <td>Sep 2025</td>
-      <td class="num">1194.8</td>
-      <td>Aug 2025</td>
-      <td class="num up">+18.630</td>
-      <td>Not SA, USD</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Average Producion Workers, Nondurable Goods</td>
-      <td class="num">1095.51</td>
-      <td>Sep 2025</td>
-      <td class="num">1082.81</td>
-      <td>Aug 2025</td>
-      <td class="num up">+12.700</td>
-      <td>Not SA, USD</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Coronavirus (COVID-19), Deaths, Cumulative</td>
-      <td class="num">1104000.0</td>
-      <td>Jul 23,2023</td>
-      <td class="num">1104000.0</td>
-      <td>Jul 22,2023</td>
-      <td class="num flat">0.000</td>
-      <td>Person, 21/01/2020 ~ 23/07/2023</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Coronavirus (COVID-19), Vaccinations, Doses Administered, Cumulative</td>
-      <td class="num">676728782</td>
-      <td>May 09,2023</td>
-      <td class="num">676717031</td>
-      <td>May 08,2023</td>
-      <td class="num up">+11751.000</td>
-      <td>Number, 13/12/2020 ~ 09/05/2023</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Coronavirus (COVID-19), Vaccinations, Doses Administered, Per Hundred People</td>
-      <td class="num">203.83</td>
-      <td>May 09,2023</td>
-      <td class="num">203.82</td>
-      <td>May 08,2023</td>
-      <td class="num up">+0.010</td>
-      <td>Number, 13/12/2020 ~ 09/05/2023</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Coronavirus (COVID-19), Vaccinations, People Fully Vaccinated</td>
-      <td class="num">230637348</td>
-      <td>May 09,2023</td>
-      <td class="num">230636397</td>
-      <td>May 08,2023</td>
-      <td class="num up">+951.000</td>
-      <td>Number, 13/12/2020 ~ 09/05/2023</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Coronavirus (COVID-19), Vaccinations, People Vaccinated</td>
-      <td class="num">270227181</td>
-      <td>May 09,2023</td>
-      <td class="num">270225714</td>
-      <td>May 08,2023</td>
-      <td class="num up">+1467.000</td>
-      <td>Number, 13/12/2020 ~ 09/05/2023</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Earnings, Average Hourly, Nonfarm, All Private Employees</td>
-      <td class="num">36.67</td>
-      <td>Sep 2025</td>
-      <td class="num">36.58</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.090</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Earnings, Average Hourly, Nonfarm, Manufacturing</td>
-      <td class="num">29.23</td>
-      <td>Sep 2025</td>
-      <td class="num">29.1</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.130</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Earnings, Average Hourly, Nonfarm Goods Producing Industries</td>
-      <td class="num">32.74</td>
-      <td>Sep 2025</td>
-      <td class="num">32.6</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.140</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Earnings, Average Hourly, Nonfarm Payrolls, Manufacturing</td>
-      <td class="num">35.69</td>
-      <td>Sep 2025</td>
-      <td class="num">35.55</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.140</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Earnings, Average Hourly, Nonfarm Service-producing Industries</td>
-      <td class="num">31.29</td>
-      <td>Sep 2025</td>
-      <td class="num">31.22</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.070</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Earnings, Average Weekly Private</td>
-      <td class="num">386.63</td>
-      <td>Sep 2025</td>
-      <td class="num">386.88</td>
-      <td>Aug 2025</td>
-      <td class="num down">-0.250</td>
-      <td>SA, Constant Prices, 1982-1984 prices, USD</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Earnings, Hourly, Business</td>
-      <td class="num">4.6</td>
-      <td>Q2 2025</td>
-      <td class="num">5.1</td>
-      <td>Q1 2025</td>
-      <td class="num down">-0.500</td>
-      <td>SA, AR, %, Q2 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Earnings, Hourly, Nonfarm Business</td>
-      <td class="num">4.3</td>
-      <td>Q2 2025</td>
-      <td class="num">5.0</td>
-      <td>Q1 2025</td>
-      <td class="num down">-0.700</td>
-      <td>SA, AR, %, Q2 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Employed, Education &amp; Health Service</td>
-      <td class="num">27511000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">27452000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+59000.000</td>
-      <td>SA, Person</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Employed, Information Services</td>
-      <td class="num">2921000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">2948000.0</td>
-      <td>Aug 2025</td>
-      <td class="num down">-27000.000</td>
-      <td>Person</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Employed, Nonfarm Payroll</td>
-      <td class="num">159548000.0</td>
-      <td>Q3 2025</td>
-      <td class="num">159441000.0</td>
-      <td>Q2 2025</td>
-      <td class="num up">+107000.000</td>
-      <td>SA, Person, Q1 1939 ~ Q3 2025</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Employed, Nonfarm Payroll, Private</td>
-      <td class="num">136123000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">136703000.0</td>
-      <td>Aug 2025</td>
-      <td class="num down">-580000.000</td>
-      <td>Person</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Employed, Payroll Jobs, Standardized</td>
-      <td class="num">0.07460487627502241</td>
-      <td>Sep 2025</td>
-      <td class="num">-0.002507664048247456</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.077</td>
-      <td>Chg P/P, SA, %</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Employed, Production Workers, Durable Goods</td>
-      <td class="num">5342000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">5335000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+7000.000</td>
-      <td>SA, Person</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Employed, Retail Trade</td>
-      <td class="num">13900.0</td>
-      <td>Sep 2025</td>
-      <td class="num">3200.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+10700.000</td>
-      <td>Absolute change, SA, Person</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Employed, Services, Private</td>
-      <td class="num">114407000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">114320000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+87000.000</td>
-      <td>SA, Person</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Employed, Standardized</td>
-      <td class="num">163381666.6666667000</td>
-      <td>Q3 2025</td>
-      <td class="num">163536000.0</td>
-      <td>Q2 2025</td>
-      <td class="num down">-154333.333</td>
-      <td>SA, Person, Q1 1948 ~ Q3 2025</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Employed, Transport &amp; Storage</td>
-      <td class="num">6709900.0</td>
-      <td>Sep 2025</td>
-      <td class="num">6735200.0</td>
-      <td>Aug 2025</td>
-      <td class="num down">-25300.000</td>
-      <td>SA, Person</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Employed, Wholesale Trade</td>
-      <td class="num">6164700.0</td>
-      <td>Sep 2025</td>
-      <td class="num">6155300.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+9400.000</td>
-      <td>SA, Person</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Employed in Government, Actual</td>
-      <td class="num">22000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">-16000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+38000.000</td>
-      <td>Absolute change, SA, Person</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Hours Worked, Average per Week, Nonfarm Payroll, Goods-Producing Industries, Construction</td>
-      <td class="num">40.0</td>
-      <td>Sep 2025</td>
-      <td class="num">39.8</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.200</td>
-      <td>SA, Hour</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Hours Worked, Average per Week, Nonfarm Payroll, Goods-Producing Industries, Manufacturing</td>
-      <td class="num">41.0</td>
-      <td>Sep 2025</td>
-      <td class="num">41.0</td>
-      <td>Aug 2025</td>
-      <td class="num flat">0.000</td>
-      <td>SA, Hour</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Hours Worked, per Week, Aggregate Hours, Goods-Producing Industries, Construction</td>
-      <td class="num">120.8</td>
-      <td>Sep 2025</td>
-      <td class="num">119.8</td>
-      <td>Aug 2025</td>
-      <td class="num up">+1.000</td>
-      <td>SA, 2002=100, Index</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Hours Worked, per Week, Aggregate Hours, Goods-Producing Industries, Manufacturing</td>
-      <td class="num">83.5</td>
-      <td>Sep 2025</td>
-      <td class="num">83.4</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.100</td>
-      <td>SA, 2002=100, Index</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Hours Worked, per Week, Aggregate Hours, Service Producing industries</td>
-      <td class="num">132.3</td>
-      <td>Sep 2025</td>
-      <td class="num">132.2</td>
-      <td>Aug 2025</td>
-      <td class="num up">+0.100</td>
-      <td>SA, 2002=100, Index</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Jobless Claims, National, Initial</td>
-      <td class="num">220000.0</td>
-      <td>W46 2025</td>
-      <td class="num">228000.0</td>
-      <td>W45 2025</td>
-      <td class="num down">-8000.000</td>
-      <td>SA, Person, W1 1967 ~ W46 2025</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Jobless Claims, National, Pandemic Emergency Unemployment Compensation</td>
-      <td class="num">17945.0</td>
-      <td>W3 2023</td>
-      <td class="num">20107.0</td>
-      <td>W2 2023</td>
-      <td class="num down">-2162.000</td>
-      <td>Not SA, Person, W15 2020 ~ W3 2023</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Jobless Claims, National, Pandemic Unemployment Assistance</td>
-      <td class="num">1.3</td>
-      <td>W45 2025</td>
-      <td class="num">1.3</td>
-      <td>W44 2025</td>
-      <td class="num flat">0.000</td>
-      <td>SA, %, W53 1970 ~ W45 2025</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Job Vacancies</td>
-      <td class="num">15433000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">15548000.0</td>
-      <td>Q1 2025</td>
-      <td class="num down">-115000.000</td>
-      <td>Not SA, Number, Q1 1965 ~ Q2 2025</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Job Vacancies, Standardized</td>
-      <td class="num">-6.993186784933796</td>
-      <td>Aug 2025</td>
-      <td class="num">9.950530035335689</td>
-      <td>Jul 2025</td>
-      <td class="num down">-16.944</td>
-      <td>Chg P/P, %</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Labour Force</td>
-      <td class="num">171248000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">170778000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+470000.000</td>
-      <td>SA, Person</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Payroll Index, Producion Workers, Durable Goods</td>
-      <td class="num">161.4</td>
-      <td>Sep 2025</td>
-      <td class="num">159.1</td>
-      <td>Aug 2025</td>
-      <td class="num up">+2.300</td>
-      <td>Not SA, 2002=100, Index</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Payroll Index, Producion Workers, Manufacturing</td>
-      <td class="num">161.8</td>
-      <td>Sep 2025</td>
-      <td class="num">159.5</td>
-      <td>Aug 2025</td>
-      <td class="num up">+2.300</td>
-      <td>Not SA, 2002=100, Index</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Payroll Index, Producion Workers, Nondurable Goods</td>
-      <td class="num">161.3</td>
-      <td>Sep 2025</td>
-      <td class="num">159.9</td>
-      <td>Aug 2025</td>
-      <td class="num up">+1.400</td>
-      <td>Not SA, 2002=100, Index</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Population</td>
-      <td class="num">340110988</td>
-      <td>2024</td>
-      <td class="num">336806231</td>
-      <td>2023</td>
-      <td class="num up">+3304757.000</td>
-      <td>Person, 1960 ~ 2024</td>
-    </tr><tr>
-      <td>Population &amp; Labor</td>
-      <td>Population, 10-14 Years</td>
-      <td class="num">20469051.000</td>
-      <td>2024</td>
-      <td class="num">20454711.000</td>
-      <td>2023</td>
-      <td class="num up">+14340.000</td>
-      <td>Person, 1900 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Consumer Spending, Standardized</td>
-      <td class="num">3721393005383.023000000000</td>
-      <td>Q2 2025</td>
-      <td class="num">3698789058506.1537000000000</td>
-      <td>Q1 2025</td>
-      <td class="num up">+22603946876.869</td>
-      <td>SA, Constant Prices, 2010 prices, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Consumption of Fixed Capital</td>
-      <td class="num">3927345000000.000</td>
-      <td>2024</td>
-      <td class="num">3810323000000.000</td>
-      <td>2023</td>
-      <td class="num up">+117022000000.000</td>
-      <td>Constant Prices, 2012 chnd prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Consumption of Fixed Capital, Government</td>
-      <td class="num">650478000000.000</td>
-      <td>2024</td>
-      <td class="num">634620000000.00</td>
-      <td>2023</td>
-      <td class="num up">+15858000000.000</td>
-      <td>Constant Prices, 2012 chnd prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Consumption of Fixed Capital, Government Enterprises</td>
-      <td class="num">83949000000.000</td>
-      <td>2024</td>
-      <td class="num">82321000000.000</td>
-      <td>2023</td>
-      <td class="num up">+1628000000.000</td>
-      <td>Constant Prices, 2012 chnd prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Consumption of Fixed Capital, Inventory Valuation</td>
-      <td class="num">878288000000.000</td>
-      <td>2024</td>
-      <td class="num">848365000000.000</td>
-      <td>2023</td>
-      <td class="num up">+29923000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Consumption of Fixed Capital, Real</td>
-      <td class="num">3.1</td>
-      <td>2024</td>
-      <td class="num">3.2</td>
-      <td>2023</td>
-      <td class="num down">-0.100</td>
-      <td>Chg P/P, %, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Consumption of Fixed Capital, Real, Government</td>
-      <td class="num">2.5</td>
-      <td>2024</td>
-      <td class="num">2.6</td>
-      <td>2023</td>
-      <td class="num down">-0.100</td>
-      <td>Chg P/P, %, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Consumption of Fixed Capital, Real, Government Enterprises</td>
-      <td class="num">2.0</td>
-      <td>2024</td>
-      <td class="num">1.9</td>
-      <td>2023</td>
-      <td class="num up">+0.100</td>
-      <td>Chg P/P, %, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Consumption of Fixed Capital, Real, Inventory Valuation</td>
-      <td class="num">3.2</td>
-      <td>2024</td>
-      <td class="num">3.4</td>
-      <td>2023</td>
-      <td class="num down">-0.200</td>
-      <td>Chg P/P, %, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Disposable Personal Income</td>
-      <td class="num">51488000000000.0</td>
-      <td>2024</td>
-      <td class="num">50580000000000.0</td>
-      <td>2023</td>
-      <td class="num up">+908000000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Disposable Personal Income, After-tax Income Received by The Personal Sector</td>
-      <td class="num">17723264000000.000</td>
-      <td>2024</td>
-      <td class="num">17217775000000.000</td>
-      <td>2023</td>
-      <td class="num up">+505489000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Exports % of GDP</td>
-      <td class="num">11.0</td>
-      <td>2024</td>
-      <td class="num">11.1</td>
-      <td>2023</td>
-      <td class="num down">-0.100</td>
-      <td>% of GDP, %, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>GDP</td>
-      <td class="num">100.0</td>
-      <td>2024</td>
-      <td class="num">100.0</td>
-      <td>2023</td>
-      <td class="num flat">0.000</td>
-      <td>% of GDP, %, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>GDP, per Capita</td>
-      <td class="num">68521.81735451605</td>
-      <td>2024</td>
-      <td class="num">67311.98509210478</td>
-      <td>2023</td>
-      <td class="num up">+1209.832</td>
-      <td>Constant Prices, 2010 prices, USD, 1960 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>GDP, PPP Conversion Factor</td>
-      <td class="num">1.0</td>
-      <td>2024</td>
-      <td class="num">1.0</td>
-      <td>2023</td>
-      <td class="num flat">0.000</td>
-      <td>USD, 1990 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>GDP, Production Approach</td>
-      <td class="num">29298013000000.000</td>
-      <td>2024</td>
-      <td class="num">27811517000000.000</td>
-      <td>2023</td>
-      <td class="num up">+1486496000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>GDP, Real</td>
-      <td class="num">2.8</td>
-      <td>2024</td>
-      <td class="num">2.9</td>
-      <td>2023</td>
-      <td class="num down">-0.100</td>
-      <td>Chg P/P, %, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>GDP, Standardized</td>
-      <td class="num">5326593871446.988000000000</td>
-      <td>Q2 2025</td>
-      <td class="num">5276676526430.663000000000</td>
-      <td>Q1 2025</td>
-      <td class="num up">+49917345016.325</td>
-      <td>SA, Constant Prices, 2010 prices, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>GDP Growth (Annual %)</td>
-      <td class="num">2.796190356213927</td>
-      <td>2024</td>
-      <td class="num">2.8875560090598356</td>
-      <td>2023</td>
-      <td class="num down">-0.091</td>
-      <td>%, 1961 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>GDP per Capita, Standardized</td>
-      <td class="num">15557.86779753949</td>
-      <td>Q2 2025</td>
-      <td class="num">15412.06966212483</td>
-      <td>Q1 2025</td>
-      <td class="num up">+145.798</td>
-      <td>SA, Constant Prices, 2010 prices, USD, Q4 1950 ~ Q2 2025</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>GDP per Capita Growth (Annual %)</td>
-      <td class="num">1.7973504432469554</td>
-      <td>2024</td>
-      <td class="num">2.035599876961939</td>
-      <td>2023</td>
-      <td class="num down">-0.238</td>
-      <td>%, 1961 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>GDP Price Deflator</td>
-      <td class="num">2.1</td>
-      <td>Q2 2025</td>
-      <td class="num">3.6</td>
-      <td>Q1 2025</td>
-      <td class="num down">-1.500</td>
-      <td>Chg P/P, SA, %, Q2 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>GDP Price Deflator, Gross National Product</td>
-      <td class="num">2.5</td>
-      <td>2024</td>
-      <td class="num">3.7</td>
-      <td>2023</td>
-      <td class="num down">-1.200</td>
-      <td>Chg P/P, %, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>GDP Price Deflator, Standardized</td>
-      <td class="num">0.5259568731040861</td>
-      <td>Q2 2025</td>
-      <td class="num">0.8912613681296955</td>
-      <td>Q1 2025</td>
-      <td class="num down">-0.365</td>
-      <td>Chg Q/Q, SA, %, Q2 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Government Consumption, Standardized</td>
-      <td class="num">-0.2527783136102693</td>
-      <td>Q2 2025</td>
-      <td class="num">-0.4274861023363314</td>
-      <td>Q1 2025</td>
-      <td class="num up">+0.175</td>
-      <td>Chg Q/Q, SA, %, Q2 2007 ~ Q2 2025</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Government Consumption Expenditures, Real</td>
-      <td class="num">3.3</td>
-      <td>2024</td>
-      <td class="num">3.0</td>
-      <td>2023</td>
-      <td class="num up">+0.300</td>
-      <td>Chg P/P, %, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Government Consumption Expenditures and Gross Investments</td>
-      <td class="num">5236970000000.00</td>
-      <td>Q2 2025</td>
-      <td class="num">5195517000000.000</td>
-      <td>Q1 2025</td>
-      <td class="num up">+41453000000.000</td>
-      <td>SA, Current Prices, AR, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Gross Domestic Income</td>
-      <td class="num">29001715000000.000</td>
-      <td>2024</td>
-      <td class="num">27485663000000.000</td>
-      <td>2023</td>
-      <td class="num up">+1516052000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Gross Fixed Capital Investment, Standardized</td>
-      <td class="num">1018743310429.1097000000000</td>
-      <td>Q2 2025</td>
-      <td class="num">1007839975462.8815000000000</td>
-      <td>Q1 2025</td>
-      <td class="num up">+10903334966.228</td>
-      <td>SA, Constant Prices, 2010 prices, USD, Q1 1999 ~ Q2 2025</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Personal Consumption Expenditures, Real</td>
-      <td class="num">2.9</td>
-      <td>2024</td>
-      <td class="num">2.6</td>
-      <td>2023</td>
-      <td class="num up">+0.300</td>
-      <td>Chg P/P, %, 1930 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Personal Income Account</td>
-      <td class="num">26279866000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num">26184157000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num up">+95709000000.000</td>
-      <td>SA, Current Prices, AR, USD</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Personal Income Account, Disposable Personal Income</td>
-      <td class="num">22858513000000.000</td>
-      <td>Q2 2025</td>
-      <td class="num">22563684000000.000</td>
-      <td>Q1 2025</td>
-      <td class="num up">+294829000000.000</td>
-      <td>SA, Current Prices, AR, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Personal Income Account, Disposable Personal Income, per Capita</td>
-      <td class="num">52866.0</td>
-      <td>Q2 2025</td>
-      <td class="num">52528.0</td>
-      <td>Q1 2025</td>
-      <td class="num up">+338.000</td>
-      <td>SA, Constant Prices, AR, 2012 chnd prices, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Personal Outlays</td>
-      <td class="num">21973757000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num">21840847000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num up">+132910000000.000</td>
-      <td>SA, Current Prices, AR, USD</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Personal Saving</td>
-      <td class="num">1212246000000.000</td>
-      <td>Q2 2025</td>
-      <td class="num">1163267000000.000</td>
-      <td>Q1 2025</td>
-      <td class="num up">+48979000000.000</td>
-      <td>SA, Current Prices, AR, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Personal Savings</td>
-      <td class="num">1193230000000.00</td>
-      <td>2024</td>
-      <td class="num">1159240000000.00</td>
-      <td>2023</td>
-      <td class="num up">+33990000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>National Accounts</td>
-      <td>Purchasing Power Parities for GDP</td>
-      <td class="num">1.0</td>
-      <td>2024</td>
-      <td class="num">1.0</td>
-      <td>2023</td>
-      <td class="num flat">0.000</td>
-      <td>USD, 1960 ~ 2024</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>API Cushing Number</td>
-      <td class="num">-790.00</td>
-      <td>W46 2025</td>
-      <td class="num">-43.000</td>
-      <td>W45 2025</td>
-      <td class="num down">-747.000</td>
-      <td>Number, W45 2016 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>API Weekly Crude Imports</td>
-      <td class="num">396000.000</td>
-      <td>W46 2025</td>
-      <td class="num">-186000.000</td>
-      <td>W45 2025</td>
-      <td class="num up">+582000.000</td>
-      <td>Number, W20 2017 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>API Weekly Crude Stocks</td>
-      <td class="num">4448000.000</td>
-      <td>W46 2025</td>
-      <td class="num">1300000.0</td>
-      <td>W45 2025</td>
-      <td class="num up">+3148000.000</td>
-      <td>Number, W20 2017 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>API Weekly Gasoline Stocks</td>
-      <td class="num">1546000.000</td>
-      <td>W46 2025</td>
-      <td class="num">-1385000.000</td>
-      <td>W45 2025</td>
-      <td class="num up">+2931000.000</td>
-      <td>Number, W20 2017 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>API Weekly Heating Oil</td>
-      <td class="num">-317000.000</td>
-      <td>W46 2025</td>
-      <td class="num">-2000.000</td>
-      <td>W45 2025</td>
-      <td class="num down">-315000.000</td>
-      <td>Number, W46 2016 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Crude Oil Proved Reserves</td>
-      <td class="num">41151000000.0</td>
-      <td>2021</td>
-      <td class="num">35835000000.0</td>
-      <td>2020</td>
-      <td class="num up">+5316000000.000</td>
-      <td>Barrel, 1900 ~ 2021</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>EIA, Gasoline</td>
-      <td class="num">207391000.0</td>
-      <td>W46 2025</td>
-      <td class="num">205064000.0</td>
-      <td>W45 2025</td>
-      <td class="num up">+2327000.000</td>
-      <td>Barrel, W1 1990 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>EIA Weekly Crude Imports Changes</td>
-      <td class="num">-614.000</td>
-      <td>W46 2025</td>
-      <td class="num">849.000</td>
-      <td>W45 2025</td>
-      <td class="num down">-1463.000</td>
-      <td>Barrel, W42 2005 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Gasoline</td>
-      <td class="num">2327000.000</td>
-      <td>W46 2025</td>
-      <td class="num">-945000.000</td>
-      <td>W45 2025</td>
-      <td class="num up">+3272000.000</td>
-      <td>Absolute change, Barrel, W36 2008 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Production, Eia, Coal U.S.</td>
-      <td class="num">9727000.0</td>
-      <td>W46 2025</td>
-      <td class="num">9916000.0</td>
-      <td>W45 2025</td>
-      <td class="num down">-189000.000</td>
-      <td>Ton (short), W1 1984 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Production, Eia, Crude Oil Inputs Into Refineries</td>
-      <td class="num">16232000.0</td>
-      <td>W46 2025</td>
-      <td class="num">15973000.0</td>
-      <td>W45 2025</td>
-      <td class="num up">+259000.000</td>
-      <td>Barrel/Day, W33 1982 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Production, Eia, Distillate</td>
-      <td class="num">4911000.0</td>
-      <td>W46 2025</td>
-      <td class="num">5028000.0</td>
-      <td>W45 2025</td>
-      <td class="num down">-117000.000</td>
-      <td>Barrel/Day, W33 1982 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Production, Eia, Gasoline</td>
-      <td class="num">9271000.0</td>
-      <td>W46 2025</td>
-      <td class="num">9933000.0</td>
-      <td>W45 2025</td>
-      <td class="num down">-662000.000</td>
-      <td>Barrel/Day, W33 1982 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Production, Eia, Refinery Capacity Utilization</td>
-      <td class="num">90.0</td>
-      <td>W46 2025</td>
-      <td class="num">89.4</td>
-      <td>W45 2025</td>
-      <td class="num up">+0.600</td>
-      <td>%, W44 1990 ~ W46 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Prospective Plantings, Corn</td>
-      <td class="num">91500000.0</td>
-      <td>2024</td>
-      <td class="num">94100000.0</td>
-      <td>2023</td>
-      <td class="num down">-2600000.000</td>
-      <td>Acre, 2005 ~ 2024</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Prospective Plantings, Cotton</td>
-      <td class="num">11700000.0</td>
-      <td>2024</td>
-      <td class="num">11087000.000</td>
-      <td>2023</td>
-      <td class="num up">+613000.000</td>
-      <td>Acre, 2005 ~ 2024</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Prospective Plantings, Soy</td>
-      <td class="num">86510000.00</td>
-      <td>2024</td>
-      <td class="num">87500000.0</td>
-      <td>2023</td>
-      <td class="num down">-990000.000</td>
-      <td>Acre, 2005 ~ 2024</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Prospective Plantings, Wheat</td>
-      <td class="num">47200000.0</td>
-      <td>2024</td>
-      <td class="num">49628000.000</td>
-      <td>2023</td>
-      <td class="num down">-2428000.000</td>
-      <td>Acre, 2005 ~ 2024</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Soybean Meal Net Export Sales</td>
-      <td class="num">328300.0</td>
-      <td>W40 2025</td>
-      <td class="num">-216200.0</td>
-      <td>W39 2025</td>
-      <td class="num up">+544500.000</td>
-      <td>Tonne, W45 2016 ~ W40 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Soybean Net Export Sales</td>
-      <td class="num">919400.0</td>
-      <td>W40 2025</td>
-      <td class="num">870500.0</td>
-      <td>W39 2025</td>
-      <td class="num up">+48900.000</td>
-      <td>Tonne, W45 2016 ~ W40 2025</td>
-    </tr><tr>
-      <td>Commodities</td>
-      <td>Strategic Petroleum Reserve</td>
-      <td class="num">404941000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">402976000.0</td>
-      <td>Jul 2025</td>
-      <td class="num up">+1965000.000</td>
-      <td>Not SA, Barrel</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Central Government Debt</td>
-      <td class="num">3.1811053E+13</td>
-      <td>2023</td>
-      <td class="num">2.9340356E+13</td>
-      <td>2022</td>
-      <td class="num up">+2470697000000.000</td>
-      <td>Current Prices, USD, 1989 ~ 2023</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Central Government Surplus/Deficit, Standardized</td>
-      <td class="num">197950000000.00</td>
-      <td>Sep 2025</td>
-      <td class="num">-344792000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num up">+542742000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Federal Budget</td>
-      <td class="num">198000000000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">-345000000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+543000000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Federal Debt Amount Outstanding</td>
-      <td class="num">36232613320820.4000000000</td>
-      <td>Jun 2025</td>
-      <td class="num">36236785373620.8000000000</td>
-      <td>May 2025</td>
-      <td class="num down">-4172052800.398</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Federal Debt Amount Outstanding, Public Debt Securities</td>
-      <td class="num">38040093805637.9000000000</td>
-      <td>Oct 2025</td>
-      <td class="num">37637552527014.2000000000</td>
-      <td>Sep 2025</td>
-      <td class="num up">+402541278623.695</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Federal Debt Amount Outstanding, Treasury Bills</td>
-      <td class="num">15505681583500.0000000</td>
-      <td>Oct 2025</td>
-      <td class="num">15392478881200.0000000</td>
-      <td>Sep 2025</td>
-      <td class="num up">+113202702300.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Federal Debt Amount Outstanding, Treasury Bonds</td>
-      <td class="num">5172699259800.0000000</td>
-      <td>Oct 2025</td>
-      <td class="num">5142560576200.0000000</td>
-      <td>Sep 2025</td>
-      <td class="num up">+30138683600.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Federal Government, Current Expenditures</td>
-      <td class="num">2476452000000.000</td>
-      <td>2023</td>
-      <td class="num">2242911000000.000</td>
-      <td>2022</td>
-      <td class="num up">+233541000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2023</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Federal Government Overall Surplus/Deficit</td>
-      <td class="num">197950000000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">-344792000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+542742000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Federal Government Revenues</td>
-      <td class="num">543663000000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">344315000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+199348000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Federal Outlays, General Government</td>
-      <td class="num">7178000000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">1668000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+5510000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Federal Surplus/Deficit as Percent of GDP</td>
-      <td class="num">-6.20107</td>
-      <td>2024</td>
-      <td class="num">-6.09546</td>
-      <td>2023</td>
-      <td class="num down">-0.106</td>
-      <td>%, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>General Government Debt</td>
-      <td class="num">138.1419</td>
-      <td>2024</td>
-      <td class="num">137.6397</td>
-      <td>2023</td>
-      <td class="num up">+0.502</td>
-      <td>% of GDP, %, 1980 ~ 2024</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Government Current Expenditures, Excluding Imputations</td>
-      <td class="num">8965341000000.000</td>
-      <td>2022</td>
-      <td class="num">9514441000000.000</td>
-      <td>2021</td>
-      <td class="num down">-549100000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2022</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Gross Public Debt</td>
-      <td class="num">111.1</td>
-      <td>Q1 2023</td>
-      <td class="num">111.9</td>
-      <td>Q4 2022</td>
-      <td class="num down">-0.800</td>
-      <td>% of GDP, Not SA, %, Q1 1952 ~ Q1 2023</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Public Debt Outstanding</td>
-      <td class="num">36211500000000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">36214300000000.0</td>
-      <td>Q1 2025</td>
-      <td class="num down">-2800000000.000</td>
-      <td>USD, Q1 1970 ~ Q2 2025</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Treasury Securities Outstanding, Bills</td>
-      <td class="num">6593194185500.0000</td>
-      <td>Oct 2025</td>
-      <td class="num">6397045050100.0000</td>
-      <td>Sep 2025</td>
-      <td class="num up">+196149135400.000</td>
-      <td>Not SA, USD</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Treasury Securities Outstanding, Bonds</td>
-      <td class="num">5172699259800.0000</td>
-      <td>Oct 2025</td>
-      <td class="num">5142560576200.0000</td>
-      <td>Sep 2025</td>
-      <td class="num up">+30138683600.000</td>
-      <td>Not SA, USD</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Treasury Securities Outstanding, Notes</td>
-      <td class="num">15505681583500.0000</td>
-      <td>Oct 2025</td>
-      <td class="num">15392478881200.0000</td>
-      <td>Sep 2025</td>
-      <td class="num up">+113202702300.000</td>
-      <td>Not SA, USD</td>
-    </tr><tr>
-      <td>Government Sector</td>
-      <td>Treasury Securities Outstanding, Public Debt</td>
-      <td class="num">38040093805637.9000000</td>
-      <td>Oct 2025</td>
-      <td class="num">37637552527014.2000000</td>
-      <td>Sep 2025</td>
-      <td class="num up">+402541278623.695</td>
-      <td>Not SA, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Balance, Capital Account</td>
-      <td class="num">-1906000000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">6934000000.0</td>
-      <td>Q1 2025</td>
-      <td class="num down">-8840000000.000</td>
-      <td>SA, USD, Q4 1989 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Balance, Goods</td>
-      <td class="num">-269980000000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">-465784000000.0</td>
-      <td>Q1 2025</td>
-      <td class="num up">+195804000000.000</td>
-      <td>SA, USD, Q1 1960 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Balance, Goods and Services</td>
-      <td class="num">-190393000000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">-385499000000.0</td>
-      <td>Q1 2025</td>
-      <td class="num up">+195106000000.000</td>
-      <td>SA, USD, Q1 1960 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Balance, Primary Income</td>
-      <td class="num">-7685000000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">-2596000000.0</td>
-      <td>Q1 2025</td>
-      <td class="num down">-5089000000.000</td>
-      <td>SA, USD, Q1 1960 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Balance, Secondary Income</td>
-      <td class="num">-53234000000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">-51728000000.0</td>
-      <td>Q1 2025</td>
-      <td class="num down">-1506000000.000</td>
-      <td>SA, USD, Q1 1960 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Balance, Services</td>
-      <td class="num">79588000000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">80285000000.0</td>
-      <td>Q1 2025</td>
-      <td class="num down">-697000000.000</td>
-      <td>SA, USD, Q1 1960 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Current Account, Goods, Balance</td>
-      <td class="num">-84249000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">-117979000000.0</td>
-      <td>Jul 2025</td>
-      <td class="num up">+33730000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Current Account, Goods, Credit</td>
-      <td class="num">550203000000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">538929000000.0</td>
-      <td>Q1 2025</td>
-      <td class="num up">+11274000000.000</td>
-      <td>SA, USD, Q1 1960 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Current Account, Goods, Debit</td>
-      <td class="num">820183000000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">1004713000000.0</td>
-      <td>Q1 2025</td>
-      <td class="num down">-184530000000.000</td>
-      <td>SA, USD, Q1 1960 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Current Account, Goods and Services, Imports</td>
-      <td class="num">264846000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">294337000000.0</td>
-      <td>Jul 2025</td>
-      <td class="num down">-29491000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Current Account, Services, Credit</td>
-      <td class="num">301623000000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">299518000000.0</td>
-      <td>Q1 2025</td>
-      <td class="num up">+2105000000.000</td>
-      <td>SA, USD, Q1 1960 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Current Account, Services, Debit</td>
-      <td class="num">222035000000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">219232000000.0</td>
-      <td>Q1 2025</td>
-      <td class="num up">+2803000000.000</td>
-      <td>SA, USD, Q1 1960 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Current Account Balance</td>
-      <td class="num">-251312000000.0</td>
-      <td>Q2 2025</td>
-      <td class="num">-439822000000.0</td>
-      <td>Q1 2025</td>
-      <td class="num up">+188510000000.000</td>
-      <td>SA, Current Prices, USD, Q1 1960 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Current Account Balance, Percentage of GDP, Standardized</td>
-      <td class="num">-3.2974379585936755</td>
-      <td>Q2 2025</td>
-      <td class="num">-5.856072773576213</td>
-      <td>Q1 2025</td>
-      <td class="num up">+2.559</td>
-      <td>SA, %, Q1 1960 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Current Account Balance, Standardized</td>
-      <td class="num">34999000000.000</td>
-      <td>Q2 2025</td>
-      <td class="num">-178968000000.000</td>
-      <td>Q1 2025</td>
-      <td class="num up">+213967000000.000</td>
-      <td>Absolute change, SA, USD, Q1 1961 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Exports</td>
-      <td class="num">179707000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">175235000000.0</td>
-      <td>Jul 2025</td>
-      <td class="num up">+4472000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Exports, Goods</td>
-      <td class="num">7.0</td>
-      <td>2024</td>
-      <td class="num">7.3</td>
-      <td>2023</td>
-      <td class="num down">-0.300</td>
-      <td>% of GDP, %, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Exports, Goods and Services</td>
-      <td class="num">822183000000.000</td>
-      <td>Q2 2025</td>
-      <td class="num">798499000000.000</td>
-      <td>Q1 2025</td>
-      <td class="num up">+23684000000.000</td>
-      <td>Not SA, Current Prices, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Exports, Goods and Services, Standardized</td>
-      <td class="num">644465814154.8299000000000</td>
-      <td>Q2 2025</td>
-      <td class="num">647447767231.0196000000000</td>
-      <td>Q1 2025</td>
-      <td class="num down">-2981953076.190</td>
-      <td>SA, Constant Prices, 2010 prices, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Exports, Services</td>
-      <td class="num">1186198000000.000</td>
-      <td>Q2 2025</td>
-      <td class="num">1177698000000.000</td>
-      <td>Q1 2025</td>
-      <td class="num up">+8500000000.000</td>
-      <td>SA, Current Prices, AR, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Exports of Finished Motor Gasoline</td>
-      <td class="num">790000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">790000.0</td>
-      <td>Jul 2025</td>
-      <td class="num flat">0.000</td>
-      <td>Not SA, Barrel/Day</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Exports of Goods, Standardized</td>
-      <td class="num">180597000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num">176357000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num up">+4240000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>External Debt, Standardized</td>
-      <td class="num">6.352425538629549</td>
-      <td>Q2 2025</td>
-      <td class="num">6.1585289020851794</td>
-      <td>Q1 2025</td>
-      <td class="num up">+0.194</td>
-      <td>Chg Y/Y, %, Q2 2004 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Foreign Net Treasury International Capital Flows, Actual</td>
-      <td class="num">190100000000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">187100000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+3000000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Government External Debt, Standardized</td>
-      <td class="num">0.7465247432431725</td>
-      <td>Q2 2025</td>
-      <td class="num">4.630436870474907</td>
-      <td>Q1 2025</td>
-      <td class="num down">-3.884</td>
-      <td>Chg Q/Q, %, Q3 2003 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Imports</td>
-      <td class="num">4113828000000.000</td>
-      <td>2024</td>
-      <td class="num">3859856000000.000</td>
-      <td>2023</td>
-      <td class="num up">+253972000000.000</td>
-      <td>Current Prices, USD, 1929 ~ 2024</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Imports, Crude Oil</td>
-      <td class="num">194769000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">196174000.0</td>
-      <td>Jul 2025</td>
-      <td class="num down">-1405000.000</td>
-      <td>Not SA, Barrel</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Imports, Goods and Services</td>
-      <td class="num">4167305000000.000</td>
-      <td>Q2 2025</td>
-      <td class="num">4558265000000.000</td>
-      <td>Q1 2025</td>
-      <td class="num down">-390960000000.000</td>
-      <td>SA, Current Prices, AR, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Imports, Goods and Services, Standardized</td>
-      <td class="num">964383743900.9167000000000</td>
-      <td>Q2 2025</td>
-      <td class="num">1051556078823.1564000000000</td>
-      <td>Q1 2025</td>
-      <td class="num down">-87172334922.240</td>
-      <td>SA, Constant Prices, 2010 prices, USD, Q1 1947 ~ Q2 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Imports, Petroleum Products</td>
-      <td class="num">-270.00</td>
-      <td>W46 2025</td>
-      <td class="num">-41.000</td>
-      <td>W45 2025</td>
-      <td class="num down">-229.000</td>
-      <td>Absolute change, Barrel/Day, W47 2005 ~ W46 2025</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Imports of Goods, Standardized</td>
-      <td class="num">-5.310012942530872</td>
-      <td>Aug 2025</td>
-      <td class="num">1.3452467031642736</td>
-      <td>Jul 2025</td>
-      <td class="num down">-6.655</td>
-      <td>Chg Y/Y, %</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Merchandise Exports, Standardized</td>
-      <td class="num">178161000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">178495000000.0</td>
-      <td>Jul 2025</td>
-      <td class="num down">-334000000.000</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>Merchandise Imports, Standardized</td>
-      <td class="num">-3.7660799847494477</td>
-      <td>Aug 2025</td>
-      <td class="num">1.5952103943403453</td>
-      <td>Jul 2025</td>
-      <td class="num down">-5.361</td>
-      <td>Chg Y/Y, SA, %</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Algeria Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">680000000.00</td>
-      <td>Jan 2023</td>
-      <td class="num">680000000.00</td>
-      <td>Dec 2022</td>
-      <td class="num flat">0.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Australia Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">72116000000.000</td>
-      <td>Sep 2025</td>
-      <td class="num">67447000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num up">+4669000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Austria Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">5878000000.000</td>
-      <td>Sep 2025</td>
-      <td class="num">5786000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num up">+92000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Bahamas Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">26222000000.000</td>
-      <td>Sep 2025</td>
-      <td class="num">24689000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num up">+1533000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Bahrain Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">1478000000.000</td>
-      <td>Jan 2023</td>
-      <td class="num">1337000000.000</td>
-      <td>Dec 2022</td>
-      <td class="num up">+141000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Barbados Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">3037000000.000</td>
-      <td>Sep 2025</td>
-      <td class="num">2948000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num up">+89000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Belgium Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">466831000000.000</td>
-      <td>Sep 2025</td>
-      <td class="num">454291000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num up">+12540000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Bermuda Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">103654000000.000</td>
-      <td>Sep 2025</td>
-      <td class="num">99014000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num up">+4640000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Bolivia Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">475000000.000</td>
-      <td>Jan 2023</td>
-      <td class="num">351000000.000</td>
-      <td>Dec 2022</td>
-      <td class="num up">+124000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Brazil Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">172669000000.000</td>
-      <td>Sep 2025</td>
-      <td class="num">184519000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num down">-11850000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Canada Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">475781000000.000</td>
-      <td>Sep 2025</td>
-      <td class="num">443686000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num up">+32095000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Cayman Islands Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">426889000000.000</td>
-      <td>Sep 2025</td>
-      <td class="num">412405000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num up">+14484000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, China Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">700541000000.000</td>
-      <td>Sep 2025</td>
-      <td class="num">700985000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num down">-444000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Costa Rica Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">4035000000.000</td>
-      <td>Sep 2025</td>
-      <td class="num">3964000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num up">+71000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Curacao Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">2472000000.000</td>
-      <td>Jun 2024</td>
-      <td class="num">2495000000.000</td>
-      <td>May 2024</td>
-      <td class="num down">-23000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Cyprus Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">823000000.000</td>
-      <td>Sep 2025</td>
-      <td class="num">902000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num down">-79000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>External Sector</td>
-      <td>TIC, Dominican Republic Major Foreign Holdings of Treasury Securities</td>
-      <td class="num">3469000000.000</td>
-      <td>Jan 2023</td>
-      <td class="num">3127000000.000</td>
-      <td>Dec 2022</td>
-      <td class="num up">+342000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Building Permits</td>
-      <td class="num">1330000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">1362000.0</td>
-      <td>Jul 2025</td>
-      <td class="num down">-32000.000</td>
-      <td>SA, AR, Number</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Building Permits, Actual</td>
-      <td class="num">-2.3</td>
-      <td>Aug 2025</td>
-      <td class="num">-2.2</td>
-      <td>Jul 2025</td>
-      <td class="num down">-0.100</td>
-      <td>Chg P/P, SA, %</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Building Permits, Midwest</td>
-      <td class="num">200000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">221000.0</td>
-      <td>Jul 2025</td>
-      <td class="num down">-21000.000</td>
-      <td>SA, AR, Number</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Building Permits, Northeast</td>
-      <td class="num">121000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">125000.0</td>
-      <td>Jul 2025</td>
-      <td class="num down">-4000.000</td>
-      <td>SA, AR, Number</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Building Permits, South</td>
-      <td class="num">691000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">742000.0</td>
-      <td>Jul 2025</td>
-      <td class="num down">-51000.000</td>
-      <td>SA, AR, Number</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Building Permits, West</td>
-      <td class="num">300000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">274000.0</td>
-      <td>Jul 2025</td>
-      <td class="num up">+26000.000</td>
-      <td>SA, AR, Number</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Capacity Utilization, Manufacturing, Durable</td>
-      <td class="num">75.1333</td>
-      <td>Aug 2025</td>
-      <td class="num">75.0957</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.038</td>
-      <td>SA, %</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Capacity Utilization, Manufacturing, Nondurable</td>
-      <td class="num">78.4055</td>
-      <td>Aug 2025</td>
-      <td class="num">78.2341</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.171</td>
-      <td>SA, %</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Capacity Utilization, Manufacturing (SIC)</td>
-      <td class="num">76.7622</td>
-      <td>Aug 2025</td>
-      <td class="num">76.6507</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.112</td>
-      <td>SA, 2017=100, %</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Capacity Utilization, Mining</td>
-      <td class="num">90.6185</td>
-      <td>Aug 2025</td>
-      <td class="num">89.8703</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.748</td>
-      <td>SA, 2017=100, %</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Capacity Utilization Index</td>
-      <td class="num">77.4</td>
-      <td>Aug 2025</td>
-      <td class="num">77.5</td>
-      <td>Jul 2025</td>
-      <td class="num down">-0.100</td>
-      <td>Chg M/M, SA, %</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Construction Spending</td>
-      <td class="num">2169468000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num">2165016000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num up">+4452000000.000</td>
-      <td>SA, Current Prices, AR, USD</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Construction Spending, Nonresidential</td>
-      <td class="num">1242208000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num">1245075000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num down">-2867000000.000</td>
-      <td>SA, Current Prices, AR, USD</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Construction Spending, Private</td>
-      <td class="num">1652122000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num">1647495000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num up">+4627000000.000</td>
-      <td>SA, Current Prices, AR, USD</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Construction Spending, Private, Nonresidential</td>
-      <td class="num">737277000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num">739787000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num down">-2510000000.000</td>
-      <td>SA, Current Prices, AR, USD</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Construction Spending, Private, Residential</td>
-      <td class="num">914845000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num">907708000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num up">+7137000000.000</td>
-      <td>SA, Current Prices, AR, USD</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Construction Spending, Public</td>
-      <td class="num">517346000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num">517521000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num down">-175000000.000</td>
-      <td>SA, Current Prices, AR, USD</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Construction Spending, Residential</td>
-      <td class="num">927260000000.00</td>
-      <td>Aug 2025</td>
-      <td class="num">919941000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num up">+7319000000.000</td>
-      <td>SA, Current Prices, AR, USD</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Housing Completions</td>
-      <td class="num">144600.0</td>
-      <td>Aug 2025</td>
-      <td class="num">128500.0</td>
-      <td>Jul 2025</td>
-      <td class="num up">+16100.000</td>
-      <td>Number</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Housing Starts</td>
-      <td class="num">113300.0</td>
-      <td>Aug 2025</td>
-      <td class="num">129600.0</td>
-      <td>Jul 2025</td>
-      <td class="num down">-16300.000</td>
-      <td>Number</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Industrial Capacity Index</td>
-      <td class="num">134.3056</td>
-      <td>Aug 2025</td>
-      <td class="num">134.1381</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.167</td>
-      <td>SA, %</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Industrial Production Index</td>
-      <td class="num">254.33757880722086</td>
-      <td>Aug 2025</td>
-      <td class="num">254.09063319888787</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.247</td>
-      <td>SA, 1975=100, Index</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Industrial Production Index, Standardized</td>
-      <td class="num">113.42321862193151</td>
-      <td>Aug 2025</td>
-      <td class="num">113.31309189251527</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.110</td>
-      <td>SA, 2010=100, Index</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Manufacturing Inventories, Durable Goods</td>
-      <td class="num">590869000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num">590865000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num up">+4000000.000</td>
-      <td>SA, Current Prices, USD</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Manufacturing Inventories, Durable Goods Excluding Transportation</td>
-      <td class="num">403248000000.000</td>
-      <td>Aug 2025</td>
-      <td class="num">403827000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num down">-579000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Manufacturing New Orders</td>
-      <td class="num">612030000000.00</td>
-      <td>Aug 2025</td>
-      <td class="num">603586000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num up">+8444000000.000</td>
-      <td>SA, Current Prices, USD</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Production Index</td>
-      <td class="num">103.9203</td>
-      <td>Aug 2025</td>
-      <td class="num">103.8194</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.101</td>
-      <td>SA, 2017=100, Index</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Production Index, Manufacturing</td>
-      <td class="num">101.0388</td>
-      <td>Aug 2025</td>
-      <td class="num">100.7999</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.239</td>
-      <td>SA, Volume, 2017=100, Index</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Production Index, Mining</td>
-      <td class="num">121.3942</td>
-      <td>Aug 2025</td>
-      <td class="num">120.2778</td>
-      <td>Jul 2025</td>
-      <td class="num up">+1.116</td>
-      <td>SA, Volume, 2017=100, Index</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Retail Inventories</td>
-      <td class="num">795698000000.000</td>
-      <td>Jul 2025</td>
-      <td class="num">799444000000.000</td>
-      <td>Jun 2025</td>
-      <td class="num down">-3746000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Retail Sales, Standardized</td>
-      <td class="num">0.6318272675532778</td>
-      <td>Aug 2025</td>
-      <td class="num">0.6059197851273731</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.026</td>
-      <td>Chg P/P, SA, %</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Retail Sales Index, Standardized</td>
-      <td class="num">213.1043709187305</td>
-      <td>Aug 2025</td>
-      <td class="num">212.96258357877724</td>
-      <td>Jul 2025</td>
-      <td class="num up">+0.142</td>
-      <td>Not SA, 2010=100, Index</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Transportation Services Index</td>
-      <td class="num">129.0</td>
-      <td>Sep 2025</td>
-      <td class="num">132.1</td>
-      <td>Aug 2025</td>
-      <td class="num down">-3.100</td>
-      <td>SA, 2000=100, Index</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Transportation Services Index, Freight</td>
-      <td class="num">136.2</td>
-      <td>Sep 2025</td>
-      <td class="num">139.1</td>
-      <td>Aug 2025</td>
-      <td class="num down">-2.900</td>
-      <td>SA, 2000=100, Index</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Transportation Services Index, Passenger</td>
-      <td class="num">123.7</td>
-      <td>Sep 2025</td>
-      <td class="num">127.4</td>
-      <td>Aug 2025</td>
-      <td class="num down">-3.700</td>
-      <td>SA, 2000=100, Index</td>
-    </tr><tr>
-      <td>Industry Sector</td>
-      <td>Wholesale Trade</td>
-      <td class="num">704916000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num">722910000000.0</td>
-      <td>Jul 2025</td>
-      <td class="num down">-17994000000.000</td>
-      <td>Current Prices, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>10-Year Government Bond Yield</td>
-      <td class="num">3.9862</td>
-      <td>Oct 2025</td>
-      <td class="num">4.0218</td>
-      <td>Sep 2025</td>
-      <td class="num down">-0.036</td>
-      <td>Not SA, %</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Assets and Liabilities of Commercial Banks, Commercial &amp; Industrial</td>
-      <td class="num">2694695600000.0000</td>
-      <td>Oct 2025</td>
-      <td class="num">2693857900000.0000</td>
-      <td>Sep 2025</td>
-      <td class="num up">+837700000.000</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Assets and Liabilities of Commercial Banks, Consumer</td>
-      <td class="num">1845403200000.0000</td>
-      <td>Oct 2025</td>
-      <td class="num">1835030900000.0000</td>
-      <td>Sep 2025</td>
-      <td class="num up">+10372300000.000</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Assets and Liabilities of Commercial Banks, Other Loans &amp; Leases</td>
-      <td class="num">2909271800000.0000</td>
-      <td>Oct 2025</td>
-      <td class="num">2868520800000.0000</td>
-      <td>Sep 2025</td>
-      <td class="num up">+40751000000.000</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Assets and Liabilities of Commercial Banks, Real Estate</td>
-      <td class="num">5697901100000.0000</td>
-      <td>Oct 2025</td>
-      <td class="num">5684556400000.0000</td>
-      <td>Sep 2025</td>
-      <td class="num up">+13344700000.000</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Commercial Banks, Interest Expense</td>
-      <td class="num">543408222000</td>
-      <td>2024</td>
-      <td class="num">431724537000</td>
-      <td>2023</td>
-      <td class="num up">+111683685000.000</td>
-      <td>USD, 1934 ~ 2024</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Commercial Banks, Interest Income</td>
-      <td class="num">1.20327387000E+12</td>
-      <td>2024</td>
-      <td class="num">1091845572000</td>
-      <td>2023</td>
-      <td class="num up">+111428298000.000</td>
-      <td>USD, 1934 ~ 2024</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Commercial Banks, Net Income</td>
-      <td class="num">259380948000</td>
-      <td>2024</td>
-      <td class="num">245277032000</td>
-      <td>2023</td>
-      <td class="num up">+14103916000.000</td>
-      <td>USD, 1934 ~ 2024</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Commercial Banks, Net Interest Income</td>
-      <td class="num">659865648000</td>
-      <td>2024</td>
-      <td class="num">660121035000</td>
-      <td>2023</td>
-      <td class="num down">-255387000.000</td>
-      <td>USD, 1934 ~ 2024</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Commercial Banks, Non-interest Expense</td>
-      <td class="num">553885667000</td>
-      <td>2024</td>
-      <td class="num">5.6319842000E+11</td>
-      <td>2023</td>
-      <td class="num down">-9312753000.000</td>
-      <td>USD, 1934 ~ 2024</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Commercial Banks, Non-interest Income</td>
-      <td class="num">299897516000</td>
-      <td>2024</td>
-      <td class="num">294964645000</td>
-      <td>2023</td>
-      <td class="num up">+4932871000.000</td>
-      <td>USD, 1934 ~ 2024</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Consumer Credit</td>
-      <td class="num">157110720000.00</td>
-      <td>Sep 2025</td>
-      <td class="num">37520280000.00</td>
-      <td>Aug 2025</td>
-      <td class="num up">+119590440000.000</td>
-      <td>Chg M/M, AR, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Discount Window Primary Credit Rate</td>
-      <td class="num">4.23</td>
-      <td>Oct 2025</td>
-      <td class="num">4.39</td>
-      <td>Sep 2025</td>
-      <td class="num down">-0.160</td>
-      <td>%</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Federal Funds Rate</td>
-      <td class="num">5.190341</td>
-      <td>2024</td>
-      <td class="num">5.070192</td>
-      <td>2023</td>
-      <td class="num up">+0.120</td>
-      <td>%, 1980 ~ 2024</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Fed Funds Effective Rate</td>
-      <td class="num">4.09</td>
-      <td>Oct 2025</td>
-      <td class="num">4.22</td>
-      <td>Sep 2025</td>
-      <td class="num down">-0.130</td>
-      <td>%</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Fed Interest on Excess Reserves</td>
-      <td class="num">3.9</td>
-      <td>Oct 30,2025</td>
-      <td class="num">4.15</td>
-      <td>Sep 18,2025</td>
-      <td class="num down">-0.250</td>
-      <td>%, 09/10/2008 ~ 30/10/2025</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Foreign Reserves, Assets</td>
-      <td class="num">255690000000.0</td>
-      <td>W37 2025</td>
-      <td class="num">255467000000.0</td>
-      <td>W36 2025</td>
-      <td class="num up">+223000000.000</td>
-      <td>USD, W49 1998 ~ W37 2025</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Foreign Reserves, Gold</td>
-      <td class="num">11041000000.0</td>
-      <td>W37 2025</td>
-      <td class="num">11041000000.0</td>
-      <td>W36 2025</td>
-      <td class="num flat">0.000</td>
-      <td>USD, W49 1998 ~ W37 2025</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Foreign Reserves, IMF Position</td>
-      <td class="num">30781000000.0</td>
-      <td>W37 2025</td>
-      <td class="num">30721000000.0</td>
-      <td>W36 2025</td>
-      <td class="num up">+60000000.000</td>
-      <td>USD, W49 1998 ~ W37 2025</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Foreign Reserves, SDRs</td>
-      <td class="num">174839000000.0</td>
-      <td>W37 2025</td>
-      <td class="num">174495000000.0</td>
-      <td>W36 2025</td>
-      <td class="num up">+344000000.000</td>
-      <td>USD, W49 1998 ~ W37 2025</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Money Supply M0, Standardized</td>
-      <td class="num">-2.4239638681021503</td>
-      <td>Sep 2025</td>
-      <td class="num">-1.769497418043692</td>
-      <td>Aug 2025</td>
-      <td class="num down">-0.654</td>
-      <td>Chg P/P, SA, %</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Money Supply M1</td>
-      <td class="num">18870300000000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">18797000000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+73300000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Money Supply M1, Standardized</td>
-      <td class="num">18912800000000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">18836400000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+76400000000.000</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Money Supply M1, Weekly</td>
-      <td class="num">18971600000000.0</td>
-      <td>W41 2025</td>
-      <td class="num">18833800000000.0</td>
-      <td>W40 2025</td>
-      <td class="num up">+137800000000.000</td>
-      <td>USD, W2 1975 ~ W41 2025</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Money Supply M2</td>
-      <td class="num">22212500000000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">22108400000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+104100000000.000</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Money Supply M2, Standardized</td>
-      <td class="num">22212500000000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">22108400000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+104100000000.000</td>
-      <td>SA, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Nominal Broad Effective Exchange Rate Index (BIS)</td>
-      <td class="num">104.14</td>
-      <td>Oct 2025</td>
-      <td class="num">103.55</td>
-      <td>Sep 2025</td>
-      <td class="num up">+0.590</td>
-      <td>2010=100, Index, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Nominal Broad Effective Exchange Rate Index (J.P. Morgan)</td>
-      <td class="num">113.458437737413</td>
-      <td>Apr 04,2025</td>
-      <td class="num">112.504853248609</td>
-      <td>Apr 03,2025</td>
-      <td class="num up">+0.954</td>
-      <td>USD, 04/01/1994 ~ 04/04/2025</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Nominal Effective Exchange Rate (NEER) Based on Consumer Price Index</td>
-      <td class="num">127.885394152259</td>
-      <td>Sep 2025</td>
-      <td class="num">128.504649505679</td>
-      <td>Aug 2025</td>
-      <td class="num down">-0.619</td>
-      <td>2010=100, Index</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Nominal Narrow Effective Exchange Rate Index (BIS)</td>
-      <td class="num">105.99</td>
-      <td>Oct 2025</td>
-      <td class="num">104.69</td>
-      <td>Sep 2025</td>
-      <td class="num up">+1.300</td>
-      <td>2010=100, Index, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Official International Reserves, Standardized</td>
-      <td class="num">0.05600200510675628</td>
-      <td>Sep 2025</td>
-      <td class="num">1.492086456751751</td>
-      <td>Aug 2025</td>
-      <td class="num down">-1.436</td>
-      <td>Chg P/P, %</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Official Reserve Assets</td>
-      <td class="num">242257289682.208000000</td>
-      <td>Jan 2024</td>
-      <td class="num">245237194026.5000000</td>
-      <td>Dec 2023</td>
-      <td class="num down">-2979904344.292</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Official Reserve Assets, Foreign Currency</td>
-      <td class="num">35884000000.0</td>
-      <td>Jan 2024</td>
-      <td class="num">36919000000.0</td>
-      <td>Dec 2023</td>
-      <td class="num down">-1035000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Policy Rates, Discount Window Primary Credit Rate</td>
-      <td class="num">4.5</td>
-      <td>Dec 19,2024</td>
-      <td class="num">4.75</td>
-      <td>Nov 08,2024</td>
-      <td class="num down">-0.250</td>
-      <td>%, 09/01/2003 ~ 19/12/2024</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Policy Rates, Discount Window Seasonal Credit Rate</td>
-      <td class="num">3.9</td>
-      <td>Nov 21,2025</td>
-      <td class="num">3.9</td>
-      <td>Nov 13,2025</td>
-      <td class="num flat">0.000</td>
-      <td>%, 04/01/1996 ~ 21/11/2025</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Policy Rates, Discount Window Secondary Credit Rate</td>
-      <td class="num">5.0</td>
-      <td>Dec 19,2024</td>
-      <td class="num">5.25</td>
-      <td>Nov 08,2024</td>
-      <td class="num down">-0.250</td>
-      <td>%, 09/01/2003 ~ 19/12/2024</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Policy Rates, Fed Funds Target Rate</td>
-      <td class="num">4.0</td>
-      <td>Oct 2025</td>
-      <td class="num">4.25</td>
-      <td>Sep 2025</td>
-      <td class="num down">-0.250</td>
-      <td>%</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Policy Rates, Fed Overnight Repo</td>
-      <td class="num">3.75</td>
-      <td>Nov 21,2025</td>
-      <td class="num">3.75</td>
-      <td>Nov 20,2025</td>
-      <td class="num flat">0.000</td>
-      <td>%, 11/01/2016 ~ 21/11/2025</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Policy Rates, Overnight Reverse Repurchase Agreement (ON RRP)</td>
-      <td class="num">3.75</td>
-      <td>Nov 21,2025</td>
-      <td class="num">3.75</td>
-      <td>Nov 20,2025</td>
-      <td class="num flat">0.000</td>
-      <td>%, 23/09/2013 ~ 21/11/2025</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Prime Rates</td>
-      <td class="num">7.23</td>
-      <td>Oct 2025</td>
-      <td class="num">7.38</td>
-      <td>Sep 2025</td>
-      <td class="num down">-0.150</td>
-      <td>Not SA, %</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Prime Rates, Major Banks</td>
-      <td class="num">7.23</td>
-      <td>Oct 2025</td>
-      <td class="num">7.38</td>
-      <td>Sep 2025</td>
-      <td class="num down">-0.150</td>
-      <td>%</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Real Broad Effective Exchange Rate Index (Bis)</td>
-      <td class="num">108.73</td>
-      <td>Oct 2025</td>
-      <td class="num">108.26</td>
-      <td>Sep 2025</td>
-      <td class="num up">+0.470</td>
-      <td>2010=100, Index, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Real Broad Effective Exchange Rate Index (J.P. Morgan) (CPI)</td>
-      <td class="num">116.035964158319</td>
-      <td>Apr 04,2025</td>
-      <td class="num">115.0566231713</td>
-      <td>Apr 03,2025</td>
-      <td class="num up">+0.979</td>
-      <td>USD, 04/01/1994 ~ 04/04/2025</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Real Broad Effective Exchange Rate Index (J.P. Morgan) (PPI)</td>
-      <td class="num">111.393610912813</td>
-      <td>Apr 04,2025</td>
-      <td class="num">110.441382829879</td>
-      <td>Apr 03,2025</td>
-      <td class="num up">+0.952</td>
-      <td>USD, 04/01/1994 ~ 04/04/2025</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Real Effective Exchange Rate (Reer) Based On Consumer Price Index</td>
-      <td class="num">128.506180295302</td>
-      <td>Sep 2025</td>
-      <td class="num">129.063527589384</td>
-      <td>Aug 2025</td>
-      <td class="num down">-0.557</td>
-      <td>2010=100, Index</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Real Effective Exchange Rate (Reer) Based On Relative Unit Labor Cost</td>
-      <td class="num">146.62121823941</td>
-      <td>Sep 2025</td>
-      <td class="num">146.928151866618</td>
-      <td>Aug 2025</td>
-      <td class="num down">-0.307</td>
-      <td>2010=100, Index</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Real Narrow Effective Exchange Rate Index (BIS)</td>
-      <td class="num">104.09</td>
-      <td>Oct 2025</td>
-      <td class="num">103.36</td>
-      <td>Sep 2025</td>
-      <td class="num up">+0.730</td>
-      <td>2010=100, Index, USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Reserve Assets</td>
-      <td class="num">255491000000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">255348000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+143000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Reserve Assets, Reserve Position in IMF</td>
-      <td class="num">30513000000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">30710000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num down">-197000000.000</td>
-      <td>USD</td>
-    </tr><tr>
-      <td>Money &amp; Finance</td>
-      <td>Reserves, Foreign Currency</td>
-      <td class="num">39205000000.0</td>
-      <td>Sep 2025</td>
-      <td class="num">39161000000.0</td>
-      <td>Aug 2025</td>
-      <td class="num up">+44000000.000</td>
-      <td>USD</td>
-    </tr></tbody>
-</table>
+    // DATA GLOBAL
+    let ALL_ROWS = [];
+    let sortKey = null;      // 'category' | 'indicator' | ...
+    let sortDir = 'asc';     // 'asc' | 'desc'
 
-<script>
-const CATEGORIES = {
-  1: "Prices",
-  2: "Population & Labor",
-  3: "National Accounts",
-  4: "Commodities",
-  5: "Government Sector",
-  6: "External Sector",
-  7: "Industry Sector",
-  8: "Money & Finance"
-};
-
-// DATA GLOBAL
-let ALL_ROWS = [];
-let sortKey = null;      // 'category' | 'indicator' | ...
-let sortDir = 'asc';     // 'asc' | 'desc'
-
-function API(country, col) {
-  return `https://api.fastbull.com/fastbull-macro-data-service/api/getWebIndicatorList?countryId=${country}&pageIndex=1&columnId=${col}&pageSize=50`;
-}
-
-async function fetchCategory(countryId, columnId) {
-  const res = await fetch(API(countryId, columnId), {
-    headers: {
-      "b-token": "cf44ae1f585e1ddf806333e4e6e5f905",
-      "client-type": "Web",
-      "lang": "en",
-      "accept": "application/json"
-    }
-  });
-
-  const outer = await res.json();
-  const inner = JSON.parse(outer.bodyMessage || "{}");
-  return inner.pageDatas || [];
-}
-
-function cleanDescription(desc) {
-  if (!desc) return "";
-  const pattern = /,\s[A-Za-z]{3}\s\d{4}\s~\s[A-Za-z]{3}\s\d{4}$/;
-  return desc.replace(pattern, "");
-}
-
-function computeDelta(curr, prev) {
-  const c = parseFloat(curr);
-  const p = parseFloat(prev);
-  if (isNaN(c) || isNaN(p)) return null;
-  return (c - p).toFixed(3);
-}
-
-// ===== SORTING LOGIC =====
-function getSortValue(row, key) {
-  switch (key) {
-    case 'category':
-      return (row.__category || '').toLowerCase();
-    case 'indicator':
-      return (row.metricsName || '').toLowerCase();
-    case 'current':
-      return parseFloat(row.current);
-    case 'previous':
-      return parseFloat(row.last);
-    case 'currentTime':
-      return (row.currentTime || '').toLowerCase();
-    case 'previousTime':
-      return (row.lastTime || '').toLowerCase();
-    case 'description':
-      return (row.description || '').toLowerCase();
-    case 'delta':
-      const d = computeDelta(row.current, row.last);
-      return d === null ? NaN : parseFloat(d);
-    default:
-      return null;
-  }
-}
-
-function compareRows(a, b) {
-  const va = getSortValue(a, sortKey);
-  const vb = getSortValue(b, sortKey);
-
-  const dir = sortDir === 'asc' ? 1 : -1;
-
-  // numeric sort
-  if (['current','previous','delta'].includes(sortKey)) {
-    const na = isNaN(va);
-    const nb = isNaN(vb);
-
-    if (na && nb) return 0;
-    if (na) return 1;   // NaN ke bawah
-    if (nb) return -1;
-
-    if (va < vb) return -1 * dir;
-    if (va > vb) return 1 * dir;
-    return 0;
-  }
-
-  // string sort
-  const sa = (va || '').toString();
-  const sb = (vb || '').toString();
-
-  return sa.localeCompare(sb) * dir;
-}
-
-function updateHeaderLabels() {
-  const ths = document.querySelectorAll('thead th');
-  ths.forEach(th => {
-    const key = th.dataset.sortKey;
-    const base = th.dataset.label || th.textContent;
-    if (!key || key === 'none') {
-      th.textContent = base;
-      return;
-    }
-    if (key === sortKey) {
-      const arrow = sortDir === 'asc' ? ' ↑' : ' ↓';
-      th.textContent = base + arrow;
-    } else {
-      th.textContent = base;
-    }
-  });
-}
-
-// ===== RENDER TABLE (FILTER + SORT) =====
-function renderTable() {
-  const tbody = document.getElementById("atlas-body");
-  const status = document.getElementById("status");
-  const q = document.getElementById("searchInput").value.trim().toLowerCase();
-
-  tbody.innerHTML = "";
-
-  // Filter
-  let filtered = ALL_ROWS.filter(row => {
-    if (!q) return true;
-    const haystack = (
-      row.__category + " " +
-      (row.metricsName || "") + " " +
-      (row.description || "")
-    ).toLowerCase();
-    return haystack.includes(q);
-  });
-
-  // Sort
-  if (sortKey) {
-    filtered.sort(compareRows);
-  }
-
-  // Render
-  filtered.forEach(item => {
-    const current = item.current ?? "";
-    const previous = item.last ?? "";
-    const delta = computeDelta(current, previous);
-    let deltaClass = "flat";
-    let deltaText = delta;
-
-    if (delta === null) {
-      deltaText = "";
-      deltaClass = "flat";
-    } else if (delta > 0) {
-      deltaText = "+" + delta;
-      deltaClass = "up";
-    } else if (delta < 0) {
-      deltaClass = "down";
+    function API(country, col) {
+      return `https://api.fastbull.com/fastbull-macro-data-service/api/getWebIndicatorList?countryId=${country}&pageIndex=1&columnId=${col}&pageSize=50`;
     }
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${item.__category}</td>
-      <td>${item.metricsName}</td>
-      <td class="num">${current}</td>
-      <td>${item.currentTime}</td>
-      <td class="num">${previous}</td>
-      <td>${item.lastTime}</td>
-      <td class="num ${deltaClass}">${deltaText ?? ""}</td>
-      <td>${cleanDescription(item.description || "")}</td>
-    `;
-    tbody.appendChild(tr);
-  });
+    async function fetchCategory(countryId, columnId) {
+      const res = await fetch(API(countryId, columnId), {
+        headers: {
+          "b-token": "cf44ae1f585e1ddf806333e4e6e5f905",
+          "client-type": "Web",
+          "lang": "en",
+          "accept": "application/json"
+        }
+      });
 
-  status.textContent =
-    `Loaded ${ALL_ROWS.length} indicators, showing ${filtered.length} matching "${q || "all"}".`;
+      const outer = await res.json();
+      const inner = JSON.parse(outer.bodyMessage || "{}");
+      return inner.pageDatas || [];
+    }
 
-  updateHeaderLabels();
-}
+    function cleanDescription(desc) {
+      if (!desc) return "";
+      const pattern = /,\s[A-Za-z]{3}\s\d{4}\s~\s[A-Za-z]{3}\s\d{4}$/;
+      return desc.replace(pattern, "");
+    }
 
-// ===== LOAD DATA DARI API =====
-async function loadAtlas() {
-  const status = document.getElementById("status");
-  const countryId = document.getElementById("countrySelect").value;
+    function computeDelta(curr, prev) {
+      const c = parseFloat(curr);
+      const p = parseFloat(prev);
+      if (isNaN(c) || isNaN(p)) return null;
+      return (c - p).toFixed(3);
+    }
 
-  ALL_ROWS = [];
-  sortKey = null;
-  sortDir = 'asc';
-  updateHeaderLabels();
+    // ===== SORTING LOGIC =====
+    function getSortValue(row, key) {
+      switch (key) {
+        case 'category':
+          return (row.__category || '').toLowerCase();
+        case 'indicator':
+          return (row.metricsName || '').toLowerCase();
+        case 'current':
+          return parseFloat(row.current);
+        case 'previous':
+          return parseFloat(row.last);
+        case 'currentTime':
+          return (row.currentTime || '').toLowerCase();
+        case 'previousTime':
+          return (row.lastTime || '').toLowerCase();
+        case 'description':
+          return (row.description || '').toLowerCase();
+        case 'delta':
+          const d = computeDelta(row.current, row.last);
+          return d === null ? NaN : parseFloat(d);
+        default:
+          return null;
+      }
+    }
 
-  status.textContent = `Loading indicators for countryId=${countryId}…`;
+    function compareRows(a, b) {
+      const va = getSortValue(a, sortKey);
+      const vb = getSortValue(b, sortKey);
 
-  for (const colId in CATEGORIES) {
-    status.textContent = `Fetching ${CATEGORIES[colId]} for countryId=${countryId}…`;
-    const rows = await fetchCategory(countryId, colId);
-    rows.forEach(x => x.__category = CATEGORIES[colId]);
-    ALL_ROWS.push(...rows);
-  }
+      const dir = sortDir === 'asc' ? 1 : -1;
 
-  renderTable();
-}
+      // numeric sort
+      if (['current','previous','delta'].includes(sortKey)) {
+        const na = isNaN(va);
+        const nb = isNaN(vb);
 
-// ===== EVENT HANDLERS =====
-document.getElementById("countrySelect").addEventListener("change", loadAtlas);
-document.getElementById("searchInput").addEventListener("input", renderTable);
+        if (na && nb) return 0;
+        if (na) return 1;   // NaN ke bawah
+        if (nb) return -1;
 
-document.querySelectorAll('thead th').forEach(th => {
-  const key = th.dataset.sortKey;
-  if (!key || key === 'none') return;
+        if (va < vb) return -1 * dir;
+        if (va > vb) return 1 * dir;
+        return 0;
+      }
 
-  th.addEventListener('click', () => {
-    if (sortKey === key) {
-      // toggle direction
-      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-    } else {
-      sortKey = key;
+      // string sort
+      const sa = (va || '').toString();
+      const sb = (vb || '').toString();
+
+      return sa.localeCompare(sb) * dir;
+    }
+
+    function updateHeaderLabels() {
+      const ths = document.querySelectorAll('thead th');
+      ths.forEach(th => {
+        const key = th.dataset.sortKey;
+        const base = th.dataset.label || th.textContent;
+        if (!key || key === 'none') {
+          th.textContent = base;
+          return;
+        }
+        if (key === sortKey) {
+          const arrow = sortDir === 'asc' ? ' ↑' : ' ↓';
+          th.textContent = base + arrow;
+        } else {
+          th.textContent = base;
+        }
+      });
+    }
+
+    // ===== RENDER TABLE (FILTER + SORT) =====
+    function renderTable() {
+      const tbody = document.getElementById("atlas-body");
+      const status = document.getElementById("status");
+      const q = document.getElementById("searchInput").value.trim().toLowerCase();
+
+      tbody.innerHTML = "";
+
+      // Filter
+      let filtered = ALL_ROWS.filter(row => {
+        if (!q) return true;
+        const haystack = (
+          row.__category + " " +
+          (row.metricsName || "") + " " +
+          (row.description || "")
+        ).toLowerCase();
+        return haystack.includes(q);
+      });
+
+      // Sort
+      if (sortKey) {
+        filtered.sort(compareRows);
+      }
+
+      // Render
+      filtered.forEach(item => {
+        const current = item.current ?? "";
+        const previous = item.last ?? "";
+        const delta = computeDelta(current, previous);
+        let deltaClass = "flat";
+        let deltaText = delta;
+
+        if (delta === null) {
+          deltaText = "";
+          deltaClass = "flat";
+        } else if (delta > 0) {
+          deltaText = "+" + delta;
+          deltaClass = "up";
+        } else if (delta < 0) {
+          deltaClass = "down";
+        }
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.__category}</td>
+          <td>${item.metricsName}</td>
+          <td class="num">${current}</td>
+          <td>${item.currentTime}</td>
+          <td class="num">${previous}</td>
+          <td>${item.lastTime}</td>
+          <td class="num ${deltaClass}">${deltaText ?? ""}</td>
+          <td>${cleanDescription(item.description || "")}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      status.textContent =
+        `Loaded ${ALL_ROWS.length} indicators, showing ${filtered.length} matching "${q || "all"}".`;
+
+      updateHeaderLabels();
+    }
+
+    // ===== LOAD DATA DARI API =====
+    async function loadAtlas() {
+      const status = document.getElementById("status");
+      const countryId = document.getElementById("countrySelect").value;
+
+      ALL_ROWS = [];
+      sortKey = null;
       sortDir = 'asc';
-    }
-    renderTable();
-  });
-});
+      updateHeaderLabels();
 
-// initial load
-loadAtlas();
-</script>
+      status.textContent = `Loading indicators for countryId=${countryId}…`;
+
+      for (const colId in CATEGORIES) {
+        status.textContent = `Fetching ${CATEGORIES[colId]} for countryId=${countryId}…`;
+        const rows = await fetchCategory(countryId, colId);
+        rows.forEach(x => x.__category = CATEGORIES[colId]);
+        ALL_ROWS.push(...rows);
+      }
+
+      renderTable();
+    }
+
+    // ===== EVENT HANDLERS =====
+    document.getElementById("countrySelect").addEventListener("change", loadAtlas);
+    document.getElementById("searchInput").addEventListener("input", renderTable);
+
+    document.querySelectorAll('thead th').forEach(th => {
+      const key = th.dataset.sortKey;
+      if (!key || key === 'none') return;
+
+      th.addEventListener('click', () => {
+        if (sortKey === key) {
+          // toggle direction
+          sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          sortKey = key;
+          sortDir = 'asc';
+        }
+        renderTable();
+      });
+    });
+
+    // initial load
+    loadAtlas();
+  </script>
+
 </body>
 </html>
