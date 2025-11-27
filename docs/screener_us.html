@@ -73,23 +73,17 @@
       min-height:0;
     }
 
-    .panel-header-right{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-wrap:nowrap;
-    }
-
     .market-toggle{
       display:inline-flex;
       border:1px solid var(--border-soft);
       border-radius:4px;
       overflow:hidden;
       font-size:var(--fs-body);
+      background:#000;
     }
 
     .market-toggle button{
-      padding:4px 10px;
+      padding:4px 12px;
       background:#111111;
       border:none;
       color:var(--text-muted);
@@ -108,69 +102,6 @@
       border-left:1px solid var(--border-soft);
     }
 
-    .run-btn{
-      padding:4px 10px;
-      border-radius:4px;
-      border:1px solid var(--accent);
-      background:transparent;
-      color:var(--accent);
-      font-size:var(--fs-body);
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      white-space:nowrap;
-    }
-
-    .run-btn:hover{
-      background:rgba(255,191,0,0.06);
-    }
-
-    .run-btn-icon{
-      width:9px;
-      height:9px;
-      border-radius:50%;
-      border:1px solid var(--accent);
-      display:inline-block;
-      box-shadow:0 0 4px rgba(255,191,0,0.6);
-    }
-
-    .status-bar{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-    }
-
-    .status-bar span strong{
-      color:var(--accent);
-      font-weight:500;
-    }
-
-    .status-dot{
-      width:7px;
-      height:7px;
-      border-radius:50%;
-      background:#4b5563;
-      display:inline-block;
-      margin-right:4px;
-    }
-
-    .status-dot.running{
-      background:var(--accent);
-      box-shadow:0 0 6px rgba(255,191,0,0.7);
-    }
-
-    .status-dot.idle{
-      background:#4b5563;
-    }
-
-    .status-dot.error{
-      background:var(--down);
-    }
-
     .panel-body{
       margin-top:2px;
       display:flex;
@@ -186,6 +117,7 @@
       gap:12px;
       width:100%;
       flex:1 1 auto;
+      height:100%;
     }
 
     .screen-card{
@@ -195,14 +127,16 @@
       padding:12px;
       display:flex;
       flex-direction:column;
-      gap:8px;
+      gap:6px;
       min-height:0;
+      height:100%;
     }
 
     .screen-card-header{
       display:flex;
       flex-direction:column;
       gap:2px;
+      flex:0 0 auto;
     }
 
     .screen-card-title{
@@ -214,115 +148,41 @@
     .screen-card-tagline{
       font-size:var(--fs-small);
       color:var(--text-muted);
+      opacity:0.85;
     }
 
-    .screen-meta{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .chip{
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      padding:2px 8px;
-      font-size:var(--fs-small);
-    }
-
-    .chip-label{
-      color:var(--text-muted);
-    }
-
-    .chip-strong{
-      color:var(--accent);
-    }
-
-    .chip-up{
-      color:var(--up);
-    }
-
-    .chip-down{
-      color:var(--down);
-    }
-
+    /* Wrapper: scroll horizontal kalau layar sempit, tinggi di-handle widget */
     .table-wrapper{
       margin-top:4px;
       flex:1 1 auto;
       border-radius:4px;
       border:1px solid var(--border-soft);
-      overflow:auto;
+      overflow-x:auto;
+      overflow-y:hidden;
+      min-height:0;
     }
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:var(--fs-body);
-      min-width:260px;
+    .table-wrapper-inner{
+      min-width:1000px;
+      height:100%;
+      display:block;
     }
 
-    thead{
-      background:#111111;
-      position:sticky;
-      top:0;
-      z-index:1;
+    .tradingview-widget-container,
+    .tradingview-widget-container__widget{
+      height:100% !important;
     }
 
-    th,td{
-      padding:4px 6px;
-      border-bottom:1px solid var(--border-soft);
-      text-align:left;
-      white-space:nowrap;
+    /* Hide TradingView footer if muncul */
+    .tradingview-widget-copyright{
+      display:none !important;
+      height:0 !important;
+      overflow:hidden !important;
+      opacity:0 !important;
+      visibility:hidden !important;
     }
 
-    th{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      font-weight:500;
-    }
-
-    td{
-      font-size:var(--fs-body);
-      color:var(--text-main);
-    }
-
-    td.is-num{
-      text-align:right;
-      font-variant-numeric:tabular-nums;
-    }
-
-    .badge-long{
-      font-size:var(--fs-small);
-      padding:1px 6px;
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      color:var(--accent);
-    }
-
-    .badge-bull{
-      color:var(--up);
-      border-color:var(--up);
-    }
-
-    .badge-bear{
-      color:var(--down);
-      border-color:var(--down);
-    }
-
-    .empty-state{
-      padding:10px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .hint{
-      margin-top:2px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    /* Scrollbars */
+    /* Scrollbar horizontal */
     .table-wrapper::-webkit-scrollbar{
       width:6px;
       height:6px;
@@ -335,180 +195,253 @@
       border-radius:999px;
     }
 
-    /* Responsive */
+    .hidden{
+      display:none;
+    }
+
+    /* ===== Tablet ===== */
     @media (max-width: 960px){
       body{
         padding:12px;
       }
       .panel-root{
-        min-height:calc(100vh - 24px);
+        min-height:auto;
       }
       .screen-grid{
         grid-template-columns:1fr;
         max-width:100%;
         margin:0 auto;
+        height:auto;
       }
-      table{
-        min-width:240px;
+      .screen-card{
+        height:auto;
       }
-      .status-bar{
-        flex-direction:column;
-        align-items:flex-start;
+      .table-wrapper{
+        min-height:380px;
+      }
+      .table-wrapper-inner{
+        min-width:900px;
       }
     }
 
-    @media (max-width: 480px){
+    /* ===== Mobile ===== */
+    @media (max-width: 600px){
       .panel-root{
         padding:10px;
       }
       .panel-header{
+        flex-direction:row;
         justify-content:center;
       }
-      .panel-header-right{
-        width:100%;
-        justify-content:center;
+      .table-wrapper{
+        min-height:420px;
+      }
+      .table-wrapper-inner{
+        min-width:800px;
       }
     }
   </style>
 </head>
 <body>
   <div class="panel-root" id="screener-panel">
-    <!-- HEADER -->
+    <!-- HEADER: HANYA TOGGLE USA / IDX -->
     <div class="panel-header">
-      <div class="panel-header-right">
-        <div class="market-toggle" id="market-toggle">
-          <button type="button" data-market="US" class="active">US</button>
-          <button type="button" data-market="IDX">IDX</button>
-        </div>
-        <button type="button" class="run-btn" id="run-btn">
-          <span class="run-btn-icon"></span>
-          Run
-        </button>
-      </div>
-    </div>
-
-    <!-- STATUS -->
-    <div class="status-bar">
-      <div>
-        <span class="status-dot idle" id="status-dot"></span>
-        <span id="status-text">Idle · pilih market lalu tekan <strong>Run</strong></span>
-      </div>
-      <div id="status-meta">
-        Last run: – · Universe: –
+      <div class="market-toggle" id="market-toggle">
+        <button type="button" data-target="usa" class="active">USA</button>
+        <button type="button" data-target="idx">IDX</button>
       </div>
     </div>
 
     <!-- BODY -->
     <div class="panel-body">
-      <div class="screen-grid">
-        <!-- COL 1: TREND FOLLOWING -->
+      <!-- GRID USA -->
+      <div class="screen-grid" id="grid-usa">
+        <!-- COL 1: TREND FOLLOWING (USA) -->
         <section class="screen-card">
           <div class="screen-card-header">
-            <div class="screen-card-title">Trend Following</div>
+            <div class="screen-card-title">Trend Following – USA</div>
             <div class="screen-card-tagline">
-              Screening saham dengan tren naik kuat berbasis MA & momentum.
+              Saham US dengan tren naik kuat &amp; momentum berkelanjutan.
             </div>
           </div>
-          <div class="screen-meta">
-            <span class="chip"><span class="chip-label">Signal:</span> <span class="chip-strong">Trend &amp; Momentum</span></span>
-            <span class="chip"><span class="chip-label">Horizon:</span> Swing 1–8 minggu</span>
-          </div>
+
           <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Ticker</th>
-                  <th>Price</th>
-                  <th>Trend</th>
-                  <th>%&Delta; 200MA</th>
-                  <th>50&gt;200</th>
-                </tr>
-              </thead>
-              <tbody id="trend-tbody">
-                <tr>
-                  <td colspan="5" class="empty-state">
-                    Tekan <strong>Run</strong> untuk menjalankan screening trend following.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="hint">
-            Logika umum: MA50 &gt; MA200, harga &gt; MA50, momentum return positif 1–3 bulan, filter likuiditas &amp; market cap.
+            <div class="table-wrapper-inner">
+              <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+                {
+                  "market": "america",
+                  "showToolbar": false,
+                  "defaultColumn": "moving_averages",
+                  "defaultScreen": "outperforming_SMA50",
+                  "isTransparent": true,
+                  "locale": "en",
+                  "colorTheme": "dark",
+                  "width": "100%",
+                  "height": "100%"
+                }
+                </script>
+              </div>
+            </div>
           </div>
         </section>
 
-        <!-- COL 2: VOLUME BREAKOUT -->
+        <!-- COL 2: VOLUME BREAKOUT (USA) -->
         <section class="screen-card">
           <div class="screen-card-header">
-            <div class="screen-card-title">Volume Breakout</div>
+            <div class="screen-card-title">Volume Breakout – USA</div>
             <div class="screen-card-tagline">
-              Deteksi lonjakan volume &amp; range harga, potensi awal pergerakan besar.
+              Lonjakan volume &amp; pergerakan abnormal untuk saham US.
             </div>
           </div>
-          <div class="screen-meta">
-            <span class="chip"><span class="chip-label">Signal:</span> <span class="chip-strong">Volume &amp; Range</span></span>
-            <span class="chip"><span class="chip-label">Focus:</span> Breakout &amp; Accumulation</span>
-          </div>
+
           <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Ticker</th>
-                  <th>Price</th>
-                  <th>Vol / 20d</th>
-                  <th>Day %</th>
-                  <th>Score</th>
-                </tr>
-              </thead>
-              <tbody id="volume-tbody">
-                <tr>
-                  <td colspan="5" class="empty-state">
-                    Tekan <strong>Run</strong> untuk screening volume breakout.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="hint">
-            Logika umum: Volume hari ini &gt;= 2–5x rata-rata 20 hari, range harga melebar, optional filter gap &amp; close vs high.
+            <div class="table-wrapper-inner">
+              <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+                {
+                  "market": "america",
+                  "showToolbar": false,
+                  "defaultColumn": "performance",
+                  "defaultScreen": "unusual_volume",
+                  "isTransparent": true,
+                  "locale": "en",
+                  "colorTheme": "dark",
+                  "width": "100%",
+                  "height": "100%"
+                }
+                </script>
+              </div>
+            </div>
           </div>
         </section>
 
-        <!-- COL 3: FUNDAMENTAL -->
+        <!-- COL 3: FUNDAMENTAL (USA) -->
         <section class="screen-card">
           <div class="screen-card-header">
-            <div class="screen-card-title">Fundamental Quality &amp; Value</div>
+            <div class="screen-card-title">Fundamental – USA</div>
             <div class="screen-card-tagline">
-              Screening berbasis valuasi &amp; kualitas earning untuk swing/position trade.
+              Valuasi &amp; kualitas earnings saham US.
             </div>
           </div>
-          <div class="screen-meta">
-            <span class="chip"><span class="chip-label">Style:</span> <span class="chip-strong">Quality · Value</span></span>
-            <span class="chip"><span class="chip-label">Horizon:</span> Multi-month</span>
-          </div>
+
           <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Ticker</th>
-                  <th>Price</th>
-                  <th>P/E</th>
-                  <th>ROE%</th>
-                  <th>Debt/Equity</th>
-                </tr>
-              </thead>
-              <tbody id="fundamental-tbody">
-                <tr>
-                  <td colspan="5" class="empty-state">
-                    Tekan <strong>Run</strong> untuk screening saham berdasarkan fundamental.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="table-wrapper-inner">
+              <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+                {
+                  "market": "america",
+                  "showToolbar": false,
+                  "defaultColumn": "valuation",
+                  "defaultScreen": "most_capitalized",
+                  "isTransparent": true,
+                  "locale": "en",
+                  "colorTheme": "dark",
+                  "width": "100%",
+                  "height": "100%"
+                }
+                </script>
+              </div>
+            </div>
           </div>
-          <div class="hint">
-            Logika umum: Filter market cap &amp; likuiditas, P/E relatif ke sektor, ROE stabil/tinggi, leverage terkendali.
+        </section>
+      </div>
+
+      <!-- GRID IDX -->
+      <div class="screen-grid hidden" id="grid-idx">
+        <!-- COL 1: TREND FOLLOWING (IDX) -->
+        <section class="screen-card">
+          <div class="screen-card-header">
+            <div class="screen-card-title">Trend Following – IDX</div>
+            <div class="screen-card-tagline">
+              Saham Indonesia dengan tren naik kuat &amp; momentum berkelanjutan.
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <div class="table-wrapper-inner">
+              <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+                {
+                  "market": "indonesia",
+                  "showToolbar": false,
+                  "defaultColumn": "moving_averages",
+                  "defaultScreen": "outperforming_SMA50",
+                  "isTransparent": true,
+                  "locale": "en",
+                  "colorTheme": "dark",
+                  "width": "100%",
+                  "height": "100%"
+                }
+                </script>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- COL 2: VOLUME BREAKOUT (IDX) -->
+        <section class="screen-card">
+          <div class="screen-card-header">
+            <div class="screen-card-title">Volume Breakout – IDX</div>
+            <div class="screen-card-tagline">
+              Lonjakan volume &amp; pergerakan abnormal saham Indonesia.
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <div class="table-wrapper-inner">
+              <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+                {
+                  "market": "indonesia",
+                  "showToolbar": false,
+                  "defaultColumn": "performance",
+                  "defaultScreen": "unusual_volume",
+                  "isTransparent": true,
+                  "locale": "en",
+                  "colorTheme": "dark",
+                  "width": "100%",
+                  "height": "100%"
+                }
+                </script>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- COL 3: FUNDAMENTAL (IDX) -->
+        <section class="screen-card">
+          <div class="screen-card-header">
+            <div class="screen-card-title">Fundamental – IDX</div>
+            <div class="screen-card-tagline">
+              Valuasi &amp; kualitas earnings saham Indonesia.
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <div class="table-wrapper-inner">
+              <div class="tradingview-widget-container">
+                <div class="tradingview-widget-container__widget"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+                {
+                  "market": "indonesia",
+                  "showToolbar": false,
+                  "defaultColumn": "valuation",
+                  "defaultScreen": "most_capitalized",
+                  "isTransparent": true,
+                  "locale": "en",
+                  "colorTheme": "dark",
+                  "width": "100%",
+                  "height": "100%"
+                }
+                </script>
+              </div>
+            </div>
           </div>
         </section>
       </div>
@@ -517,170 +450,25 @@
 
   <script>
     (function(){
-      const state = {
-        market: "US",
-        loading: false,
-        lastRun: null
-      };
+      const toggle = document.getElementById('market-toggle');
+      const usaGrid = document.getElementById('grid-usa');
+      const idxGrid = document.getElementById('grid-idx');
 
-      const toggleEl = document.getElementById("market-toggle");
-      const runBtn = document.getElementById("run-btn");
-      const statusDot = document.getElementById("status-dot");
-      const statusText = document.getElementById("status-text");
-      const statusMeta = document.getElementById("status-meta");
+      toggle.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          toggle.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
 
-      const trendBody = document.getElementById("trend-tbody");
-      const volumeBody = document.getElementById("volume-tbody");
-      const fundamentalBody = document.getElementById("fundamental-tbody");
-
-      // MARKET TOGGLE
-      toggleEl.querySelectorAll("button").forEach(btn => {
-        btn.addEventListener("click", () => {
-          toggleEl.querySelectorAll("button").forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
-          state.market = btn.getAttribute("data-market") || "US";
-          updateStatus("Idle · universe: " + state.market, "idle");
-        });
-      });
-
-      // RUN BUTTON
-      runBtn.addEventListener("click", () => {
-        if(state.loading) return;
-        runScreener();
-      });
-
-      function updateStatus(text, mode){
-        statusText.innerHTML = text;
-
-        statusDot.classList.remove("idle","running","error");
-        if(mode === "running") statusDot.classList.add("running");
-        else if(mode === "error") statusDot.classList.add("error");
-        else statusDot.classList.add("idle");
-      }
-
-      function updateMeta(){
-        const ts = state.lastRun
-          ? new Date(state.lastRun).toLocaleTimeString("en-GB",{hour12:false})
-          : "–";
-        statusMeta.textContent = "Last run: " + ts + " · Universe: " + state.market;
-      }
-
-      function clearTablesForLoading(){
-        const rows = `
-          <tr><td colspan="5" class="empty-state">Loading screening results...</td></tr>
-        `;
-        trendBody.innerHTML = rows;
-        volumeBody.innerHTML = rows;
-        fundamentalBody.innerHTML = rows;
-      }
-
-      function renderTable(tbody, rows, fields){
-        tbody.innerHTML = "";
-        if(!rows || rows.length === 0){
-          const tr = document.createElement("tr");
-          const td = document.createElement("td");
-          td.colSpan = fields.length;
-          td.className = "empty-state";
-          td.textContent = "Tidak ada hasil yang lolos filter screening.";
-          tr.appendChild(td);
-          tbody.appendChild(tr);
-          return;
-        }
-
-        rows.forEach(row => {
-          const tr = document.createElement("tr");
-          fields.forEach(f => {
-            const td = document.createElement("td");
-            const val = row[f];
-
-            if(typeof val === "number"){
-              td.classList.add("is-num");
-              td.textContent = typeof val === "number"
-                ? (Math.abs(val) >= 100 ? val.toFixed(0) : val.toFixed(2))
-                : val;
-            }else{
-              td.textContent = val;
-            }
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
-      }
-
-      function generateMockData(market){
-        // Contoh dummy – ganti dengan response backend dari yfinance nantinya.
-        if(market === "US"){
-          return {
-            trend:[
-              {symbol:"AAPL", price:235.4, trend:"Uptrend", dist200:15.2, maCross:"Yes"},
-              {symbol:"MSFT", price:420.8, trend:"Uptrend", dist200:18.9, maCross:"Yes"},
-              {symbol:"NVDA", price:122.3, trend:"Strong Up", dist200:35.7, maCross:"Yes"}
-            ],
-            volume:[
-              {symbol:"AMD", price:190.1, volRatio:3.8, dayRet:4.2, score:82},
-              {symbol:"TSLA", price:215.7, volRatio:2.4, dayRet:5.9, score:77}
-            ],
-            fundamental:[
-              {symbol:"GOOGL", price:192.2, pe:24.5, roe:18.3, de:0.12},
-              {symbol:"JPM", price:196.7, pe:10.8, roe:16.1, de:1.15}
-            ]
-          };
-        }else{
-          return {
-            trend:[
-              {symbol:"BBCA.JK", price:10400, trend:"Uptrend", dist200:8.5, maCross:"Yes"},
-              {symbol:"BMRI.JK", price:7200, trend:"Uptrend", dist200:6.3, maCross:"Yes"}
-            ],
-            volume:[
-              {symbol:"BBRI.JK", price:5600, volRatio:3.1, dayRet:3.4, score:75},
-              {symbol:"ANTM.JK", price:1580, volRatio:2.7, dayRet:4.9, score:71}
-            ],
-            fundamental:[
-              {symbol:"BBCA.JK", price:10400, pe:23.2, roe:18.9, de:0.40},
-              {symbol:"UNVR.JK", price:4100, pe:19.4, roe:38.1, de:0.50}
-            ]
-          };
-        }
-      }
-
-      function runScreener(){
-        state.loading = true;
-        updateStatus("Running screening untuk universe: <strong>" + state.market + "</strong>...", "running");
-        clearTablesForLoading();
-
-        // ==== INI YANG NANTI DISAMBUNG KE BACKEND PYTHON + YFINANCE ====
-        //
-        // fetch("/api/screener?market=" + state.market)
-        //   .then(r => r.json())
-        //   .then(data => {
-        //       applyScreeningResult(data);
-        //   })
-        //   .catch(err => { ... });
-        //
-        setTimeout(() => {
-          try{
-            const data = generateMockData(state.market);
-            applyScreeningResult(data);
-            state.lastRun = Date.now();
-            updateMeta();
-            updateStatus("Selesai · " + state.market + " screening updated", "idle");
-          }catch(e){
-            console.error(e);
-            updateStatus("Error saat menjalankan screening. Cek console/log backend.", "error");
-          }finally{
-            state.loading = false;
+          const target = btn.getAttribute('data-target');
+          if(target === 'usa'){
+            usaGrid.classList.remove('hidden');
+            idxGrid.classList.add('hidden');
+          }else{
+            idxGrid.classList.remove('hidden');
+            usaGrid.classList.add('hidden');
           }
-        }, 600);
-      }
-
-      function applyScreeningResult(data){
-        renderTable(trendBody, data.trend, ["symbol","price","trend","dist200","maCross"]);
-        renderTable(volumeBody, data.volume, ["symbol","price","volRatio","dayRet","score"]);
-        renderTable(fundamentalBody, data.fundamental, ["symbol","price","pe","roe","de"]);
-      }
-
-      // Init
-      updateMeta();
+        });
+      });
     })();
   </script>
 </body>
