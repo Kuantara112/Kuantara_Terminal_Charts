@@ -1,143 +1,1005 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Kuantara – Central Bank Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600&display=swap">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
   <style>
     :root {
-      --bg:#050505;
-      --card:#151515;
-      --accent:#ffbf00;
-      --text-main:#f5f5f5;
-      --text-muted:#9b9b9b;
+      /* Palette Minimalis Dark Mode */
+      --bg-body: #050505;
+      --bg-panel: #0f0f0f;
+      --border-color: #262626;
+      --text-main: #e5e5e5;
+      --text-muted: #737373;
+      --accent: #d4d4d4; /* Putih redup untuk highlight */
+      
+      --font-stack: "Fira Code", monospace;
+      --fs-sm: 11px;
+      --fs-xs: 10px;
     }
 
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+
+    body {
+      background: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-stack);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden; /* Desktop: prevent body scroll */
+      font-size: var(--fs-sm);
     }
 
-    body{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
-      color:var(--text-main);
+    /* === Layout Grid Utama 2x2 (semua panel sama besar) === */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 8px;
+      height: 100%;
+      padding: 8px;
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
-      text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    /* === Panel Styles === */
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden; /* Konten scroll di dalam body */
+      min-width: 0;
+      min-height: 0;
     }
 
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
-      color:var(--accent);
-      margin-bottom:18px;
+    .panel-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-panel);
+      flex-shrink: 0;
+      gap: 8px;
     }
 
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
+    .panel-title {
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: -0.02em;
     }
 
-    h1{
-      font-size:22px;
-      margin-bottom:8px;
+    .panel-meta {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      white-space: nowrap;
     }
 
-    p{
-      font-size:14px;
-      line-height:1.6;
-      color:var(--text-muted);
-      margin-bottom:18px;
+    .panel-body {
+      flex: 1;
+      overflow: auto; /* Scrollable area */
+      position: relative;
     }
 
-    .time-estimate{
-      font-size:13px;
-      color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
+    /* Scrollbar Styling */
+    .panel-body::-webkit-scrollbar { width: 6px; height: 6px; }
+    .panel-body::-webkit-scrollbar-track { background: var(--bg-panel); }
+    .panel-body::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+    /* === Tabel Styling (Shared) === */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed; /* Penting untuk alignment */
     }
 
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
+    th, td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .btn:hover{
-      background:var(--accent);
-      color:#000;
-      transform:translateY(-1px);
+    th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-panel);
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: var(--fs-xs);
+      z-index: 10;
+      border-bottom: 1px solid var(--border-color);
     }
 
-    .footer-text{
-      margin-top:16px;
-      font-size:11px;
-      color:#666;
+    tr:hover td { background: #1a1a1a; }
+    
+    .text-sub { font-size: 9px; color: var(--text-muted); display: block; margin-top: 2px; }
+    .cb-name { font-weight: 500; color: #fff; }
+
+    /* Lebar Kolom Tabel Kebijakan */
+    .col-cb { width: 32%; }
+    .col-rate { width: 23%; }
+    .col-stance { width: 15%; }
+    .col-meet { width: 20%; }
+    .col-chg { width: 10%; text-align: right; }
+
+    /* === Stance Tag === */
+    .stance-tag {
+      display: inline-block;
+      font-size: 9px;
+      padding: 1px 6px;
+      border-radius: 3px;
+      border: 1px solid #3a3a3a;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .stance-hawk {
+      color: #ef5350;
+      border-color: rgba(239, 83, 80, 0.7);
+    }
+    .stance-dove {
+      color: #66bb6a;
+      border-color: rgba(102, 187, 106, 0.7);
+    }
+    .stance-hold {
+      color: var(--text-muted);
+      border-color: #444;
+    }
+
+    /* === Toggle Button === */
+    .toggle-group {
+      display: flex;
+      gap: 2px;
+      background: #1a1a1a;
+      padding: 2px;
+      border-radius: 4px;
+    }
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-stack);
+      font-size: 9px;
+      padding: 3px 8px;
+      cursor: pointer;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .toggle-btn.active {
+      background: #333;
+      color: #fff;
+    }
+
+    /* === Chart & Voters === */
+    #chartView, #votersView { width: 100%; height: 100%; }
+    .hidden { display: none !important; }
+
+    .voters-container { padding: 12px; }
+    .voter-item { margin-bottom: 12px; border-bottom: 1px dashed #222; padding-bottom: 8px; }
+    .voter-item:last-child { border: none; }
+    .voter-cb { color: #fff; font-weight: 500; margin-bottom: 4px; }
+    .tag { 
+      display: inline-block; background: #1a1a1a; border: 1px solid #333; 
+      color: #aaa; font-size: 9px; padding: 1px 5px; border-radius: 3px; margin-right: 4px; margin-bottom: 2px;
+    }
+
+    /* === Calendar Styling === */
+    .cal-date { width: 80px; color: var(--text-muted); }
+    .cal-cb { width: 50px; }
+    .cal-event { width: auto; } /* Fluid */
+    .cal-data { width: 60px; text-align: right; }
+
+    .badge {
+      font-size: 9px; padding: 1px 4px; border-radius: 3px; font-weight: 600;
+    }
+    .badge.us { color: #81c784; background: rgba(129, 199, 132, 0.1); }
+    .badge.eu { color: #64b5f6; background: rgba(100, 181, 246, 0.1); }
+    .badge.uk { color: #e57373; background: rgba(229, 115, 115, 0.1); }
+    .badge.jp { color: #ffd54f; background: rgba(255, 213, 79, 0.1); }
+    .badge.id { color: #ba68c8; background: rgba(186, 104, 200, 0.1); }
+    .badge.ot { color: #90a4ae; background: rgba(144, 164, 174, 0.1); }
+
+    /* === CB News List === */
+    .news-list {
+      padding: 8px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .news-item {
+      padding: 6px 0;
+      border-bottom: 1px solid #181818;
+    }
+    .news-item:last-child {
+      border-bottom: none;
+    }
+    .news-meta {
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .news-title {
+      font-size: 11px;
+      color: var(--text-main);
+      white-space: normal;
+    }
+
+    /* Dropdown untuk topic CB (pakai struktur Fastbull) */
+    .cb-topic-select {
+      background: #050505;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 9px;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-family: var(--font-stack);
+      max-width: 220px;
+      width: 100%;
+      appearance: none;
+      -moz-appearance: none;
+      -webkit-appearance: none;
+    }
+    .cb-topic-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(255,191,0,0.25);
+    }
+    .cb-topic-select optgroup {
+      font-style: normal;
+      color: var(--accent);
+      background: #1a1a1a;
+    }
+    .cb-topic-select option {
+      color: var(--text-main);
+      background: #000000;
+      padding: 3px 4px;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 900px) {
+      body { overflow-y: auto; height: auto; } /* Allow main scroll on tablet/mobile */
+      .dashboard {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        gap: 12px;
+      }
+      .panel { min-height: 320px; }
+      #chartView { min-height: 240px; }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
+
+<div class="dashboard">
+  <!-- TOP LEFT: POLICY RATES -->
+  <section class="panel" id="panel-policy">
+    <header class="panel-header">
+      <div class="panel-title">Global Policy Rates</div>
+      <div class="panel-meta">Live Snapshot</div>
+    </header>
+    <div class="panel-body">
+      <div style="min-width: 450px;">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-cb">Central Bank</th>
+              <th class="col-rate">Rate (ACT)</th>
+              <th class="col-stance">Stance</th>
+              <th class="col-meet">Next Meeting</th>
+              <th class="col-chg">Chg (bps)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span class="cb-name">Federal Reserve</span>
+                <span class="text-sub">USA · FOMC</span>
+              </td>
+              <td>
+                4.50–4.75%
+                <span class="text-sub">Current</span>
+              </td>
+              <td>
+                <span class="stance-tag stance-dove">Dove</span>
+                <span class="text-sub">Easing bias</span>
+              </td>
+              <td>
+                Dec 18, 2025
+                <span class="text-sub">Forecast: Cut 25bps</span>
+              </td>
+              <td style="text-align:right; color:#ef5350;">-25</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="cb-name">ECB</span>
+                <span class="text-sub">Euro Area</span>
+              </td>
+              <td>
+                3.25%
+                <span class="text-sub">Dep. Facility</span>
+              </td>
+              <td>
+                <span class="stance-tag stance-hold">Hold</span>
+                <span class="text-sub">Data-dependent</span>
+              </td>
+              <td>
+                Dec 12, 2025
+                <span class="text-sub">Forecast: Hold</span>
+              </td>
+              <td style="text-align:right; color:var(--text-muted);">0</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="cb-name">Bank of England</span>
+                <span class="text-sub">UK · MPC</span>
+              </td>
+              <td>
+                4.75%
+                <span class="text-sub">Bank Rate</span>
+              </td>
+              <td>
+                <span class="stance-tag stance-dove">Dove</span>
+                <span class="text-sub">Gradual cuts</span>
+              </td>
+              <td>
+                Dec 19, 2025
+                <span class="text-sub">Forecast: Cut 25bps</span>
+              </td>
+              <td style="text-align:right; color:#ef5350;">-25</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="cb-name">Bank of Japan</span>
+                <span class="text-sub">Japan</span>
+              </td>
+              <td>
+                0.25%
+                <span class="text-sub">Policy Bal.</span>
+              </td>
+              <td>
+                <span class="stance-tag stance-hawk">Hawk</span>
+                <span class="text-sub">Normalization</span>
+              </td>
+              <td>
+                Dec 19, 2025
+                <span class="text-sub">Forecast: Hike 10bps</span>
+              </td>
+              <td style="text-align:right; color:#66bb6a;">+15</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="cb-name">Bank of Canada</span>
+                <span class="text-sub">Canada</span>
+              </td>
+              <td>
+                3.75%
+                <span class="text-sub">Overnight</span>
+              </td>
+              <td>
+                <span class="stance-tag stance-dove">Dove</span>
+                <span class="text-sub">Aggressive cuts</span>
+              </td>
+              <td>
+                Dec 11, 2025
+                <span class="text-sub">Forecast: Cut 50bps</span>
+              </td>
+              <td style="text-align:right; color:#ef5350;">-50</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="cb-name">RBA</span>
+                <span class="text-sub">Australia</span>
+              </td>
+              <td>
+                4.35%
+                <span class="text-sub">Cash Rate</span>
+              </td>
+              <td>
+                <span class="stance-tag stance-hold">Hold</span>
+                <span class="text-sub">Wait & see</span>
+              </td>
+              <td>
+                Feb 18, 2026
+                <span class="text-sub">No meeting Dec</span>
+              </td>
+              <td style="text-align:right; color:var(--text-muted);">0</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="cb-name">RBNZ</span>
+                <span class="text-sub">New Zealand</span>
+              </td>
+              <td>
+                4.25%
+                <span class="text-sub">OCR</span>
+              </td>
+              <td>
+                <span class="stance-tag stance-dove">Dove</span>
+                <span class="text-sub">Easing cycle</span>
+              </td>
+              <td>
+                Feb 25, 2026
+                <span class="text-sub">Forecast: Cut</span>
+              </td>
+              <td style="text-align:right; color:#ef5350;">-50</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="cb-name">SNB</span>
+                <span class="text-sub">Switzerland</span>
+              </td>
+              <td>
+                1.00%
+                <span class="text-sub">Policy Rate</span>
+              </td>
+              <td>
+                <span class="stance-tag stance-dove">Dove</span>
+                <span class="text-sub">Further easing</span>
+              </td>
+              <td>
+                Dec 12, 2025
+                <span class="text-sub">Forecast: Cut 25bps</span>
+              </td>
+              <td style="text-align:right; color:#ef5350;">-25</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="cb-name">Bank Indonesia</span>
+                <span class="text-sub">Indonesia</span>
+              </td>
+              <td>
+                6.00%
+                <span class="text-sub">BI-Rate</span>
+              </td>
+              <td>
+                <span class="stance-tag stance-hold">Hold</span>
+                <span class="text-sub">Rupiah stability</span>
+              </td>
+              <td>
+                Dec 18, 2025
+                <span class="text-sub">Forecast: Hold</span>
+              </td>
+              <td style="text-align:right; color:var(--text-muted);">0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+  </section>
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
+  <!-- TOP RIGHT: TREND & STRUCTURE (ECharts + Voters) -->
+  <section class="panel" id="panel-trend">
+    <header class="panel-header">
+      <div class="panel-title">Trend & Structure</div>
+      <div class="toggle-group" id="trend-toggle">
+        <button class="toggle-btn active" onclick="switchView('chart')">Rates</button>
+        <button class="toggle-btn" onclick="switchView('voters')">Voters</button>
+      </div>
+    </header>
+    <div class="panel-body">
+      <div id="chartView"></div>
 
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
+      <div id="votersView" class="hidden voters-container">
+        <div class="voter-item">
+          <div class="voter-cb">Federal Reserve (FOMC)</div>
+          <div>
+            <span class="tag">Jerome Powell (Chair)</span>
+            <span class="tag">John Williams (NY)</span>
+            <span class="tag">Philip Jefferson</span>
+            <span class="tag">Michelle Bowman</span>
+            <span class="tag">Michael Barr</span>
+            <span class="tag">Lisa Cook</span>
+            <span class="tag">Adriana Kugler</span>
+            <span class="tag">Rotating Presidents (4)</span>
+          </div>
+        </div>
+        <div class="voter-item">
+          <div class="voter-cb">ECB (Governing Council)</div>
+          <div>
+            <span class="tag">Christine Lagarde</span>
+            <span class="tag">Luis de Guindos</span>
+            <span class="tag">Philip Lane</span>
+            <span class="tag">Piero Cipollone</span>
+            <span class="tag">Isabel Schnabel</span>
+            <span class="tag">Frank Elderson</span>
+            <span class="tag">+ 20 NCB Governors</span>
+          </div>
+        </div>
+        <div class="voter-item">
+          <div class="voter-cb">Bank of England (MPC)</div>
+          <div>
+            <span class="tag">Andrew Bailey</span>
+            <span class="tag">Clare Lombardelli</span>
+            <span class="tag">Dave Ramsden</span>
+            <span class="tag">Swati Dhingra</span>
+            <span class="tag">Megan Greene</span>
+            <span class="tag">Catherine Mann</span>
+            <span class="tag">Huw Pill</span>
+            <span class="tag">Alan Taylor</span>
+          </div>
+        </div>
+        <div class="voter-item">
+          <div class="voter-cb">Bank Indonesia (RDG)</div>
+          <div>
+            <span class="tag">Perry Warjiyo</span>
+            <span class="tag">Destry Damayanti</span>
+            <span class="tag">Doni P. Joewono</span>
+            <span class="tag">Juda Agung</span>
+            <span class="tag">Aida S. Budiman</span>
+            <span class="tag">Filianingsih Hendarta</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
-
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
+  <!-- BOTTOM LEFT: CENTRAL BANK 24/7 HEADLINES (pakai struktur topic Fastbull) -->
+  <section class="panel" id="panel-news">
+    <header class="panel-header">
+      <div class="panel-title">Central Bank 24/7 Headlines</div>
+      <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+        <select id="cb-topic-select" class="cb-topic-select">
+          <option value="all_cb">Loading...</option>
+        </select>
+        <div class="panel-meta" id="cb-news-status">Syncing...</div>
+      </div>
+    </header>
+    <div class="panel-body">
+      <div class="news-list" id="cb-news-feed">
+        <div style="padding:12px; font-size:10px; color:var(--text-muted);">
+          Loading central bank headlines...
+        </div>
+      </div>
     </div>
-  </main>
+  </section>
 
-  <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+  <!-- BOTTOM RIGHT: 30-DAY CB CALENDAR -->
+  <section class="panel" id="panel-calendar">
+    <header class="panel-header">
+      <div class="panel-title">30-Day Calendar</div>
+      <div class="panel-meta" id="cal-status">Syncing...</div>
+    </header>
+    <div class="panel-body">
+      <div id="calendar-view" style="min-width: 400px;">
+        <table>
+          <thead>
+            <tr>
+              <th class="cal-date">Date (UTC)</th>
+              <th class="cal-cb">Bank</th>
+              <th class="cal-event">Event</th>
+              <th class="cal-data">Prev</th>
+              <th class="cal-data">Fcst</th>
+            </tr>
+          </thead>
+          <tbody id="calendar-body">
+            <tr>
+              <td colspan="5" style="text-align:center; padding:20px; color:#555;">
+                Loading Fastbull Data...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // === 1. View Switcher (Rates vs Voters) ===
+  function switchView(view) {
+    const chart = document.getElementById('chartView');
+    const voters = document.getElementById('votersView');
+    const btns = document.querySelectorAll('#trend-toggle .toggle-btn');
+
+    if (view === 'chart') {
+      chart.classList.remove('hidden');
+      voters.classList.add('hidden');
+      btns[0].classList.add('active');
+      btns[1].classList.remove('active');
+      if (myChart) myChart.resize();
+    } else {
+      chart.classList.add('hidden');
+      voters.classList.remove('hidden');
+      btns[0].classList.remove('active');
+      btns[1].classList.add('active');
+    }
+  }
+
+  // === 2. ECharts Configuration (Minimalist Rate Trend) ===
+  var myChart = echarts.init(document.getElementById('chartView'));
+  var option = {
+    backgroundColor: 'transparent',
+    grid: { top: 30, right: 20, bottom: 20, left: 40 },
+    tooltip: { 
+      trigger: 'axis', 
+      backgroundColor: '#111', 
+      borderColor: '#333', 
+      textStyle: { color: '#eee', fontSize: 10 } 
+    },
+    legend: {
+      top: 8,
+      left: 40,
+      textStyle: { color: '#bdbdbd', fontSize: 10 }
+    },
+    xAxis: {
+      type: 'category',
+      data: ['2020', '2021', '2022', '2023', '2024', '2025'],
+      axisLine: { lineStyle: { color: '#333' } },
+      axisLabel: { color: '#777', fontSize: 10 }
+    },
+    yAxis: {
+      type: 'value',
+      splitLine: { lineStyle: { color: '#1a1a1a' } },
+      axisLabel: { color: '#777', fontSize: 10 }
+    },
+    series: [
+      { name: 'Fed', data: [0.25, 0.25, 4.5, 5.5, 5.0, 4.5], type: 'line', smooth: true, showSymbol: false, itemStyle: {color:'#81c784'} },
+      { name: 'ECB', data: [0, 0, 2.5, 4.5, 3.5, 3.25], type: 'line', smooth: true, showSymbol: false, itemStyle: {color:'#64b5f6'} },
+      { name: 'BI',  data: [3.75, 3.50, 5.5, 6.0, 6.25, 6.0], type: 'line', smooth: true, showSymbol: false, itemStyle: {color:'#ba68c8'} }
+    ]
+  };
+  myChart.setOption(option);
+  window.addEventListener('resize', function() { myChart.resize(); });
+
+  // === 3. Calendar Logic (Fastbull Merge Calendar API) ===
+  async function loadCalendar() {
+    const tbody = document.getElementById('calendar-body');
+    const status = document.getElementById('cal-status');
+
+    const now = Date.now();
+    const future = now + (30 * 24 * 60 * 60 * 1000);
+    const url = `https://api.fastbull.com/fastbull-news-service/api/getMergeCalendarV1Page?startTimestamp=${now}&endTimestamp=${future}&types=1,2,3&pageSize=100&importance=3`; 
+
+    try {
+      const req = await fetch(url, { headers: { "lang": "en", "client-type": "web" }});
+      const res = await req.json();
+      
+      // Normalisasi Data
+      let items = res.data?.list || res.data || [];
+      
+      // Filter Keyword Central Bank
+      const cbKeywords = ["rate decision", "interest rate", "policy meeting", "monetary policy", "minutes"];
+      let filtered = items.filter(i => {
+        const title = (i.title || "").toLowerCase();
+        return cbKeywords.some(k => title.includes(k));
+      }).slice(0, 20); // Ambil 20 terdekat
+
+      tbody.innerHTML = "";
+
+      if(filtered.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:10px; color:#555;'>No major CB events detected soon.</td></tr>";
+        status.textContent = "Data Empty";
+        return;
+      }
+
+      filtered.forEach(ev => {
+        const row = document.createElement('tr');
+        
+        // Date Parsing
+        const rawTime = ev.releaseTime || ev.timestamp || 0;
+        const dateObj = rawTime > 1000000000000 ? new Date(rawTime) : new Date(rawTime * 1000);
+        
+        const day = dateObj.getUTCDate();
+        const mon = dateObj.toLocaleString('en-US', { month: 'short' });
+        const time = dateObj.toISOString().substr(11, 5);
+        
+        // Bank Badge
+        let country = (ev.countryName || "").toLowerCase();
+        let badgeClass = "ot";
+        let code = "CB";
+        if(country.includes("united states")) { badgeClass="us"; code="FED"; }
+        else if(country.includes("euro")) { badgeClass="eu"; code="ECB"; }
+        else if(country.includes("kingdom")) { badgeClass="uk"; code="BOE"; }
+        else if(country.includes("japan")) { badgeClass="jp"; code="BOJ"; }
+        else if(country.includes("indonesia")) { badgeClass="id"; code="BI"; }
+
+        // === Calendar Row ===
+        row.innerHTML = `
+          <td class="cal-date">${day} ${mon} <span style="font-size:8px; opacity:0.6">${time}</span></td>
+          <td class="cal-cb"><span class="badge ${badgeClass}">${code}</span></td>
+          <td class="cal-event">${(ev.title || "").replace("Interest Rate Decision", "Rate Dec")}</td>
+          <td class="cal-data text-sub">${ev.previous ?? "-"}</td>
+          <td class="cal-data text-sub">${ev.consensus ?? "-"}</td>
+        `;
+        tbody.appendChild(row);
+      });
+      status.textContent = "Updated";
+
+    } catch (e) {
+      console.error(e);
+      tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#ef5350;'>API Load Failed. Check Console.</td></tr>";
+      status.textContent = "Error";
+    }
+  }
+
+  // === 4. FASTBULL TOPIC STRUCTURE (SAMA SEPERTI PAGE 24/7 HEADLINES) ===
+  const FASTBULL_NEWS_ENDPOINT = "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
+  const FASTBULL_NEWS_HEADERS = { 
+    Accept: "application/json",
+    "client-type": "4",
+    clientversion: "latest",
+    langid: "13"
+  };
+  const FASTBULL_CORS_PROXY = "https://api.allorigins.win/raw?url=";
+
+  // Full tag structure (copy dari page 24/7 Headlines)
+  const FASTBULL_TAG_DATA = [
+    {
+      categoryName: "Highlights",
+      tagList: [
+        { id: 143, tagName: "Breaking/Top News" },
+        { id: 174, tagName: "Corporate Announcements" }
+      ]
+    },
+    {
+      categoryName: "Macro & Central Banks",
+      tagList: [
+        { id: 100, tagName: "All Central Banks" },
+        { id: 115, tagName: "Fed (USA)" },
+        { id: 118, tagName: "ECB (Europe)" },
+        { id: 120, tagName: "BOE (UK)" },
+        { id: 123, tagName: "BOJ (Japan)" },
+        { id: 124, tagName: "RBA (Australia)" },
+        { id: 116, tagName: "BOC (Canada)" },
+        { id: 114, tagName: "PBOC (China)" },
+        { id: 132, tagName: "Central Banks Updates" },
+        { id: 110, tagName: "Inflation" },
+        { id: 111, tagName: "Interest Rates" },
+        { id: 112, tagName: "Employment" },
+        { id: 125, tagName: "Monetary Policy" },
+        { id: 127, tagName: "Fiscal Policy" }
+      ]
+    },
+    {
+      categoryName: "Markets",
+      tagList: [
+        { id: 94, tagName: "Forex (FX)" },
+        { id: 95, tagName: "Stocks (Equities)" },
+        { id: 152, tagName: "Major Indices" },
+        { id: 169, tagName: "Stock Ratings" },
+        { id: 163, tagName: "Dividends" },
+        { id: 97, tagName: "Commodities" },
+        { id: 117, tagName: "Trade" }
+      ]
+    },
+    {
+      categoryName: "Crypto",
+      tagList: [
+        { id: 98, tagName: "Cryptocurrency" },
+        { id: 155, tagName: "Bitcoin" },
+        { id: 157, tagName: "Ethereum" },
+        { id: 134, tagName: "Regulation (Crypto)" }
+      ]
+    },
+    {
+      categoryName: "Geopolitics & Events",
+      tagList: [
+        { id: 136, tagName: "National Security" },
+        { id: 105, tagName: "Disasters/Accidents" },
+        { id: 108, tagName: "Russia-Ukraine" },
+        { id: 177, tagName: "Middle East" },
+        { id: 176, tagName: "Trump Trade" },
+        { id: 135, tagName: "Politics" }
+      ]
+    }
+  ];
+
+  const FASTBULL_ID_TO_LABEL = {};
+  FASTBULL_TAG_DATA.forEach(cat => {
+    cat.tagList.forEach(tag => {
+      FASTBULL_ID_TO_LABEL[tag.id] = tag.tagName;
+      FASTBULL_ID_TO_LABEL[String(tag.id)] = tag.tagName;
+    });
+  });
+
+  // Ambil semua tag ID khusus cluster "Macro & Central Banks"
+  function getCentralBankTagIdsArray() {
+    const cat = FASTBULL_TAG_DATA.find(c => c.categoryName === "Macro & Central Banks");
+    if (!cat) return [];
+    return cat.tagList.map(t => t.id);
+  }
+  function getCentralBankTagIdsJoined() {
+    return getCentralBankTagIdsArray().join(",");
+  }
+
+  function resolveFastbullTagLabel(rawTagsArray, currentTopicId) {
+    if (!Array.isArray(rawTagsArray)) return "News";
+
+    if (currentTopicId && currentTopicId !== "all_cb") {
+      const targetId = String(currentTopicId);
+      if (rawTagsArray.includes(targetId) && FASTBULL_ID_TO_LABEL[targetId]) {
+        return FASTBULL_ID_TO_LABEL[targetId];
+      }
+    }
+
+    for (const id of rawTagsArray) {
+      const label = FASTBULL_ID_TO_LABEL[id];
+      if (label && id !== "143") return label;
+    }
+
+    if (rawTagsArray.includes("143")) return "Breaking News";
+    return "News";
+  }
+
+  function formatFastbullTime(ts) {
+    if (!ts) return "";
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return "";
+    const dateStr = d.toLocaleDateString("en-GB", { day:"2-digit", month:"short" });
+    const timeStr = d.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit" });
+    return { dateStr, timeStr };
+  }
+
+  function normalizeCbNewsItem(item, currentTopicId) {
+    const rawTagsStr = typeof item.tags === "string" ? item.tags : "";
+    const rawTagsArray = rawTagsStr.split(",").map(t => t.trim()).filter(Boolean);
+    const label = resolveFastbullTagLabel(rawTagsArray, currentTopicId);
+    const { dateStr, timeStr } = formatFastbullTime(item.releasedDate);
+
+    return {
+      id: item.newsId,
+      label,
+      title: item.newsTitle || "Untitled Headline",
+      date: dateStr,
+      time: timeStr,
+      important: Number(item.important) === 1,
+      rawTags: rawTagsArray
+    };
+  }
+
+  // === DROPDOWN CENTRAL BANK TOPICS (SAMA STRUKTUR DENGAN PAGE HEADLINES) ===
+  const cbTopicSelect = document.getElementById("cb-topic-select");
+  const cbNewsFeed   = document.getElementById("cb-news-feed");
+  const cbNewsStatus = document.getElementById("cb-news-status");
+
+  let cbCurrentTopic = "all_cb";
+  let cbFastbullProxyEnabled = false;
+
+  function initCbTopicDropdown() {
+    cbTopicSelect.innerHTML = "";
+
+    // Default: semua topik central bank
+    const def = document.createElement("option");
+    def.value = "all_cb";
+    def.textContent = "All Central Bank Topics";
+    cbTopicSelect.appendChild(def);
+
+    // Hanya ambil kategori "Macro & Central Banks"
+    const macroCbCat = FASTBULL_TAG_DATA.find(c => c.categoryName === "Macro & Central Banks");
+    if (!macroCbCat) return;
+
+    // Pisah sedikit: sub-group "Major Central Banks" vs "Macro Links"
+    const mainBanksGroup = document.createElement("optgroup");
+    mainBanksGroup.label = "Major Central Banks";
+
+    const macroLinksGroup = document.createElement("optgroup");
+    macroLinksGroup.label = "Macro Links";
+
+    macroCbCat.tagList.forEach(tag => {
+      const opt = document.createElement("option");
+      opt.value = String(tag.id);
+      opt.textContent = tag.tagName;
+
+      // Central banks utama
+      if (["All Central Banks","Fed (USA)","ECB (Europe)","BOE (UK)","BOJ (Japan)","RBA (Australia)","BOC (Canada)","PBOC (China)","Central Banks Updates"].includes(tag.tagName)) {
+        mainBanksGroup.appendChild(opt);
+      } else {
+        // Inflation, Interest Rates, Employment, Monetary Policy, Fiscal Policy
+        macroLinksGroup.appendChild(opt);
+      }
+    });
+
+    if (mainBanksGroup.children.length) cbTopicSelect.appendChild(mainBanksGroup);
+    if (macroLinksGroup.children.length) cbTopicSelect.appendChild(macroLinksGroup);
+  }
+
+  function getTagIdsForCbTopic(topicKey) {
+    if (topicKey === "all_cb") {
+      // semua tag Macro & Central Banks
+      return getCentralBankTagIdsJoined();
+    }
+    // single tag id
+    return String(topicKey);
+  }
+
+  function renderCbNews(list) {
+    cbNewsFeed.innerHTML = "";
+    if (!list || !list.length) {
+      cbNewsFeed.innerHTML = "<div style='padding:12px; font-size:10px; color:var(--text-muted);'>No central bank headlines for this topic.</div>";
+      return;
+    }
+
+    list.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "news-item";
+      div.innerHTML = `
+        <div class="news-meta">
+          <span>${item.date} · ${item.time} UTC</span>
+          ${item.label ? `<span>· ${item.label}</span>` : ""}
+          ${item.important ? `<span style="color:#ffb74d;">· HIGH</span>` : ""}
+        </div>
+        <div class="news-title">${item.title}</div>
+      `;
+      cbNewsFeed.appendChild(div);
+    });
+  }
+
+  async function loadCbNews(topicKey) {
+    const key = topicKey || cbCurrentTopic || "all_cb";
+    const tagIds = getTagIdsForCbTopic(key);
+
+    cbNewsStatus.textContent = "Syncing...";
+    cbNewsFeed.innerHTML = "<div style='padding:12px; font-size:10px; color:var(--text-muted);'>Loading central bank headlines...</div>";
+
+    const baseUrl = `${FASTBULL_NEWS_ENDPOINT}?checkImportant=0&pageSize=60&tagIds=${tagIds}`;
+
+    try {
+      let payload;
+      try {
+        const r = await fetch(baseUrl, { headers: FASTBULL_NEWS_HEADERS });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        payload = await r.json();
+      } catch (err) {
+        if (cbFastbullProxyEnabled) throw err;
+        cbFastbullProxyEnabled = true;
+        const r = await fetch(FASTBULL_CORS_PROXY + encodeURIComponent(baseUrl));
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        payload = await r.json();
+      }
+
+      const list = JSON.parse(payload.bodyMessage || "{}").pageDatas || [];
+      if (!list.length) {
+        renderCbNews([]);
+        cbNewsStatus.textContent = "No Data";
+        return;
+      }
+
+      // Normalisasi + filter halus supaya tetap relevan central bank
+      let items = list.map(it => normalizeCbNewsItem(it, key));
+
+      // Kalau pilihan bukan "all_cb", pastikan tag sesuai dengan topic
+      if (key !== "all_cb") {
+        const requestedIds = String(key).split(",").map(s => s.trim()).filter(Boolean);
+        items = items.filter(it => it.rawTags?.some(rt => requestedIds.includes(rt)));
+      }
+
+      // Sort terbaru ke atas
+      items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+      renderCbNews(items);
+      cbNewsStatus.textContent = "Updated";
+    } catch (e) {
+      console.error(e);
+      cbNewsFeed.innerHTML = "<div style='padding:12px; font-size:10px; color:#ef5350;'>Failed to load CB headlines. Check console / network.</div>";
+      cbNewsStatus.textContent = "Error";
+    }
+  }
+
+  // === INIT ===
+  document.addEventListener("DOMContentLoaded", () => {
+    initCbTopicDropdown();
+    loadCalendar();
+    loadCbNews(cbCurrentTopic);
+
+    cbTopicSelect.addEventListener("change", () => {
+      cbCurrentTopic = cbTopicSelect.value || "all_cb";
+      loadCbNews(cbCurrentTopic);
+    });
+
+    // Auto-refresh CB news setiap 60s untuk topic aktif
+    setInterval(() => loadCbNews(cbCurrentTopic), 60000);
+  });
+</script>
 </body>
 </html>
