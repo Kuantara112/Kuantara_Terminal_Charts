@@ -104,14 +104,6 @@
     .kt-iframe-loading-done{ opacity: 0; }  
     @keyframes kt-spin{ to{transform: rotate(360deg);} }  
   
-    /* VIGNETTE GRADIENTS (Smoother) */  
-    .kt-iframe-layer::before, .kt-iframe-layer::after{  
-      content: ""; position: absolute; left: 0; right: 0; height: 30px;  
-      pointer-events: none; z-index: 2;  
-    }  
-    .kt-iframe-layer::before{ top: 0; background: linear-gradient(to bottom, #000 0%, transparent 100%); }  
-    .kt-iframe-layer::after{ bottom: 0; background: linear-gradient(to top, #000 0%, transparent 100%); }  
-  
     /* ===== PINNED MODE ===== */  
     body.kt-pinned .kt-mainmenu-strip,  
     body.kt-pinned .kt-content-header,  
@@ -130,7 +122,6 @@
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border-soft);  
       padding: 8px 12px; font-size: 10px; z-index: 3000; user-select: none;  
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }  
     .kt-topbar-left{ display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; flex-wrap: wrap; }  
     
@@ -174,7 +165,6 @@
       overflow-x: auto; scrollbar-width: thin;  
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       justify-content: center;  
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     }  
     .kt-hide-top{ transform: translateY(-100%); opacity: 0; pointer-events: none; }  
   
@@ -232,7 +222,6 @@
       left: 0; right: 0; bottom: 46px; border-top: 1px solid var(--border-soft);  
       background: rgba(10, 10, 10, 0.9); padding: 4px 6px 4px 8px; min-height: 32px;  
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
     }  
     .kt-submenu-group{ display: none; gap: 4px; overflow-x: auto; padding-bottom: 2px; }  
     .kt-submenu-group.active{ display: flex; }  
@@ -292,7 +281,7 @@
     }  
     .kt-bottom-item.active::before { opacity: 1; }
   
-    /* PROFILE PAGE */  
+    /* PROFILE PAGE (MINIMAL) */  
     .kt-profile-page{  
       position: fixed; left: 0; right: 0; top: 38px; bottom: 46px; padding: 0; z-index: 2; display: none;  
       overflow: auto; background: #050505; box-sizing: border-box;  
@@ -323,7 +312,7 @@
     .kt-profile-card-title{ font-size: 10px; color: var(--amber); margin-bottom: 4px; opacity: 0.9; }  
     .kt-profile-card-body{ font-size: 10px; line-height: 1.5; color: #ccc; }  
   
-    .kt-profile-menu{ margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }  
+    .kt-profile-menu{ margin-top: 14px; display: none; }  
     .kt-profile-menu-btn{  
       padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border-soft);  
       background: linear-gradient(180deg, rgba(30,30,30,0.5), rgba(15,15,15,0.8));
@@ -516,6 +505,17 @@
       .kt-profile-inner{ padding: 12px 12px; }  
       .kt-workspace-window{ width: 88vw; height: 45vh; }  
     }  
+
+    /* Desktop: smaller bottom bar & adjusted offsets */
+    @media (min-width: 900px){
+      .kt-bottom-nav{ height: 36px; }
+      .kt-iframe-layer{ bottom: 36px; }
+      .kt-statusbar{ bottom: 36px; }
+      .kt-submenu-strip{ bottom: 36px; }
+      body.kt-pinned .kt-iframe-layer{ bottom: 102px; }
+      body.kt-pinned .kt-statusbar{ bottom: 68px !important; }
+      body.kt-pinned .kt-submenu-strip{ bottom: 36px !important; }
+    }
   </style>  
 </head>  
 <body>  
@@ -592,10 +592,10 @@
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="5">Indonesia</button>  
     </div>  
 
-    <!-- Macroeconomic: US Macro removed, order: Central Bank - G10+ - All Countries -->
+    <!-- Macroeconomic: US Macro removed, order: Central Bank - Major - All Countries -->
     <div class="kt-submenu-group" data-menu-sub="2">  
       <button class="kt-submenu-btn" data-menu="2" data-sub-index="0">Central Bank</button>  
-      <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">G10+</button>  
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">Major</button>  
       <button class="kt-submenu-btn" data-menu="2" data-sub-index="2">All Countries</button>  
     </div>  
 
@@ -605,16 +605,12 @@
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="2">Resources</button>  
     </div>  
 
+    <!-- Metrics submenu simplified -->
     <div class="kt-submenu-group" data-menu-sub="4">  
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="0">Macro</button>  
-      <button class="kt-submenu-btn" data-menu="4" data-sub-index="1">Liquidity</button>  
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="1">Market</button>  
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="2">Sentiment</button>  
-      <button class="kt-submenu-btn" data-menu="4" data-sub-index="3">Seasonality</button>  
-      <button class="kt-submenu-btn" data-menu="4" data-sub-index="4">COT</button>  
-      <button class="kt-submenu-btn" data-menu="4" data-sub-index="5">Curve</button>  
-      <button class="kt-submenu-btn" data-menu="4" data-sub-index="6">Breadth</button>  
-      <button class="kt-submenu-btn" data-menu="4" data-sub-index="7">Flows</button>  
-      <button class="kt-submenu-btn" data-menu="4" data-sub-index="8">Volatility</button>  
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="3">Valuation</button>  
     </div>  
 
     <div class="kt-submenu-group" data-menu-sub="5">  
@@ -658,15 +654,12 @@
     <div class="kt-profile-inner">  
       <div class="kt-profile-header">  
         <div>  
-          <div class="kt-profile-title">User Profile</div>  
+          <div class="kt-profile-title">Profile</div>  
           <div class="kt-profile-name">Guest User</div>  
           <div class="kt-profile-meta">  
-            Kuantara Terminal · Single-seat license<br/>  
-            Last login: —  
+            Kuantara Terminal · Standard Plan<br/>  
+            Single-seat license  
           </div>  
-        </div>  
-        <div>  
-          <span class="kt-badge">ACTIVE PLAN</span>  
         </div>  
       </div>  
 
@@ -674,45 +667,11 @@
         <div class="kt-profile-card">  
           <div class="kt-profile-card-title">Account</div>  
           <div class="kt-profile-card-body">  
-            Name : Guest User<br/>  
-            Email: guest@example.com<br/>  
-            Role : Retail Trader / Analyst  
+            Name  : Guest User<br/>  
+            Role  : Trader / Analyst<br/>  
+            Status: Trial  
           </div>  
         </div>  
-
-        <div class="kt-profile-card">  
-          <div class="kt-profile-card-title">Subscription</div>  
-          <div class="kt-profile-card-body">  
-            Plan          : Kuantara Terminal Standard<br/>  
-            Status        : Trial<br/>  
-            Time Left     : 7 days<br/>  
-            Renewal Mode  : Manual  
-          </div>  
-        </div>  
-
-        <div class="kt-profile-card">  
-          <div class="kt-profile-card-title">Contact & Support</div>  
-          <div class="kt-profile-card-body">  
-            Telegram : @kuantara<br/>  
-            Email    : support@kuantara.com<br/>  
-            Priority : Standard  
-          </div>  
-        </div>  
-
-        <div class="kt-profile-card">  
-          <div class="kt-profile-card-title">Usage Snapshot</div>  
-          <div class="kt-profile-card-body">  
-            Terminals Active : 1 / 2<br/>  
-            Last 24h Logins : 3<br/>  
-            Most Used Page  : Markets · Overview  
-          </div>  
-        </div>  
-      </div>  
-
-      <div class="kt-profile-menu">  
-        <button class="kt-profile-menu-btn">Settings</button>  
-        <button class="kt-profile-menu-btn">Notifications</button>  
-        <button class="kt-profile-menu-btn">Store</button>  
       </div>  
 
       <div class="kt-profile-footer">  
@@ -738,23 +697,23 @@
     <div class="kt-bottom-item active" data-bottom-role="home">  
       <span>Home</span>  
     </div>  
+    <div class="kt-bottom-item" data-bottom-role="search">  
+      <span>Search</span>  
+    </div>  
     <div class="kt-bottom-item" data-bottom-role="workspace">  
       <span>Workspace</span>  
-    </div>  
-    <div class="kt-bottom-item" data-bottom-role="profile">  
-      <span>Profile</span>  
     </div>  
   </nav>  
 
   <div class="kt-ai-fab" id="kt-ai-fab">≡</div>  
 
   <div class="kt-ai-menu" id="kt-ai-menu">  
-    <button class="kt-ai-menu-btn" data-pane="search"><span>SR</span><span>Search</span></button>  
     <button class="kt-ai-menu-btn" data-pane="ai"><span>AI</span><span>Kuantara AI</span></button>  
     <button class="kt-ai-menu-btn" data-pane="mini"><span>MC</span><span>Mini Chart</span></button>  
     <button class="kt-ai-menu-btn" data-pane="notes"><span>NT</span><span>Notes</span></button>  
-    <button class="kt-ai-menu-btn" data-pane="signals"><span>SG</span><span>Signals</span></button>  
+    <button class="kt-ai-menu-btn" data-pane="signals"><span>AL</span><span>Alerts</span></button>  
     <button class="kt-ai-menu-btn" data-pane="group"><span>GC</span><span>Group Chat</span></button>  
+    <button class="kt-ai-menu-btn" data-pane="profile"><span>PR</span><span>Profile</span></button>  
   </div>  
 
   <div class="kt-ai-panel" id="kt-ai-panel">  
@@ -871,16 +830,11 @@
         "3:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_tradeshipping.html",  
         "3:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_resources.html",  
   
-        // Metrics  
+        // Metrics (simplified)
         "4:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macro.html",  
         "4:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_liquidity.html",  
         "4:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentiment.html",  
         "4:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_seasonality.html",  
-        "4:4":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_cot.html",  
-        "4:5":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_curve.html",  
-        "4:6":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_breadth.html",  
-        "4:7":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_flows.html",  
-        "4:8":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_volatility.html",  
   
         // Companies  
         "5:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us.html",  
@@ -1073,12 +1027,17 @@
               injectIframe("");  
               showWorkspacePage();  
             }  
-            else if(role==="profile"){  
-              setBottomActive("profile");  
-              hideWorkspacePage();  
-              hideAllBars();  
-              injectIframe("");  
-              showProfilePage();  
+            else if(role==="search"){  
+              // Search is an action button (center), tidak mengubah mode "home/workspace"
+              if(activeBottom!=="home"){  
+                setBottomActive("home");  
+                hideProfilePage();  
+                hideWorkspacePage();  
+                setActiveMenu(0);  
+                setActiveSub(0,0);  
+              }  
+              openSearch();  
+              showAllBars();  
             }  
           });  
         });  
@@ -1417,12 +1376,12 @@
           aiPanel.style.display="flex";  
           if(activeBottom==="home") showAllBars();  
         }else if(mode==="signals"){  
-          aiTitle.textContent = "Signals";  
-          aiSubtitle.textContent = "Ringkasan sinyal trading & alert utama.";  
+          aiTitle.textContent = "Alerts";  
+          aiSubtitle.textContent = "Ringkasan alert trading & notifikasi utama.";  
           aiBody.innerHTML =  
             '<div style="width:100%;height:100%;padding:8px 10px;box-sizing:border-box;font-size:10px;line-height:1.5;color:var(--text-muted);overflow:auto;">' +  
-            'Panel ini akan menampilkan sinyal dari sistem Kuantara (algo, screener, atau alert eksternal). ' +  
-            'Integrasi backend bisa diarahkan untuk push sinyal terbaru ke area ini secara realtime.' +  
+            'Panel ini akan menampilkan alert dari sistem Kuantara (algo, screener, atau alert eksternal). ' +  
+            'Integrasi backend bisa diarahkan untuk push alert terbaru ke area ini secara realtime.' +  
             '</div>';  
           aiFooter.innerHTML = '';  
           aiPanel.style.display="flex";  
@@ -1441,6 +1400,14 @@
           aiFooter.innerHTML = '';  
           aiPanel.style.display="flex";  
           if(activeBottom==="home") showAllBars();  
+        }else if(mode==="profile"){  
+          aiPanel.style.display="none";  
+          toggleAiMenu(false);  
+          setBottomActive("home");  
+          hideWorkspacePage();  
+          hideAllBars();  
+          injectIframe("");  
+          showProfilePage();  
         }  
       }  
   
@@ -1455,10 +1422,6 @@
           e.stopPropagation();  
           const pane = btn.getAttribute("data-pane");  
           toggleAiMenu(false);  
-          if(pane==="search"){  
-            openSearch();  
-            return;  
-          }  
           openAiPane(pane);  
         });  
       });  
@@ -1551,6 +1514,8 @@
         let isDragging=false, startX=0,startY=0,startLeft=0,startTop=0;  
   
         header.addEventListener("pointerdown",(e)=>{  
+          const isClose = e.target.closest(".kt-workspace-window-close");  
+          if(isClose) return;  
           e.preventDefault();  
           isDragging=true;  
           const rect = win.getBoundingClientRect();  
@@ -1686,7 +1651,7 @@
         }  
         if(e.key==="Tab"){  
           e.preventDefault();  
-          setBottomActive("profile");  
+          setBottomActive("home");  
           hideWorkspacePage();  
           hideAllBars();  
           injectIframe("");  
