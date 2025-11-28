@@ -134,6 +134,44 @@
 <body>
 <div class="shell">
 
+  <!-- PANEL 0 – BANDAR ACTIVITY -->
+  <section class="block" id="panel-bpjp">
+    <header class="block-header">
+      <h1>BANDAR ACTIVITY</h1>
+      <div></div>
+    </header>
+
+    <div>
+      <button id="run-btn-bpjp">RUN SCREENER</button>
+      <span id="status-bpjp" class="status"></span>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Price</th>
+          <th>Value</th>
+          <th>ROC(1)</th>
+          <th>Vol / Prev</th>
+          <th>Price &gt; MA5</th>
+          <th>Price / 52W High</th>
+        </tr>
+        </thead>
+        <tbody id="results-body-bpjp">
+        <tr>
+          <td colspan="7" style="text-align:center;color:var(--text-muted);">
+            Tekan <b>RUN SCREENER</b> untuk mencari saham potensial aktivitas bandar.
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="line">
+
   <!-- PANEL 1 – VOLUME BREAKOUT -->
   <section class="block" id="panel-k01">
     <header class="block-header">
@@ -248,7 +286,7 @@
 
   <hr class="line">
 
-  <!-- PANEL 4 – MOMENTUM (MACD, RSI, Stochastic) -->
+  <!-- PANEL 4 – MOMENTUM (MACD Golden Cross, EMA50, H4) -->
   <section class="block" id="panel-mom">
     <header class="block-header">
       <h1>MOMENTUM</h1>
@@ -267,9 +305,9 @@
           <th>Symbol</th>
           <th>Price</th>
           <th>MACD Hist</th>
-          <th>RSI(14)</th>
-          <th>Stoch %K</th>
-          <th>Stoch %D</th>
+          <th>EMA50</th>
+          <th>Last 3 &gt; EMA50</th>
+          <th>Signal</th>
           <th>Momentum Score</th>
         </tr>
         </thead>
@@ -288,12 +326,15 @@
 
 <script>
   const BASE_URL   = "https://kuancloud.loclx.io/api/tvohlc/ohlcv";
-  const INTERVAL   = "5";   // 5m
+  const INTERVAL   = "5";    // intraday
+  const INTERVAL_D = "D";    // daily
+  const INTERVAL_H4 = "240"; // H4
 
   // Bars count
-  const BARS_K01 = 25;   // Volume breakout
-  const BARS_MA  = 120;  // Volume & Trend, Trend Following
-  const BARS_MOM = 120;  // Momentum
+  const BARS_K01  = 25;    // Volume breakout
+  const BARS_MA   = 120;   // Volume & Trend, Trend Following
+  const BARS_MOM  = 120;   // Momentum (H4)
+  const BARS_BSJP = 280;   // BANDAR ACTIVITY – daily, ~1y
 
   // ======================================
   //   ISI SENDIRI: UNIVERSE SAHAM
@@ -388,6 +429,20 @@
     return emaPrev;
   }
 
+  // EMA series (untuk cek 3 candle terakhir vs EMA50)
+  function emaSeries(values, length){
+    if(values.length < length) return [];
+    const k = 2/(length+1);
+    let emaPrev = values.slice(0,length).reduce((a,b)=>a+b,0)/length;
+    const series = [];
+    series.push(emaPrev); // ini untuk index (length-1)
+    for(let i=length;i<values.length;i++){
+      emaPrev = values[i]*k + emaPrev*(1-k);
+      series.push(emaPrev);
+    }
+    return series;
+  }
+
   function calcRSI(closes, length=14){
     if(closes.length <= length) return NaN;
     let gains = 0, losses = 0;
@@ -445,10 +500,11 @@
     return {k, d};
   }
 
-  async function fetchOHLC(symbol, barsCount){
+  async function fetchOHLC(symbol, barsCount, interval){
+    const useInterval = interval || INTERVAL;
     const url = BASE_URL +
       "?symbol=" + encodeURIComponent(symbol) +
-      "&interval=" + INTERVAL +
+      "&interval=" + useInterval +
       "&bars_count=" + barsCount;
     const res = await fetch(url);
     if(!res.ok) throw new Error("HTTP " + res.status);
@@ -472,6 +528,83 @@
     if(Math.abs(n) >= 1_000_000)     return (n/1_000_000).toFixed(digits)+"M";
     if(Math.abs(n) >= 1_000)         return (n/1_000).toFixed(digits)+"K";
     return n.toFixed(digits);
+  }
+
+  // ===== BANDAR ACTIVITY (BSJP Style) =====
+  function applyBigPlayerEntry(bars){
+    if(!bars || bars.length < 30) return null;
+
+    const closes  = bars.map(b=>b.close);
+    const highs   = bars.map(b=>b.high);
+    const volumes = bars.map(b=>b.volume);
+
+    const last = bars[bars.length-1];
+    const prev = bars[bars.length-2];
+
+    const value        = last.close * last.volume; // Value > 100M
+    const roc1         = prev.close !== 0 ? (last.close - prev.close)/prev.close : 0;
+    const ma5          = sma(closes,5);
+    const ma10         = sma(closes,10);
+
+    const lookback     = Math.min(260, bars.length);
+    const high52       = Math.max.apply(null, highs.slice(-lookback));
+    const ratio52      = high52 > 0 ? last.close / high52 : 0;
+
+    const condValue        = value > 100_000_000;
+    const condPriceVsPrev  = last.close >= prev.close;
+    const condReturn1D     = roc1 > 0.03;
+    const condPriceAboveM5 = last.close > ma5;
+    const condVol2xPrev    = last.volume >= 2 * Math.max(prev.volume,1);
+    const condPrevVsMA10   = prev.close <= 2 * ma10;
+    const condPriceMin     = last.close > 50;
+    const condNear52W      = last.close >= 0.95 * high52;
+
+    const passed =
+      condValue &&
+      condPriceVsPrev &&
+      condReturn1D &&
+      condPriceAboveM5 &&
+      condVol2xPrev &&
+      condPrevVsMA10 &&
+      condPriceMin &&
+      condNear52W;
+
+    if(!passed) return null;
+
+    return {
+      last,
+      value,
+      roc1,
+      volRatio: last.volume / Math.max(prev.volume,1),
+      ratio52,
+      ma5
+    };
+  }
+
+  function renderResultsBigPlayer(rows){
+    const tbody = document.getElementById("results-body-bpjp");
+    tbody.innerHTML = "";
+    if(!rows.length){
+      tbody.innerHTML =
+        '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Tidak ada saham yang lolos BANDAR ACTIVITY.</td></tr>';
+      return;
+    }
+
+    rows.sort((a,b)=>b.value-a.value);
+
+    rows.forEach(row=>{
+      const tr = document.createElement("tr");
+      const priceAboveMa5 = row.price > row.ma5 ? "Ya" : "Tidak";
+      tr.innerHTML =
+        '<td>'+row.symbol+'</td>'+
+        '<td>'+row.price.toFixed(2)+'</td>'+
+        '<td>'+formatNumber(row.value,0)+'</td>'+
+        '<td>'+ (row.roc1*100).toFixed(2)+'%</td>'+
+        '<td>'+row.volRatio.toFixed(2)+'x</td>'+
+        '<td>'+priceAboveMa5+'</td>'+
+        '<td>'+ (row.ratio52*100).toFixed(1)+'%</td>';
+      tbody.appendChild(tr);
+    });
   }
 
   // ===== VOLUME BREAKOUT (KUANTARA 01) =====
@@ -699,70 +832,71 @@
     });
   }
 
-  // ===== MOMENTUM – MACD, RSI, Stoch =====
+  // ===== MOMENTUM – MACD Golden Cross + EMA50 (H4) =====
   function applyMomentum(bars){
     if(!bars || bars.length < 60) return null;
 
     const closes = bars.map(b=>b.close);
-    const highs  = bars.map(b=>b.high);
-    const lows   = bars.map(b=>b.low);
     const last   = bars[bars.length-1];
 
-    const ema12  = ema(closes,12);
-    const ema26  = ema(closes,26);
-    if(!isFinite(ema12) || !isFinite(ema26)) return null;
+    // EMA50 series untuk cek 3 candle terakhir
+    const ema50Series = emaSeries(closes,50);
+    if(!ema50Series.length) return null;
 
-    const macdLine   = ema12 - ema26;
-    const macdSeries = [];
-    if(closes.length >= 26+9){
-      let e12 = closes.slice(0,12).reduce((a,b)=>a+b,0)/12;
-      let e26 = closes.slice(0,26).reduce((a,b)=>a+b,0)/26;
-      const k12 = 2/(12+1);
-      const k26 = 2/(26+1);
-      for(let i=26;i<closes.length;i++){
-        e12 = closes[i]*k12 + e12*(1-k12);
-        e26 = closes[i]*k26 + e26*(1-k26);
-        macdSeries.push(e12 - e26);
+    const n = closes.length;
+    const ema50Last = ema50Series[ema50Series.length-1];
+
+    // 3 candle terakhir close di atas EMA50 (berdasarkan masing-masing EMA50 point)
+    let last3Above = true;
+    for(let i = n-3; i < n; i++){
+      const emaIdx = i - (50 - 1); // mapping index close ke index ema50Series
+      const emaVal = ema50Series[emaIdx];
+      if(emaVal === undefined || closes[i] <= emaVal){
+        last3Above = false;
+        break;
       }
-    } else {
-      macdSeries.push(macdLine);
-    }
-    const signal = ema(macdSeries,9);
-    const hist   = macdLine - signal;
-
-    let histPrev = hist;
-    if(macdSeries.length >= 10){
-      const signalPrev = ema(macdSeries.slice(0,-1),9);
-      const macdPrev   = macdSeries[macdSeries.length-2];
-      histPrev = macdPrev - signalPrev;
     }
 
-    const rsi14 = calcRSI(closes,14);
-    const {k:stochK, d:stochD} = calcStochastic(highs,lows,closes,14,3);
+    const priceAboveEma50 = last.close > ema50Last;
 
-    const condMacdPos   = macdLine > signal && hist > 0 && hist > histPrev;
-    const condRsiStrong = rsi14 >= 55 && rsi14 <= 80;
-    const condStoch     = stochK > stochD && stochK >= 50 && stochK <= 90;
+    // MACD 12-26-9 untuk Golden Cross
+    if(closes.length < 26 + 9) return null;
 
-    const cBack10 = closes[closes.length-11];
-    const roc10   = cBack10 ? (last.close - cBack10)/cBack10 : 0;
-    const condRoc10 = roc10 > 0.03;
+    let e12 = closes.slice(0,12).reduce((a,b)=>a+b,0)/12;
+    let e26 = closes.slice(0,26).reduce((a,b)=>a+b,0)/26;
+    const k12 = 2/(12+1);
+    const k26 = 2/(26+1);
+    const macdSeries = [];
+    for(let i=26;i<closes.length;i++){
+      e12 = closes[i]*k12 + e12*(1-k12);
+      e26 = closes[i]*k26 + e26*(1-k26);
+      macdSeries.push(e12 - e26);
+    }
+    if(macdSeries.length < 10) return null;
 
-    const passed = condMacdPos && condRsiStrong && condStoch && condRoc10;
+    const macdLine   = macdSeries[macdSeries.length-1];
+    const macdPrev   = macdSeries[macdSeries.length-2];
+    const signal     = ema(macdSeries,9);
+    const signalPrev = ema(macdSeries.slice(0,-1),9);
+    const hist       = macdLine - signal;
+    const histPrev   = macdPrev - signalPrev;
+
+    // Golden Cross: MACD line cross up signal (hist dari <=0 ke >0)
+    const goldenCross = (macdLine > signal) && (hist > 0) && (histPrev <= 0);
+
+    const passed = goldenCross && priceAboveEma50 && last3Above;
     if(!passed) return null;
 
-    const normRsi   = (rsi14-50)/50;
-    const normStoch = (stochK-50)/50;
-    const normHist  = hist / (Math.abs(histPrev)+1e-6);
-
-    const momentumScore = normRsi*40 + normStoch*30 + normHist*30;
+    // Momentum score simpel: kombinasi hist & distance ke EMA50
+    const distEma50 = (last.close - ema50Last) / ema50Last;
+    const momentumScore = (hist * 100) + (distEma50 * 100);
 
     return {
       last,
       macdHist: hist,
-      rsi: rsi14,
-      stochK,
-      stochD,
+      ema50: ema50Last,
+      above3: last3Above,
+      goldenCross,
       momentumScore
     };
   }
@@ -777,22 +911,25 @@
     }
     rows.forEach(row=>{
       const tr = document.createElement("tr");
+      const aboveLabel  = row.above3 ? "3/3" : "Tidak";
+      const signalLabel = row.goldenCross ? "Golden Cross" : "-";
       tr.innerHTML =
         '<td>'+row.symbol+'</td>'+
         '<td>'+row.price.toFixed(2)+'</td>'+
         '<td>'+row.macdHist.toFixed(4)+'</td>'+
-        '<td>'+row.rsi.toFixed(1)+'</td>'+
-        '<td>'+row.stochK.toFixed(1)+'</td>'+
-        '<td>'+row.stochD.toFixed(1)+'</td>'+
+        '<td>'+row.ema50.toFixed(2)+'</td>'+
+        '<td>'+aboveLabel+'</td>'+
+        '<td>'+signalLabel+'</td>'+
         '<td>'+row.momentumScore.toFixed(1)+'</td>';
       tbody.appendChild(tr);
     });
   }
 
   // ===== Handlers – NO BATCH, PERCENTAGE PROGRESS =====
-  async function runScreen(name, barsCount, applyFn, renderFn, statusId){
+  async function runScreen(name, barsCount, applyFn, renderFn, statusId, interval){
     const statusEl = document.getElementById(statusId);
     const btnMap = {
+      "status-bpjp":"run-btn-bpjp",
       "status-k01":"run-btn-k01",
       "status-ma":"run-btn-ma",
       "status-trend":"run-btn-trend",
@@ -821,7 +958,7 @@
         `${name} – ${i+1}/${total} saham (${progress}%)`;
 
       try{
-        const bars = await fetchOHLC(sym, barsCount);
+        const bars = await fetchOHLC(sym, barsCount, interval);
         if(!bars || !bars.length) continue;
         const hit = applyFn(bars, sym);
         if(hit){
@@ -839,6 +976,29 @@
     statusEl.className   = "status ok";
     btn.disabled         = false;
   }
+
+  // BANDAR ACTIVITY – daily timeframe
+  document.getElementById("run-btn-bpjp").addEventListener("click", ()=>{
+    runScreen(
+      "BANDAR ACTIVITY",
+      BARS_BSJP,
+      applyBigPlayerEntry,
+      (rows)=>{
+        const mapped = rows.map(r => ({
+          symbol:r.symbol,
+          price:r.last.close,
+          value:r.value,
+          roc1:r.roc1,
+          volRatio:r.volRatio,
+          ma5:r.ma5,
+          ratio52:r.ratio52
+        }));
+        renderResultsBigPlayer(mapped);
+      },
+      "status-bpjp",
+      INTERVAL_D
+    );
+  });
 
   document.getElementById("run-btn-k01").addEventListener("click", ()=>{
     runScreen(
@@ -913,14 +1073,15 @@
           symbol:r.symbol,
           price:r.last.close,
           macdHist:r.macdHist,
-          rsi:r.rsi,
-          stochK:r.stochK,
-          stochD:r.stochD,
+          ema50:r.ema50,
+          above3:r.above3,
+          goldenCross:r.goldenCross,
           momentumScore:r.momentumScore
         }));
         renderResultsMomentum(mapped);
       },
-      "status-mom"
+      "status-mom",
+      INTERVAL_H4   // H4 timeframe
     );
   });
 </script>
