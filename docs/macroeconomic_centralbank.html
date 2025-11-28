@@ -153,41 +153,10 @@
       border-color: #444;
     }
 
-    /* === Toggle Button === */
-    .toggle-group {
-      display: flex;
-      gap: 2px;
-      background: #1a1a1a;
-      padding: 2px;
-      border-radius: 4px;
-    }
-    .toggle-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-family: var(--font-stack);
-      font-size: 9px;
-      padding: 3px 8px;
-      cursor: pointer;
-      border-radius: 2px;
-      white-space: nowrap;
-    }
-    .toggle-btn.active {
-      background: #333;
-      color: #fff;
-    }
-
-    /* === Chart & Voters === */
-    #chartView, #votersView { width: 100%; height: 100%; }
-    .hidden { display: none !important; }
-
-    .voters-container { padding: 12px; }
-    .voter-item { margin-bottom: 12px; border-bottom: 1px dashed #222; padding-bottom: 8px; }
-    .voter-item:last-child { border: none; }
-    .voter-cb { color: #fff; font-weight: 500; margin-bottom: 4px; }
-    .tag { 
-      display: inline-block; background: #1a1a1a; border: 1px solid #333; 
-      color: #aaa; font-size: 9px; padding: 1px 5px; border-radius: 3px; margin-right: 4px; margin-bottom: 2px;
+    /* === Chart View Only === */
+    #chartView {
+      width: 100%;
+      height: 100%;
     }
 
     /* === Calendar Styling === */
@@ -286,7 +255,7 @@
   <section class="panel" id="panel-policy">
     <header class="panel-header">
       <div class="panel-title">Global Policy Rates</div>
-      <div class="panel-meta">Live Snapshot</div>
+      <div class="panel-meta" id="policy-status">Syncing...</div>
     </header>
     <div class="panel-body">
       <div style="min-width: 450px;">
@@ -300,177 +269,11 @@
               <th class="col-chg">Chg (bps)</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="policy-body">
             <tr>
-              <td>
-                <span class="cb-name">Federal Reserve</span>
-                <span class="text-sub">USA · FOMC</span>
+              <td colspan="5" style="text-align:center; padding:20px; color:#555;">
+                Loading Fastbull Policy Rates...
               </td>
-              <td>
-                4.50–4.75%
-                <span class="text-sub">Current</span>
-              </td>
-              <td>
-                <span class="stance-tag stance-dove">Dove</span>
-                <span class="text-sub">Easing bias</span>
-              </td>
-              <td>
-                Dec 18, 2025
-                <span class="text-sub">Forecast: Cut 25bps</span>
-              </td>
-              <td style="text-align:right; color:#ef5350;">-25</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="cb-name">ECB</span>
-                <span class="text-sub">Euro Area</span>
-              </td>
-              <td>
-                3.25%
-                <span class="text-sub">Dep. Facility</span>
-              </td>
-              <td>
-                <span class="stance-tag stance-hold">Hold</span>
-                <span class="text-sub">Data-dependent</span>
-              </td>
-              <td>
-                Dec 12, 2025
-                <span class="text-sub">Forecast: Hold</span>
-              </td>
-              <td style="text-align:right; color:var(--text-muted);">0</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="cb-name">Bank of England</span>
-                <span class="text-sub">UK · MPC</span>
-              </td>
-              <td>
-                4.75%
-                <span class="text-sub">Bank Rate</span>
-              </td>
-              <td>
-                <span class="stance-tag stance-dove">Dove</span>
-                <span class="text-sub">Gradual cuts</span>
-              </td>
-              <td>
-                Dec 19, 2025
-                <span class="text-sub">Forecast: Cut 25bps</span>
-              </td>
-              <td style="text-align:right; color:#ef5350;">-25</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="cb-name">Bank of Japan</span>
-                <span class="text-sub">Japan</span>
-              </td>
-              <td>
-                0.25%
-                <span class="text-sub">Policy Bal.</span>
-              </td>
-              <td>
-                <span class="stance-tag stance-hawk">Hawk</span>
-                <span class="text-sub">Normalization</span>
-              </td>
-              <td>
-                Dec 19, 2025
-                <span class="text-sub">Forecast: Hike 10bps</span>
-              </td>
-              <td style="text-align:right; color:#66bb6a;">+15</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="cb-name">Bank of Canada</span>
-                <span class="text-sub">Canada</span>
-              </td>
-              <td>
-                3.75%
-                <span class="text-sub">Overnight</span>
-              </td>
-              <td>
-                <span class="stance-tag stance-dove">Dove</span>
-                <span class="text-sub">Aggressive cuts</span>
-              </td>
-              <td>
-                Dec 11, 2025
-                <span class="text-sub">Forecast: Cut 50bps</span>
-              </td>
-              <td style="text-align:right; color:#ef5350;">-50</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="cb-name">RBA</span>
-                <span class="text-sub">Australia</span>
-              </td>
-              <td>
-                4.35%
-                <span class="text-sub">Cash Rate</span>
-              </td>
-              <td>
-                <span class="stance-tag stance-hold">Hold</span>
-                <span class="text-sub">Wait & see</span>
-              </td>
-              <td>
-                Feb 18, 2026
-                <span class="text-sub">No meeting Dec</span>
-              </td>
-              <td style="text-align:right; color:var(--text-muted);">0</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="cb-name">RBNZ</span>
-                <span class="text-sub">New Zealand</span>
-              </td>
-              <td>
-                4.25%
-                <span class="text-sub">OCR</span>
-              </td>
-              <td>
-                <span class="stance-tag stance-dove">Dove</span>
-                <span class="text-sub">Easing cycle</span>
-              </td>
-              <td>
-                Feb 25, 2026
-                <span class="text-sub">Forecast: Cut</span>
-              </td>
-              <td style="text-align:right; color:#ef5350;">-50</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="cb-name">SNB</span>
-                <span class="text-sub">Switzerland</span>
-              </td>
-              <td>
-                1.00%
-                <span class="text-sub">Policy Rate</span>
-              </td>
-              <td>
-                <span class="stance-tag stance-dove">Dove</span>
-                <span class="text-sub">Further easing</span>
-              </td>
-              <td>
-                Dec 12, 2025
-                <span class="text-sub">Forecast: Cut 25bps</span>
-              </td>
-              <td style="text-align:right; color:#ef5350;">-25</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="cb-name">Bank Indonesia</span>
-                <span class="text-sub">Indonesia</span>
-              </td>
-              <td>
-                6.00%
-                <span class="text-sub">BI-Rate</span>
-              </td>
-              <td>
-                <span class="stance-tag stance-hold">Hold</span>
-                <span class="text-sub">Rupiah stability</span>
-              </td>
-              <td>
-                Dec 18, 2025
-                <span class="text-sub">Forecast: Hold</span>
-              </td>
-              <td style="text-align:right; color:var(--text-muted);">0</td>
             </tr>
           </tbody>
         </table>
@@ -478,69 +281,14 @@
     </div>
   </section>
 
-  <!-- TOP RIGHT: TREND & STRUCTURE (ECharts + Voters) -->
+  <!-- TOP RIGHT: INTEREST RATES TREND (ECharts) -->
   <section class="panel" id="panel-trend">
     <header class="panel-header">
-      <div class="panel-title">Trend & Structure</div>
-      <div class="toggle-group" id="trend-toggle">
-        <button class="toggle-btn active" onclick="switchView('chart')">Rates</button>
-        <button class="toggle-btn" onclick="switchView('voters')">Voters</button>
-      </div>
+      <div class="panel-title">Interest Rates Trend</div>
+      <div class="panel-meta" id="trend-status">Syncing...</div>
     </header>
     <div class="panel-body">
       <div id="chartView"></div>
-
-      <div id="votersView" class="hidden voters-container">
-        <div class="voter-item">
-          <div class="voter-cb">Federal Reserve (FOMC)</div>
-          <div>
-            <span class="tag">Jerome Powell (Chair)</span>
-            <span class="tag">John Williams (NY)</span>
-            <span class="tag">Philip Jefferson</span>
-            <span class="tag">Michelle Bowman</span>
-            <span class="tag">Michael Barr</span>
-            <span class="tag">Lisa Cook</span>
-            <span class="tag">Adriana Kugler</span>
-            <span class="tag">Rotating Presidents (4)</span>
-          </div>
-        </div>
-        <div class="voter-item">
-          <div class="voter-cb">ECB (Governing Council)</div>
-          <div>
-            <span class="tag">Christine Lagarde</span>
-            <span class="tag">Luis de Guindos</span>
-            <span class="tag">Philip Lane</span>
-            <span class="tag">Piero Cipollone</span>
-            <span class="tag">Isabel Schnabel</span>
-            <span class="tag">Frank Elderson</span>
-            <span class="tag">+ 20 NCB Governors</span>
-          </div>
-        </div>
-        <div class="voter-item">
-          <div class="voter-cb">Bank of England (MPC)</div>
-          <div>
-            <span class="tag">Andrew Bailey</span>
-            <span class="tag">Clare Lombardelli</span>
-            <span class="tag">Dave Ramsden</span>
-            <span class="tag">Swati Dhingra</span>
-            <span class="tag">Megan Greene</span>
-            <span class="tag">Catherine Mann</span>
-            <span class="tag">Huw Pill</span>
-            <span class="tag">Alan Taylor</span>
-          </div>
-        </div>
-        <div class="voter-item">
-          <div class="voter-cb">Bank Indonesia (RDG)</div>
-          <div>
-            <span class="tag">Perry Warjiyo</span>
-            <span class="tag">Destry Damayanti</span>
-            <span class="tag">Doni P. Joewono</span>
-            <span class="tag">Juda Agung</span>
-            <span class="tag">Aida S. Budiman</span>
-            <span class="tag">Filianingsih Hendarta</span>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -596,134 +344,512 @@
 </div>
 
 <script>
-  // === 1. View Switcher (Rates vs Voters) ===
-  function switchView(view) {
-    const chart = document.getElementById('chartView');
-    const voters = document.getElementById('votersView');
-    const btns = document.querySelectorAll('#trend-toggle .toggle-btn');
+  // === GLOBAL ECHARTS INSTANCE UNTUK TREND ===
+  var trendChart = null;
 
-    if (view === 'chart') {
-      chart.classList.remove('hidden');
-      voters.classList.add('hidden');
-      btns[0].classList.add('active');
-      btns[1].classList.remove('active');
-      if (myChart) myChart.resize();
-    } else {
-      chart.classList.add('hidden');
-      voters.classList.remove('hidden');
-      btns[0].classList.remove('active');
-      btns[1].classList.add('active');
-    }
+  // --- Helper rate parsing (handle "3.75-4.0" jadi 3.75) ---
+  function parseRateToNumber(rateStr) {
+    if (!rateStr) return NaN;
+    const firstPart = String(rateStr).split(/[-–]/)[0].trim();
+    const val = parseFloat(firstPart);
+    return val;
   }
 
-  // === 2. ECharts Configuration (Minimalist Rate Trend) ===
-  var myChart = echarts.init(document.getElementById('chartView'));
-  var option = {
-    backgroundColor: 'transparent',
-    grid: { top: 30, right: 20, bottom: 20, left: 40 },
-    tooltip: { 
-      trigger: 'axis', 
-      backgroundColor: '#111', 
-      borderColor: '#333', 
-      textStyle: { color: '#eee', fontSize: 10 } 
-    },
-    legend: {
-      top: 8,
-      left: 40,
-      textStyle: { color: '#bdbdbd', fontSize: 10 }
-    },
-    xAxis: {
-      type: 'category',
-      data: ['2020', '2021', '2022', '2023', '2024', '2025'],
-      axisLine: { lineStyle: { color: '#333' } },
-      axisLabel: { color: '#777', fontSize: 10 }
-    },
-    yAxis: {
-      type: 'value',
-      splitLine: { lineStyle: { color: '#1a1a1a' } },
-      axisLabel: { color: '#777', fontSize: 10 }
-    },
-    series: [
-      { name: 'Fed', data: [0.25, 0.25, 4.5, 5.5, 5.0, 4.5], type: 'line', smooth: true, showSymbol: false, itemStyle: {color:'#81c784'} },
-      { name: 'ECB', data: [0, 0, 2.5, 4.5, 3.5, 3.25], type: 'line', smooth: true, showSymbol: false, itemStyle: {color:'#64b5f6'} },
-      { name: 'BI',  data: [3.75, 3.50, 5.5, 6.0, 6.25, 6.0], type: 'line', smooth: true, showSymbol: false, itemStyle: {color:'#ba68c8'} }
-    ]
-  };
-  myChart.setOption(option);
-  window.addEventListener('resize', function() { myChart.resize(); });
+  // === 1. POLICY RATES – getWebCentralBankInterestRate ===
+  async function loadPolicyRates() {
+    const tbody = document.getElementById('policy-body');
+    const statusEl = document.getElementById('policy-status');
 
-  // === 3. Calendar Logic (Fastbull Merge Calendar API) ===
-  async function loadCalendar() {
-    const tbody = document.getElementById('calendar-body');
-    const status = document.getElementById('cal-status');
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align:center; padding:10px; color:#555;">
+          Loading Fastbull Policy Rates...
+        </td>
+      </tr>
+    `;
+    statusEl.textContent = "Syncing...";
 
-    const now = Date.now();
-    const future = now + (30 * 24 * 60 * 60 * 1000);
-    const url = `https://api.fastbull.com/fastbull-news-service/api/getMergeCalendarV1Page?startTimestamp=${now}&endTimestamp=${future}&types=1,2,3&pageSize=100&importance=3`; 
+    const url = "https://api.fastbull.com/fastbull-macro-data-service/api/getWebCentralBankInterestRate";
 
     try {
-      const req = await fetch(url, { headers: { "lang": "en", "client-type": "web" }});
-      const res = await req.json();
-      
-      // Normalisasi Data
-      let items = res.data?.list || res.data || [];
-      
-      // Filter Keyword Central Bank
-      const cbKeywords = ["rate decision", "interest rate", "policy meeting", "monetary policy", "minutes"];
-      let filtered = items.filter(i => {
-        const title = (i.title || "").toLowerCase();
-        return cbKeywords.some(k => title.includes(k));
-      }).slice(0, 20); // Ambil 20 terdekat
+      const headers = {
+        "Accept": "application/json, text/plain, */*",
+        "lang": "en",
+        "client-type": "Web",
+        "client-version": "4.2.0",
+        "version": "4",
+        "timestamp": String(Date.now())
+      };
 
-      tbody.innerHTML = "";
+      const res = await fetch(url, { headers });
+      if (!res.ok) throw new Error("HTTP " + res.status);
 
-      if(filtered.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:10px; color:#555;'>No major CB events detected soon.</td></tr>";
-        status.textContent = "Data Empty";
+      const json = await res.json();
+
+      let list = [];
+      if (Array.isArray(json.data)) {
+        list = json.data;
+      } else if (typeof json.bodyMessage === "string") {
+        try {
+          list = JSON.parse(json.bodyMessage);
+        } catch (e) {
+          console.error("Failed to parse bodyMessage:", e);
+        }
+      }
+
+      if (!Array.isArray(list) || !list.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align:center; padding:10px; color:#555;">
+              No policy rate data.
+            </td>
+          </tr>
+        `;
+        statusEl.textContent = "No Data";
         return;
       }
 
-      filtered.forEach(ev => {
-        const row = document.createElement('tr');
-        
-        // Date Parsing
-        const rawTime = ev.releaseTime || ev.timestamp || 0;
-        const dateObj = rawTime > 1000000000000 ? new Date(rawTime) : new Date(rawTime * 1000);
-        
-        const day = dateObj.getUTCDate();
-        const mon = dateObj.toLocaleString('en-US', { month: 'short' });
-        const time = dateObj.toISOString().substr(11, 5);
-        
-        // Bank Badge
-        let country = (ev.countryName || "").toLowerCase();
-        let badgeClass = "ot";
-        let code = "CB";
-        if(country.includes("united states")) { badgeClass="us"; code="FED"; }
-        else if(country.includes("euro")) { badgeClass="eu"; code="ECB"; }
-        else if(country.includes("kingdom")) { badgeClass="uk"; code="BOE"; }
-        else if(country.includes("japan")) { badgeClass="jp"; code="BOJ"; }
-        else if(country.includes("indonesia")) { badgeClass="id"; code="BI"; }
+      list.sort((a, b) => (a.bankId || 0) - (b.bankId || 0));
 
-        // === Calendar Row ===
+      tbody.innerHTML = "";
+
+      list.forEach(item => {
+        const bankName     = item.bankName || "Central Bank";
+        const abbr         = item.abbreviation || "";
+        const currentRate  = item.currentRate || "-";
+        const lastRate     = item.lastRate || "-";
+        const addRateStr   = item.addRate || "0";
+        const addRateVal   = Number(addRateStr);
+        const nextRate     = item.nextRate || "-";
+        const cpiValue     = item.cpiValue || null;
+
+        let stanceLabel = "Hold";
+        let stanceClass = "stance-hold";
+
+        if (!isNaN(addRateVal)) {
+          if (addRateVal > 0) {
+            stanceLabel = "Hawk";
+            stanceClass = "stance-hawk";
+          } else if (addRateVal < 0) {
+            stanceLabel = "Dove";
+            stanceClass = "stance-dove";
+          }
+        }
+
+        const stanceSub =
+          cpiValue != null
+            ? `Inflation ~ ${cpiValue}%`
+            : `Δ last rate: ${addRateStr} bps`;
+
+        let nextMeetingHtml = "-";
+        if (item.nextRateTime) {
+          const tsMs = item.nextRateTime * 1000;
+          const d = new Date(tsMs);
+          if (!isNaN(d.getTime())) {
+            const dayStr = d.toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric"
+            });
+            const timeStr = d.toLocaleTimeString("en-GB", {
+              hour: "2-digit",
+              minute: "2-digit"
+            });
+            nextMeetingHtml = `
+              ${dayStr}
+              <span class="text-sub">Next Rate: ${nextRate} · ${timeStr} UTC</span>
+            `;
+          }
+        }
+
+        let chgColor = "var(--text-muted)";
+        if (!isNaN(addRateVal)) {
+          if (addRateVal > 0) chgColor = "#66bb6a";
+          else if (addRateVal < 0) chgColor = "#ef5350";
+        }
+
+        const row = document.createElement("tr");
         row.innerHTML = `
-          <td class="cal-date">${day} ${mon} <span style="font-size:8px; opacity:0.6">${time}</span></td>
-          <td class="cal-cb"><span class="badge ${badgeClass}">${code}</span></td>
-          <td class="cal-event">${(ev.title || "").replace("Interest Rate Decision", "Rate Dec")}</td>
-          <td class="cal-data text-sub">${ev.previous ?? "-"}</td>
-          <td class="cal-data text-sub">${ev.consensus ?? "-"}</td>
+          <td>
+            <span class="cb-name">${bankName}</span>
+            <span class="text-sub">${abbr}</span>
+          </td>
+          <td>
+            ${currentRate}
+            <span class="text-sub">Last: ${lastRate}</span>
+          </td>
+          <td>
+            <span class="stance-tag ${stanceClass}">${stanceLabel}</span>
+            <span class="text-sub">${stanceSub}</span>
+          </td>
+          <td>
+            ${nextMeetingHtml}
+          </td>
+          <td style="text-align:right; color:${chgColor};">
+            ${isNaN(addRateVal) ? "-" : addRateVal}
+          </td>
         `;
         tbody.appendChild(row);
       });
-      status.textContent = "Updated";
 
+      statusEl.textContent = "Updated";
+    } catch (err) {
+      console.error(err);
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align:center; padding:10px; color:#ef5350;">
+            Failed to load policy rates. Check console / network.
+          </td>
+        </tr>
+      `;
+      statusEl.textContent = "Error";
+    }
+  }
+
+  // === 2. INTEREST RATES TREND – getHistoryInterestRate per bank ===
+  async function loadInterestTrend() {
+    const status = document.getElementById("trend-status");
+    const dom = document.getElementById("chartView");
+
+    if (!trendChart) {
+      trendChart = echarts.init(dom);
+      window.addEventListener("resize", () => {
+        if (trendChart) trendChart.resize();
+      });
+    }
+
+    status.textContent = "Syncing...";
+
+    const BANKS = [
+      { id: 1, code: "FED", name: "Federal Reserve" },
+      { id: 2, code: "ECB", name: "European Central Bank" },
+      { id: 3, code: "BOE", name: "Bank of England" },
+      { id: 4, code: "BOJ", name: "Bank of Japan" },
+      { id: 5, code: "BOC", name: "Bank of Canada" },
+      { id: 6, code: "RBA", name: "Reserve Bank of Australia" },
+      { id: 7, code: "RBNZ", name: "Reserve Bank of New Zealand" },
+      { id: 8, code: "SNB", name: "Swiss National Bank" }
+    ];
+
+    const BASE_URL = "https://api.fastbull.com/fastbull-macro-data-service/api/getHistoryInterestRate";
+    const endTime = Date.now();
+
+    // cutoff Oktober 2024 untuk SNB
+    const SNB_CUTOFF_MS = Date.UTC(2024, 9, 1); // 1 Oct 2024 (month 9)
+
+    async function fetchHistory(bank) {
+      const url = `${BASE_URL}?bankId=${bank.id}&endTime=${endTime}&startTime=`;
+      try {
+        const headers = {
+          "Accept": "application/json, text/plain, */*",
+          "lang": "en",
+          "client-type": "Web",
+          "client-version": "4.2.0",
+          "version": "4",
+          "timestamp": String(Date.now())
+        };
+
+        const res = await fetch(url, { headers });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+
+        const json = await res.json();
+        let list = [];
+
+        if (Array.isArray(json.data)) {
+          list = json.data;
+        } else if (typeof json.bodyMessage === "string") {
+          try {
+            list = JSON.parse(json.bodyMessage);
+          } catch (e) {
+            console.error("Failed to parse bodyMessage for bank", bank.id, e);
+          }
+        }
+
+        if (!Array.isArray(list)) return [];
+
+        let pts = list
+          .map(row => {
+            const t = (row.createTime || 0) * 1000;
+            const rateStr = row.currentRate || row.predictionRate || row.lastRate;
+            const val = parseRateToNumber(rateStr);
+            if (!t || isNaN(val)) return null;
+            return [t, val];
+          })
+          .filter(Boolean);
+
+        // khusus SNB: buang data sebelum 1 Okt 2024
+        if (bank.code === "SNB") {
+          pts = pts.filter(([t]) => t >= SNB_CUTOFF_MS);
+        }
+
+        pts.sort((a, b) => a[0] - b[0]);
+        return pts;
+      } catch (err) {
+        console.error("Failed to fetch history for bank", bank.id, err);
+        return [];
+      }
+    }
+
+    try {
+      const allHistories = await Promise.all(BANKS.map(fetchHistory));
+
+      const series = [];
+      allHistories.forEach((pts, idx) => {
+        if (!pts.length) return;
+        const b = BANKS[idx];
+        series.push({
+          name: b.code,
+          type: "line",
+          showSymbol: false,
+          smooth: true,
+          data: pts
+        });
+      });
+
+      if (!series.length) {
+        trendChart.clear();
+        trendChart.setOption({
+          backgroundColor: "transparent",
+          graphic: {
+            type: "text",
+            left: "center",
+            top: "middle",
+            style: {
+              text: "No rate history data",
+              fill: "#777",
+              fontSize: 12
+            }
+          }
+        });
+        status.textContent = "No Data";
+        return;
+      }
+
+      const option = {
+        backgroundColor: "transparent",
+        grid: { top: 32, right: 18, bottom: 30, left: 48 },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: { type: "line" },
+          backgroundColor: "#111",
+          borderColor: "#333",
+          textStyle: { color: "#eee", fontSize: 10 },
+          valueFormatter: v => (v == null ? "-" : v.toFixed(2) + "%")
+        },
+        legend: {
+          top: 6,
+          left: 40,
+          textStyle: { color: "#bdbdbd", fontSize: 10 }
+        },
+        xAxis: {
+          type: "time",
+          axisLine: { lineStyle: { color: "#333" } },
+          axisLabel: {
+            color: "#777",
+            fontSize: 10,
+            formatter: value => {
+              const d = new Date(value);
+              return d.toLocaleDateString("en-GB", {
+                month: "short",
+                year: "2-digit"
+              });
+            }
+          },
+          splitLine: { lineStyle: { color: "#1a1a1a" } }
+        },
+        yAxis: {
+          type: "value",
+          axisLine: { lineStyle: { color: "#333" } },
+          axisLabel: {
+            color: "#777",
+            fontSize: 10,
+            formatter: value => value.toFixed(1) + "%"
+          },
+          splitLine: { lineStyle: { color: "#1a1a1a" } }
+        },
+        series
+      };
+
+      trendChart.setOption(option, true);
+      status.textContent = "Updated";
     } catch (e) {
       console.error(e);
-      tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#ef5350;'>API Load Failed. Check Console.</td></tr>";
+      trendChart.clear();
+      trendChart.setOption({
+        backgroundColor: "transparent",
+        graphic: {
+          type: "text",
+          left: "center",
+          top: "middle",
+          style: {
+            text: "Error loading interest rate trend",
+            fill: "#ef5350",
+            fontSize: 12
+          }
+        }
+      });
       status.textContent = "Error";
     }
   }
 
-  // === 4. FASTBULL TOPIC STRUCTURE (SAMA SEPERTI PAGE 24/7 HEADLINES) ===
+  // === 3. Calendar Logic (Fastbull getInterestRateById per bank) ===
+  async function loadCalendar() {
+    const tbody  = document.getElementById('calendar-body');
+    const status = document.getElementById('cal-status');
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align:center; padding:10px; color:#555;">
+          Loading Central Bank Schedules...
+        </td>
+      </tr>
+    `;
+    status.textContent = "Syncing...";
+
+    const now    = Date.now();
+    const future = now + 30 * 24 * 60 * 60 * 1000;
+
+    const BANKS = [
+      { id: 1, code: "FED", badge: "us" },
+      { id: 2, code: "ECB", badge: "eu" },
+      { id: 3, code: "BOE", badge: "uk" },
+      { id: 4, code: "BOJ", badge: "jp" },
+      { id: 5, code: "BOC", badge: "ot" },
+      { id: 6, code: "RBA", badge: "ot" },
+      { id: 7, code: "RBNZ", badge: "ot" },
+      { id: 8, code: "SNB", badge: "ot" }
+    ];
+
+    const BASE_URL = "https://api.fastbull.com/fastbull-macro-data-service/api/getInterestRateById";
+
+    async function fetchBankSchedules(bank) {
+      const url = `${BASE_URL}?bankId=${bank.id}`;
+      try {
+        const headers = {
+          "Accept": "application/json, text/plain, */*",
+          "lang": "en",
+          "client-type": "Web",
+          "client-version": "4.2.0",
+          "version": "4",
+          "timestamp": String(Date.now())
+        };
+
+        const res = await fetch(url, { headers });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+
+        const json = await res.json();
+        if (typeof json.bodyMessage !== "string") return [];
+
+        let inner;
+        try {
+          inner = JSON.parse(json.bodyMessage);
+        } catch (e) {
+          console.error("Failed to parse bodyMessage for bank", bank.id, e);
+          return [];
+        }
+
+        const base   = inner.rateBaseModel || {};
+        const detail = inner.scheduleDetailModels || [];
+
+        const bankName  = base.bankName || bank.code;
+        const abbr      = base.abbreviation || bank.code;
+        const badge     = bank.badge;
+
+        const events = [];
+
+        detail.forEach(dayBlock => {
+          const schedules = dayBlock.scheduleList || [];
+          schedules.forEach(ev => {
+            const ts = ev.startTime || ev.currentTime || 0;
+            if (!ts) return;
+
+            if (ts < now || ts > future) return;
+
+            events.push({
+              ts,
+              localTime: ev.localTime || "",
+              title: ev.events || "(No title)",
+              bankCode: abbr,
+              bankName,
+              badgeClass: badge
+            });
+          });
+        });
+
+        return events;
+      } catch (err) {
+        console.error("Failed to fetch schedule for bank", bank.id, err);
+        return [];
+      }
+    }
+
+    try {
+      const allLists = await Promise.all(BANKS.map(fetchBankSchedules));
+      let allEvents = allLists.flat();
+
+      allEvents.sort((a, b) => a.ts - b.ts);
+
+      tbody.innerHTML = "";
+
+      if (!allEvents.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align:center; padding:10px; color:#555;">
+              No central bank events within the next 30 days.
+            </td>
+          </tr>
+        `;
+        status.textContent = "Data Empty";
+        return;
+      }
+
+      allEvents.forEach(ev => {
+        const d = new Date(ev.ts);
+
+        const day  = d.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short"
+        });
+        const timeUtc = d.toISOString().slice(11, 16);
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="cal-date">
+            ${day}
+            <span style="font-size:8px; opacity:0.6; display:block;">${timeUtc} UTC</span>
+          </td>
+          <td class="cal-cb">
+            <span class="badge ${ev.badgeClass}">${ev.bankCode}</span>
+          </td>
+          <td class="cal-event">
+            ${ev.title}
+            <span class="text-sub">${ev.bankName}</span>
+          </td>
+          <td class="cal-data text-sub">
+            ${ev.localTime || "-"}
+          </td>
+          <td class="cal-data text-sub">
+            -
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      status.textContent = "Updated";
+    } catch (e) {
+      console.error(e);
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align:center; padding:10px; color:#ef5350;">
+            API Load Failed. Check Console.
+          </td>
+        </tr>
+      `;
+      status.textContent = "Error";
+    }
+  }
+
+  // === 4. FASTBULL TOPIC STRUCTURE (NEWS) ===
   const FASTBULL_NEWS_ENDPOINT = "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
   const FASTBULL_NEWS_HEADERS = { 
     Accept: "application/json",
@@ -733,7 +859,6 @@
   };
   const FASTBULL_CORS_PROXY = "https://api.allorigins.win/raw?url=";
 
-  // Full tag structure (copy dari page 24/7 Headlines)
   const FASTBULL_TAG_DATA = [
     {
       categoryName: "Highlights",
@@ -803,7 +928,6 @@
     });
   });
 
-  // Ambil semua tag ID khusus cluster "Macro & Central Banks"
   function getCentralBankTagIdsArray() {
     const cat = FASTBULL_TAG_DATA.find(c => c.categoryName === "Macro & Central Banks");
     if (!cat) return [];
@@ -858,7 +982,6 @@
     };
   }
 
-  // === DROPDOWN CENTRAL BANK TOPICS (SAMA STRUKTUR DENGAN PAGE HEADLINES) ===
   const cbTopicSelect = document.getElementById("cb-topic-select");
   const cbNewsFeed   = document.getElementById("cb-news-feed");
   const cbNewsStatus = document.getElementById("cb-news-status");
@@ -869,17 +992,14 @@
   function initCbTopicDropdown() {
     cbTopicSelect.innerHTML = "";
 
-    // Default: semua topik central bank
     const def = document.createElement("option");
     def.value = "all_cb";
     def.textContent = "All Central Bank Topics";
     cbTopicSelect.appendChild(def);
 
-    // Hanya ambil kategori "Macro & Central Banks"
     const macroCbCat = FASTBULL_TAG_DATA.find(c => c.categoryName === "Macro & Central Banks");
     if (!macroCbCat) return;
 
-    // Pisah sedikit: sub-group "Major Central Banks" vs "Macro Links"
     const mainBanksGroup = document.createElement("optgroup");
     mainBanksGroup.label = "Major Central Banks";
 
@@ -891,11 +1011,13 @@
       opt.value = String(tag.id);
       opt.textContent = tag.tagName;
 
-      // Central banks utama
-      if (["All Central Banks","Fed (USA)","ECB (Europe)","BOE (UK)","BOJ (Japan)","RBA (Australia)","BOC (Canada)","PBOC (China)","Central Banks Updates"].includes(tag.tagName)) {
+      if ([
+        "All Central Banks","Fed (USA)","ECB (Europe)","BOE (UK)",
+        "BOJ (Japan)","RBA (Australia)","BOC (Canada)","PBOC (China)",
+        "Central Banks Updates"
+      ].includes(tag.tagName)) {
         mainBanksGroup.appendChild(opt);
       } else {
-        // Inflation, Interest Rates, Employment, Monetary Policy, Fiscal Policy
         macroLinksGroup.appendChild(opt);
       }
     });
@@ -906,10 +1028,8 @@
 
   function getTagIdsForCbTopic(topicKey) {
     if (topicKey === "all_cb") {
-      // semua tag Macro & Central Banks
       return getCentralBankTagIdsJoined();
     }
-    // single tag id
     return String(topicKey);
   }
 
@@ -965,17 +1085,12 @@
         return;
       }
 
-      // Normalisasi + filter halus supaya tetap relevan central bank
       let items = list.map(it => normalizeCbNewsItem(it, key));
 
-      // Kalau pilihan bukan "all_cb", pastikan tag sesuai dengan topic
       if (key !== "all_cb") {
         const requestedIds = String(key).split(",").map(s => s.trim()).filter(Boolean);
         items = items.filter(it => it.rawTags?.some(rt => requestedIds.includes(rt)));
       }
-
-      // Sort terbaru ke atas
-      items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
       renderCbNews(items);
       cbNewsStatus.textContent = "Updated";
@@ -989,6 +1104,8 @@
   // === INIT ===
   document.addEventListener("DOMContentLoaded", () => {
     initCbTopicDropdown();
+    loadPolicyRates();
+    loadInterestTrend();
     loadCalendar();
     loadCbNews(cbCurrentTopic);
 
