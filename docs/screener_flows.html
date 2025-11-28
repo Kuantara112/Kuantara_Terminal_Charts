@@ -43,6 +43,23 @@
       background:radial-gradient(circle at top, #111111 0, #000000 55%, #000000 100%);
       color:var(--text-main);
       padding:16px;
+      overflow-y:auto;
+    }
+
+    /* Scrollbar hitam transparan */
+    body::-webkit-scrollbar{
+      width:8px;
+    }
+    body::-webkit-scrollbar-track{
+      background:transparent;
+    }
+    body::-webkit-scrollbar-thumb{
+      background:rgba(0,0,0,0.6);
+      border-radius:999px;
+    }
+    body{
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.6) transparent;
     }
 
     .page{
@@ -84,11 +101,6 @@
       font-weight:600;
       letter-spacing:0.12em;
       text-transform:uppercase;
-    }
-
-    .panel-caption{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
     }
 
     .chart-holder{
@@ -185,7 +197,6 @@
       <div class="panel-header">
         <div>
           <div class="panel-title">RISK-ON / RISK-OFF GAUGE</div>
-          <div class="panel-caption">Score 0–100 (risk_mean vs safe_mean) dengan jarum & label status</div>
         </div>
       </div>
       <div class="chart-holder">
@@ -203,7 +214,6 @@
       <div class="panel-header">
         <div>
           <div class="panel-title">RISK / SAFE NETFLOW PROXY</div>
-          <div class="panel-caption">Return (%) per ETF – Safe Haven vs Risk Asset</div>
         </div>
       </div>
       <div class="chart-holder">
@@ -224,9 +234,6 @@
       <div class="panel-header">
         <div>
           <div class="panel-title">MARKET PHASE DYNAMICS</div>
-          <div class="panel-caption">
-            % Daily Change (3-day smoothing)
-          </div>
         </div>
       </div>
       <div class="chart-holder">
@@ -244,9 +251,6 @@
       <div class="panel-header">
         <div>
           <div class="panel-title">US SECTOR CAPITAL-FLOW SNAPSHOT</div>
-          <div class="panel-caption">
-            % Move vs Prior Close (approx) – Sectors, Benchmarks, Macro Risk
-          </div>
         </div>
       </div>
       <div class="chart-holder">
@@ -267,9 +271,6 @@
       <div class="panel-header">
         <div>
           <div class="panel-title">RELATIVE LINES — US SECTORS / BENCH / MACRO</div>
-          <div class="panel-caption">
-            Rebased to 100 dari start lookback (approx 3 tahun) — pilih group di dropdown
-          </div>
         </div>
         <div class="controls">
           <span class="control-label">Group:</span>
@@ -295,9 +296,6 @@
       <div class="panel-header">
         <div>
           <div class="panel-title">DM vs EM DAILY % CHANGE</div>
-          <div class="panel-caption">
-            1D change vs prior close — ETF proxies Developed vs Emerging Markets
-          </div>
         </div>
         <div class="controls">
           <span class="control-label">Group:</span>
@@ -331,9 +329,6 @@
       <div class="panel-header">
         <div>
           <div class="panel-title">FOREX STRENGTH METER</div>
-          <div class="panel-caption">
-            FX index basket (TVC) · 1D % return per currency index
-          </div>
         </div>
       </div>
       <div class="chart-holder">
@@ -351,9 +346,6 @@
       <div class="panel-header">
         <div>
           <div class="panel-title">COMMODITIES STRENGTH METER</div>
-          <div class="panel-caption">
-            Futures basket · 1D % return per commodity
-          </div>
         </div>
       </div>
       <div class="chart-holder">
@@ -470,6 +462,10 @@ const COMDT_TV = {
   "Coffee":"ICEUS:KC1!",
   "Cotton":"ICEUS:CT1!"
 };
+
+// Skala paksa untuk Forex Strength [-2%, 2%]
+const FX_AXIS_MIN = -2;
+const FX_AXIS_MAX =  2;
 
 // global storage
 const dailyBars = {};
@@ -917,14 +913,26 @@ function renderRelLines(groupKey) {
   Object.entries(mapping).forEach(([ticker, label])=>{
     const bars = dailyBars[ticker];
     if (!bars || !bars.length) return;
+
+    // Filter: hanya data mulai tahun 2023
     const sorted = [...bars].sort((a,b)=>a.timestamp - b.timestamp);
-    const firstClose = sorted[0].close;
-    if (!firstClose) return;
-    const data = sorted.map(b=>{
-      const rebase = (b.close / firstClose)*100;
-      const iso = b.time_iso || "";
-      return [iso, rebase];
+    const filtered = sorted.filter(b => {
+      if (!b.time_iso) return false;
+      const d = new Date(b.time_iso);
+      return d.getUTCFullYear() >= 2023;
     });
+    if (!filtered.length) return;
+
+    const firstClose = filtered[0].close;
+    if (!firstClose) return;
+
+    // Rebase semua aset ke 0% di titik awal (since 2023)
+    const data = filtered.map(b=>{
+      const pct = (b.close / firstClose - 1) * 100;
+      const iso = b.time_iso || "";
+      return [iso, pct];
+    });
+
     series.push({
       name: `${ticker} – ${label}`,
       type:"line",
@@ -959,7 +967,7 @@ function renderRelLines(groupKey) {
     },
     yAxis:{
       type:"value",
-      name:"Rebased to 100",
+      name:"Return Since 2023 (%)",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{color:"#e5e5e5"},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
@@ -970,7 +978,7 @@ function renderRelLines(groupKey) {
       left:"right",
       top:6,
       style:{
-        text:`Updated: ${formatWIB()} · Rebased = 100 (group: ${groupKey})`,
+        text:`Updated: ${formatWIB()} · All lines start at 0% (since 2023, group: ${groupKey})`,
         fill:"#9b9b9b",
         fontSize:10
       }
@@ -1109,7 +1117,6 @@ function renderForexStrength(rows, asof) {
   const sorted = rows.slice().sort((a,b)=>a.ret - b.ret);
   const vals = sorted.map(r=>r.ret);
   const labs = sorted.map(r=>r.ccy);
-  const maxAbs = Math.max(5, Math.ceil(Math.max(...vals.map(v=>Math.abs(v)) || [5])));
 
   const option = {
     backgroundColor:"#111111",
@@ -1133,8 +1140,8 @@ function renderForexStrength(rows, asof) {
     xAxis:{
       type:"value",
       name:"Return 1D (%)",
-      min:-maxAbs,
-      max:maxAbs,
+      min:FX_AXIS_MIN,
+      max:FX_AXIS_MAX,
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{color:"#e5e5e5"},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
@@ -1147,8 +1154,8 @@ function renderForexStrength(rows, asof) {
     },
     visualMap:{
       show:false,
-      min:-maxAbs,
-      max:maxAbs,
+      min:FX_AXIS_MIN,
+      max:FX_AXIS_MAX,
       dimension:0,
       inRange:{
         color:["#b91c1c","#f97316","#fde68a","#4ade80","#16a34a"]
@@ -1294,11 +1301,6 @@ async function initDashboard() {
   dmError.style.display     = "none";
   fxError.style.display     = "none";
   comdtError.style.display  = "none";
-
-  // (optional) kalau mau, bisa show loading lagi saat refresh:
-  // gaugeLoading.style.display  = "flex";
-  // barsLoading.style.display   = "flex";
-  // dst...
 
   const allTickersSet = new Set([
     ...SAFE_HAVEN,
