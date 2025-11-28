@@ -575,7 +575,7 @@
         <table>
           <thead>
             <tr>
-              <th class="cal-date">Date (WIB)</th>
+              <th class="cal-date">Date (UTC)</th>
               <th class="cal-cb">Bank</th>
               <th class="cal-event">Event</th>
               <th class="cal-data">Prev</th>
@@ -925,7 +925,7 @@
       div.className = "news-item";
       div.innerHTML = `
         <div class="news-meta">
-          <span>${item.date} · ${item.time} UTC</span>
+          <span>${item.date} · ${item.time} WIB</span>
           ${item.label ? `<span>· ${item.label}</span>` : ""}
           ${item.important ? `<span style="color:#ffb74d;">· HIGH</span>` : ""}
         </div>
