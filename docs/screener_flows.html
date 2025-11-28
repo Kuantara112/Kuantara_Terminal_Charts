@@ -1,143 +1,1522 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Kuantara – Global Risk & Strength Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
   <style>
-    :root {
-      --bg:#050505;
-      --card:#151515;
-      --accent:#ffbf00;
+    :root{
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --bg-panel:#111111;
+      --bg-panel-soft:#151515;
+      --border-soft:#2b2b2b;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+      --danger:#ef4444;
+      --success:#22c55e;
+
+      --fs-title:16px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:10px;
     }
 
     *{
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:"Fira Code",monospace;
     }
 
     body{
       min-height:100vh;
+      background:radial-gradient(circle at top, #111111 0, #000000 55%, #000000 100%);
+      color:var(--text-main);
+      padding:16px;
+    }
+
+    .page{
+      max-width:1400px;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1.1fr 1.1fr;
+      gap:14px;
+    }
+
+    .panel{
+      background:linear-gradient(145deg, rgba(15,15,15,0.98), rgba(8,8,8,0.98));
+      border-radius:14px;
+      border:1px solid var(--border-soft);
+      padding:10px 10px 6px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      box-shadow:0 18px 45px rgba(0,0,0,0.55);
+      min-height:320px;
+    }
+
+    .panel-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:6px;
+      margin-bottom:2px;
+    }
+
+    .panel-title{
+      font-size:var(--fs-subtitle);
+      font-weight:600;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+    }
+
+    .panel-caption{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+    }
+
+    .chart-holder{
+      position:relative;
+      width:100%;
+      flex:1;
+      min-height:260px;
+    }
+
+    .chart{
+      width:100%;
+      height:100%;
+    }
+
+    .error-msg{
+      font-size:var(--fs-body);
+      color:#fecaca;
+      padding:4px 6px;
+      border-radius:6px;
+      background:rgba(127,29,29,0.35);
+      border:1px solid rgba(248,113,113,0.6);
+      margin-top:4px;
+    }
+
+    .loading{
+      position:absolute;
+      inset:0;
       display:flex;
       align-items:center;
       justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
-      color:var(--text-main);
+      font-size:var(--fs-body);
+      color:var(--text-muted);
+      background:radial-gradient(circle at top, rgba(31,31,31,0.9), rgba(3,3,3,0.9));
+      z-index:2;
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
-      text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    .spinner{
+      width:16px;
+      height:16px;
+      border-radius:999px;
+      border:2px solid rgba(148,163,184,0.4);
+      border-top-color:var(--accent);
+      margin-right:8px;
+      animation:spin 0.8s linear infinite;
     }
 
-    .badge{
-      display:inline-flex;
+    @keyframes spin{
+      to{transform:rotate(360deg);}
+    }
+
+    .controls{
+      display:flex;
+      gap:6px;
       align-items:center;
-      gap:8px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
-      color:var(--accent);
-      margin-bottom:18px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      margin-bottom:2px;
     }
 
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
-    }
-
-    h1{
-      font-size:22px;
-      margin-bottom:8px;
-    }
-
-    p{
-      font-size:14px;
-      line-height:1.6;
+    .control-label{
+      font-size:var(--fs-small);
       color:var(--text-muted);
-      margin-bottom:18px;
     }
 
-    .time-estimate{
-      font-size:13px;
-      color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
+    .control-select{
+      background:#111111;
+      color:var(--text-main);
+      border-radius:6px;
+      border:1px solid var(--border-soft);
+      font-size:var(--fs-small);
+      padding:2px 6px;
+      outline:none;
     }
 
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
+    @media(max-width:1100px){
+      .grid{
+        grid-template-columns:1fr;
+      }
     }
 
-    .btn:hover{
-      background:var(--accent);
-      color:#000;
-      transform:translateY(-1px);
-    }
-
-    .footer-text{
-      margin-top:16px;
-      font-size:11px;
-      color:#666;
+    @media(max-width:640px){
+      body{padding:10px;}
+      .panel{padding:8px 8px 5px;}
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
-    </div>
+<div class="page">
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
+  <!-- TOP ROW -->
+  <section class="grid">
+    <!-- Panel 1: Gauge -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">RISK-ON / RISK-OFF GAUGE</div>
+          <div class="panel-caption">Score 0–100 (risk_mean vs safe_mean) dengan jarum & label status</div>
+        </div>
+      </div>
+      <div class="chart-holder">
+        <div class="loading" id="gauge-loading">
+          <div class="spinner"></div>
+          <span>Fetching OHLC & menghitung basket…</span>
+        </div>
+        <div id="gauge-chart" class="chart"></div>
+      </div>
+      <div id="gauge-error" class="error-msg" style="display:none;"></div>
+    </section>
 
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
-    </div>
+    <!-- Panel 2: Risk/Safe Netflow -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">RISK / SAFE NETFLOW PROXY</div>
+          <div class="panel-caption">Return (%) per ETF – Safe Haven vs Risk Asset</div>
+        </div>
+      </div>
+      <div class="chart-holder">
+        <div class="loading" id="bars-loading">
+          <div class="spinner"></div>
+          <span>Memuat return per ETF…</span>
+        </div>
+        <div id="bars-chart" class="chart"></div>
+      </div>
+      <div id="bars-error" class="error-msg" style="display:none;"></div>
+    </section>
+  </section>
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
+  <!-- MIDDLE ROW -->
+  <section class="grid">
+    <!-- Panel 3: Market Phase Dynamics -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">MARKET PHASE DYNAMICS</div>
+          <div class="panel-caption">
+            % Daily Change (3-day smoothing)
+          </div>
+        </div>
+      </div>
+      <div class="chart-holder">
+        <div class="loading" id="phase-loading">
+          <div class="spinner"></div>
+          <span>Menghitung 14D smoothed % change…</span>
+        </div>
+        <div id="phase-chart" class="chart"></div>
+      </div>
+      <div id="phase-error" class="error-msg" style="display:none;"></div>
+    </section>
 
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
-    </div>
-  </main>
+    <!-- Panel 4: Sector Capital-Flow Snapshot -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">US SECTOR CAPITAL-FLOW SNAPSHOT</div>
+          <div class="panel-caption">
+            % Move vs Prior Close (approx) – Sectors, Benchmarks, Macro Risk
+          </div>
+        </div>
+      </div>
+      <div class="chart-holder">
+        <div class="loading" id="sector-loading">
+          <div class="spinner"></div>
+          <span>Memuat sektor & macro ETFs…</span>
+        </div>
+        <div id="sector-chart" class="chart"></div>
+      </div>
+      <div id="sector-error" class="error-msg" style="display:none;"></div>
+    </section>
+  </section>
 
-  <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+  <!-- THIRD ROW: Relative Lines & DM/EM -->
+  <section class="grid">
+    <!-- Panel 5: Relative Lines (Sectors / Bench / Macro) -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">RELATIVE LINES — US SECTORS / BENCH / MACRO</div>
+          <div class="panel-caption">
+            Rebased to 100 dari start lookback (approx 3 tahun) — pilih group di dropdown
+          </div>
+        </div>
+        <div class="controls">
+          <span class="control-label">Group:</span>
+          <select id="rel-select" class="control-select">
+            <option value="Sectors">Sectors</option>
+            <option value="Benchmarks">Benchmarks</option>
+            <option value="Macro">Macro</option>
+          </select>
+        </div>
+      </div>
+      <div class="chart-holder">
+        <div class="loading" id="rel-loading">
+          <div class="spinner"></div>
+          <span>Memuat & merebase sektor/bench/macro…</span>
+        </div>
+        <div id="rel-chart" class="chart"></div>
+      </div>
+      <div id="rel-error" class="error-msg" style="display:none;"></div>
+    </section>
+
+    <!-- Panel 6: DM vs EM Daily % Change -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">DM vs EM DAILY % CHANGE</div>
+          <div class="panel-caption">
+            1D change vs prior close — ETF proxies Developed vs Emerging Markets
+          </div>
+        </div>
+        <div class="controls">
+          <span class="control-label">Group:</span>
+          <select id="dm-group" class="control-select">
+            <option value="ALL">ALL</option>
+            <option value="DM">DM only</option>
+            <option value="EM">EM only</option>
+          </select>
+          <span class="control-label">Sort:</span>
+          <select id="dm-order" class="control-select">
+            <option value="DESC">Top ↓</option>
+            <option value="ASC">Bottom ↑</option>
+          </select>
+        </div>
+      </div>
+      <div class="chart-holder">
+        <div class="loading" id="dm-loading">
+          <div class="spinner"></div>
+          <span>Menghitung 1D change DM & EM ETF…</span>
+        </div>
+        <div id="dm-chart" class="chart"></div>
+      </div>
+      <div id="dm-error" class="error-msg" style="display:none;"></div>
+    </section>
+  </section>
+
+  <!-- FOURTH ROW: FOREX / COMMODITIES (2 panels) -->
+  <section class="grid">
+    <!-- Panel 7: Forex Strength Meter -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">FOREX STRENGTH METER</div>
+          <div class="panel-caption">
+            FX index basket (TVC) · 1D % return per currency index
+          </div>
+        </div>
+      </div>
+      <div class="chart-holder">
+        <div class="loading" id="fx-loading">
+          <div class="spinner"></div>
+          <span>Menghitung FX 1D return dari TVC index…</span>
+        </div>
+        <div id="fx-chart" class="chart"></div>
+      </div>
+      <div id="fx-error" class="error-msg" style="display:none;"></div>
+    </section>
+
+    <!-- Panel 8: Commodities Strength Meter -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">COMMODITIES STRENGTH METER</div>
+          <div class="panel-caption">
+            Futures basket · 1D % return per commodity
+          </div>
+        </div>
+      </div>
+      <div class="chart-holder">
+        <div class="loading" id="comdt-loading">
+          <div class="spinner"></div>
+          <span>Menghitung 1D return komoditas…</span>
+        </div>
+        <div id="comdt-chart" class="chart"></div>
+      </div>
+      <div id="comdt-error" class="error-msg" style="display:none;"></div>
+    </section>
+  </section>
+</div>
+
+<script>
+// ================== CONFIG ==================
+const BASE_URL   = "https://kuancloud.loclx.io";
+const TV_PATH    = "/api/tvohlc/ohlcv";
+const INTERVAL_D = "1D";      // daily OHLC
+const BARS_D     = 800;       // approx 3 years history
+
+// Risk gauge / netflow basket
+const SAFE_HAVEN  = ["GLD","FXY","FXF","UUP"];
+const RISK_ASSETS = ["IBIT","QQQ","SPY","EEM"];
+
+// Market Phase assets
+const PHASE_ASSETS = {
+  "Cash (UUP)":"UUP",
+  "Bonds (BND)":"BND",
+  "Stocks (QQQ)":"QQQ",
+  "Commodities (DBC)":"DBC"
+};
+
+// Sector / Bench / Macro
+const SECTORS = {
+  "XLB":"Materials","XLE":"Energy","XLF":"Financials","XLI":"Industrials","XLK":"Technology",
+  "XLP":"Consumer Staples","XLU":"Utilities","XLV":"Health Care","XLY":"Consumer Discretionary",
+  "XLRE":"Real Estate","XLC":"Communication Services"
+};
+const BENCH = {
+  "SPY":"S&P 500","QQQ":"Nasdaq 100","IWM":"Russell 2000","IWF":"Russell 1000 Growth","IWD":"Russell 1000 Value"
+};
+const MACRO = {
+  "HYG":"High Yield Credit","LQD":"IG Credit","TLT":"US 20Y+ Treasury","UUP":"US Dollar Index ETF",
+  "GLD":"Gold","USO":"WTI Oil","XOP":"Oil & Gas E&P","ARKK":"High Beta Innovation"
+};
+
+// DM vs EM meta
+const DMEM_META = {
+  // DM
+  "SPY": {name:"S&P 500 (SPY)",       cls:"DM"},
+  "QQQ": {name:"NASDAQ 100 (QQQ)",    cls:"DM"},
+  "DIA": {name:"Dow Jones (DIA)",     cls:"DM"},
+  "VGK": {name:"Europe (VGK)",        cls:"DM"},
+  "EWG": {name:"Germany (EWG)",       cls:"DM"},
+  "EWQ": {name:"France (EWQ)",        cls:"DM"},
+  "EWU": {name:"UK (EWU)",            cls:"DM"},
+  "EWL": {name:"Switzerland (EWL)",   cls:"DM"},
+  "EWJ": {name:"Japan (EWJ)",         cls:"DM"},
+  "EWA": {name:"Australia (EWA)",     cls:"DM"},
+  "EWC": {name:"Canada (EWC)",        cls:"DM"},
+  "EWS": {name:"Singapore (EWS)",     cls:"DM"},
+  // EM
+  "EEM":  {name:"EM Broad (EEM)",         cls:"EM"},
+  "VWO":  {name:"EM Broad (VWO)",         cls:"EM"},
+  "FXI":  {name:"China Large (FXI)",      cls:"EM"},
+  "MCHI": {name:"China Broad (MCHI)",     cls:"EM"},
+  "KWEB": {name:"China Internet (KWEB)",  cls:"EM"},
+  "INDA": {name:"India (INDA)",           cls:"EM"},
+  "EWT":  {name:"Taiwan (EWT)",           cls:"EM"},
+  "EWZ":  {name:"Brazil (EWZ)",           cls:"EM"},
+  "EWW":  {name:"Mexico (EWW)",           cls:"EM"},
+  "EZA":  {name:"South Africa (EZA)",     cls:"EM"},
+  "THD":  {name:"Thailand (THD)",         cls:"EM"},
+  "EIDO": {name:"Indonesia (EIDO)",       cls:"EM"},
+  "EWM":  {name:"Malaysia (EWM)",         cls:"EM"}
+};
+
+const CLIP_PCT = 0.05;  // untuk risk gauge
+
+// DM/EM color palettes
+const DM_COLORS = ["#60a5fa","#3b82f6","#2563eb","#1d4ed8","#1e40af"];
+const EM_COLORS = ["#fb7185","#f97316","#22c55e","#eab308","#ec4899"];
+
+// ===== Forex Strength via TVC Index =====
+const FX_CURRENCIES = ["USD","EUR","JPY","GBP","AUD","NZD","CAD","CHF"];
+const FX_INDEX_TV = {
+  "USD":"TVC:DXY",
+  "EUR":"TVC:EXY",
+  "JPY":"TVC:JXY",
+  "GBP":"TVC:BXY",
+  "AUD":"TVC:AXY",
+  "NZD":"TVC:ZXY",
+  "CAD":"TVC:CXY",
+  "CHF":"TVC:SXY"
+};
+
+// ===== Commodities Strength (TV futures; adjust jika perlu) =====
+const COMDT_TV = {
+  "Gold":"COMEX:GC1!",
+  "Silver":"COMEX:SI1!",
+  "Copper":"COMEX:HG1!",
+  "WTI Crude":"NYMEX:CL1!",
+  "Brent Crude":"ICEEUR:BRN1!",
+  "NatGas":"NYMEX:NG1!",
+  "Gasoline":"NYMEX:RB1!",
+  "HeatingOil":"NYMEX:HO1!",
+  "Platinum":"NYMEX:PL1!",
+  "Palladium":"NYMEX:PA1!",
+  "Corn":"CBOT:ZC1!",
+  "Wheat":"CBOT:ZW1!",
+  "Soybeans":"CBOT:ZS1!",
+  "Sugar":"ICEUS:SB1!",
+  "Coffee":"ICEUS:KC1!",
+  "Cotton":"ICEUS:CT1!"
+};
+
+// global storage
+const dailyBars = {};
+let relChartInstance = null;
+let dmChartInstance  = null;
+let DMEM_BASE        = [];
+
+// NEW: global chart instances
+let gaugeChartInstance  = null;
+let barsChartInstance   = null;
+let phaseChartInstance  = null;
+let sectorChartInstance = null;
+let fxChartInstance     = null;
+let comdtChartInstance  = null;
+
+// flags untuk event listener & refresh lock
+let relListenersAttached = false;
+let dmListenersAttached  = false;
+let isRefreshing         = false;
+
+// ================== HELPERS ==================
+function formatWIB() {
+  const now = new Date();
+  const opts = {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  };
+  const s = now.toLocaleString("en-GB", opts); // 28/11/2025, 17:09
+  const [d, m, yTime] = s.split("/");
+  const [y, timePart] = yTime.split(", ");
+  return `${y}-${m}-${d} ${timePart} WIB`;
+}
+
+function avg(arr) {
+  if (!arr.length) return NaN;
+  return arr.reduce((a,b)=>a+b,0)/arr.length;
+}
+
+function toDateStrFromISO(iso) {
+  if (!iso) return "";
+  return iso.slice(0,10); // YYYY-MM-DD
+}
+
+// ================== FETCH OHLC ==================
+async function fetchOHLC(ticker, interval = INTERVAL_D, barsCount = BARS_D) {
+  const url = `${BASE_URL}${TV_PATH}?symbol=${encodeURIComponent(ticker)}&interval=${encodeURIComponent(interval)}&bars_count=${barsCount}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status} untuk ${ticker}`);
+  }
+  const json = await res.json();
+  if (!json || !json.ok) {
+    throw new Error(`Response ok=false untuk ${ticker}`);
+  }
+  if (!Array.isArray(json.results) || json.results.length === 0) {
+    throw new Error(`results kosong untuk ${ticker}`);
+  }
+  const result = json.results[0];
+  if (!result.ok) {
+    throw new Error(`Result ok=false untuk ${ticker}`);
+  }
+  if (!Array.isArray(result.bars) || result.bars.length < 2) {
+    throw new Error(`bars tidak cukup untuk ${ticker}`);
+  }
+  return result.bars.sort((a,b)=>a.timestamp - b.timestamp);
+}
+
+// multi-day return (start→end) in %
+function computeWindowReturnPct(bars) {
+  const first = bars[0].close;
+  const last  = bars[bars.length - 1].close;
+  return (last / first - 1) * 100;
+}
+
+// last vs prior close (approx intraday move) in %
+function computeLastVsPrevReturnPct(bars) {
+  if (bars.length < 2) throw new Error("bars < 2");
+  const prev = bars[bars.length - 2].close;
+  const last = bars[bars.length - 1].close;
+  return (last / prev - 1) * 100;
+}
+
+// daily % change series from OHLC bars
+function computeDailyChangeSeries(bars) {
+  const out = [];
+  for (let i=1; i<bars.length; i++) {
+    const prev = bars[i-1].close;
+    const cur  = bars[i].close;
+    const pct  = (cur / prev - 1) * 100;
+    const dStr = toDateStrFromISO(bars[i].time_iso);
+    out.push({date:dStr, value:pct});
+  }
+  return out;
+}
+
+// 3-day rolling mean
+function smooth3(series) {
+  const out = [];
+  for (let i=0;i<series.length;i++) {
+    const a = Math.max(0, i-2);
+    const slice = series.slice(a, i+1).map(p=>p.value);
+    out.push({date:series[i].date, value: avg(slice)});
+  }
+  return out;
+}
+
+// keep last N points
+function keepLastN(series, n) {
+  if (series.length <= n) return series;
+  return series.slice(series.length - n);
+}
+
+// risk score (0–100) dari return map (multi-day window)
+function computeRiskScore(returnMap) {
+  const riskVals = RISK_ASSETS.map(t => returnMap[t]).filter(v => Number.isFinite(v));
+  const safeVals = SAFE_HAVEN.map(t => returnMap[t]).filter(v => Number.isFinite(v));
+
+  const riskMean = avg(riskVals);
+  const safeMean = avg(safeVals);
+
+  let rawScore = (riskMean - safeMean)/100.0;
+  rawScore = Math.max(-CLIP_PCT, Math.min(CLIP_PCT, rawScore));
+  const scaled_pm100 = (rawScore / CLIP_PCT) * 100.0;
+  const riskScore = (scaled_pm100 + 100.0)/2.0;
+
+  return { riskScore, riskMean, safeMean };
+}
+
+function statusFromScore(score) {
+  if (score >= 70) {
+    return {text:"RISK-ON",  color:"#22c55e"};
+  } else if (score <= 30) {
+    return {text:"RISK-OFF", color:"#ef4444"};
+  } else {
+    return {text:"NEUTRAL",  color:"#facc15"};
+  }
+}
+
+// ================== ECHARTS RENDERERS (DARK MODE) ==================
+function renderGauge(metrics) {
+  const gaugeDom = document.getElementById("gauge-chart");
+  if (!gaugeChartInstance) {
+    gaugeChartInstance = echarts.init(gaugeDom);
+    window.addEventListener("resize", ()=>gaugeChartInstance && gaugeChartInstance.resize());
+  }
+
+  const {riskScore, riskMean, safeMean} = metrics;
+  const {text:statusText, color:statusColor} = statusFromScore(riskScore);
+
+  const option = {
+    backgroundColor:"#111111",
+    title:{
+      text:"Risk-On / Risk-Off Gauge",
+      subtext:`Risk mean: ${riskMean.toFixed(2)}% | Safe mean: ${safeMean.toFixed(2)}%`,
+      left:"center",
+      top:6,
+      textStyle:{color:"#f5f5f5", fontSize:14},
+      subtextStyle:{color:"#9b9b9b", fontSize:11}
+    },
+    tooltip:{formatter:(p)=>`Score: ${p.value.toFixed(1)}`},
+    series:[
+      {
+        type:"gauge",
+        startAngle:180,
+        endAngle:0,
+        min:0,
+        max:100,
+        radius:"90%",
+        center:["50%","60%"],
+        axisLine:{
+          lineStyle:{
+            width:14,
+            color:[
+              [0.3,"#4b1f1f"],
+              [0.7,"#3b3b3b"],
+              [1.0,"#1f3b1f"]
+            ]
+          }
+        },
+        splitLine:{show:false},
+        axisTick:{show:false},
+        axisLabel:{color:"#e5e5e5"},
+        pointer:{
+          length:"60%",
+          width:4,
+          itemStyle:{color:statusColor}
+        },
+        detail:{
+          formatter:(v)=>`Score: ${v.toFixed(1)}/100`,
+          color:"#f5f5f5",
+          fontSize:12,
+          offsetCenter:[0,"65%"]
+        },
+        itemStyle:{color:statusColor},
+        data:[{value:riskScore, name:statusText}]
+      }
+    ],
+    graphic:[
+      {
+        type:"text",
+        left:"center",
+        top:"68%",
+        style:{
+          text:statusText,
+          fill:statusColor,
+          fontSize:28,
+          fontWeight:700
+        }
+      },
+      {
+        type:"text",
+        left:"center",
+        top:"82%",
+        style:{
+          text:`Updated: ${formatWIB()}`,
+          fill:"#9b9b9b",
+          fontSize:11
+        }
+      }
+    ]
+  };
+
+  gaugeChartInstance.setOption(option, true);
+}
+
+function renderBars(returnMap) {
+  const dom = document.getElementById("bars-chart");
+  if (!barsChartInstance) {
+    barsChartInstance = echarts.init(dom);
+    window.addEventListener("resize", ()=>barsChartInstance && barsChartInstance.resize());
+  }
+
+  const categories = [...SAFE_HAVEN, ...RISK_ASSETS];
+  const safeData = categories.map(t => SAFE_HAVEN.includes(t) ? (Number.isFinite(returnMap[t]) ? returnMap[t] : null) : null);
+  const riskData = categories.map(t => RISK_ASSETS.includes(t) ? (Number.isFinite(returnMap[t]) ? returnMap[t] : null) : null);
+
+  const riskVals = RISK_ASSETS.map(t => returnMap[t]).filter(v=>Number.isFinite(v));
+  const safeVals = SAFE_HAVEN.map(t => returnMap[t]).filter(v=>Number.isFinite(v));
+  const delta = avg(riskVals) - avg(safeVals);
+
+  const option = {
+    backgroundColor:"#111111",
+    tooltip:{trigger:"axis"},
+    legend:{
+      data:["Safe Haven","Risk Asset"],
+      top:6,
+      textStyle:{color:"#f5f5f5", fontSize:11}
+    },
+    grid:{left:70,right:16,top:40,bottom:40},
+    xAxis:{
+      type:"value",
+      name:"Return (%)",
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"},
+      splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
+    },
+    yAxis:{
+      type:"category",
+      data:categories,
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"}
+    },
+    series:[
+      {
+        name:"Safe Haven",
+        type:"bar",
+        data:safeData,
+        itemStyle:{color:"#60a5fa"}
+      },
+      {
+        name:"Risk Asset",
+        type:"bar",
+        data:riskData,
+        itemStyle:{color:"#fb7185"}
+      }
+    ],
+    graphic:[
+      {
+        type:"text",
+        left:"right",
+        top:6,
+        style:{
+          text:`ΔRisk − Safe: ${Number.isFinite(delta) ? delta.toFixed(2) : "NaN"} pts · ${formatWIB()}`,
+          fill:"#9b9b9b",
+          fontSize:10
+        }
+      }
+    ]
+  };
+
+  barsChartInstance.setOption(option, true);
+}
+
+function renderPhaseChart(seriesByAsset) {
+  const dom = document.getElementById("phase-chart");
+  if (!phaseChartInstance) {
+    phaseChartInstance = echarts.init(dom);
+    window.addEventListener("resize", ()=>phaseChartInstance && phaseChartInstance.resize());
+  }
+
+  const dateSet = new Set();
+  Object.values(seriesByAsset).forEach(arr => {
+    arr.forEach(p => dateSet.add(p.date));
+  });
+  const dates = Array.from(dateSet).sort();
+
+  const series = Object.entries(seriesByAsset).map(([assetName, arr]) => {
+    const map = {};
+    arr.forEach(p => { map[p.date] = p.value; });
+    const data = dates.map(d => (d in map ? map[d] : null));
+    return {
+      name: assetName,
+      type:"line",
+      data,
+      smooth:true,
+      showSymbol:false,
+      areaStyle:{opacity:0.28}
+    };
+  });
+
+  const option = {
+    backgroundColor:"#111111",
+    tooltip:{trigger:"axis"},
+    legend:{
+      top:6,
+      textStyle:{color:"#f5f5f5", fontSize:11}
+    },
+    grid:{left:55,right:16,top:40,bottom:40},
+    xAxis:{
+      type:"category",
+      data:dates,
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"}
+    },
+    yAxis:{
+      type:"value",
+      name:"Change (%)",
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"},
+      splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
+    },
+    series,
+    graphic:[{
+      type:"text",
+      left:"right",
+      top:6,
+      style:{
+        text:`Updated: ${formatWIB()} · approx 14D window`,
+        fill:"#9b9b9b",
+        fontSize:10
+      }
+    }]
+  };
+
+  phaseChartInstance.setOption(option, true);
+}
+
+function renderSectorSnapshot(retMap) {
+  const dom = document.getElementById("sector-chart");
+  if (!sectorChartInstance) {
+    sectorChartInstance = echarts.init(dom);
+    window.addEventListener("resize", ()=>sectorChartInstance && sectorChartInstance.resize());
+  }
+
+  const all = Object.assign({}, SECTORS, BENCH, MACRO);
+  const pairs = Object.keys(all)
+    .map(t => [t, retMap[t]])
+    .filter(([_, v]) => Number.isFinite(v));
+
+  pairs.sort((a,b)=>b[1]-a[1]);
+
+  const tickers = pairs.map(p=>p[0]);
+  const values  = pairs.map(p=>p[1]);
+
+  const option = {
+    backgroundColor:"#111111",
+    tooltip:{
+      trigger:"axis",
+      axisPointer:{type:"shadow"},
+      formatter:(params)=>{
+        const p = params[0];
+        const t = p.name;
+        const label = all[t] || t;
+        return `${t} – ${label}<br/>Return: ${p.value.toFixed(2)}%`;
+      }
+    },
+    grid:{left:70,right:16,top:40,bottom:40},
+    xAxis:{
+      type:"category",
+      data:tickers,
+      axisLabel:{color:"#e5e5e5"},
+      axisLine:{lineStyle:{color:"#a3a3a3"}}
+    },
+    yAxis:{
+      type:"value",
+      name:"Return vs Prior Close (%)",
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"},
+      splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
+    },
+    series:[
+      {
+        name:"% vs Prior Close (approx)",
+        type:"bar",
+        data:values,
+        itemStyle:{
+          color:(p)=> p.value >= 0 ? "#22c55e" : "#ef4444"
+        }
+      }
+    ],
+    graphic:[{
+      type:"text",
+      left:"right",
+      top:6,
+      style:{
+        text:`Updated: ${formatWIB()} · last vs prior daily close`,
+        fill:"#9b9b9b",
+        fontSize:10
+      }
+    }]
+  };
+
+  sectorChartInstance.setOption(option, true);
+}
+
+// Relative Lines
+function renderRelLines(groupKey) {
+  const mapping =
+    groupKey === "Benchmarks" ? BENCH :
+    groupKey === "Macro"      ? MACRO :
+                                SECTORS;
+
+  const dom = document.getElementById("rel-chart");
+  if (!relChartInstance) {
+    relChartInstance = echarts.init(dom);
+    window.addEventListener("resize", ()=>relChartInstance && relChartInstance.resize());
+  }
+
+  const series = [];
+  Object.entries(mapping).forEach(([ticker, label])=>{
+    const bars = dailyBars[ticker];
+    if (!bars || !bars.length) return;
+    const sorted = [...bars].sort((a,b)=>a.timestamp - b.timestamp);
+    const firstClose = sorted[0].close;
+    if (!firstClose) return;
+    const data = sorted.map(b=>{
+      const rebase = (b.close / firstClose)*100;
+      const iso = b.time_iso || "";
+      return [iso, rebase];
+    });
+    series.push({
+      name: `${ticker} – ${label}`,
+      type:"line",
+      showSymbol:false,
+      smooth:true,
+      data,
+      lineStyle:{width:1.6},
+      areaStyle:{opacity:0.18}
+    });
+  });
+
+  if (!series.length) {
+    throw new Error(`Tidak ada data untuk grup ${groupKey}`);
+  }
+
+  const option = {
+    backgroundColor:"#111111",
+    tooltip:{
+      trigger:"axis",
+      axisPointer:{type:"cross"},
+      valueFormatter:(v)=> v != null ? v.toFixed(2)+"%" : ""
+    },
+    legend:{
+      top:6,
+      textStyle:{color:"#f5f5f5", fontSize:11}
+    },
+    grid:{left:55,right:16,top:40,bottom:40},
+    xAxis:{
+      type:"time",
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"}
+    },
+    yAxis:{
+      type:"value",
+      name:"Rebased to 100",
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"},
+      splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
+    },
+    series,
+    graphic:[{
+      type:"text",
+      left:"right",
+      top:6,
+      style:{
+        text:`Updated: ${formatWIB()} · Rebased = 100 (group: ${groupKey})`,
+        fill:"#9b9b9b",
+        fontSize:10
+      }
+    }]
+  };
+
+  relChartInstance.setOption(option, true);
+}
+
+// DM/EM helper
+function buildDMEMData(group, order) {
+  let rows = DMEM_BASE;
+  if (group === "DM") {
+    rows = rows.filter(r => r.cls === "DM");
+  } else if (group === "EM") {
+    rows = rows.filter(r => r.cls === "EM");
+  } else {
+    rows = rows.slice();
+  }
+
+  rows = rows.slice().sort((a,b)=> order === "ASC" ? a.chg - b.chg : b.chg - a.chg);
+
+  let dmIdx=0, emIdx=0;
+  rows.forEach(r=>{
+    if (r.cls === "DM") {
+      r.color = DM_COLORS[dmIdx % DM_COLORS.length];
+      dmIdx++;
+    } else {
+      r.color = EM_COLORS[emIdx % EM_COLORS.length];
+      emIdx++;
+    }
+  });
+  return rows;
+}
+
+function renderDMEMChart() {
+  const groupSel = document.getElementById("dm-group").value;
+  const orderSel = document.getElementById("dm-order").value;
+
+  const rows = buildDMEMData(groupSel, orderSel);
+  if (!rows.length) {
+    throw new Error(`Tidak ada data untuk grup ${groupSel}`);
+  }
+
+  const names = rows.map(r=>r.name);
+  const dataItems = rows.map(r=>({
+    value:r.chg,
+    name:r.name,
+    itemStyle:{color:r.color}
+  }));
+
+  const dom = document.getElementById("dm-chart");
+  if (!dmChartInstance) {
+    dmChartInstance = echarts.init(dom);
+    window.addEventListener("resize", ()=>dmChartInstance && dmChartInstance.resize());
+  }
+
+  const option = {
+    backgroundColor:"#111111",
+    tooltip:{
+      trigger:"axis",
+      axisPointer:{type:"shadow"},
+      formatter:(params)=>{
+        const p = params[0];
+        const idx = p.dataIndex;
+        const row = rows[idx];
+        return `<b>${row.name}</b><br/>Δ 1D: ${row.chg.toFixed(2)}%<br/>Ticker: ${row.ticker}<br/>Class: ${row.cls}`;
+      }
+    },
+    grid:{left:180,right:16,top:40,bottom:40},
+    xAxis:{
+      type:"value",
+      name:"% Perubahan Harian (1D)",
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"},
+      splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
+    },
+    yAxis:{
+      type:"category",
+      data:names,
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"}
+    },
+    series:[
+      {
+        type:"bar",
+        data:dataItems,
+        label:{
+          show:true,
+          position:"right",
+          formatter:(p)=> `${p.value.toFixed(2)}%`,
+          color:"#f5f5f5",
+          fontSize:10
+        }
+      }
+    ],
+    graphic:[{
+      type:"text",
+      left:"right",
+      top:6,
+      style:{
+        text:`Updated: ${formatWIB()} · 1D change`,
+        fill:"#9b9b9b",
+        fontSize:10
+      }
+    }]
+  };
+
+  dmChartInstance.setOption(option, true);
+}
+
+// ======== Forex Strength via TVC Indices (REAL 1D RETURN) ========
+function computeForexStrength() {
+  const rows = [];
+  FX_CURRENCIES.forEach(ccy=>{
+    const symbol = FX_INDEX_TV[ccy];
+    const bars = dailyBars[symbol];
+    if (!bars || bars.length < 2) return;
+    const ret = computeLastVsPrevReturnPct(bars); // real daily return
+    if (!Number.isFinite(ret)) return;
+    rows.push({ccy, ret});
+  });
+  if (!rows.length) {
+    throw new Error("Tidak ada data FX index yang cukup.");
+  }
+  return {rows, asof:formatWIB()};
+}
+
+function renderForexStrength(rows, asof) {
+  const dom = document.getElementById("fx-chart");
+  if (!fxChartInstance) {
+    fxChartInstance = echarts.init(dom);
+    window.addEventListener("resize", ()=>fxChartInstance && fxChartInstance.resize());
+  }
+
+  const sorted = rows.slice().sort((a,b)=>a.ret - b.ret);
+  const vals = sorted.map(r=>r.ret);
+  const labs = sorted.map(r=>r.ccy);
+  const maxAbs = Math.max(5, Math.ceil(Math.max(...vals.map(v=>Math.abs(v)) || [5])));
+
+  const option = {
+    backgroundColor:"#111111",
+    title:{
+      text:"Forex Strength Meter (TVC Index)",
+      subtext:`1D % change vs prior close · as of ${asof}`,
+      left:"center",
+      top:4,
+      textStyle:{color:"#f5f5f5", fontSize:13},
+      subtextStyle:{color:"#9b9b9b", fontSize:11}
+    },
+    tooltip:{
+      trigger:"axis",
+      axisPointer:{type:"shadow"},
+      formatter:(params)=>{
+        const p = params[0];
+        return `${p.name}<br/>Return 1D: ${p.value.toFixed(2)}%`;
+      }
+    },
+    grid:{left:60,right:20,top:52,bottom:30},
+    xAxis:{
+      type:"value",
+      name:"Return 1D (%)",
+      min:-maxAbs,
+      max:maxAbs,
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"},
+      splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
+    },
+    yAxis:{
+      type:"category",
+      data:labs,
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"}
+    },
+    visualMap:{
+      show:false,
+      min:-maxAbs,
+      max:maxAbs,
+      dimension:0,
+      inRange:{
+        color:["#b91c1c","#f97316","#fde68a","#4ade80","#16a34a"]
+      }
+    },
+    series:[
+      {
+        type:"bar",
+        data:vals,
+        label:{
+          show:true,
+          position:"right",
+          formatter:(p)=>`${p.value.toFixed(2)}%`,
+          color:"#f5f5f5",
+          fontSize:10
+        }
+      }
+    ]
+  };
+
+  fxChartInstance.setOption(option, true);
+}
+
+// ======== Commodities Strength (REAL 1D RETURN) ========
+function computeComdtStrength() {
+  const rows = [];
+  Object.entries(COMDT_TV).forEach(([name, symbol])=>{
+    const bars = dailyBars[symbol];
+    if (!bars || bars.length < 2) return;
+    const ret = computeLastVsPrevReturnPct(bars); // real daily return
+    if (!Number.isFinite(ret)) return;
+    rows.push({name, ret});
+  });
+  if (!rows.length) {
+    throw new Error("Tidak ada data komoditas.");
+  }
+  return {rows, asof:formatWIB()};
+}
+
+function renderComdtStrength(rows, asof) {
+  const dom = document.getElementById("comdt-chart");
+  if (!comdtChartInstance) {
+    comdtChartInstance = echarts.init(dom);
+    window.addEventListener("resize", ()=>comdtChartInstance && comdtChartInstance.resize());
+  }
+
+  const sorted = rows.slice().sort((a,b)=>a.ret - b.ret);
+  const vals = sorted.map(r=>r.ret);
+  const labs = sorted.map(r=>r.name);
+  const maxAbs = Math.max(5, Math.ceil(Math.max(...vals.map(v=>Math.abs(v)) || [5])));
+
+  const option = {
+    backgroundColor:"#111111",
+    title:{
+      text:"Commodities Strength Meter",
+      subtext:`1D % change vs prior close · as of ${asof}`,
+      left:"center",
+      top:4,
+      textStyle:{color:"#f5f5f5", fontSize:13},
+      subtextStyle:{color:"#9b9b9b", fontSize:11}
+    },
+    tooltip:{
+      trigger:"axis",
+      axisPointer:{type:"shadow"},
+      formatter:(params)=>{
+        const p = params[0];
+        return `${p.name}<br/>Return 1D: ${p.value.toFixed(2)}%`;
+      }
+    },
+    grid:{left:90,right:20,top:52,bottom:30},
+    xAxis:{
+      type:"value",
+      name:"Return 1D (%)",
+      min:-maxAbs,
+      max:maxAbs,
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"},
+      splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
+    },
+    yAxis:{
+      type:"category",
+      data:labs,
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"}
+    },
+    visualMap:{
+      show:false,
+      min:-maxAbs,
+      max:maxAbs,
+      dimension:0,
+      inRange:{
+        color:["#b91c1c","#f97316","#fde68a","#4ade80","#16a34a"]
+      }
+    },
+    series:[
+      {
+        type:"bar",
+        data:vals,
+        label:{
+          show:true,
+          position:"right",
+          formatter:(p)=>`${p.value.toFixed(2)}%`,
+          color:"#f5f5f5",
+          fontSize:10
+        }
+      }
+    ]
+  };
+
+  comdtChartInstance.setOption(option, true);
+}
+
+// ================== MAIN FLOW ==================
+async function initDashboard() {
+  if (isRefreshing) {
+    return;
+  }
+  isRefreshing = true;
+
+  const gaugeLoading  = document.getElementById("gauge-loading");
+  const barsLoading   = document.getElementById("bars-loading");
+  const phaseLoading  = document.getElementById("phase-loading");
+  const sectorLoading = document.getElementById("sector-loading");
+  const relLoading    = document.getElementById("rel-loading");
+  const dmLoading     = document.getElementById("dm-loading");
+  const fxLoading     = document.getElementById("fx-loading");
+  const comdtLoading  = document.getElementById("comdt-loading");
+
+  const gaugeError  = document.getElementById("gauge-error");
+  const barsError   = document.getElementById("bars-error");
+  const phaseError  = document.getElementById("phase-error");
+  const sectorError = document.getElementById("sector-error");
+  const relError    = document.getElementById("rel-error");
+  const dmError     = document.getElementById("dm-error");
+  const fxError     = document.getElementById("fx-error");
+  const comdtError  = document.getElementById("comdt-error");
+
+  gaugeError.style.display  = "none";
+  barsError.style.display   = "none";
+  phaseError.style.display  = "none";
+  sectorError.style.display = "none";
+  relError.style.display    = "none";
+  dmError.style.display     = "none";
+  fxError.style.display     = "none";
+  comdtError.style.display  = "none";
+
+  // (optional) kalau mau, bisa show loading lagi saat refresh:
+  // gaugeLoading.style.display  = "flex";
+  // barsLoading.style.display   = "flex";
+  // dst...
+
+  const allTickersSet = new Set([
+    ...SAFE_HAVEN,
+    ...RISK_ASSETS,
+    ...Object.values(PHASE_ASSETS),
+    ...Object.keys(SECTORS),
+    ...Object.keys(BENCH),
+    ...Object.keys(MACRO),
+    ...Object.keys(DMEM_META),
+    ...Object.values(FX_INDEX_TV),
+    ...Object.values(COMDT_TV)
+  ]);
+  const ALL_TICKERS = Array.from(allTickersSet);
+
+  try {
+    const results = await Promise.allSettled(
+      ALL_TICKERS.map(t => fetchOHLC(t).then(bars => ({ticker:t, bars})))
+    );
+
+    results.forEach(res => {
+      if (res.status === "fulfilled") {
+        dailyBars[res.value.ticker] = res.value.bars;
+      } else {
+        console.warn("Fetch gagal:", res.reason);
+      }
+    });
+
+    // ========= 1) Risk gauge & netflow (multi-day window) =========
+    try {
+      const retMap = {};
+      [...SAFE_HAVEN, ...RISK_ASSETS].forEach(t => {
+        const bars = dailyBars[t];
+        if (bars && bars.length >= 2) {
+          retMap[t] = computeWindowReturnPct(bars);
+        }
+      });
+
+      const haveAny = Object.values(retMap).some(v => Number.isFinite(v));
+      if (!haveAny) throw new Error("Tidak ada return untuk basket risk/safe.");
+
+      const metrics = computeRiskScore(retMap);
+      renderGauge(metrics);
+      renderBars(retMap);
+    } catch (e) {
+      console.error("Gauge/Bars error:", e);
+      gaugeError.style.display = "block";
+      gaugeError.textContent   = `Gauge error: ${e.message || e}`;
+      barsError.style.display  = "block";
+      barsError.textContent    = `Bars error: ${e.message || e}`;
+    } finally {
+      gaugeLoading.style.display = "none";
+      barsLoading.style.display  = "none";
+    }
+
+    // ========= 2) Market Phase Dynamics =========
+    try {
+      const seriesByAsset = {};
+      for (const [name, ticker] of Object.entries(PHASE_ASSETS)) {
+        const bars = dailyBars[ticker];
+        if (!bars || bars.length < 3) continue;
+        const dailySeries = computeDailyChangeSeries(bars);
+        const smoothed = smooth3(dailySeries);
+        const last14 = keepLastN(smoothed, 14);
+        if (last14.length) {
+          seriesByAsset[name] = last14;
+        }
+      }
+
+      if (Object.keys(seriesByAsset).length === 0) {
+        throw new Error("Tidak ada data cukup untuk phase assets.");
+      }
+
+      renderPhaseChart(seriesByAsset);
+    } catch (e) {
+      console.error("Phase error:", e);
+      phaseError.style.display = "block";
+      phaseError.textContent   = `Phase error: ${e.message || e}`;
+    } finally {
+      phaseLoading.style.display = "none";
+    }
+
+    // ========= 3) Sector snapshot (1D approx) =========
+    try {
+      const retMap = {};
+      const all = Object.assign({}, SECTORS, BENCH, MACRO);
+      Object.keys(all).forEach(t => {
+        const bars = dailyBars[t];
+        if (bars && bars.length >= 2) {
+          retMap[t] = computeLastVsPrevReturnPct(bars);
+        }
+      });
+
+      const haveAnyS = Object.values(retMap).some(v => Number.isFinite(v));
+      if (!haveAnyS) throw new Error("Tidak ada data cukup untuk sektor/bench/macro.");
+
+      renderSectorSnapshot(retMap);
+    } catch (e) {
+      console.error("Sector error:", e);
+      sectorError.style.display = "block";
+      sectorError.textContent   = `Sector error: ${e.message || e}`;
+    } finally {
+      sectorLoading.style.display = "none";
+    }
+
+    // ========= 4) Relative Lines (Sectors / Bench / Macro) =========
+    try {
+      const initialGroup = document.getElementById("rel-select").value;
+      renderRelLines(initialGroup);
+      if (!relListenersAttached) {
+        document.getElementById("rel-select").addEventListener("change", e=>{
+          try {
+            renderRelLines(e.target.value);
+          } catch (err) {
+            console.error("RelLines change error:", err);
+            relError.style.display = "block";
+            relError.textContent   = `RelLines error: ${err.message || err}`;
+          }
+        });
+        relListenersAttached = true;
+      }
+    } catch (e) {
+      console.error("RelLines error:", e);
+      relError.style.display = "block";
+      relError.textContent   = `RelLines error: ${e.message || e}`;
+    } finally {
+      relLoading.style.display = "none";
+    }
+
+    // ========= 5) DM vs EM Daily % Change (1D) =========
+    try {
+      DMEM_BASE = [];
+      for (const [ticker, meta] of Object.entries(DMEM_META)) {
+        const bars = dailyBars[ticker];
+        if (!bars || bars.length < 2) continue;
+        let chg;
+        try {
+          chg = computeLastVsPrevReturnPct(bars);
+        } catch {
+          continue;
+        }
+        if (!Number.isFinite(chg)) continue;
+        DMEM_BASE.push({ticker, name:meta.name, cls:meta.cls, chg});
+      }
+
+      if (!DMEM_BASE.length) {
+        throw new Error("Tidak ada data DM/EM yang cukup.");
+      }
+
+      renderDMEMChart();
+      if (!dmListenersAttached) {
+        document.getElementById("dm-group").addEventListener("change", ()=>{
+          try { renderDMEMChart(); } catch(e){ console.error(e); }
+        });
+        document.getElementById("dm-order").addEventListener("change", ()=>{
+          try { renderDMEMChart(); } catch(e){ console.error(e); }
+        });
+        dmListenersAttached = true;
+      }
+    } catch (e) {
+      console.error("DM/EM error:", e);
+      dmError.style.display = "block";
+      dmError.textContent   = `DM/EM error: ${e.message || e}`;
+    } finally {
+      dmLoading.style.display = "none";
+    }
+
+    // ========= 6) Forex 1D Return (Index) =========
+    try {
+      const {rows, asof} = computeForexStrength();
+      renderForexStrength(rows, asof);
+    } catch (e) {
+      console.error("FX error:", e);
+      fxError.style.display = "block";
+      fxError.textContent   = `FX error: ${e.message || e}`;
+    } finally {
+      fxLoading.style.display = "none";
+    }
+
+    // ========= 7) Commodities 1D Return =========
+    try {
+      const {rows, asof} = computeComdtStrength();
+      renderComdtStrength(rows, asof);
+    } catch (e) {
+      console.error("Comdt error:", e);
+      comdtError.style.display = "block";
+      comdtError.textContent   = `Commodities error: ${e.message || e}`;
+    } finally {
+      comdtLoading.style.display = "none";
+    }
+
+  } catch (fatal) {
+    console.error("Fatal error:", fatal);
+    gaugeLoading.style.display  = "none";
+    barsLoading.style.display   = "none";
+    phaseLoading.style.display  = "none";
+    sectorLoading.style.display = "none";
+    relLoading.style.display    = "none";
+    dmLoading.style.display     = "none";
+    fxLoading.style.display     = "none";
+    comdtLoading.style.display  = "none";
+
+    const msg = `Fatal: ${fatal.message || fatal}`;
+    gaugeError.style.display  = "block"; gaugeError.textContent  = msg;
+    barsError.style.display   = "block"; barsError.textContent   = msg;
+    phaseError.style.display  = "block"; phaseError.textContent  = msg;
+    sectorError.style.display = "block"; sectorError.textContent = msg;
+    relError.style.display    = "block"; relError.textContent    = msg;
+    dmError.style.display     = "block"; dmError.textContent     = msg;
+    fxError.style.display     = "block"; fxError.textContent     = msg;
+    comdtError.style.display  = "block"; comdtError.textContent  = msg;
+  } finally {
+    isRefreshing = false;
+  }
+}
+
+// first load + auto refresh 60 detik
+initDashboard();
+setInterval(initDashboard, 60000);
+</script>
 </body>
 </html>
