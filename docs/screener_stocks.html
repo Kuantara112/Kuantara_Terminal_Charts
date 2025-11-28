@@ -381,7 +381,7 @@
     "DWGL","PBID","JMAS","CAMP","IPCM","PCAR","LCKM","BOSS","HELI","JSKY","INPS","GHON","TDPM","DFAM",
     "NICK","BTPS","SPTO","PRIM","HEAL","TRUK","PZZA","TUGU","MSIN","SWAT","TNCA","MAPA","TCPI","IPCC",
     "RISE","BPTR","POLL","NFCX","MGRO","NUSA","FILM","ANDI","LAND","MOLI","PANI","DIGI","CITY","SAPX",
-    "SURE","HKMU","MPRO","DUCK","GOOD","SKRN","YELO","CAKK","SATU","SOSS","DEAL","POLA","DIVA","LUCK",
+    "SURE","HKMU","MPRO","DUCK","GOOD","SKRN","YELO","CAKK","SATU","SOTS","DEAL","POLA","DIVA","LUCK",
     "URBN","SOTS","ZONE","PEHA","FOOD","BEEF","POLI","CLAY","NATO","JAYA","COCO","MTPS","CPRI","HRME",
     "POSA","JAST","FITT","BOLA","CCSI","SFAN","POLU","KJEN","KAYU","ITIC","PAMG","IPTV","BLUE","ENVY",
     "EAST","LIFE","FUJI","KOTA","INOV","ARKA","SMKL","HDIT","KEEN","BAPI","TFAS","GGRP","OPMS","NZIA",
@@ -500,25 +500,35 @@
     return {k, d};
   }
 
-  async function fetchOHLC(symbol, barsCount, interval){
+  // === NEW: Fetch sekali untuk semua saham ===
+  async function fetchAllOHLC(barsCount, interval){
     const useInterval = interval || INTERVAL;
+    const symbolsParam = encodeURIComponent(UNIVERSE.join(","));
     const url = BASE_URL +
-      "?symbol=" + encodeURIComponent(symbol) +
+      "?symbols=" + symbolsParam +
       "&interval=" + useInterval +
       "&bars_count=" + barsCount;
+
     const res = await fetch(url);
     if(!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
-    if(!data.ok || !data.results || !data.results.length) return [];
-    const bars = data.results[0].bars || [];
-    return bars.map(b => ({
-      time:   b.timestamp,
-      open:   b.open,
-      high:   b.high,
-      low:    b.low,
-      close:  b.close,
-      volume: b.volume ?? 0
-    }));
+    if(!data.ok || !data.results || !data.results.length) return {};
+
+    const map = {};
+    data.results.forEach(item => {
+      const sym = item.symbol || item.ticker || item.code;
+      const barsRaw = item.bars || [];
+      if(!sym || !barsRaw.length) return;
+      map[sym] = barsRaw.map(b => ({
+        time:   b.timestamp,
+        open:   b.open,
+        high:   b.high,
+        low:    b.low,
+        close:  b.close,
+        volume: b.volume ?? 0
+      }));
+    });
+    return map;
   }
 
   function formatNumber(n,digits){
@@ -925,7 +935,7 @@
     });
   }
 
-  // ===== Handlers – NO BATCH, PERCENTAGE PROGRESS =====
+  // ===== Handlers – Single API Call per Screen =====
   async function runScreen(name, barsCount, applyFn, renderFn, statusId, interval){
     const statusEl = document.getElementById(statusId);
     const btnMap = {
@@ -944,37 +954,52 @@
     }
 
     btn.disabled         = true;
-    statusEl.textContent = `${name}: mulai scan ${UNIVERSE.length} saham...`;
+    statusEl.textContent = `${name}: fetch data untuk ${UNIVERSE.length} saham...`;
     statusEl.className   = "status";
 
-    const results = [];
-    const total   = UNIVERSE.length;
+    try {
+      // 1x call API untuk semua saham
+      const allBarsMap = await fetchAllOHLC(barsCount, interval);
+      const symbols = Object.keys(allBarsMap);
+      const total   = symbols.length;
 
-    for(let i = 0; i < total; i++){
-      const sym = UNIVERSE[i];
-      const progress = Math.round(((i+1)/total)*100);
+      if(!total){
+        statusEl.textContent = `${name} gagal – tidak ada data diterima dari API.`;
+        statusEl.className   = "status err";
+        btn.disabled         = false;
+        return;
+      }
 
-      statusEl.textContent =
-        `${name} – ${i+1}/${total} saham (${progress}%)`;
+      const results = [];
 
-      try{
-        const bars = await fetchOHLC(sym, barsCount, interval);
+      for(let i = 0; i < total; i++){
+        const sym   = symbols[i];
+        const bars  = allBarsMap[sym];
+        const progress = Math.round(((i+1)/total)*100);
+
+        statusEl.textContent =
+          `${name} – proses ${i+1}/${total} saham (${progress}%)`;
+
         if(!bars || !bars.length) continue;
+
         const hit = applyFn(bars, sym);
         if(hit){
           results.push({symbol:sym, ...hit});
         }
-      }catch(e){
-        console.error(name, sym, e);
       }
+
+      renderFn(results);
+
+      const hitPercent = Math.round((results.length / total) * 100);
+      statusEl.textContent = `${name} selesai. ${results.length} saham lolos dari ${total} (${hitPercent}%).`;
+      statusEl.className   = "status ok";
+      btn.disabled         = false;
+    } catch(e){
+      console.error(name, e);
+      statusEl.textContent = `${name} gagal: ${e.message}`;
+      statusEl.className   = "status err";
+      btn.disabled         = false;
     }
-
-    renderFn(results);
-
-    const hitPercent = Math.round((results.length / total) * 100);
-    statusEl.textContent = `${name} selesai. ${results.length} saham lolos dari ${total} (${hitPercent}%).`;
-    statusEl.className   = "status ok";
-    btn.disabled         = false;
   }
 
   // BANDAR ACTIVITY – daily timeframe
