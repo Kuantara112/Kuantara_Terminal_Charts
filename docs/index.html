@@ -457,6 +457,36 @@
       transition: border-color 0.2s ease, box-shadow 0.2s ease;  
     }  
     .kt-search-input:focus{ border-color: var(--amber); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 5px rgba(255,191,0,0.2); }  
+
+    /* SEARCH QUICK CHIPS */
+    .kt-search-chips{
+      margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .kt-search-chip{
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: linear-gradient(180deg, rgba(35,35,35,0.9), rgba(10,10,10,0.95));
+      font-size: 10px;
+      color: var(--text-muted);
+      cursor: pointer;
+      box-shadow: var(--shadow-tactile);
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .kt-search-chip:hover{
+      border-color: var(--border-highlight);
+      color: var(--text-main);
+      background: linear-gradient(180deg, rgba(45,45,45,0.95), rgba(15,15,15,1));
+    }
+    .kt-search-chip:active{
+      transform: translateY(1px);
+      box-shadow: var(--shadow-active);
+      border-color: transparent;
+    }
       
     .kt-close-btn{  
       margin-top: 10px; padding: 6px 10px; font-size: 11px; border-radius: 4px;  
@@ -605,33 +635,35 @@
       <button class="kt-submenu-btn" data-menu="3" data-sub-index="2">Resources</button>  
     </div>  
 
-    <!-- Metrics submenu simplified -->
+    <!-- Metrics Labs submenu -->
     <div class="kt-submenu-group" data-menu-sub="4">  
-      <button class="kt-submenu-btn" data-menu="4" data-sub-index="0">Macro</button>  
-      <button class="kt-submenu-btn" data-menu="4" data-sub-index="1">Market</button>  
-      <button class="kt-submenu-btn" data-menu="4" data-sub-index="2">Sentiment</button>  
-      <button class="kt-submenu-btn" data-menu="4" data-sub-index="3">Valuation</button>  
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="0">Macro Lab</button>  
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="1">Market Lab</button>  
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="2">Sentiment Lab</button>  
     </div>  
 
+    <!-- Companies menu updated: NASDAQ100, DJI30, JKSE, FOREIGN -->
     <div class="kt-submenu-group" data-menu-sub="5">  
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="0">S&amp;P500</button>  
-      <button class="kt-submenu-btn" data-menu="5" data-sub-index="1">LQ45</button>  
-      <button class="kt-submenu-btn" data-menu="5" data-sub-index="2">Blockchain Projects</button>  
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="1">NASDAQ100</button>  
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="2">DJI30</button>  
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="3">JKSE</button>  
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="4">FOREIGN</button>  
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="5">Blockchain Projects</button>  
     </div>  
 
-    <!-- Charts: add Real-Time -->
+    <!-- Charts: Fundamental removed, indexes realigned -->
     <div class="kt-submenu-group" data-menu-sub="6">  
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="0">Technical</button>  
-      <button class="kt-submenu-btn" data-menu="6" data-sub-index="1">Fundamental</button>  
-      <button class="kt-submenu-btn" data-menu="6" data-sub-index="2">Economy</button>  
-      <button class="kt-submenu-btn" data-menu="6" data-sub-index="3">Real-Time</button>  
+      <button class="kt-submenu-btn" data-menu="6" data-sub-index="1">Economy</button>  
+      <button class="kt-submenu-btn" data-menu="6" data-sub-index="2">Real-Time</button>  
     </div>  
 
-    <!-- Screener: merge US + ID Stocks → Stocks, then Crypto, Custom -->
+    <!-- Screener: Stocks -> IDX Stocks, Custom -> Flows -->
     <div class="kt-submenu-group" data-menu-sub="7">  
-      <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">Stocks</button>  
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">IDX Stocks</button>  
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">Crypto</button>  
-      <button class="kt-submenu-btn" data-menu="7" data-sub-index="2">Custom</button>  
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="2">Flows</button>  
     </div>  
 
     <!-- Research: swap Reports & Quantitative -->
@@ -732,6 +764,7 @@
     <div class="kt-card">  
       <div class="kt-card-title">Search</div>  
       <input id="kt-search-input" class="kt-search-input" type="text" placeholder="Cari menu/sub… (Enter untuk lompat, Esc tutup)" />  
+      <div class="kt-search-chips" id="kt-search-chips"></div>
       <div class="kt-search-suggestions hidden" id="kt-search-suggestions"></div>  
       <button class="kt-close-btn" id="kt-search-close">Close</button>  
     </div>  
@@ -767,6 +800,7 @@
       const searchInput = document.getElementById("kt-search-input");  
       const searchClose = document.getElementById("kt-search-close");  
       const searchSuggestions = document.getElementById("kt-search-suggestions");  
+      const searchChips = document.getElementById("kt-search-chips");
   
       const iframeLayer   = document.getElementById("kt-iframe-layer");  
       const topbar        = document.getElementById("kt-topbar");  
@@ -830,27 +864,28 @@
         "3:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_tradeshipping.html",  
         "3:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_resources.html",  
   
-        // Metrics (simplified)
+        // Metrics Labs
         "4:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macro.html",  
         "4:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_liquidity.html",  
         "4:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentiment.html",  
-        "4:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_seasonality.html",  
   
-        // Companies  
+        // Companies (updated)
         "5:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us.html",  
-        "5:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_indo.html",  
-        "5:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_blockchain.html",  
+        "5:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us2.html",   // NASDAQ100
+        "5:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us3.html",   // DJI30
+        "5:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_indo.html",  // JKSE
+        "5:4":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_foreign.html", // FOREIGN
+        "5:5":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_blockchain.html",  
   
-        // Charts (+ Real-Time)
+        // Charts (Fundamental removed, realigned)
         "6:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/technical_charts.html",  
-        "6:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_fundamental.html",  
-        "6:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_economy.html",  
-        "6:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_realtime.html",  
+        "6:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_economy.html",  
+        "6:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_realtime.html",  
   
-        // Screener (Stocks merged)
+        // Screener (IDX Stocks + Crypto + Flows)
         "7:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_stocks.html",  
         "7:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_crypto.html",  
-        "7:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_custom.html",  
+        "7:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_flows.html",  
   
         // Research (Reports and Quant swapped)
         "8:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_institutions.html",  
@@ -1106,6 +1141,23 @@
         searchSuggestions.innerHTML = "";  
         searchSuggestions.classList.add("hidden");  
       }  
+
+      function clearSearchChips(){
+        if(!searchChips) return;
+        searchChips.innerHTML = "";
+      }
+
+      function jumpToTarget(match){
+        if(!match) return;
+        if(activeBottom!=="home"){  
+          setBottomActive("home");  
+          hideProfilePage();  
+          hideWorkspacePage();  
+        }  
+        setActiveMenu(match.menu);  
+        if(match.sub!==null && match.sub!==undefined) setActiveSub(match.menu,match.sub);  
+        if(!isPinned) statusMsg.textContent=`SEARCH goto: ${match.label} (${match.type})`;  
+      }
   
       function updateSearchSuggestions(qRaw){  
         if(!searchSuggestions) return;  
@@ -1144,14 +1196,7 @@
           item.appendChild(metaSpan);  
   
           item.addEventListener("click", () => {  
-            if(activeBottom!=="home"){  
-              setBottomActive("home");  
-              hideProfilePage();  
-              hideWorkspacePage();  
-            }  
-            setActiveMenu(match.menu);  
-            if(match.sub!==null) setActiveSub(match.menu,match.sub);  
-            if(!isPinned) statusMsg.textContent=`SEARCH goto: ${match.label} (${match.type})`;  
+            jumpToTarget(match);
             closeSearch();  
           });  
   
@@ -1160,6 +1205,41 @@
   
         searchSuggestions.classList.remove("hidden");  
       }  
+
+      /* RANDOM CHIPS BAWAH INPUT SEARCH */
+      function renderRandomChips(){
+        if(!searchChips) return;
+        clearSearchChips();
+        if(!searchIndex || !searchIndex.length) return;
+
+        const candidates = searchIndex.slice(); // menu + sub
+        if(!candidates.length) return;
+
+        // shuffle sederhana
+        for(let i = candidates.length - 1; i > 0; i--){
+          const j = Math.floor(Math.random() * (i + 1));
+          const tmp = candidates[i];
+          candidates[i] = candidates[j];
+          candidates[j] = tmp;
+        }
+
+        const maxCount = Math.min(3, candidates.length);
+        const minCount = Math.min(2, maxCount);
+        const count = maxCount <= 2 ? maxCount : (minCount + Math.floor(Math.random() * (maxCount - minCount + 1)));
+        const picks = candidates.slice(0, count);
+
+        picks.forEach(match => {
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "kt-search-chip";
+          chip.textContent = match.label;
+          chip.addEventListener("click", () => {
+            jumpToTarget(match);
+            closeSearch();
+          });
+          searchChips.appendChild(chip);
+        });
+      }
   
       function openSearch(){  
         searchIndex=buildSearchIndex();  
@@ -1169,11 +1249,13 @@
         if(activeBottom==="home"){  
           showAllBars();  
         }  
+        renderRandomChips();
         updateSearchSuggestions(searchInput.value || "");  
       }  
       function closeSearch(){   
         closeOverlay(searchOvl);   
         clearSearchSuggestions();  
+        clearSearchChips();
         if(!isPinned) statusMsg.textContent="SEARCH: closed";   
         if(activeBottom==="home" && !isPinned) scheduleHide();   
       }  
@@ -1198,14 +1280,7 @@
           }  
           const match=findBestMatch(searchIndex,q);  
           if(match){  
-            if(activeBottom!=="home"){  
-              setBottomActive("home");  
-              hideProfilePage();  
-              hideWorkspacePage();  
-            }  
-            setActiveMenu(match.menu);  
-            if(match.sub!==null) setActiveSub(match.menu,match.sub);  
-            if(!isPinned) statusMsg.textContent=`SEARCH goto: ${match.label} (${match.type})`;  
+            jumpToTarget(match);
           }  
           else{  
             if(!isPinned) statusMsg.textContent=`SEARCH: "${q}" not found`;  
