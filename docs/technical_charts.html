@@ -103,7 +103,7 @@
     /* LEFT PANEL */
     .panel-stats {
       grid-column:1 / 2;
-      grid-row:1 / 2;
+      grid-row:1 / 3; /* FULL HEIGHT desktop */
       display:flex;
       flex-direction:column;
       padding:16px;
@@ -247,7 +247,7 @@
     }
 
     .panel-tech {
-      grid-column:1 / 3;
+      grid-column:2 / 3;  /* ONLY UNDER CHART, same width as CHART */
       grid-row:2 / 3;
       border-top:1px solid var(--border-soft);
       display:grid;
@@ -349,38 +349,56 @@
       margin:4px 0;
     }
 
-    @media (max-width:900px){
+    /* MOBILE: device < 770px -> panel stack & Asset/Ticker pakai scroll internal */
+    @media (max-width:770px){
       .page-root{
         padding:12px;
       }
+
       .main-grid{
         grid-template-columns:1fr;
         grid-template-rows:auto auto auto;
         height:auto;
       }
+
+      /* PANEL ASSET / TICKER */
       .panel-stats{
         grid-column:1 / 2;
         grid-row:1 / 2;
-        max-height:260px;
+        /* tinggi nyaman + scroll internal */
+        min-height:260px;
+        max-height:60vh;           /* batasi tinggi panel di mobile */
+        overflow-y:auto;           /* aktifkan scrollbar hanya untuk panel ini */
       }
+
+      .panel-stats-inner{
+        /* biarkan ikut tinggi parent, jangan override scroll di sini */
+        overflow:visible;
+      }
+
+      /* CHART PANEL */
       .panel-chart{
         grid-column:1 / 2;
         grid-row:2 / 3;
-        height:260px;
+        min-height:300px;
       }
+
+      /* TECH SUMMARY PANEL */
       .panel-tech{
         grid-column:1 / 2;
         grid-row:3 / 4;
         grid-template-columns:1fr;
-        height:260px;
+        min-height:300px;
       }
+
       .gauge-section{
         border-right:none;
         border-bottom:1px solid var(--border-soft);
-        height:140px;
+        min-height:140px;
       }
+
       .tech-table-container{
-        height:120px;
+        min-height:160px;
       }
     }
   </style>
@@ -573,7 +591,7 @@
       <div id="mainChart"></div>
     </div>
 
-    <!-- PANEL 3: BOTTOM – TECH SUMMARY -->
+    <!-- PANEL 3: BOTTOM – TECH SUMMARY (ONLY UNDER CHART) -->
     <div class="panel panel-tech">
       <div class="gauge-section">
         <div class="gauge-caption">OVERALL SUMMARY</div>
@@ -859,7 +877,16 @@
           ? new Date(Number(b.time) * 1000)
           : new Date(b.time);
         if (!isNaN(t.getTime())) {
-          dLabel = t.toLocaleDateString("en-GB");
+          // Tanggal-bulan-tahun + jam:menit:detik (lokal ID)
+          dLabel = t.toLocaleString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+          });
         }
       }
       if (!dLabel) dLabel = String(i + 1);
