@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuantara – Panel Layout Shell</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
+
+  <style>
+    :root {
+      --amber:#ffbf00;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+
+      --green:#22c55e;
+      --red:#ef4444;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(255,255,255,0.2) transparent;
+    }
+
+    html, body {
+      width:100%;
+      height:100%;
+      background:var(--bg-root);
+      color:var(--text-main);
+      overflow:hidden; /* no global scroll */
+    }
+
+    ::-webkit-scrollbar {
+      width:4px;
+      height:4px;
+    }
+    ::-webkit-scrollbar-track {
+      background:transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background:rgba(255,255,255,0.2);
+      border-radius:999px;
+    }
+
+    .kt-page {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding:16px;
+      background:var(--bg-root);
+      overflow: hidden;
+    }
+
+    .kt-page-tabs {
+      display:flex;
+      gap:8px;
+      margin-bottom:10px;
+      flex-shrink: 0;
+      flex-wrap:wrap;
+    }
+
+    .kt-pill-page {
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:4px 12px;
+      font-size:var(--fs-small);
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+      color:var(--text-muted);
+      background:#050505;
+      transition:background 0.15s ease, color 0.15s ease;
+    }
+    .kt-pill-page.active {
+      border-color:var(--amber);
+      color:#000;
+      background:var(--amber);
+      font-weight: 700;
+    }
+
+    .kt-layout {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .kt-column {
+      display:flex;
+      flex-direction:column;
+      flex: 1;
+      min-height:0;
+    }
+
+    .kt-card {
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:6px;
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      flex: 1;
+      min-height:0;
+      overflow: hidden;
+    }
+
+    .kt-card-header {
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      font-size:var(--fs-subtitle);
+      color:var(--text-main);
+      border-bottom: 1px solid var(--border-soft);
+      flex-shrink: 0;
+      background: var(--bg-main);
+    }
+
+    .kt-header-left {
+      display:flex;
+      flex-direction:column;
+    }
+    .kt-header-left #quotesTitle {
+      font-weight: 700;
+      color: var(--amber);
+    }
+
+    .kt-toolbar {
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .kt-search {
+      display:flex;
+      align-items:center;
+      border-radius:4px;
+      border:1px solid var(--border-soft);
+      padding:4px 8px;
+      background: #000;
+      width: 180px;
+    }
+
+    .kt-search input {
+      flex:1;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--text-main);
+      font-size:var(--fs-small);
+      min-width:0;
+    }
+
+    .kt-table-wrapper {
+      flex:1;
+      overflow-y:auto;
+      overflow-x:hidden;
+      background: var(--bg-main);
+      position: relative;
+    }
+
+    .kt-table-scroller {
+      width:100%;
+      overflow-x:auto;
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:var(--fs-body);
+      min-width: 800px;
+    }
+
+    thead {
+      position:sticky;
+      top:0;
+      background: #1a1a1a;
+      z-index:10;
+      box-shadow: 0 1px 0 var(--border-soft);
+    }
+
+    th, td {
+      padding:8px 8px;
+      text-align:right;
+      white-space:nowrap;
+      border-bottom: 1px solid #1f1f1f;
+    }
+
+    th {
+      font-size:var(--fs-small);
+      font-weight:500;
+      color:var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    th:first-child, td:first-child {
+      text-align:left;
+      position:sticky;
+      left:0;
+      background:inherit;
+      z-index:2;
+    }
+    th:nth-child(2), td:nth-child(2) { text-align:left; }
+
+    tbody tr:nth-child(even) { background:#0d0d0d; }
+    tbody tr:nth-child(odd) { background:#090909; }
+    tbody tr:hover { background:#151515; }
+
+    .text-up { color:var(--green); }
+    .text-down { color:var(--red); }
+
+    .copy-btn {
+      border-radius:4px;
+      border:1px solid var(--border-soft);
+      background:transparent;
+      color:var(--text-muted);
+      font-size:9px;
+      padding:2px 6px;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .copy-btn:hover {
+      border-color:var(--amber);
+      color:var(--amber);
+    }
+
+    .spark-cell svg { display:block; }
+
+    @media (max-width:600px) {
+      .kt-page {
+        padding: 8px;
+      }
+      
+      .kt-page-tabs {
+        margin-bottom: 8px;
+        gap: 6px;
+      }
+      
+      .kt-pill-page {
+        padding: 3px 10px;
+        font-size: 10px;
+      }
+
+      .kt-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .kt-header-left {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .kt-toolbar {
+        width: 100%;
+      }
+      
+      .kt-search {
+        width: 100%;
+      }
+
+      th, td {
+        padding: 6px 5px;
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kt-page">
+    <div class="kt-page-tabs">
+      <div class="kt-pill-page active" data-page="major">Major</div>
+      <div class="kt-pill-page" data-page="minor">Minor</div>
+      <div class="kt-pill-page" data-page="exotic">Exotic</div>
+    </div>
+
+    <div class="kt-layout">
+      <div class="kt-column">
+        <section class="kt-card">
+          <header class="kt-card-header">
+            <div class="kt-header-left">
+              <div id="quotesTitle">Panel Title</div>
+              <div id="tickerMeta" class="subtitle" style="font-size:9px; color:var(--text-muted); display:none;"></div>
+            </div>
+            <div class="kt-toolbar">
+              <div class="kt-search">
+                <input id="searchInput" type="text" placeholder="Search...">
+              </div>
+            </div>
+          </header>
+
+          <div class="kt-table-wrapper">
+            <div class="kt-table-scroller">
+              <table id="fxTable">
+                <thead>
+                  <tr>
+                    <th>Col 1</th>
+                    <th>Col 2</th>
+                    <th>Col 3</th>
+                    <th>Col 4</th>
+                    <th>Col 5</th>
+                    <th>Col 6</th>
+                    <th>Col 7</th>
+                    <th>Col 8</th>
+                    <th>Col 9</th>
+                    <th>Col 10</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Isi data sendiri di sini -->
+                  <!-- Contoh dummy:
+                  <tr>
+                    <td>EXAMPLE</td>
+                    <td>Sample Row</td>
+                    <td>...</td>
+                    <td>...</td>
+                    <td>...</td>
+                    <td>...</td>
+                    <td>...</td>
+                    <td>...</td>
+                    <td>...</td>
+                    <td>...</td>
+                    <td><button class="copy-btn">COPY</button></td>
+                  </tr>
+                  -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const pagePills = document.querySelectorAll(".kt-pill-page");
+    const quotesTitleEl = document.getElementById("quotesTitle");
+    const tickerMetaEl = document.getElementById("tickerMeta");
+    const searchInput = document.getElementById("searchInput");
+    const tableBody = document.querySelector("#fxTable tbody");
+
+    const PAGE_TITLES = {
+      major: "Major Panel",
+      minor: "Minor Panel",
+      exotic: "Exotic Panel"
+    };
+
+    function updateTickerMeta() {
+      const rows = Array.from(tableBody.querySelectorAll("tr"))
+        .filter(tr => tr.style.display !== "none");
+      if (!rows.length) {
+        tickerMetaEl.style.display = "none";
+        tickerMetaEl.textContent = "";
+      } else {
+        tickerMetaEl.style.display = "block";
+        tickerMetaEl.textContent = `${rows.length} Rows`;
+      }
+    }
+
+    function filterTable() {
+      const q = (searchInput.value || "").toLowerCase().trim();
+      const rows = tableBody.querySelectorAll("tr");
+      rows.forEach(tr => {
+        const text = tr.textContent.toLowerCase();
+        tr.style.display = !q || text.includes(q) ? "" : "none";
+      });
+      updateTickerMeta();
+    }
+
+    pagePills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        pagePills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        const key = pill.dataset.page;
+        quotesTitleEl.textContent = PAGE_TITLES[key] || "Panel Title";
+        // Data switching logic bisa kamu isi sendiri di sini nanti
+        updateTickerMeta();
+      });
+    });
+
+    searchInput.addEventListener("input", filterTable);
+
+    // Init meta on load
+    updateTickerMeta();
+  </script>
+</body>
+</html>
