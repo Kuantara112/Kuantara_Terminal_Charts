@@ -11,10 +11,14 @@
 
   <style>
     :root {
-      --bg:#000000;
-      --footer-h:50px;
+      --bg-root:#000000;
+      --bg-panel:#111111;
+      --bg-panel-soft:#141414;
       --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --radius-lg:16px;
+      --footer-h:50px;
     }
 
     * {
@@ -27,29 +31,70 @@
     html, body {
       width:100%;
       height:100%;
-      background:var(--bg);
-      overflow:hidden; /* full page, no scroll */
+      background:var(--bg-root);
+      overflow:hidden;
+      color:var(--text-main);
+    }
+
+    .app-root {
+      height:100vh;
+      width:100vw;
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      background:var(--bg-root);
+    }
+
+    .panel {
+      flex:1;
+      border-radius:var(--radius-lg);
+      background:var(--bg-panel);
+      border:1px solid var(--border-soft);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+
+    .panel-header {
+      height:42px;
+      border-bottom:1px solid var(--border-soft);
+      display:flex;
+      align-items:center;
+      padding:0 14px;
+      font-size:11px;
+      letter-spacing:0.05em;
+      text-transform:uppercase;
+    }
+
+    .panel-body {
+      flex:1;
+      position:relative;
+      background:var(--bg-panel-soft);
     }
 
     iframe {
-      position:fixed;
-      top:0;
-      left:0;
-      width:100vw;
-      height:100vh;          /* FULL PAGE */
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
       border:none;
-      /* Dark-mode hack untuk Deepnote (light -> dark) */
-      filter: invert(1) hue-rotate(180deg);
-      background:#000000;
+
+      /* darker premium grey */
+      filter: invert(1)
+              hue-rotate(180deg)
+              contrast(0.78)
+              brightness(0.72);
+
+      background:#101010;
     }
 
     .footer-stack {
-      position:fixed;
-      left:0;
+      position:absolute;
       bottom:0;
+      left:0;
       width:100%;
       height:var(--footer-h);
-      background:var(--bg);
+      background:#000;
       border-top:1px solid var(--border-soft);
       display:flex;
       align-items:center;
@@ -57,22 +102,38 @@
       padding:0 14px;
       font-size:11px;
       color:var(--text-muted);
-      letter-spacing:0.04em;
       text-transform:uppercase;
-      pointer-events:none; /* biar nggak ganggu klik di dalam iframe */
+      pointer-events:auto;
+      cursor:default;
+    }
+
+    @media (max-width:768px) {
+      .app-root { padding:8px; }
+      .panel-header { padding:0 10px; font-size:10px; }
+      .footer-stack { font-size:9.5px; }
     }
   </style>
 </head>
 <body>
 
-  <iframe
-    src="https://deepnote.com/app/kuantara-analytics-terminal/Screener-and-Quantitative-Tools-3a159ea6-0254-4bbd-96b3-75e07e31ecc1?utm_source=app-settings&utm_medium=product-embed&utm_campaign=data-app&utm_content=3a159ea6-0254-4bbd-96b3-75e07e31ecc1&__embedded=true"
-    allowfullscreen>
-  </iframe>
+<div class="app-root">
+  <div class="panel">
+    <div class="panel-header">
+      Screener &amp; Quantitative Tools
+    </div>
 
-  <div class="footer-stack">
-    Kuantara · Quantitative Research
+    <div class="panel-body">
+      <iframe
+        src="https://deepnote.com/app/kuantara-analytics-terminal/Screener-and-Quantitative-Tools-3a159ea6-0254-4bbd-96b3-75e07e31ecc1?__embedded=true"
+        allowfullscreen>
+      </iframe>
+
+      <div class="footer-stack">
+        Kuantara · Quantitative Research
+      </div>
+    </div>
   </div>
+</div>
 
 </body>
 </html>
