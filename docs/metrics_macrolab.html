@@ -1,1 +1,152 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuantara – Panel Layout Shell</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
+
+  <style>
+    :root {
+      --amber:#ffbf00;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+
+      --fs-title:14px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
+      --fs-small:9.5px;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(255,255,255,0.2) transparent;
+    }
+
+    html, body {
+      width:100%;
+      height:100%;
+      background:var(--bg-root);
+      color:var(--text-main);
+      overflow:hidden;
+    }
+
+    ::-webkit-scrollbar { width:4px; height:4px; }
+    ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.2); border-radius:999px;}
+
+    .kt-page { height: 100%; display: flex; flex-direction: column; padding:16px; overflow: hidden; }
+
+    .kt-layout { display:flex; flex-direction:column; flex:1; min-height:0; }
+
+    .kt-card {
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:6px;
+      display:flex;
+      flex-direction:column;
+      flex: 1;
+      overflow:hidden;
+    }
+
+    .kt-card-header {
+      padding:12px 14px;
+      display:flex;
+      justify-content:space-between;
+      border-bottom:1px solid var(--border-soft);
+      align-items:center;
+    }
+
+    #quotesTitle { font-weight:700; color:var(--amber); }
+
+    .kt-page-tabs { display:flex; gap:8px; }
+    .kt-pill-page {
+      cursor:pointer;
+      border-radius:999px;
+      padding:4px 12px;
+      font-size:var(--fs-small);
+      border:1px solid var(--border-soft);
+      color:var(--text-muted);
+      background:#050505;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .kt-pill-page.active {
+      background:var(--amber);
+      color:#000;
+      border-color:var(--amber);
+      font-weight:700;
+    }
+
+    .kt-panel-body { flex:1; min-height:0; position:relative; }
+    iframe { width:100%; height:100%; border:0; display:none; }
+
+    @media(max-width:600px){
+      .kt-card-header{flex-direction:column; align-items:flex-start; gap:8px;}
+      .kt-page-tabs{gap:6px; flex-wrap:wrap;}
+      .kt-pill-page{padding:3px 10px; font-size:10px;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="kt-page">
+  <div class="kt-layout">
+    <section class="kt-card">
+      <header class="kt-card-header">
+        <div id="quotesTitle">Economic</div>
+        <div class="kt-page-tabs">
+          <div class="kt-pill-page active" data-page="economic">Economic</div>
+          <div class="kt-pill-page" data-page="recession">Recession</div>
+          <div class="kt-pill-page" data-page="liquidity">Liquidity</div>
+        </div>
+      </header>
+
+      <div class="kt-panel-body">
+        <iframe id="economicFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macrolab_economic.html"></iframe>
+        <iframe id="recessionFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macrolab_recession.html"></iframe>
+        <iframe id="liquidityFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macrolab_liquidity.html"></iframe>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  const frames = {
+    economic: document.getElementById("economicFrame"),
+    recession: document.getElementById("recessionFrame"),
+    liquidity: document.getElementById("liquidityFrame"),
+  };
+
+  const pagePills = document.querySelectorAll(".kt-pill-page");
+  const titleEl = document.getElementById("quotesTitle");
+
+  const TITLES = { economic: "Economic", recession: "Recession", liquidity: "Liquidity" };
+
+  function updatePanel(key) {
+    titleEl.textContent = TITLES[key];
+
+    Object.values(frames).forEach(f => f.style.display = "none");
+    frames[key].style.display = "block";
+  }
+
+  pagePills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      pagePills.forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      updatePanel(pill.dataset.page);
+    });
+  });
+
+  updatePanel("economic");
+</script>
+
+</body>
+</html>
