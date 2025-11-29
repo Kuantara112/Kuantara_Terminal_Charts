@@ -2,564 +2,77 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Kuantara – Quant Lab</title>
+  <title>Kuantara – Screener & Quant Tools</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Fira Code (Kuantara Standard) -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
     :root {
-      --bg-root:#000000;
-      --bg-main:#111111;
-      --bg-elevated:#141414;
+      --bg:#000000;
+      --footer-h:50px;
       --border-soft:#2b2b2b;
-      --border-strong:#3b3b3b;
-      --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
-      --accent:#ffbf00;
-      --accent-soft:rgba(255,191,0,0.12);
-
-      --fs-title:14px;
-      --fs-subtitle:12px;
-      --fs-body:11px;
-      --fs-small:9.5px;
-
-      --radius-sm:6px;
-      --radius-md:10px;
-      --shadow-soft:0 0 0 1px rgba(0,0,0,0.7), 0 20px 40px rgba(0,0,0,0.8);
     }
 
     * {
-      box-sizing:border-box;
       margin:0;
       padding:0;
+      box-sizing:border-box;
       font-family:"Fira Code", monospace;
     }
 
     html, body {
       width:100%;
       height:100%;
-      background-color:var(--bg-root);
-      color:var(--text-main);
+      background:var(--bg);
+      overflow:hidden; /* full page, no scroll */
     }
 
-    body {
-      display:flex;
-      flex-direction:column;
+    iframe {
+      position:fixed;
+      top:0;
+      left:0;
+      width:100vw;
+      height:100vh;          /* FULL PAGE */
+      border:none;
+      /* Dark-mode hack untuk Deepnote (light -> dark) */
+      filter: invert(1) hue-rotate(180deg);
+      background:#000000;
     }
 
-    .app-root {
-      min-height:100vh;
-      padding:8px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      background:
-        radial-gradient(circle at top left, rgba(255,191,0,0.05), transparent 55%),
-        radial-gradient(circle at bottom right, rgba(255,255,255,0.02), transparent 55%);
-    }
-
-    /* TOP STRIP – super minimal */
-    .top-strip {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:6px;
-      padding:6px 8px;
-      background:rgba(15,15,15,0.96);
-      border-radius:var(--radius-md);
-      border:1px solid var(--border-soft);
-      box-shadow:var(--shadow-soft);
-    }
-
-    .top-left {
-      display:flex;
-      align-items:center;
-      gap:8px;
-      min-width:0;
-    }
-
-    .status-dot {
-      width:8px;
-      height:8px;
-      border-radius:999px;
-      background:#22c55e;
-      box-shadow:0 0 10px rgba(34,197,94,0.85);
-    }
-
-    .status-text {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .top-right {
-      display:flex;
-      align-items:center;
-      gap:6px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-
-    .btn {
-      font-size:var(--fs-small);
-      padding:5px 10px;
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      background:#181818;
-      color:var(--text-muted);
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      gap:5px;
-      transition:background 0.15s ease,border-color 0.15s ease,transform 0.05s ease;
-      white-space:nowrap;
-    }
-
-    .btn:hover:not(:disabled) {
-      background:#222222;
-      border-color:var(--accent-soft);
-      color:var(--text-main);
-    }
-
-    .btn-primary {
-      border-color:var(--accent);
-      background:var(--accent);
-      color:#000;
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      background:#ffd95e;
-      border-color:#ffd95e;
-    }
-
-    .btn:disabled {
-      opacity:0.6;
-      cursor:default;
-      transform:none;
-    }
-
-    /* MAIN LAYOUT */
-    .main-layout {
-      flex:1;
-      display:grid;
-      gap:8px;
-      grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
-      min-height:0;
-      margin-top:2px;
-    }
-
-    .panel {
-      display:flex;
-      flex-direction:column;
-      background:var(--bg-main);
-      border-radius:var(--radius-md);
-      border:1px solid var(--border-soft);
-      box-shadow:var(--shadow-soft);
-      min-height:0;
-      overflow:hidden;
-    }
-
-    .panel-header {
-      padding:6px 8px;
-      border-bottom:1px solid rgba(43,43,43,0.95);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-    }
-
-    .panel-title {
-      font-size:var(--fs-subtitle);
-      color:var(--text-muted);
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-
-    .panel-tag {
-      font-size:var(--fs-small);
-      padding:2px 6px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,0.08);
-      color:var(--text-muted);
-    }
-
-    .editor-wrapper {
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      padding:6px;
-      gap:6px;
-      min-height:0;
-    }
-
-    .editor-meta {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .pill-soft {
-      padding:2px 6px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,0.06);
-      background:rgba(255,255,255,0.02);
-      font-size:var(--fs-small);
-    }
-
-    .editor-container {
-      flex:1;
-      position:relative;
-      border-radius:var(--radius-md);
-      border:1px solid var(--border-soft);
-      background:radial-gradient(circle at top left, rgba(255,191,0,0.05), transparent 55%);
-      min-height:200px;
-      overflow:hidden;
-    }
-
-    .editor-gutter {
-      position:absolute;
-      inset:0 auto 0 0;
-      width:28px;
-      background:rgba(0,0,0,0.8);
-      border-right:1px solid var(--border-soft);
-      color:var(--text-muted);
-      font-size:var(--fs-small);
-      padding:6px 3px;
-      text-align:right;
-      pointer-events:none;
-      overflow:hidden;
-    }
-
-    .editor-gutter-line {
-      height:1.4em;
-    }
-
-    #code-editor {
+    .footer-stack {
+      position:fixed;
+      left:0;
+      bottom:0;
       width:100%;
-      height:100%;
-      border:none;
-      outline:none;
-      resize:none;
-      background:transparent;
-      color:var(--text-main);
-      padding:6px 10px 6px 34px;
-      font-size:var(--fs-body);
-      line-height:1.4;
-      tab-size:2;
-      white-space:pre;
-      overflow:auto;
-    }
-
-    /* OUTPUT PANEL */
-    .output-wrapper {
+      height:var(--footer-h);
+      background:var(--bg);
+      border-top:1px solid var(--border-soft);
       display:flex;
-      flex-direction:column;
-      min-height:0;
-    }
-
-    .output-body {
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      padding:6px;
-      gap:6px;
-      min-height:0;
-    }
-
-    .output-panel {
-      flex:1;
-      border-radius:var(--radius-md);
-      border:1px solid var(--border-soft);
-      background:var(--bg-elevated);
-      overflow:auto;
-      padding:8px;
-      min-height:120px;
-      position:relative;
-    }
-
-    .output-panel + .output-panel {
-      margin-top:4px;
-    }
-
-    .panel-label {
-      position:absolute;
-      top:6px;
-      left:8px;
-      font-size:var(--fs-small);
+      align-items:center;
+      justify-content:flex-end;
+      padding:0 14px;
+      font-size:11px;
       color:var(--text-muted);
-      opacity:0.85;
-    }
-
-    .panel-content {
-      margin-top:14px;
-      font-size:var(--fs-body);
-    }
-
-    #plot-area img {
-      max-width:100%;
-      height:auto;
-      border-radius:var(--radius-sm);
-      border:1px solid rgba(255,255,255,0.06);
-      display:block;
-    }
-
-    #console-output {
-      background:transparent;
-      border:none;
-      color:var(--text-main);
-      font-size:var(--fs-small);
-      white-space:pre-wrap;
-      word-break:break-word;
-    }
-
-    .placeholder {
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width:8px;
-      height:8px;
-    }
-    ::-webkit-scrollbar-track {
-      background:rgba(0,0,0,0.7);
-    }
-    ::-webkit-scrollbar-thumb {
-      background:rgba(40,40,40,0.9);
-      border-radius:999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background:rgba(70,70,70,1);
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 900px) {
-      .main-layout {
-        grid-template-columns:minmax(0,1fr);
-      }
-    }
-
-    @media (max-width: 600px) {
-      .app-root {
-        padding:6px;
-      }
-      .top-strip {
-        flex-direction:column;
-        align-items:flex-start;
-      }
-      .editor-container {
-        min-height:180px;
-      }
+      letter-spacing:0.04em;
+      text-transform:uppercase;
+      pointer-events:none; /* biar nggak ganggu klik di dalam iframe */
     }
   </style>
 </head>
 <body>
-  <div class="app-root">
-    <!-- Minimal Top Strip -->
-    <div class="top-strip">
-      <div class="top-left">
-        <div class="status-dot"></div>
-        <div class="status-text" id="status-text">engine: idle</div>
-      </div>
-      <div class="top-right">
-        <button class="btn" id="btn-template" type="button">
-          📎 template
-        </button>
-        <button class="btn btn-primary" id="btn-run" type="button">
-          ▶ run
-        </button>
-      </div>
-    </div>
 
-    <!-- Main Layout -->
-    <main class="main-layout">
-      <!-- Editor -->
-      <section class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            editor.py
-          </div>
-          <div class="panel-tag" id="last-run-label">never run</div>
-        </div>
-        <div class="editor-wrapper">
-          <div class="editor-meta">
-            <span class="pill-soft">Shift+Enter = run</span>
-          </div>
-          <div class="editor-container">
-            <div id="editor-gutter" class="editor-gutter"></div>
-            <textarea id="code-editor" spellcheck="false"></textarea>
-          </div>
-        </div>
-      </section>
+  <iframe
+    src="https://deepnote.com/app/kuantara-analytics-terminal/Screener-and-Quantitative-Tools-3a159ea6-0254-4bbd-96b3-75e07e31ecc1?utm_source=app-settings&utm_medium=product-embed&utm_campaign=data-app&utm_content=3a159ea6-0254-4bbd-96b3-75e07e31ecc1&__embedded=true"
+    allowfullscreen>
+  </iframe>
 
-      <!-- Output -->
-      <section class="panel output-wrapper">
-        <div class="panel-header">
-          <div class="panel-title">output</div>
-          <div class="panel-tag" id="run-status-pill">status: idle</div>
-        </div>
-        <div class="output-body">
-          <div class="output-panel">
-            <div class="panel-label">chart</div>
-            <div class="panel-content" id="plot-area">
-              <div class="placeholder">jalankan script untuk menghasilkan grafik.</div>
-            </div>
-          </div>
-          <div class="output-panel">
-            <div class="panel-label">console</div>
-            <div class="panel-content">
-              <pre id="console-output" class="placeholder">logs eksekusi akan muncul di sini.</pre>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+  <div class="footer-stack">
+    Kuantara · Quantitative Research
   </div>
 
-  <script>
-    // GANTI DENGAN ENDPOINT BACKEND KAMU
-    const API_URL = "https://kuancloud.loclx.io/api/quant/execute";
-
-    const codeEditor = document.getElementById("code-editor");
-    const gutter = document.getElementById("editor-gutter");
-    const btnRun = document.getElementById("btn-run");
-    const btnTemplate = document.getElementById("btn-template");
-    const statusText = document.getElementById("status-text");
-    const runStatusPill = document.getElementById("run-status-pill");
-    const lastRunLabel = document.getElementById("last-run-label");
-    const plotArea = document.getElementById("plot-area");
-    const consoleOutput = document.getElementById("console-output");
-
-    function setDefaultTemplate() {
-      const template = `import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
-
-# Contoh data dummy untuk correlation (ganti dengan kuantara_data.load_prices)
-assets = ["SPX", "NDX", "XAUUSD", "CL1!", "DXY"]
-np.random.seed(42)
-data = np.random.normal(size=(250, len(assets)))
-df = pd.DataFrame(data, columns=assets)
-
-returns = df.pct_change().dropna()
-corr = returns.corr()
-
-print("Correlation matrix:")
-print(corr.round(2))
-
-fig, ax = plt.subplots(figsize=(6, 4))
-cax = ax.imshow(corr, vmin=-1, vmax=1, cmap="RdBu")
-ax.set_xticks(range(len(assets)))
-ax.set_yticks(range(len(assets)))
-ax.set_xticklabels(assets, rotation=45, ha="right")
-ax.set_yticklabels(assets)
-ax.set_title("Dummy Cross-Asset Correlation")
-fig.colorbar(cax, ax=ax, fraction=0.046, pad=0.04)
-plt.tight_layout()
-`;
-      codeEditor.value = template;
-      updateGutter();
-    }
-
-    function updateGutter() {
-      const lines = codeEditor.value.split("\n").length || 1;
-      let html = "";
-      for (let i = 1; i <= lines; i++) {
-        html += '<div class="editor-gutter-line">' + i + '</div>';
-      }
-      gutter.innerHTML = html;
-    }
-
-    codeEditor.addEventListener("input", updateGutter);
-
-    function setRunningState(isRunning) {
-      btnRun.disabled = isRunning;
-      statusText.textContent = isRunning ? "engine: running…" : "engine: idle";
-      runStatusPill.textContent = isRunning ? "status: running…" : "status: idle";
-      runStatusPill.style.color = isRunning ? "#ffd95e" : "var(--text-muted)";
-    }
-
-    function updateLastRun() {
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2, "0");
-      const mm = String(now.getMinutes()).padStart(2, "0");
-      const ss = String(now.getSeconds()).padStart(2, "0");
-      lastRunLabel.textContent = "last: " + hh + ":" + mm + ":" + ss;
-    }
-
-    async function runScript() {
-      const code = codeEditor.value.trim();
-      if (!code) return;
-
-      setRunningState(true);
-      consoleOutput.classList.remove("placeholder");
-      consoleOutput.textContent = "running...\n";
-      plotArea.innerHTML = "<div class='placeholder'>menghasilkan grafik…</div>";
-
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            code: code,
-            user_id: "demo-user",
-            project_id: "quant-lab"
-          })
-        });
-
-        if (!res.ok) {
-          throw new Error("HTTP " + res.status + " – " + res.statusText);
-        }
-
-        const data = await res.json();
-
-        const logs = (data.logs || "").trim();
-        consoleOutput.textContent = logs || "(no logs)";
-
-        if (data.plot_png) {
-          plotArea.innerHTML =
-            '<img src="data:image/png;base64,' + data.plot_png + '" alt="quant plot">';
-        } else if (data.html_plot) {
-          plotArea.innerHTML = data.html_plot;
-        } else {
-          plotArea.innerHTML =
-            "<div class='placeholder'>tidak ada grafik yang dikembalikan.</div>";
-        }
-
-        updateLastRun();
-        runStatusPill.textContent = "status: success";
-        runStatusPill.style.color = "#22c55e";
-      } catch (err) {
-        consoleOutput.textContent += "\nERROR: " + err.message;
-        plotArea.innerHTML = "<div class='placeholder'>terjadi error saat eksekusi.</div>";
-        runStatusPill.textContent = "status: error";
-        runStatusPill.style.color = "#ef4444";
-      } finally {
-        setRunningState(false);
-      }
-    }
-
-    // Shortcut Shift+Enter
-    codeEditor.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && e.shiftKey) {
-        e.preventDefault();
-        runScript();
-      }
-    });
-
-    btnRun.addEventListener("click", runScript);
-    btnTemplate.addEventListener("click", setDefaultTemplate);
-
-    window.addEventListener("DOMContentLoaded", () => {
-      setDefaultTemplate();
-      updateGutter();
-    });
-  </script>
 </body>
 </html>
