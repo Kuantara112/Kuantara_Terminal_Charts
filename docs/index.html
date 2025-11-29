@@ -1,4 +1,4 @@
-<!DOCTYPE html>  
+<!DOCTYPE html>   
 <html lang="en">  
 <head>  
   <meta charset="UTF-8" />  
@@ -47,7 +47,7 @@
       outline: none;  
       border: none;
     }  
-    
+      
     button:focus-visible, .kt-mainmenu-btn:focus-visible {
       box-shadow: 0 0 0 1px var(--amber);
     }
@@ -124,7 +124,7 @@
       padding: 8px 12px; font-size: 10px; z-index: 3000; user-select: none;  
     }  
     .kt-topbar-left{ display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; flex-wrap: wrap; }  
-    
+      
     .kt-logo{  
       font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: 14px;  
       color: var(--amber); white-space: nowrap; cursor: pointer;  
@@ -132,7 +132,7 @@
     }  
   
     .kt-session-clock{ display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 9px; color: var(--text-muted); cursor: pointer; }  
-    
+      
     /* Tactile Session Tag */
     .kt-session-item{  
       display: inline-flex; gap: 2px; align-items: baseline; white-space: nowrap;  
@@ -179,7 +179,7 @@
       transition: all 0.15s ease;  
     }  
     .kt-mainmenu-btn span:first-child{ color: var(--amber); font-weight: 500; text-shadow: 0 0 2px rgba(0,0,0,1); }  
-    
+      
     .kt-mainmenu-btn:hover{  
       background: linear-gradient(180deg, rgba(40,40,40,0.6) 0%, rgba(20,20,20,0.9) 100%);
       border-color: var(--border-highlight);  
@@ -190,7 +190,7 @@
       box-shadow: var(--shadow-active);
       border-color: transparent;
     }  
-    
+      
     .kt-mainmenu-btn.active{  
       background: var(--amber); color: #000; border-color: transparent;  
       box-shadow: 0 0 12px var(--amber-glow), inset 0 1px 0 rgba(255,255,255,0.3);  
@@ -225,7 +225,7 @@
     }  
     .kt-submenu-group{ display: none; gap: 4px; overflow-x: auto; padding-bottom: 2px; }  
     .kt-submenu-group.active{ display: flex; }  
-    
+      
     .kt-submenu-btn{  
       flex: 0 0 auto; padding: 3px 8px; border-radius: 4px;  
       border: 1px solid var(--border-soft);  
@@ -262,7 +262,7 @@
     }  
     .kt-bottom-item{  
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;  
-      color: var(--text-muted); cursor: pointer; gap: 2px; touch-action: manipulation; font-size: 11px;  
+      color: var(--text-muted); cursor: pointer; touch-action: manipulation;  
       transition: all 0.2s ease;  
       position: relative;
     }  
@@ -273,13 +273,36 @@
     }
     .kt-bottom-item:hover{ background: rgba(255,255,255,0.03); color: var(--text-main); }  
     .kt-bottom-item:active{ transform: translateY(1px); }  
-    
+      
     .kt-bottom-item.active{  
       background: linear-gradient(180deg, rgba(255,191,0,0.05) 0%, transparent 100%);
       color: var(--amber);  
       text-shadow: 0 0 8px var(--amber-glow);
     }  
     .kt-bottom-item.active::before { opacity: 1; }
+
+    /* ICONS FOR BOTTOM NAV */
+    /* Pakai warna asli dari SVG (amber), tanpa diutak-atik filter */
+    .kt-bottom-icon{
+      width: 22px;
+      height: 22px;
+      display: block;
+      object-fit: contain;
+      filter: none;
+      opacity: 0.9;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .kt-bottom-item:hover .kt-bottom-icon{
+      opacity: 1;
+    }
+
+    /* State active: cukup mainkan sedikit posisi/scale, warna tetap dari SVG */
+    .kt-bottom-item.active .kt-bottom-icon{
+      filter: none;
+      opacity: 1;
+      transform: translateY(-1px);
+    }
   
     /* PROFILE PAGE (MINIMAL) */  
     .kt-profile-page{  
@@ -295,14 +318,14 @@
     .kt-profile-title{ font-size: 12px; color: var(--amber); font-weight: 600; text-shadow: 0 0 5px var(--amber-glow); }  
     .kt-profile-name{ font-size: 13px; color: var(--text-main); font-weight: 600; margin-top: 4px; }  
     .kt-profile-meta{ font-size: 10px; color: var(--text-muted); margin-top: 4px; }  
-      
+        
     .kt-badge{  
       display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 999px;  
       border: 1px solid var(--amber); background: rgba(255,191,0,0.1);  
       font-size: 10px; color: var(--amber); gap: 4px; box-shadow: 0 0 5px var(--amber-glow);
     }  
     .kt-profile-grid{ display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 10px; margin-top: 8px; }  
-      
+        
     .kt-profile-card{  
       border-radius: 8px; border: 1px solid var(--border-soft);  
       background: linear-gradient(145deg, rgba(20,20,20,1), rgba(10,10,10,1));
@@ -322,7 +345,7 @@
     }  
     .kt-profile-menu-btn:hover{ background: rgba(50,50,50,0.5); border-color: var(--border-highlight); }  
     .kt-profile-menu-btn:active{ transform: translateY(1px); box-shadow: var(--shadow-active); border-color: transparent;}  
-      
+        
     .kt-profile-footer{ margin-top: 14px; padding-top: 8px; border-top: 1px solid var(--border-soft); font-size: 9px; color: var(--text-muted); line-height: 1.4; opacity: 0.7; }  
   
     /* WORKSPACE */  
@@ -331,7 +354,7 @@
       display: none; background: #050505; overflow: hidden; box-sizing: border-box;  
     }  
     .kt-workspace-toolbar{ position: absolute; top: 10px; left: 10px; display: flex; flex-wrap: wrap; gap: 6px; z-index: 3; }  
-      
+        
     .kt-workspace-btn{  
       padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border-soft);  
       background: linear-gradient(180deg, rgba(30,30,30,0.8), rgba(10,10,10,0.9));
@@ -342,7 +365,7 @@
     .kt-workspace-btn.secondary{ background: linear-gradient(180deg, rgba(20,20,20,0.8), rgba(5,5,5,0.9)); color: var(--text-muted); }  
     .kt-workspace-btn:hover{ border-color: var(--border-highlight); color: #fff; }  
     .kt-workspace-btn:active{ transform: translateY(1px); box-shadow: var(--shadow-active); }  
-      
+        
     .kt-workspace-board{  
       position: absolute; inset: 0; border-radius: 0; border: none; background: #000;  
       overflow: auto; box-sizing: border-box; padding-top: 36px;  
@@ -359,7 +382,7 @@
       transition: box-shadow 0.15s ease, border-color 0.15s ease;  
     }  
     .kt-workspace-window:hover{ border-color: var(--border-highlight); }
-      
+        
     .kt-workspace-window-header{  
       height: 28px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px;  
       font-size: 10px; background: linear-gradient(to right, rgba(20,20,20,0.95), rgba(10,10,10,0.95)); 
@@ -373,7 +396,7 @@
     }  
     .kt-workspace-window-close:hover{ color: var(--amber); text-shadow: 0 0 5px var(--amber-glow); }  
     .kt-workspace-window-close:active{ transform: scale(0.9); }  
-      
+        
     .kt-workspace-window-body{ position: absolute; top: 28px; left: 0; right: 0; bottom: 0; background: #000; }  
     .kt-workspace-window-body iframe{ width: 100%; height: 100%; border: 0; display: block; }  
     .kt-workspace-resizer{  
@@ -391,12 +414,20 @@
       border: 1px solid rgba(255,255,255,0.4); user-select: none;  
       box-shadow: 0 8px 16px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.4);
       transition: transform 0.2s cubic-bezier(0.3,1.5,0.5,1), box-shadow 0.2s ease;  
+      overflow: hidden;
     }  
     .kt-ai-fab:hover{ box-shadow: 0 10px 24px rgba(255,191,0,0.4), inset 0 2px 4px rgba(255,255,255,0.5); transform: translateY(-2px); }  
     .kt-ai-fab:active{ transform: translateY(1px) scale(0.95); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }  
+
+    .kt-fab-icon{
+      width: 22px;
+      height: 22px;
+      display: block;
+      object-fit: contain;
+    }
   
     .kt-ai-menu{ position: fixed; right: 16px; bottom: 150px; display: none; flex-direction: column; gap: 6px; z-index: 3000; }  
-      
+        
     .kt-ai-menu-btn{  
       padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border-soft);  
       background: rgba(18, 18, 18, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -429,7 +460,7 @@
     .kt-ai-panel-body{ padding: 0; font-size: 11px; color: var(--text-muted); display: flex; flex-direction: column; gap: 0; flex: 1; min-height: 0; overflow: hidden; }  
   
     .kt-ai-footer{ padding: 0; border-top: none; display: none; justify-content: flex-end; gap: 6px; flex: 0 0 auto; }  
-      
+        
     .kt-ai-btn{  
       padding: 4px 10px; border-radius: 3px; font-size: 11px; border: 1px solid var(--border-soft);  
       background: linear-gradient(180deg, #222, #111); color: var(--text-muted); cursor: pointer;  
@@ -448,7 +479,7 @@
       box-shadow: var(--shadow-depth), inset 0 1px 0 rgba(255,255,255,0.05);  
     }  
     .kt-card-title{ color: var(--amber); font-size: 12px; margin-bottom: 8px; text-shadow: 0 0 8px rgba(255,191,0,0.2); }  
-      
+        
     .kt-search-input{  
       width: 100%; padding: 10px; border-radius: 6px;  
       border: 1px solid var(--border-soft); background: rgba(0,0,0,0.6);  
@@ -487,7 +518,7 @@
       box-shadow: var(--shadow-active);
       border-color: transparent;
     }
-      
+        
     .kt-close-btn{  
       margin-top: 10px; padding: 6px 10px; font-size: 11px; border-radius: 4px;  
       border: 1px solid var(--border-soft); background: linear-gradient(180deg, #222, #111);  
@@ -504,7 +535,7 @@
       border: 1px solid var(--border-soft); background: rgba(5,5,5,0.5); padding: 4px 0; font-size: 11px;  
     }  
     .kt-search-suggestions.hidden{ display: none; }  
-      
+        
     .kt-search-suggestion-item{ padding: 4px 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 6px; transition: background 0.1s ease; }  
     .kt-search-suggestion-item:hover{ background: rgba(255,255,255,0.06); }  
     .kt-search-suggestion-main{ color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px; }  
@@ -534,6 +565,7 @@
       .kt-mainmenu-strip{ justify-content: flex-start; top: 32px; }  
       .kt-profile-inner{ padding: 12px 12px; }  
       .kt-workspace-window{ width: 88vw; height: 45vh; }  
+      .kt-bottom-icon{ width: 18px; height: 18px; }
     }  
 
     /* Desktop: smaller bottom bar & adjusted offsets */
@@ -604,13 +636,15 @@
   </div>  
 
   <nav class="kt-submenu-strip kt-hide-bottom" id="kt-submenu-strip">  
+    <!-- Markets: Overview + Cap Flow + assets -->
     <div class="kt-submenu-group active" data-menu-sub="0">  
       <button class="kt-submenu-btn active" data-menu="0" data-sub-index="0">Overview</button>  
-      <button class="kt-submenu-btn" data-menu="0" data-sub-index="1">Forex</button>  
-      <button class="kt-submenu-btn" data-menu="0" data-sub-index="2">Fixed</button>  
-      <button class="kt-submenu-btn" data-menu="0" data-sub-index="3">Commodities</button>  
-      <button class="kt-submenu-btn" data-menu="0" data-sub-index="4">Equities</button>  
-      <button class="kt-submenu-btn" data-menu="0" data-sub-index="5">Crypto</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="1">Cap Flow</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="2">Forex</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="3">Fixed</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="4">Commodities</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="5">Equities</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="6">Crypto</button>  
     </div>  
 
     <div class="kt-submenu-group" data-menu-sub="1">  
@@ -659,11 +693,10 @@
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="2">Real-Time</button>  
     </div>  
 
-    <!-- Screener: Stocks -> IDX Stocks, Custom -> Flows -->
+    <!-- Screener: Stocks -> IDX Stocks, Custom -> (Cap Flow moved to Markets) -->
     <div class="kt-submenu-group" data-menu-sub="7">  
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">IDX Stocks</button>  
       <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">Crypto</button>  
-      <button class="kt-submenu-btn" data-menu="7" data-sub-index="2">Flows</button>  
     </div>  
 
     <!-- Research: swap Reports & Quantitative -->
@@ -727,24 +760,25 @@
 
   <nav class="kt-bottom-nav" id="kt-bottom-nav">  
     <div class="kt-bottom-item active" data-bottom-role="home">  
-      <span>Home</span>  
+      <img src="home-svgrepo-com.svg" class="kt-bottom-icon" alt="Home">  
     </div>  
     <div class="kt-bottom-item" data-bottom-role="search">  
-      <span>Search</span>  
+      <img src="search-alt-svgrepo-com.svg" class="kt-bottom-icon" alt="Search">  
     </div>  
     <div class="kt-bottom-item" data-bottom-role="workspace">  
-      <span>Workspace</span>  
+      <img src="workspace-svgrepo-com.svg" class="kt-bottom-icon" alt="Workspace">  
     </div>  
   </nav>  
 
-  <div class="kt-ai-fab" id="kt-ai-fab">≡</div>  
+  <div class="kt-ai-fab" id="kt-ai-fab">
+    <img src="menu-vertical-svgrepo-com.svg" class="kt-fab-icon" alt="Menu">
+  </div>  
 
   <div class="kt-ai-menu" id="kt-ai-menu">  
     <button class="kt-ai-menu-btn" data-pane="ai"><span>AI</span><span>Kuantara AI</span></button>  
     <button class="kt-ai-menu-btn" data-pane="mini"><span>MC</span><span>Mini Chart</span></button>  
     <button class="kt-ai-menu-btn" data-pane="notes"><span>NT</span><span>Notes</span></button>  
     <button class="kt-ai-menu-btn" data-pane="signals"><span>AL</span><span>Alerts</span></button>  
-    <button class="kt-ai-menu-btn" data-pane="group"><span>GC</span><span>Group Chat</span></button>  
     <button class="kt-ai-menu-btn" data-pane="profile"><span>PR</span><span>Profile</span></button>  
   </div>  
 
@@ -800,7 +834,7 @@
       const searchInput = document.getElementById("kt-search-input");  
       const searchClose = document.getElementById("kt-search-close");  
       const searchSuggestions = document.getElementById("kt-search-suggestions");  
-      const searchChips = document.getElementById("kt-search-chips");
+      const searchChips = document.getElementById("kt-search-chips");  
   
       const iframeLayer   = document.getElementById("kt-iframe-layer");  
       const topbar        = document.getElementById("kt-topbar");  
@@ -821,8 +855,9 @@
       const CLICK_GRACE = 450;  
       let hideTimer=null, graceTimer=null;  
         
-      /* Pin State */  
-      let isPinned = false;  
+      /* Pin State (default: pinned / autohide disabled) */  
+      let isPinned = true;  
+      document.body.classList.add("kt-pinned");  
   
       let activeMenu=0;  
       let activeBottom="home";  
@@ -840,11 +875,12 @@
       const IFRAME_MAP = {  
         // Markets  
         "0:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/overview_markets.html",  
-        "0:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_forex.html",  
-        "0:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_fixed.html",  
-        "0:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_commodities.html",  
-        "0:4":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_equities.html",  
-        "0:5":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_crypto.html",  
+        "0:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_capflows.html",  
+        "0:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_forex.html",  
+        "0:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_fixed.html",  
+        "0:4":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_commodities.html",  
+        "0:5":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_equities.html",  
+        "0:6":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_crypto.html",  
   
         // News  
         "1:0":FEED_247_URL,  
@@ -864,10 +900,10 @@
         "3:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_tradeshipping.html",  
         "3:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_resources.html",  
   
-        // Metrics Labs
-        "4:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macro.html",  
-        "4:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_liquidity.html",  
-        "4:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentiment.html",  
+        // Metrics Labs (updated URLs)
+        "4:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macrolab.html",  
+        "4:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_marketlab.html",  
+        "4:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentimentlab.html",  
   
         // Companies (updated)
         "5:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us.html",  
@@ -882,10 +918,9 @@
         "6:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_economy.html",  
         "6:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_realtime.html",  
   
-        // Screener (IDX Stocks + Crypto + Flows)
+        // Screener (IDX Stocks + Crypto)
         "7:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_stocks.html",  
         "7:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_crypto.html",  
-        "7:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_flows.html",  
   
         // Research (Reports and Quant swapped)
         "8:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_institutions.html",  
@@ -1457,20 +1492,6 @@
             '<div style="width:100%;height:100%;padding:8px 10px;box-sizing:border-box;font-size:10px;line-height:1.5;color:var(--text-muted);overflow:auto;">' +  
             'Panel ini akan menampilkan alert dari sistem Kuantara (algo, screener, atau alert eksternal). ' +  
             'Integrasi backend bisa diarahkan untuk push alert terbaru ke area ini secara realtime.' +  
-            '</div>';  
-          aiFooter.innerHTML = '';  
-          aiPanel.style.display="flex";  
-          if(activeBottom==="home") showAllBars();  
-        }else if(mode==="group"){  
-          aiTitle.textContent = "Group Chat";  
-          aiSubtitle.textContent = "Chat antar user Kuantara Terminal (prototype).";  
-          aiBody.innerHTML =  
-            '<div style="width:100%;height:100%;padding:8px 10px;box-sizing:border-box;font-size:10px;line-height:1.5;color:var(--text-muted);overflow:auto;">' +  
-              'Fitur ini didesain sebagai ruang obrolan realtime antar pengguna Kuantara Terminal. ' +  
-              'Integrasi backend (Telegram/Discord/WebSocket) bisa dihubungkan ke panel ini di tahap berikutnya.' +  
-              '<div style="margin-top:8px;padding:6px 8px;border-radius:6px;border:1px dashed var(--border-soft);font-size:10px;color:var(--text-muted);">' +  
-              'Prototype: belum terhubung ke server chat. Di versi production, area ini akan menampilkan pesan, daftar user online, dan input box untuk mengirim chat.' +  
-              '</div>' +  
             '</div>';  
           aiFooter.innerHTML = '';  
           aiPanel.style.display="flex";  
