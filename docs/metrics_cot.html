@@ -1,143 +1,2475 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Kuantara – COT Explorer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
   <style>
     :root {
-      --bg:#050505;
-      --card:#151515;
-      --accent:#ffbf00;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --bg-panel:#111111;
+      --bg-panel-soft:#151515;
+      --border-soft:#2b2b2b;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+      --accent-soft:rgba(255,191,0,0.16);
+      --danger:#ef4444;
+      --success:#22c55e;
+
+      --radius-lg:14px;
+      --radius-md:10px;
+      --fs-title:16px;
+      --fs-subtitle:12px;
+      --fs-body:11px;
     }
 
-    *{
+    * {
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:"Fira Code",monospace;
     }
 
-    body{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
+    html, body {
+      width:100%;
+      height:100%;
+      background-color:var(--bg-root);
       color:var(--text-main);
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
-      text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    body {
+      display:flex;
+      justify-content:center;
     }
 
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 12px;
+    /* Global scrollbar – black transparent */
+    * {
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.6) transparent;
+    }
+    *::-webkit-scrollbar {
+      width:6px;
+      height:6px;
+    }
+    *::-webkit-scrollbar-track {
+      background:transparent;
+    }
+    *::-webkit-scrollbar-thumb {
+      background:rgba(0,0,0,0.5);
       border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
-      color:var(--accent);
-      margin-bottom:18px;
     }
 
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
+    .app-shell {
+      width:100%;
+      max-width:1200px;
+      padding:16px;
     }
 
-    h1{
-      font-size:22px;
+    /* HEADER DIHILANGKAN (tidak dipakai di UI) */
+    .header {
+      display:none;
+    }
+
+    .controls {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:flex-end;
       margin-bottom:8px;
     }
 
-    p{
-      font-size:14px;
-      line-height:1.6;
+    .control-group {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      flex:1 1 220px;
+      min-width:0;
+    }
+
+    .control-label {
+      font-size:10px;
       color:var(--text-muted);
-      margin-bottom:18px;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
     }
 
-    .time-estimate{
-      font-size:13px;
-      color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
+    .control-select {
+      background:var(--bg-panel-soft);
+      border:1px solid var(--border-soft);
+      color:var(--text-main);
+      font-size:11px;
+      padding:6px 8px;
+      border-radius:8px;
+      min-width:220px;
+      width:100%;
     }
 
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
-    }
-
-    .btn:hover{
+    .btn-primary {
       background:var(--accent);
       color:#000;
-      transform:translateY(-1px);
+      border:none;
+      font-size:11px;
+      font-weight:500;
+      padding:7px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      white-space:nowrap;
     }
 
-    .footer-text{
-      margin-top:16px;
-      font-size:11px;
-      color:#666;
+    .btn-primary span.dot {
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#000;
+    }
+
+    .btn-primary:disabled {
+      opacity:0.6;
+      cursor:default;
+    }
+
+    /* STATUS-LINE & CHIP DIHILANGKAN DARI UI */
+    .status-line {
+      display:none;
+    }
+    .status-badge {
+      display:none;
+    }
+
+    .layout-grid {
+      display:grid;
+      grid-template-columns:2fr 1.4fr;
+      gap:12px;
+      margin-top:6px;
+    }
+
+    .layout-col {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:0;
+    }
+
+    @media (max-width:900px) {
+      .layout-grid {
+        grid-template-columns:1fr;
+      }
+    }
+
+    .panel {
+      background:var(--bg-panel);
+      border-radius:var(--radius-lg);
+      border:1px solid var(--border-soft);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-height:0;
+    }
+
+    .panel-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:6px;
+    }
+
+    .panel-title {
+      font-size:12px;
+      font-weight:500;
+    }
+
+    .panel-note {
+      font-size:10px;
+      color:var(--text-muted);
+      text-align:right;
+    }
+
+    .chart-container {
+      width:100%;
+      height:260px;
+    }
+
+    @media (max-width:600px) {
+      .chart-container {
+        height:220px;
+      }
+    }
+
+    .table-wrapper {
+      margin-top:12px;
+      background:var(--bg-panel);
+      border-radius:var(--radius-lg);
+      border:1px solid var(--border-soft);
+      padding:10px;
+    }
+
+    .table-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:6px;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .table-title {
+      font-size:12px;
+      font-weight:500;
+    }
+
+    .table-meta {
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .table-scroll {
+      max-height:320px;
+      overflow:auto;
+      border-radius:var(--radius-md);
+      border:1px solid var(--border-soft);
+    }
+
+    @media (max-width:768px) {
+      .app-shell {
+        padding:12px 8px;
+      }
+      .controls {
+        flex-direction:column;
+        align-items:stretch;
+      }
+      .control-group {
+        flex:1 1 auto;
+      }
+      .control-select {
+        min-width:0;
+        width:100%;
+      }
+      .table-scroll {
+        max-height:60vh;
+      }
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:10px;
+    }
+
+    thead {
+      position:sticky;
+      top:0;
+      background:var(--bg-panel-soft);
+      z-index:1;
+    }
+
+    th, td {
+      padding:4px 6px;
+      border-bottom:1px solid #1e1e1e;
+      white-space:nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background:#101010;
+    }
+
+    tbody tr:hover {
+      background:#181818;
+    }
+
+    th {
+      text-align:left;
+      color:var(--text-muted);
+      font-weight:500;
+      position:relative;
+    }
+
+    th::after {
+      content:"";
+      position:absolute;
+      right:0;
+      top:50%;
+      transform:translateY(-50%);
+      width:1px;
+      height:50%;
+      background:#1f1f1f;
+    }
+
+    th:last-child::after {
+      display:none;
+    }
+
+    .cell-num {
+      text-align:right;
+      font-variant-numeric:tabular-nums;
+    }
+
+    .cell-date {
+      font-variant-numeric:tabular-nums;
+    }
+
+    .cell-pos-pos {
+      color:var(--success);
+    }
+
+    .cell-pos-neg {
+      color:var(--danger);
+    }
+
+    .skeleton {
+      animation:pulse 1.2s ease-in-out infinite;
+      background:linear-gradient(90deg,#151515,#222222,#151515);
+      background-size:200% 100%;
+    }
+
+    @keyframes pulse {
+      0% {background-position:200% 0;}
+      100% {background-position:-200% 0;}
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
+<div class="app-shell">
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="control-group">
+      <label class="control-label">Report Type</label>
+      <select id="reportSelect" class="control-select">
+        <option value="LEGACY">Legacy – Futures Only</option>
+        <option value="TFF">TFF – Futures Only</option>
+        <option value="DISAGG">Disaggregated – Futures Only</option>
+        <option value="CIT">Supplemental – CIT</option>
+      </select>
     </div>
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
-
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
+    <div class="control-group">
+      <label class="control-label">Contract / Asset</label>
+      <select id="contractSelect" class="control-select">
+        <option value="">Loading contracts…</option>
+      </select>
     </div>
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
-
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
+    <div class="control-group" style="max-width:160px;">
+      <label class="control-label">&nbsp;</label>
+      <button id="loadBtn" class="btn-primary">
+        <span class="dot"></span>
+        Load COT Data
+      </button>
     </div>
-  </main>
+  </div>
 
-  <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+  <!-- STATUS (DISABLED / HIDDEN) -->
+  <div class="status-line">
+    <div id="statusText">Init… fetching contract list & default data (2024 → latest).</div>
+    <div id="statusBadge" class="status-badge ok">Idle</div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="layout-grid">
+    <!-- LEFT COLUMN: Net + Open Interest -->
+    <div class="layout-col">
+      <!-- MAIN CHART: NET POSITIONS -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title" id="netTitle">Net Positions</div>
+          <div class="panel-note" id="netMeta">–</div>
+        </div>
+        <div id="netChart" class="chart-container skeleton"></div>
+      </div>
+
+      <!-- NEW PANEL: OPEN INTEREST -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title" id="oiTitle">Open Interest</div>
+          <div class="panel-note" id="oiMeta">–</div>
+        </div>
+        <div id="oiChart" class="chart-container skeleton"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Long/Short + Pie -->
+    <div class="layout-col">
+      <!-- LONG & SHORT CHART -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title" id="lsTitle">Long & Short</div>
+          <div class="panel-note" id="lsMeta">–</div>
+        </div>
+        <div id="lsChart" class="chart-container skeleton"></div>
+      </div>
+
+      <!-- NEW PANEL: PIE CHART (LATEST WEEK) -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title" id="pieTitle">Latest Week Position Mix</div>
+          <div class="panel-note" id="pieMeta">–</div>
+        </div>
+        <div id="pieChart" class="chart-container skeleton"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrapper">
+    <div class="table-header">
+      <div class="table-title">
+        Weekly COT Data · <span id="tableContractLabel">–</span>
+        <span id="tableReportLabel" style="color:var(--accent); font-size:10px; margin-left:6px;"></span>
+      </div>
+      <div class="table-meta" id="tableMeta">0 rows</div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead id="cotTableHead"></thead>
+        <tbody id="cotTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // =============================
+  // CONFIG
+  // =============================
+  const APP_TOKEN = "UihM1Kc4C93nFeB6oRw1NAY6A"; // ganti kalau mau pakai token sendiri
+  const MIN_YEAR  = 2024; // dari tahun 2024 sampai latest
+
+  const REPORTS = {
+    LEGACY: {
+      key: "LEGACY",
+      labelShort: "Legacy",
+      labelLong: "Legacy – Futures Only",
+      baseUrl: "https://publicreporting.cftc.gov/api/v3/views/6dca-aqww/query.json"
+    },
+    TFF: {
+      key: "TFF",
+      labelShort: "TFF",
+      labelLong: "TFF – Traders in Financial Futures",
+      baseUrl: "https://publicreporting.cftc.gov/api/v3/views/gpe5-46if/query.json"
+    },
+    DISAGG: {
+      key: "DISAGG",
+      labelShort: "Disagg",
+      labelLong: "Disaggregated – Futures Only",
+      baseUrl: "https://publicreporting.cftc.gov/api/v3/views/72hh-3qpy/query.json"
+    },
+    CIT: {
+      key: "CIT",
+      labelShort: "CIT",
+      labelLong: "Supplemental – CIT (Fut+Opt)",
+      baseUrl: "https://publicreporting.cftc.gov/api/v3/views/4zgm-a668/query.json"
+    }
+  };
+
+  // =============================
+  // KUANTARA ASSET WHITELIST
+  // =============================
+  const ASSET_WHITELIST = [
+    // CURRENCIES
+    { group:"Currencies", label:"US Dollar (USD)",        patterns:["DOLLAR INDEX"] },
+    { group:"Currencies", label:"Euro FX (EUR)",          patterns:["EURO FX"] },
+    { group:"Currencies", label:"British Pound (GBP)",    patterns:["BRITISH POUND"] },
+    { group:"Currencies", label:"Canadian Dollar (CAD)",  patterns:["CANADIAN DOLLAR"] },
+    { group:"Currencies", label:"Japanese Yen (JPY)",     patterns:["JAPANESE YEN"] },
+    { group:"Currencies", label:"Swiss Franc (CHF)",      patterns:["SWISS FRANC"] },
+    { group:"Currencies", label:"Australian Dollar (AUD)",patterns:["AUSTRALIAN DOLLAR"] },
+    { group:"Currencies", label:"New Zealand Dollar (NZD)",patterns:["NEW ZEALAND DOLLAR"] },
+    { group:"Currencies", label:"Mexican Peso",           patterns:["MEXICAN PESO"] },
+    { group:"Currencies", label:"Brazilian Real",         patterns:["BRAZILIAN REAL"] },
+
+    // CRYPTO
+    { group:"Crypto", label:"Bitcoin Micro",              patterns:["MICRO BITCOIN"] },
+    { group:"Crypto", label:"Ether Micro",                patterns:["MICRO ETH", "ETHEREUM"] },
+
+    // INDICES
+    { group:"Indices", label:"S&P 500 E-Mini",            patterns:["S&P 500", "E-MINI"] },
+    { group:"Indices", label:"Nasdaq 100 E-Mini",         patterns:["NASDAQ-100", "E-MINI"] },
+    { group:"Indices", label:"Dow Industrial 30 E-Mini",  patterns:["DOW JONES", "E-MINI"] },
+    { group:"Indices", label:"Russell 2000 E-Mini",       patterns:["RUSSELL 2000", "E-MINI"] },
+
+    // BONDS
+    { group:"Bonds", label:"30-Year T-Bond",              patterns:["U.S. TREASURY BONDS"] },
+    { group:"Bonds", label:"10-Year T-Note",              patterns:["10-YEAR U.S. TREASURY NOTES"] },
+    { group:"Bonds", label:"Ultra 10-Year T-Note",        patterns:["ULTRA 10-YEAR"] },
+    { group:"Bonds", label:"5-Year T-Note",               patterns:["5-YEAR U.S. TREASURY NOTES"] },
+    { group:"Bonds", label:"2-Year T-Note",               patterns:["2-YEAR U.S. TREASURY NOTES"] },
+    { group:"Bonds", label:"30-Day Fed Funds",            patterns:["30-DAY FED FUNDS"] },
+
+    // ENERGY
+    { group:"Energy", label:"Crude Oil",                  patterns:["CRUDE OIL"] },
+    { group:"Energy", label:"ULSD NY Harbor",             patterns:["ULSD", "NY HARBOR"] },
+    { group:"Energy", label:"Gasoline RBOB",              patterns:["RBOB GASOLINE"] },
+    { group:"Energy", label:"Natural Gas",                patterns:["NATURAL GAS"] },
+
+    // METALS
+    { group:"Metals", label:"Gold",                       patterns:["GOLD"] },
+    { group:"Metals", label:"Silver",                     patterns:["SILVER"] },
+    { group:"Metals", label:"High Grade Copper",          patterns:["COPPER", "HIGH GRADE"] },
+    { group:"Metals", label:"Platinum",                   patterns:["PLATINUM"] },
+    { group:"Metals", label:"Palladium",                  patterns:["PALLADIUM"] },
+
+    // GRAIN
+    { group:"Grain", label:"Wheat SRW",                   patterns:["WHEAT-SRW"] },
+    { group:"Grain", label:"Corn",                        patterns:["CORN"] },
+    { group:"Grain", label:"Soybeans",                    patterns:["SOYBEANS"] },
+    { group:"Grain", label:"Soybean Meal",                patterns:["SOYBEAN MEAL"] },
+    { group:"Grain", label:"Soybean Oil",                 patterns:["SOYBEAN OIL"] },
+    { group:"Grain", label:"Rough Rice",                  patterns:["ROUGH RICE"] },
+    { group:"Grain", label:"KCBT Wheat",                  patterns:["KCBT", "WHEAT"] },
+
+    // SOFTS
+    { group:"Softs", label:"Cotton #2",                   patterns:["COTTON", "NO. 2"] },
+    { group:"Softs", label:"Coffee",                      patterns:["COFFEE"] },
+    { group:"Softs", label:"Sugar #11",                   patterns:["SUGAR", "NO. 11"] },
+    { group:"Softs", label:"Cocoa",                       patterns:["COCOA"] },
+
+    // LIVE CATTLE & MEATS
+    { group:"Live Cattle & Meats", label:"Live Cattle",   patterns:["LIVE CATTLE"] },
+    { group:"Live Cattle & Meats", label:"Feeder Cattle", patterns:["FEEDER CATTLE"] },
+    { group:"Live Cattle & Meats", label:"Lean Hogs",     patterns:["LEAN HOGS"] },
+
+    // DAIRY
+    { group:"Dairy", label:"Milk Class III",              patterns:["MILK", "CLASS III"] },
+    { group:"Dairy", label:"Nonfat Dry Milk",             patterns:["NONFAT DRY MILK"] },
+    { group:"Dairy", label:"Butter Cash-Settled",         patterns:["BUTTER", "CASH-SETTLED"] },
+    { group:"Dairy", label:"Cheese Cash-Settled",         patterns:["CHEESE", "CASH-SETTLED"] }
+  ];
+
+  function matchPatterns(name, patterns) {
+    const up = name.toUpperCase();
+    if (!patterns) return false;
+    if (Array.isArray(patterns)) {
+      return patterns.every(p => up.includes(p.toUpperCase()));
+    }
+    return up.includes(patterns.toUpperCase());
+  }
+
+  function filterToKuantaraAssets(rows) {
+    const results = [];
+    ASSET_WHITELIST.forEach(asset => {
+      const matchRow = rows.find(r => {
+        const nm = (r.contract_market_name || "").toUpperCase();
+        return nm && matchPatterns(nm, asset.patterns);
+      });
+      if (matchRow) {
+        results.push({
+          assetGroup: asset.group,
+          assetLabel: asset.label,
+          contractName: matchRow.contract_market_name
+        });
+      }
+    });
+    return results;
+  }
+
+  let currentReport = "LEGACY";
+
+  const loadBtn            = document.getElementById("loadBtn");
+  const reportSelect       = document.getElementById("reportSelect");
+  const contractSelect     = document.getElementById("contractSelect");
+  const statusText         = document.getElementById("statusText");
+  const statusBadge        = document.getElementById("statusBadge");
+  const tableHead          = document.getElementById("cotTableHead");
+  const tableBody          = document.getElementById("cotTableBody");
+  const tableMeta          = document.getElementById("tableMeta");
+  const tableContractLabel = document.getElementById("tableContractLabel");
+  const tableReportLabel   = document.getElementById("tableReportLabel");
+  const netMeta            = document.getElementById("netMeta");
+  const lsMeta             = document.getElementById("lsMeta");
+  const netTitle           = document.getElementById("netTitle");
+  const lsTitle            = document.getElementById("lsTitle");
+  const oiMeta             = document.getElementById("oiMeta");
+  const pieMeta            = document.getElementById("pieMeta");
+
+  let netChart = echarts.init(document.getElementById("netChart"));
+  let lsChart  = echarts.init(document.getElementById("lsChart"));
+  let oiChart  = echarts.init(document.getElementById("oiChart"));
+  let pieChart = echarts.init(document.getElementById("pieChart"));
+
+  window.addEventListener("resize", () => {
+    netChart.resize();
+    lsChart.resize();
+    oiChart.resize();
+    pieChart.resize();
+  });
+
+  function setStatus(msg, type="ok") {
+    if (statusText) statusText.textContent = msg;
+    let label;
+    if (type === "loading") label = "Loading…";
+    else if (type === "error") label = "Error";
+    else label = "OK";
+    if (statusBadge) {
+      statusBadge.textContent = label;
+      statusBadge.className = "status-badge " + (type === "ok" ? "ok" : type === "error" ? "err" : "");
+    }
+    console.log("[COT Explorer]", type.toUpperCase(), msg);
+  }
+
+  function formatDateShort(isoStr) {
+    if (!isoStr) return "-";
+    const d = new Date(isoStr);
+    if (Number.isNaN(d.getTime())) return isoStr.slice(0,10);
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function formatNum(n) {
+    if (n === null || n === undefined || Number.isNaN(n)) return "-";
+    return n.toLocaleString("en-US");
+  }
+
+  function parseNumber(x) {
+    if (x === null || x === undefined) return null;
+    const n = Number(x);
+    return Number.isNaN(n) ? null : n;
+  }
+
+  async function fetchJSON(baseUrl, body) {
+    const headers = { "Content-Type":"application/json" };
+    if (APP_TOKEN && APP_TOKEN !== "YOUR_APP_TOKEN_HERE") {
+      headers["X-App-Token"] = APP_TOKEN;
+    }
+
+    const res = await fetch(baseUrl, {
+      method:"POST",
+      headers,
+      body:JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`HTTP ${res.status} – ${txt.slice(0,200)}`);
+    }
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  }
+
+  async function fetchContractList(reportKey) {
+    const cfg = REPORTS[reportKey];
+    let soql;
+    if (reportKey === "CIT") {
+      soql = `
+        SELECT DISTINCT contract_market_name
+        ORDER BY contract_market_name
+      `;
+    } else {
+      soql = `
+        SELECT DISTINCT contract_market_name
+        WHERE futonly_or_combined = 'FutOnly'
+        ORDER BY contract_market_name
+      `;
+    }
+
+    const body = {
+      query: soql.replace(/\s+/g," ").trim(),
+      page: { pageNumber:1, pageSize:1000 },
+      includeSynthetic:false
+    };
+
+    return await fetchJSON(cfg.baseUrl, body);
+  }
+
+  async function fetchCOT(reportKey, contractName) {
+    const cfg = REPORTS[reportKey];
+    const dateStr = `${MIN_YEAR}-01-01T00:00:00.000`;
+    let soql;
+
+    if (reportKey === "LEGACY") {
+      soql = `
+        SELECT
+          report_date_as_yyyy_mm_dd,
+          contract_market_name,
+          commodity_name,
+          noncomm_positions_long_all,
+          noncomm_positions_short_all,
+          comm_positions_long_all,
+          comm_positions_short_all,
+          nonrept_positions_long_all,
+          nonrept_positions_short_all,
+          open_interest_all
+        WHERE
+          contract_market_name = '${contractName.replace(/'/g,"''")}'
+          AND futonly_or_combined = 'FutOnly'
+          AND report_date_as_yyyy_mm_dd >= '${dateStr}'
+        ORDER BY report_date_as_yyyy_mm_dd ASC
+      `;
+    } else if (reportKey === "TFF") {
+      soql = `
+        SELECT
+          report_date_as_yyyy_mm_dd,
+          contract_market_name,
+          commodity_name,
+          dealer_positions_long_all,
+          dealer_positions_short_all,
+          asset_mgr_positions_long,
+          asset_mgr_positions_short,
+          lev_money_positions_long,
+          lev_money_positions_short,
+          other_rept_positions_long,
+          other_rept_positions_short,
+          nonrept_positions_long_all,
+          nonrept_positions_short_all,
+          open_interest_all
+        WHERE
+          contract_market_name = '${contractName.replace(/'/g,"''")}'
+          AND futonly_or_combined = 'FutOnly'
+          AND report_date_as_yyyy_mm_dd >= '${dateStr}'
+        ORDER BY report_date_as_yyyy_mm_dd ASC
+      `;
+    } else if (reportKey === "DISAGG") {
+      soql = `
+        SELECT
+          report_date_as_yyyy_mm_dd,
+          contract_market_name,
+          commodity_name,
+          prod_merc_positions_long,
+          prod_merc_positions_short,
+          swap_positions_long_all,
+          swap__positions_short_all,
+          m_money_positions_long_all,
+          m_money_positions_short_all,
+          other_rept_positions_long,
+          other_rept_positions_short,
+          nonrept_positions_long_all,
+          nonrept_positions_short_all,
+          open_interest_all
+        WHERE
+          contract_market_name = '${contractName.replace(/'/g,"''")}'
+          AND futonly_or_combined = 'FutOnly'
+          AND report_date_as_yyyy_mm_dd >= '${dateStr}'
+        ORDER BY report_date_as_yyyy_mm_dd ASC
+      `;
+    } else {
+      // CIT – Supplemental
+      soql = `
+        SELECT
+          report_date_as_yyyy_mm_dd,
+          contract_market_name,
+          commodity_name,
+          ncomm_postions_long_all_nocit,
+          ncomm_postions_short_all_nocit,
+          ncomm_postions_spread_all_nocit,
+          comm_positions_long_all_nocit,
+          comm_positions_short_all_nocit,
+          nonrept_positions_long_all,
+          nonrept_positions_short_all,
+          cit_positions_long_all,
+          cit_positions_short_all,
+          open_interest_all
+        WHERE
+          contract_market_name = '${contractName.replace(/'/g,"''")}'
+          AND report_date_as_yyyy_mm_dd >= '${dateStr}'
+        ORDER BY report_date_as_yyyy_mm_dd ASC
+      `;
+    }
+
+    const body = {
+      query: soql.replace(/\s+/g," ").trim(),
+      page: {
+        pageNumber: 1,
+        pageSize: 5000
+      },
+      includeSynthetic: false
+    };
+
+    return await fetchJSON(cfg.baseUrl, body);
+  }
+
+  function buildTableHeader(reportKey) {
+    let headers = [];
+    if (reportKey === "LEGACY") {
+      headers = [
+        "Date",
+        "NonComm Long",
+        "NonComm Short",
+        "NonComm Net",
+        "Comm Long",
+        "Comm Short",
+        "Comm Net",
+        "NonRept Long",
+        "NonRept Short",
+        "NonRept Net",
+        "Open Interest"
+      ];
+    } else if (reportKey === "TFF") {
+      headers = [
+        "Date",
+        "Dealer Long",
+        "Dealer Short",
+        "Dealer Net",
+        "AM Long",
+        "AM Short",
+        "AM Net",
+        "Lev Long",
+        "Lev Short",
+        "Lev Net",
+        "OtherRep Long",
+        "OtherRep Short",
+        "OtherRep Net",
+        "NonRept Long",
+        "NonRept Short",
+        "NonRept Net",
+        "Open Interest"
+      ];
+    } else if (reportKey === "DISAGG") {
+      headers = [
+        "Date",
+        "Prod/Merc Long",
+        "Prod/Merc Short",
+        "Prod/Merc Net",
+        "Swap Long",
+        "Swap Short",
+        "Swap Net",
+        "M Money Long",
+        "M Money Short",
+        "M Money Net",
+        "OtherRep Long",
+        "OtherRep Short",
+        "OtherRep Net",
+        "NonRept Long",
+        "NonRept Short",
+        "NonRept Net",
+        "Open Interest"
+      ];
+    } else {
+      // CIT
+      headers = [
+        "Date",
+        "NonComm Long",
+        "NonComm Short",
+        "NonComm Net",
+        "Comm Long",
+        "Comm Short",
+        "Comm Net",
+        "CIT Long",
+        "CIT Short",
+        "CIT Net",
+        "NonRept Long",
+        "NonRept Short",
+        "NonRept Net",
+        "Open Interest"
+      ];
+    }
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = headers.map(h => `<th>${h}</th>`).join("");
+    tableHead.innerHTML = "";
+    tableHead.appendChild(tr);
+  }
+
+  // =============================
+  // CHART BUILDER (Net, Open Interest, Pie, Long/Short)
+  // =============================
+  function clearChartsWhenEmpty() {
+    netChart.clear();
+    lsChart.clear();
+    oiChart.clear();
+    pieChart.clear();
+    netMeta.textContent = "No data";
+    lsMeta.textContent  = "No data";
+    oiMeta.textContent  = "No data";
+    pieMeta.textContent = "No data";
+    document.getElementById("netChart").classList.remove("skeleton");
+    document.getElementById("lsChart").classList.remove("skeleton");
+    document.getElementById("oiChart").classList.remove("skeleton");
+    document.getElementById("pieChart").classList.remove("skeleton");
+  }
+
+  function buildCharts(rows, contractName, reportKey) {
+    const dates = [];
+
+    // Judul dibuat simple (tanpa keterangan panjang)
+    netTitle.textContent = "Net Positions";
+    lsTitle.textContent  = "Long & Short";
+    document.getElementById("oiTitle").textContent  = "Open Interest";
+    document.getElementById("pieTitle").textContent = "Latest Week Position Mix";
+
+    if (!rows || !rows.length) {
+      clearChartsWhenEmpty();
+      return;
+    }
+
+    // ----- per report -----
+    if (reportKey === "LEGACY") {
+      // === LEGACY: Non-Commercial, Commercial, Non-Reportable ===
+      const nonCommNet = [];
+      const commNet    = [];
+      const nrNet      = [];
+
+      const ncLong  = [];
+      const ncShort = [];
+      const cLong   = [];
+      const cShort  = [];
+      const nrLong  = [];
+      const nrShort = [];
+
+      const oiSeries = [];
+
+      rows.forEach(row => {
+        const dt = row.report_date_as_yyyy_mm_dd;
+        dates.push(formatDateShort(dt));
+
+        const ncL = parseNumber(row.noncomm_positions_long_all);
+        const ncS = parseNumber(row.noncomm_positions_short_all);
+        const cL  = parseNumber(row.comm_positions_long_all);
+        const cS  = parseNumber(row.comm_positions_short_all);
+        const nrLval = parseNumber(row.nonrept_positions_long_all);
+        const nrSval = parseNumber(row.nonrept_positions_short_all);
+        const oiVal  = parseNumber(row.open_interest_all);
+
+        const ncNet = (ncL ?? 0) - (ncS ?? 0);
+        const cNet  = (cL  ?? 0) - (cS  ?? 0);
+        const nrNetVal = (nrLval ?? 0) - (nrSval ?? 0);
+
+        nonCommNet.push(ncNet);
+        commNet.push(cNet);
+        nrNet.push(nrNetVal);
+
+        ncLong.push(ncL);
+        ncShort.push(-1 * (ncS ?? 0));
+        cLong.push(cL);
+        cShort.push(-1 * (cS ?? 0));
+        nrLong.push(nrLval);
+        nrShort.push(-1 * (nrSval ?? 0));
+
+        oiSeries.push(oiVal);
+      });
+
+      const lastNet = nonCommNet.length ? nonCommNet[nonCommNet.length-1] : null;
+      netMeta.textContent = lastNet != null
+        ? `Latest NonComm Net: ${formatNum(lastNet)} (${lastNet >= 0 ? "Net Long" : "Net Short"})`
+        : "No data";
+
+      const netOption = {
+        backgroundColor:"transparent",
+        tooltip:{ trigger:"axis" },
+        grid:{ left:40, right:16, top:24, bottom:30 },
+        xAxis:{
+          type:"category",
+          data:dates,
+          axisLabel:{ fontSize:9, color:"#9b9b9b", hideOverlap:true },
+          axisLine:{ lineStyle:{ color:"#333" } }
+        },
+        yAxis:{
+          type:"value",
+          axisLabel:{ fontSize:9, color:"#9b9b9b" },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        dataZoom:[
+          { type:"inside", start:0, end:100 },
+          { type:"slider", start:0, end:100, height:12, bottom:4 }
+        ],
+        legend:{
+          top:2,
+          left:4,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"NonComm Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1.5 },
+            areaStyle:{ opacity:0.2 },
+            data:nonCommNet
+          },
+          {
+            name:"Comm Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:commNet
+          },
+          {
+            name:"NonRept Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:nrNet
+          }
+        ]
+      };
+      netChart.setOption(netOption);
+      document.getElementById("netChart").classList.remove("skeleton");
+
+      // OPEN INTEREST PANEL
+      const lastOI = oiSeries.length ? oiSeries[oiSeries.length-1] : null;
+      const oiOption = {
+        backgroundColor:"transparent",
+        tooltip:{ trigger:"axis" },
+        grid:{ left:40, right:16, top:24, bottom:30 },
+        xAxis:{
+          type:"category",
+          data:dates,
+          axisLabel:{ fontSize:9, color:"#9b9b9b", hideOverlap:true },
+          axisLine:{ lineStyle:{ color:"#333" } }
+        },
+        yAxis:{
+          type:"value",
+          axisLabel:{ fontSize:9, color:"#9b9b9b" },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        dataZoom:[
+          { type:"inside", start:0, end:100 },
+          { type:"slider", start:0, end:100, height:12, bottom:4 }
+        ],
+        legend:{
+          top:2,
+          left:4,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"Open Interest",
+            type:"line",
+            smooth:true,
+            symbolSize:0,
+            lineStyle:{ width:1.2 },
+            areaStyle:{ opacity:0.15 },
+            data:oiSeries
+          }
+        ]
+      };
+      oiChart.setOption(oiOption);
+      oiMeta.textContent = lastOI != null
+        ? `${dates[0]} → ${dates[dates.length-1]} · Latest: ${formatNum(lastOI)}`
+        : "No data";
+      document.getElementById("oiChart").classList.remove("skeleton");
+
+      // LONG & SHORT BAR
+      const lsOption = {
+        backgroundColor:"transparent",
+        tooltip:{
+          trigger:"axis",
+          axisPointer:{ type:"shadow" },
+          formatter:params => {
+            const p = params;
+            let out = `<div style="font-size:11px;margin-bottom:4px;">${p[0].axisValue}</div>`;
+            p.forEach(s => {
+              const val = s.data;
+              const abs = typeof val === "number" ? Math.abs(val) : val;
+              out += `<div style="font-size:10px;">${s.marker} ${s.seriesName}: ${formatNum(abs)}</div>`;
+            });
+            return out;
+          }
+        },
+        grid:{ left:40, right:16, top:24, bottom:30 },
+        xAxis:{
+          type:"category",
+          data:dates,
+          axisLabel:{ fontSize:9, color:"#9b9b9b", hideOverlap:true },
+          axisLine:{ lineStyle:{ color:"#333" } }
+        },
+        yAxis:{
+          type:"value",
+          axisLabel:{ fontSize:9, color:"#9b9b9b" },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        dataZoom:[
+          { type:"inside", start:0, end:100 },
+          { type:"slider", start:0, end:100, height:12, bottom:4 }
+        ],
+        legend:{
+          top:2,
+          left:4,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"NonComm Long",
+            type:"bar",
+            stack:"nc",
+            data:ncLong,
+            barWidth:6
+          },
+          {
+            name:"NonComm Short",
+            type:"bar",
+            stack:"nc",
+            data:ncShort,
+            barWidth:6
+          },
+          {
+            name:"Comm Long",
+            type:"bar",
+            stack:"c",
+            data:cLong,
+            barWidth:6
+          },
+          {
+            name:"Comm Short",
+            type:"bar",
+            stack:"c",
+            data:cShort,
+            barWidth:6
+          },
+          {
+            name:"NonRept Long",
+            type:"bar",
+            stack:"nr",
+            data:nrLong,
+            barWidth:6
+          },
+          {
+            name:"NonRept Short",
+            type:"bar",
+            stack:"nr",
+            data:nrShort,
+            barWidth:6
+          }
+        ]
+      };
+      lsChart.setOption(lsOption);
+      document.getElementById("lsChart").classList.remove("skeleton");
+
+      // PIE CHART: LATEST WEEK ALL TRADERS (LONG & SHORT)
+      const lastIdx = dates.length - 1;
+      const pieData = [];
+      const latestNcL = Math.abs(ncLong[lastIdx] ?? 0);
+      const latestNcS = Math.abs(ncShort[lastIdx] ?? 0);
+      const latestCL  = Math.abs(cLong[lastIdx] ?? 0);
+      const latestCS  = Math.abs(cShort[lastIdx] ?? 0);
+      const latestNrL = Math.abs(nrLong[lastIdx] ?? 0);
+      const latestNrS = Math.abs(nrShort[lastIdx] ?? 0);
+
+      if (latestNcL) pieData.push({ name:"NonComm Long",  value:latestNcL });
+      if (latestNcS) pieData.push({ name:"NonComm Short", value:latestNcS });
+      if (latestCL)  pieData.push({ name:"Comm Long",     value:latestCL });
+      if (latestCS)  pieData.push({ name:"Comm Short",    value:latestCS });
+      if (latestNrL) pieData.push({ name:"NonRept Long",  value:latestNrL });
+      if (latestNrS) pieData.push({ name:"NonRept Short", value:latestNrS });
+
+      const pieOption = {
+        backgroundColor:"transparent",
+        tooltip:{
+          trigger:"item",
+          formatter:"{b}: {c} ({d}%)"
+        },
+        legend:{
+          type:"scroll",
+          bottom:0,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"Latest Positions",
+            type:"pie",
+            radius:["35%","70%"],
+            center:["50%","50%"],
+            avoidLabelOverlap:true,
+            label:{ fontSize:9 },
+            labelLine:{ length:6, length2:4 },
+            data:pieData
+          }
+        ]
+      };
+      pieChart.setOption(pieOption);
+      pieMeta.textContent = `${dates[lastIdx]} · ${pieData.length} slices`;
+      document.getElementById("pieChart").classList.remove("skeleton");
+
+    } else if (reportKey === "TFF") {
+      // === TFF: Dealer, Asset Manager, Leveraged Money, Other Rep, Non-Rep ===
+      const dealerNet = [];
+      const amNet     = [];
+      const levNet    = [];
+      const otherNet  = [];
+      const nrNet     = [];
+
+      const dLong   = [];
+      const dShort  = [];
+      const amLong   = [];
+      const amShort  = [];
+      const levLong  = [];
+      const levShort = [];
+      const otherLong  = [];
+      const otherShort = [];
+      const nrLong   = [];
+      const nrShort  = [];
+
+      const oiSeries = [];
+
+      rows.forEach(row => {
+        const dt = row.report_date_as_yyyy_mm_dd;
+        dates.push(formatDateShort(dt));
+
+        const dL  = parseNumber(row.dealer_positions_long_all);
+        const dS  = parseNumber(row.dealer_positions_short_all);
+        const aL  = parseNumber(row.asset_mgr_positions_long);
+        const aS  = parseNumber(row.asset_mgr_positions_short);
+        const lL  = parseNumber(row.lev_money_positions_long);
+        const lS  = parseNumber(row.lev_money_positions_short);
+        const oL  = parseNumber(row.other_rept_positions_long);
+        const oS  = parseNumber(row.other_rept_positions_short);
+        const nrLval = parseNumber(row.nonrept_positions_long_all);
+        const nrSval = parseNumber(row.nonrept_positions_short_all);
+        const oiVal  = parseNumber(row.open_interest_all);
+
+        const dNet  = (dL  ?? 0) - (dS  ?? 0);
+        const aNet  = (aL  ?? 0) - (aS  ?? 0);
+        const lNet  = (lL  ?? 0) - (lS  ?? 0);
+        const oNet  = (oL  ?? 0) - (oS  ?? 0);
+        const nrNetVal = (nrLval ?? 0) - (nrSval ?? 0);
+
+        dealerNet.push(dNet);
+        amNet.push(aNet);
+        levNet.push(lNet);
+        otherNet.push(oNet);
+        nrNet.push(nrNetVal);
+
+        dLong.push(dL);
+        dShort.push(-1 * (dS ?? 0));
+        amLong.push(aL);
+        amShort.push(-1 * (aS ?? 0));
+        levLong.push(lL);
+        levShort.push(-1 * (lS ?? 0));
+        otherLong.push(oL);
+        otherShort.push(-1 * (oS ?? 0));
+        nrLong.push(nrLval);
+        nrShort.push(-1 * (nrSval ?? 0));
+
+        oiSeries.push(oiVal);
+      });
+
+      const lastLev = levNet.length ? levNet[levNet.length-1] : null;
+      netMeta.textContent = lastLev != null
+        ? `Latest Lev Money Net: ${formatNum(lastLev)} (${lastLev >= 0 ? "Net Long" : "Net Short"})`
+        : "No data";
+
+      const netOption = {
+        backgroundColor:"transparent",
+        tooltip:{ trigger:"axis" },
+        grid:{ left:40, right:16, top:24, bottom:30 },
+        xAxis:{
+          type:"category",
+          data:dates,
+          axisLabel:{ fontSize:9, color:"#9b9b9b", hideOverlap:true },
+          axisLine:{ lineStyle:{ color:"#333" } }
+        },
+        yAxis:{
+          type:"value",
+          axisLabel:{ fontSize:9, color:"#9b9b9b" },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        dataZoom:[
+          { type:"inside", start:0, end:100 },
+          { type:"slider", start:0, end:100, height:12, bottom:4 }
+        ],
+        legend:{
+          top:2,
+          left:4,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"Dealer Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:dealerNet
+          },
+          {
+            name:"AssetMgr Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1.5 },
+            areaStyle:{ opacity:0.2 },
+            data:amNet
+          },
+          {
+            name:"LevMoney Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:levNet
+          },
+          {
+            name:"OtherRep Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:otherNet
+          },
+          {
+            name:"NonRept Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:nrNet
+          }
+        ]
+      };
+      netChart.setOption(netOption);
+      document.getElementById("netChart").classList.remove("skeleton");
+
+      // OPEN INTEREST PANEL
+      const lastOI = oiSeries.length ? oiSeries[oiSeries.length-1] : null;
+      const oiOption = {
+        backgroundColor:"transparent",
+        tooltip:{ trigger:"axis" },
+        grid:{ left:40, right:16, top:24, bottom:30 },
+        xAxis:{
+          type:"category",
+          data:dates,
+          axisLabel:{ fontSize:9, color:"#9b9b9b", hideOverlap:true },
+          axisLine:{ lineStyle:{ color:"#333" } }
+        },
+        yAxis:{
+          type:"value",
+          axisLabel:{ fontSize:9, color:"#9b9b9b" },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        dataZoom:[
+          { type:"inside", start:0, end:100 },
+          { type:"slider", start:0, end:100, height:12, bottom:4 }
+        ],
+        legend:{
+          top:2,
+          left:4,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"Open Interest",
+            type:"line",
+            smooth:true,
+            symbolSize:0,
+            lineStyle:{ width:1.2 },
+            areaStyle:{ opacity:0.15 },
+            data:oiSeries
+          }
+        ]
+      };
+      oiChart.setOption(oiOption);
+      oiMeta.textContent = lastOI != null
+        ? `${dates[0]} → ${dates[dates.length-1]} · Latest: ${formatNum(lastOI)}`
+        : "No data";
+      document.getElementById("oiChart").classList.remove("skeleton");
+
+      // LONG & SHORT BAR (AM, Lev, Other, NonRept)
+      const lsOption = {
+        backgroundColor:"transparent",
+        tooltip:{
+          trigger:"axis",
+          axisPointer:{ type:"shadow" },
+          formatter:params => {
+            const p = params;
+            let out = `<div style="font-size:11px;margin-bottom:4px;">${p[0].axisValue}</div>`;
+            p.forEach(s => {
+              const val = s.data;
+              const abs = typeof val === "number" ? Math.abs(val) : val;
+              out += `<div style="font-size:10px;">${s.marker} ${s.seriesName}: ${formatNum(abs)}</div>`;
+            });
+            return out;
+          }
+        },
+        grid:{ left:40, right:16, top:24, bottom:30 },
+        xAxis:{
+          type:"category",
+          data:dates,
+          axisLabel:{ fontSize:9, color:"#9b9b9b", hideOverlap:true },
+          axisLine:{ lineStyle:{ color:"#333" } }
+        },
+        yAxis:{
+          type:"value",
+          axisLabel:{ fontSize:9, color:"#9b9b9b" },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        dataZoom:[
+          { type:"inside", start:0, end:100 },
+          { type:"slider", start:0, end:100, height:12, bottom:4 }
+        ],
+        legend:{
+          top:2,
+          left:4,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"AM Long",
+            type:"bar",
+            stack:"am",
+            data:amLong,
+            barWidth:6
+          },
+          {
+            name:"AM Short",
+            type:"bar",
+            stack:"am",
+            data:amShort,
+            barWidth:6
+          },
+          {
+            name:"Lev Long",
+            type:"bar",
+            stack:"lev",
+            data:levLong,
+            barWidth:6
+          },
+          {
+            name:"Lev Short",
+            type:"bar",
+            stack:"lev",
+            data:levShort,
+            barWidth:6
+          },
+          {
+            name:"OtherRep Long",
+            type:"bar",
+            stack:"other",
+            data:otherLong,
+            barWidth:6
+          },
+          {
+            name:"OtherRep Short",
+            type:"bar",
+            stack:"other",
+            data:otherShort,
+            barWidth:6
+          },
+          {
+            name:"NonRept Long",
+            type:"bar",
+            stack:"nr",
+            data:nrLong,
+            barWidth:6
+          },
+          {
+            name:"NonRept Short",
+            type:"bar",
+            stack:"nr",
+            data:nrShort,
+            barWidth:6
+          }
+        ]
+      };
+      lsChart.setOption(lsOption);
+      document.getElementById("lsChart").classList.remove("skeleton");
+
+      // PIE CHART: LATEST WEEK (SEMUA TRADER LONG & SHORT)
+      const lastIdx = dates.length - 1;
+      const pieData = [];
+      const latestDL  = Math.abs(dLong[lastIdx] ?? 0);
+      const latestDS  = Math.abs(dShort[lastIdx] ?? 0);
+      const latestAL  = Math.abs(amLong[lastIdx] ?? 0);
+      const latestAS  = Math.abs(amShort[lastIdx] ?? 0);
+      const latestLL  = Math.abs(levLong[lastIdx] ?? 0);
+      const latestLS  = Math.abs(levShort[lastIdx] ?? 0);
+      const latestOL  = Math.abs(otherLong[lastIdx] ?? 0);
+      const latestOS  = Math.abs(otherShort[lastIdx] ?? 0);
+      const latestNrL = Math.abs(nrLong[lastIdx] ?? 0);
+      const latestNrS = Math.abs(nrShort[lastIdx] ?? 0);
+
+      if (latestDL)  pieData.push({ name:"Dealer Long",     value:latestDL });
+      if (latestDS)  pieData.push({ name:"Dealer Short",    value:latestDS });
+      if (latestAL)  pieData.push({ name:"AssetMgr Long",   value:latestAL });
+      if (latestAS)  pieData.push({ name:"AssetMgr Short",  value:latestAS });
+      if (latestLL)  pieData.push({ name:"LevMoney Long",   value:latestLL });
+      if (latestLS)  pieData.push({ name:"LevMoney Short",  value:latestLS });
+      if (latestOL)  pieData.push({ name:"OtherRep Long",   value:latestOL });
+      if (latestOS)  pieData.push({ name:"OtherRep Short",  value:latestOS });
+      if (latestNrL) pieData.push({ name:"NonRept Long",    value:latestNrL });
+      if (latestNrS) pieData.push({ name:"NonRept Short",   value:latestNrS });
+
+      const pieOption = {
+        backgroundColor:"transparent",
+        tooltip:{
+          trigger:"item",
+          formatter:"{b}: {c} ({d}%)"
+        },
+        legend:{
+          type:"scroll",
+          bottom:0,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"Latest Positions",
+            type:"pie",
+            radius:["35%","70%"],
+            center:["50%","50%"],
+            avoidLabelOverlap:true,
+            label:{ fontSize:9 },
+            labelLine:{ length:6, length2:4 },
+            data:pieData
+          }
+        ]
+      };
+      pieChart.setOption(pieOption);
+      pieMeta.textContent = `${dates[lastIdx]} · ${pieData.length} slices`;
+      document.getElementById("pieChart").classList.remove("skeleton");
+
+    } else if (reportKey === "DISAGG") {
+      // === DISAGG: Prod/Merc, Swap, Managed Money, OtherRep, NonRept ===
+      const prodNet  = [];
+      const swapNet  = [];
+      const mmNet    = [];
+      const otherNet = [];
+      const nrNet    = [];
+
+      const prodLong  = [];
+      const prodShort = [];
+      const swLong    = [];
+      const swShort   = [];
+      const mmLong    = [];
+      const mmShort   = [];
+      const otherLong = [];
+      const otherShort= [];
+      const nrLong    = [];
+      const nrShort   = [];
+
+      const oiSeries = [];
+
+      rows.forEach(row => {
+        const dt = row.report_date_as_yyyy_mm_dd;
+        dates.push(formatDateShort(dt));
+
+        const pL  = parseNumber(row.prod_merc_positions_long);
+        const pS  = parseNumber(row.prod_merc_positions_short);
+        const sL  = parseNumber(row.swap_positions_long_all);
+        const sS  = parseNumber(row.swap__positions_short_all);
+        const mL  = parseNumber(row.m_money_positions_long_all);
+        const mS  = parseNumber(row.m_money_positions_short_all);
+        const oL  = parseNumber(row.other_rept_positions_long);
+        const oS  = parseNumber(row.other_rept_positions_short);
+        const nrLval = parseNumber(row.nonrept_positions_long_all);
+        const nrSval = parseNumber(row.nonrept_positions_short_all);
+        const oiVal  = parseNumber(row.open_interest_all);
+
+        const pNet  = (pL  ?? 0) - (pS  ?? 0);
+        const sNet  = (sL  ?? 0) - (sS  ?? 0);
+        const mNet  = (mL  ?? 0) - (mS  ?? 0);
+        const oNet  = (oL  ?? 0) - (oS  ?? 0);
+        const nrNetVal = (nrLval ?? 0) - (nrSval ?? 0);
+
+        prodNet.push(pNet);
+        swapNet.push(sNet);
+        mmNet.push(mNet);
+        otherNet.push(oNet);
+        nrNet.push(nrNetVal);
+
+        prodLong.push(pL);
+        prodShort.push(-1 * (pS ?? 0));
+        swLong.push(sL);
+        swShort.push(-1 * (sS ?? 0));
+        mmLong.push(mL);
+        mmShort.push(-1 * (mS ?? 0));
+        otherLong.push(oL);
+        otherShort.push(-1 * (oS ?? 0));
+        nrLong.push(nrLval);
+        nrShort.push(-1 * (nrSval ?? 0));
+
+        oiSeries.push(oiVal);
+      });
+
+      const lastMM = mmNet.length ? mmNet[mmNet.length-1] : null;
+      netMeta.textContent = lastMM != null
+        ? `Latest Managed Money Net: ${formatNum(lastMM)} (${lastMM >= 0 ? "Net Long" : "Net Short"})`
+        : "No data";
+
+      const netOption = {
+        backgroundColor:"transparent",
+        tooltip:{ trigger:"axis" },
+        grid:{ left:40, right:16, top:24, bottom:30 },
+        xAxis:{
+          type:"category",
+          data:dates,
+          axisLabel:{ fontSize:9, color:"#9b9b9b", hideOverlap:true },
+          axisLine:{ lineStyle:{ color:"#333" } }
+        },
+        yAxis:{
+          type:"value",
+          axisLabel:{ fontSize:9, color:"#9b9b9b" },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        dataZoom:[
+          { type:"inside", start:0, end:100 },
+          { type:"slider", start:0, end:100, height:12, bottom:4 }
+        ],
+        legend:{
+          top:2,
+          left:4,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"Prod/Merc Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:prodNet
+          },
+          {
+            name:"Swap Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:swapNet
+          },
+          {
+            name:"M Money Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1.5 },
+            areaStyle:{ opacity:0.2 },
+            data:mmNet
+          },
+          {
+            name:"OtherRep Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:otherNet
+          },
+          {
+            name:"NonRept Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:nrNet
+          }
+        ]
+      };
+      netChart.setOption(netOption);
+      document.getElementById("netChart").classList.remove("skeleton");
+
+      // OPEN INTEREST PANEL
+      const lastOI = oiSeries.length ? oiSeries[oiSeries.length-1] : null;
+      const oiOption = {
+        backgroundColor:"transparent",
+        tooltip:{ trigger:"axis" },
+        grid:{ left:40, right:16, top:24, bottom:30 },
+        xAxis:{
+          type:"category",
+          data:dates,
+          axisLabel:{ fontSize:9, color:"#9b9b9b", hideOverlap:true },
+          axisLine:{ lineStyle:{ color:"#333" } }
+        },
+        yAxis:{
+          type:"value",
+          axisLabel:{ fontSize:9, color:"#9b9b9b" },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        dataZoom:[
+          { type:"inside", start:0, end:100 },
+          { type:"slider", start:0, end:100, height:12, bottom:4 }
+        ],
+        legend:{
+          top:2,
+          left:4,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"Open Interest",
+            type:"line",
+            smooth:true,
+            symbolSize:0,
+            lineStyle:{ width:1.2 },
+            areaStyle:{ opacity:0.15 },
+            data:oiSeries
+          }
+        ]
+      };
+      oiChart.setOption(oiOption);
+      oiMeta.textContent = lastOI != null
+        ? `${dates[0]} → ${dates[dates.length-1]} · Latest: ${formatNum(lastOI)}`
+        : "No data";
+      document.getElementById("oiChart").classList.remove("skeleton");
+
+      const lsOption = {
+        backgroundColor:"transparent",
+        tooltip:{
+          trigger:"axis",
+          axisPointer:{ type:"shadow" },
+          formatter:params => {
+            const p = params;
+            let out = `<div style="font-size:11px;margin-bottom:4px;">${p[0].axisValue}</div>`;
+            p.forEach(s => {
+              const val = s.data;
+              const abs = typeof val === "number" ? Math.abs(val) : val;
+              out += `<div style="font-size:10px;">${s.marker} ${s.seriesName}: ${formatNum(abs)}</div>`;
+            });
+            return out;
+          }
+        },
+        grid:{ left:40, right:16, top:24, bottom:30 },
+        xAxis:{
+          type:"category",
+          data:dates,
+          axisLabel:{ fontSize:9, color:"#9b9b9b", hideOverlap:true },
+          axisLine:{ lineStyle:{ color:"#333" } }
+        },
+        yAxis:{
+          type:"value",
+          axisLabel:{ fontSize:9, color:"#9b9b9b" },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        dataZoom:[
+          { type:"inside", start:0, end:100 },
+          { type:"slider", start:0, end:100, height:12, bottom:4 }
+        ],
+        legend:{
+          top:2,
+          left:4,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"Prod/Merc Long",
+            type:"bar",
+            stack:"prod",
+            data:prodLong,
+            barWidth:6
+          },
+          {
+            name:"Prod/Merc Short",
+            type:"bar",
+            stack:"prod",
+            data:prodShort,
+            barWidth:6
+          },
+          {
+            name:"Swap Long",
+            type:"bar",
+            stack:"swap",
+            data:swLong,
+            barWidth:6
+          },
+          {
+            name:"Swap Short",
+            type:"bar",
+            stack:"swap",
+            data:swShort,
+            barWidth:6
+          },
+          {
+            name:"M Money Long",
+            type:"bar",
+            stack:"mm",
+            data:mmLong,
+            barWidth:6
+          },
+          {
+            name:"M Money Short",
+            type:"bar",
+            stack:"mm",
+            data:mmShort,
+            barWidth:6
+          },
+          {
+            name:"OtherRep Long",
+            type:"bar",
+            stack:"other",
+            data:otherLong,
+            barWidth:6
+          },
+          {
+            name:"OtherRep Short",
+            type:"bar",
+            stack:"other",
+            data:otherShort,
+            barWidth:6
+          },
+          {
+            name:"NonRept Long",
+            type:"bar",
+            stack:"nr",
+            data:nrLong,
+            barWidth:6
+          },
+          {
+            name:"NonRept Short",
+            type:"bar",
+            stack:"nr",
+            data:nrShort,
+            barWidth:6
+          }
+        ]
+      };
+      lsChart.setOption(lsOption);
+      document.getElementById("lsChart").classList.remove("skeleton");
+
+      // PIE CHART LATEST WEEK
+      const lastIdx = dates.length - 1;
+      const pieData = [];
+      const latestPL  = Math.abs(prodLong[lastIdx] ?? 0);
+      const latestPS  = Math.abs(prodShort[lastIdx] ?? 0);
+      const latestSL  = Math.abs(swLong[lastIdx] ?? 0);
+      const latestSS  = Math.abs(swShort[lastIdx] ?? 0);
+      const latestML  = Math.abs(mmLong[lastIdx] ?? 0);
+      const latestMS  = Math.abs(mmShort[lastIdx] ?? 0);
+      const latestOL  = Math.abs(otherLong[lastIdx] ?? 0);
+      const latestOS  = Math.abs(otherShort[lastIdx] ?? 0);
+      const latestNrL = Math.abs(nrLong[lastIdx] ?? 0);
+      const latestNrS = Math.abs(nrShort[lastIdx] ?? 0);
+
+      if (latestPL)  pieData.push({ name:"Prod/Merc Long", value:latestPL });
+      if (latestPS)  pieData.push({ name:"Prod/Merc Short",value:latestPS });
+      if (latestSL)  pieData.push({ name:"Swap Long",      value:latestSL });
+      if (latestSS)  pieData.push({ name:"Swap Short",     value:latestSS });
+      if (latestML)  pieData.push({ name:"M Money Long",   value:latestML });
+      if (latestMS)  pieData.push({ name:"M Money Short",  value:latestMS });
+      if (latestOL)  pieData.push({ name:"OtherRep Long",  value:latestOL });
+      if (latestOS)  pieData.push({ name:"OtherRep Short", value:latestOS });
+      if (latestNrL) pieData.push({ name:"NonRept Long",   value:latestNrL });
+      if (latestNrS) pieData.push({ name:"NonRept Short",  value:latestNrS });
+
+      const pieOption = {
+        backgroundColor:"transparent",
+        tooltip:{
+          trigger:"item",
+          formatter:"{b}: {c} ({d}%)"
+        },
+        legend:{
+          type:"scroll",
+          bottom:0,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"Latest Positions",
+            type:"pie",
+            radius:["35%","70%"],
+            center:["50%","50%"],
+            avoidLabelOverlap:true,
+            label:{ fontSize:9 },
+            labelLine:{ length:6, length2:4 },
+            data:pieData
+          }
+        ]
+      };
+      pieChart.setOption(pieOption);
+      pieMeta.textContent = `${dates[lastIdx]} · ${pieData.length} slices`;
+      document.getElementById("pieChart").classList.remove("skeleton");
+
+    } else {
+      // === CIT: Non-Commercial, Commercial, Index Traders (CIT) + NonRept ===
+      const ncNet  = [];
+      const commNet= [];
+      const citNet = [];
+      const nrNet  = [];
+
+      const ncLong  = [];
+      const ncShort = [];
+      const cLong   = [];
+      const cShort  = [];
+      const citLong = [];
+      const citShort= [];
+      const nrLong  = [];
+      const nrShort = [];
+
+      const oiSeries = [];
+
+      rows.forEach(row => {
+        const dt = row.report_date_as_yyyy_mm_dd;
+        dates.push(formatDateShort(dt));
+
+        const nL  = parseNumber(row.ncomm_postions_long_all_nocit);
+        const nS  = parseNumber(row.ncomm_postions_short_all_nocit);
+        const cL  = parseNumber(row.comm_positions_long_all_nocit);
+        const cS  = parseNumber(row.comm_positions_short_all_nocit);
+        const ciL = parseNumber(row.cit_positions_long_all);
+        const ciS = parseNumber(row.cit_positions_short_all);
+        const nrLval = parseNumber(row.nonrept_positions_long_all);
+        const nrSval = parseNumber(row.nonrept_positions_short_all);
+        const oiVal = parseNumber(row.open_interest_all);
+
+        const nNet  = (nL  ?? 0) - (nS ?? 0);
+        const cNet  = (cL  ?? 0) - (cS ?? 0);
+        const ciNet = (ciL ?? 0) - (ciS ?? 0);
+        const nrNetVal = (nrLval ?? 0) - (nrSval ?? 0);
+
+        ncNet.push(nNet);
+        commNet.push(cNet);
+        citNet.push(ciNet);
+        nrNet.push(nrNetVal);
+
+        ncLong.push(nL);
+        ncShort.push(-1 * (nS ?? 0));
+        cLong.push(cL);
+        cShort.push(-1 * (cS ?? 0));
+        citLong.push(ciL);
+        citShort.push(-1 * (ciS ?? 0));
+        nrLong.push(nrLval);
+        nrShort.push(-1 * (nrSval ?? 0));
+
+        oiSeries.push(oiVal);
+      });
+
+      const lastCIT = citNet.length ? citNet[citNet.length-1] : null;
+      netMeta.textContent = lastCIT != null
+        ? `Latest CIT Net: ${formatNum(lastCIT)} (${lastCIT >= 0 ? "Net Long" : "Net Short"})`
+        : "No data";
+
+      const netOption = {
+        backgroundColor:"transparent",
+        tooltip:{ trigger:"axis" },
+        grid:{ left:40, right:16, top:24, bottom:30 },
+        xAxis:{
+          type:"category",
+          data:dates,
+          axisLabel:{ fontSize:9, color:"#9b9b9b", hideOverlap:true },
+          axisLine:{ lineStyle:{ color:"#333" } }
+        },
+        yAxis:{
+          type:"value",
+          axisLabel:{ fontSize:9, color:"#9b9b9b" },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        dataZoom:[
+          { type:"inside", start:0, end:100 },
+          { type:"slider", start:0, end:100, height:12, bottom:4 }
+        ],
+        legend:{
+          top:2,
+          left:4,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"NonComm Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:ncNet
+          },
+          {
+            name:"Comm Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:commNet
+          },
+          {
+            name:"CIT Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1.5 },
+            areaStyle:{ opacity:0.2 },
+            data:citNet
+          },
+          {
+            name:"NonRept Net",
+            type:"line",
+            smooth:true,
+            symbolSize:2,
+            lineStyle:{ width:1 },
+            data:nrNet
+          }
+        ]
+      };
+      netChart.setOption(netOption);
+      document.getElementById("netChart").classList.remove("skeleton");
+
+      // OPEN INTEREST PANEL
+      const lastOI = oiSeries.length ? oiSeries[oiSeries.length-1] : null;
+      const oiOption = {
+        backgroundColor:"transparent",
+        tooltip:{ trigger:"axis" },
+        grid:{ left:40, right:16, top:24, bottom:30 },
+        xAxis:{
+          type:"category",
+          data:dates,
+          axisLabel:{ fontSize:9, color:"#9b9b9b", hideOverlap:true },
+          axisLine:{ lineStyle:{ color:"#333" } }
+        },
+        yAxis:{
+          type:"value",
+          axisLabel:{ fontSize:9, color:"#9b9b9b" },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        dataZoom:[
+          { type:"inside", start:0, end:100 },
+          { type:"slider", start:0, end:100, height:12, bottom:4 }
+        ],
+        legend:{
+          top:2,
+          left:4,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"Open Interest",
+            type:"line",
+            smooth:true,
+            symbolSize:0,
+            lineStyle:{ width:1.2 },
+            areaStyle:{ opacity:0.15 },
+            data:oiSeries
+          }
+        ]
+      };
+      oiChart.setOption(oiOption);
+      oiMeta.textContent = lastOI != null
+        ? `${dates[0]} → ${dates[dates.length-1]} · Latest: ${formatNum(lastOI)}`
+        : "No data";
+      document.getElementById("oiChart").classList.remove("skeleton");
+
+      const lsOption = {
+        backgroundColor:"transparent",
+        tooltip:{
+          trigger:"axis",
+          axisPointer:{ type:"shadow" },
+          formatter:params => {
+            const p = params;
+            let out = `<div style="font-size:11px;margin-bottom:4px;">${p[0].axisValue}</div>`;
+            p.forEach(s => {
+              const val = s.data;
+              const abs = typeof val === "number" ? Math.abs(val) : val;
+              out += `<div style="font-size:10px;">${s.marker} ${s.seriesName}: ${formatNum(abs)}</div>`;
+            });
+            return out;
+          }
+        },
+        grid:{ left:40, right:16, top:24, bottom:30 },
+        xAxis:{
+          type:"category",
+          data:dates,
+          axisLabel:{ fontSize:9, color:"#9b9b9b", hideOverlap:true },
+          axisLine:{ lineStyle:{ color:"#333" } }
+        },
+        yAxis:{
+          type:"value",
+          axisLabel:{ fontSize:9, color:"#9b9b9b" },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        dataZoom:[
+          { type:"inside", start:0, end:100 },
+          { type:"slider", start:0, end:100, height:12, bottom:4 }
+        ],
+        legend:{
+          top:2,
+          left:4,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"NonComm Long",
+            type:"bar",
+            stack:"nc",
+            data:ncLong,
+            barWidth:6
+          },
+          {
+            name:"NonComm Short",
+            type:"bar",
+            stack:"nc",
+            data:ncShort,
+            barWidth:6
+          },
+          {
+            name:"Comm Long",
+            type:"bar",
+            stack:"c",
+            data:cLong,
+            barWidth:6
+          },
+          {
+            name:"Comm Short",
+            type:"bar",
+            stack:"c",
+            data:cShort,
+            barWidth:6
+          },
+          {
+            name:"CIT Long",
+            type:"bar",
+            stack:"cit",
+            data:citLong,
+            barWidth:6
+          },
+          {
+            name:"CIT Short",
+            type:"bar",
+            stack:"cit",
+            data:citShort,
+            barWidth:6
+          },
+          {
+            name:"NonRept Long",
+            type:"bar",
+            stack:"nr",
+            data:nrLong,
+            barWidth:6
+          },
+          {
+            name:"NonRept Short",
+            type:"bar",
+            stack:"nr",
+            data:nrShort,
+            barWidth:6
+          }
+        ]
+      };
+      lsChart.setOption(lsOption);
+      document.getElementById("lsChart").classList.remove("skeleton");
+
+      // PIE CHART LATEST WEEK
+      const lastIdx = dates.length - 1;
+      const pieData = [];
+      const latestNcL  = Math.abs(ncLong[lastIdx] ?? 0);
+      const latestNcS  = Math.abs(ncShort[lastIdx] ?? 0);
+      const latestCL   = Math.abs(cLong[lastIdx] ?? 0);
+      const latestCS   = Math.abs(cShort[lastIdx] ?? 0);
+      const latestCitL = Math.abs(citLong[lastIdx] ?? 0);
+      const latestCitS = Math.abs(citShort[lastIdx] ?? 0);
+      const latestNrL  = Math.abs(nrLong[lastIdx] ?? 0);
+      const latestNrS  = Math.abs(nrShort[lastIdx] ?? 0);
+
+      if (latestNcL)   pieData.push({ name:"NonComm Long", value:latestNcL });
+      if (latestNcS)   pieData.push({ name:"NonComm Short",value:latestNcS });
+      if (latestCL)    pieData.push({ name:"Comm Long",    value:latestCL });
+      if (latestCS)    pieData.push({ name:"Comm Short",   value:latestCS });
+      if (latestCitL)  pieData.push({ name:"CIT Long",     value:latestCitL });
+      if (latestCitS)  pieData.push({ name:"CIT Short",    value:latestCitS });
+      if (latestNrL)   pieData.push({ name:"NonRept Long", value:latestNrL });
+      if (latestNrS)   pieData.push({ name:"NonRept Short",value:latestNrS });
+
+      const pieOption = {
+        backgroundColor:"transparent",
+        tooltip:{
+          trigger:"item",
+          formatter:"{b}: {c} ({d}%)"
+        },
+        legend:{
+          type:"scroll",
+          bottom:0,
+          textStyle:{ color:"#9b9b9b", fontSize:9 }
+        },
+        series:[
+          {
+            name:"Latest Positions",
+            type:"pie",
+            radius:["35%","70%"],
+            center:["50%","50%"],
+            avoidLabelOverlap:true,
+            label:{ fontSize:9 },
+            labelLine:{ length:6, length2:4 },
+            data:pieData
+          }
+        ]
+      };
+      pieChart.setOption(pieOption);
+      pieMeta.textContent = `${dates[lastIdx]} · ${pieData.length} slices`;
+      document.getElementById("pieChart").classList.remove("skeleton");
+    }
+
+    const lastIdx = dates.length - 1;
+    lsMeta.textContent = lastIdx >= 0
+      ? `${dates[0]} → ${dates[lastIdx]} · ${rows.length} pts`
+      : "No data";
+  }
+
+  // =============================
+  // TABLE BUILDER
+  // =============================
+  function buildTable(rows, reportKey) {
+    tableBody.innerHTML = "";
+    buildTableHeader(reportKey);
+
+    const sorted = [...rows].sort((a, b) => {
+      const da = new Date(a.report_date_as_yyyy_mm_dd);
+      const db = new Date(b.report_date_as_yyyy_mm_dd);
+      return db - da;
+    });
+
+    if (reportKey === "LEGACY") {
+      sorted.forEach(row => {
+        const ncL = parseNumber(row.noncomm_positions_long_all);
+        const ncS = parseNumber(row.noncomm_positions_short_all);
+        const cL  = parseNumber(row.comm_positions_long_all);
+        const cS  = parseNumber(row.comm_positions_short_all);
+        const nrL = parseNumber(row.nonrept_positions_long_all);
+        const nrS = parseNumber(row.nonrept_positions_short_all);
+        const oi  = parseNumber(row.open_interest_all);
+
+        const ncNet = (ncL ?? 0) - (ncS ?? 0);
+        const cNet  = (cL  ?? 0) - (cS  ?? 0);
+        const nrNet = (nrL ?? 0) - (nrS ?? 0);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="cell-date">${formatDateShort(row.report_date_as_yyyy_mm_dd)}</td>
+          <td class="cell-num">${formatNum(ncL)}</td>
+          <td class="cell-num">${formatNum(ncS)}</td>
+          <td class="cell-num ${ncNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(ncNet)}</td>
+          <td class="cell-num">${formatNum(cL)}</td>
+          <td class="cell-num">${formatNum(cS)}</td>
+          <td class="cell-num ${cNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(cNet)}</td>
+          <td class="cell-num">${formatNum(nrL)}</td>
+          <td class="cell-num">${formatNum(nrS)}</td>
+          <td class="cell-num ${nrNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(nrNet)}</td>
+          <td class="cell-num">${formatNum(oi)}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    } else if (reportKey === "TFF") {
+      sorted.forEach(row => {
+        const dL  = parseNumber(row.dealer_positions_long_all);
+        const dS  = parseNumber(row.dealer_positions_short_all);
+        const aL  = parseNumber(row.asset_mgr_positions_long);
+        const aS  = parseNumber(row.asset_mgr_positions_short);
+        const lL  = parseNumber(row.lev_money_positions_long);
+        const lS  = parseNumber(row.lev_money_positions_short);
+        const oL  = parseNumber(row.other_rept_positions_long);
+        const oS  = parseNumber(row.other_rept_positions_short);
+        const nrL = parseNumber(row.nonrept_positions_long_all);
+        const nrS = parseNumber(row.nonrept_positions_short_all);
+        const oi  = parseNumber(row.open_interest_all);
+
+        const dNet  = (dL  ?? 0) - (dS  ?? 0);
+        const aNet  = (aL  ?? 0) - (aS  ?? 0);
+        const lNet  = (lL  ?? 0) - (lS  ?? 0);
+        const oNet  = (oL  ?? 0) - (oS  ?? 0);
+        const nrNet = (nrL ?? 0) - (nrS ?? 0);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="cell-date">${formatDateShort(row.report_date_as_yyyy_mm_dd)}</td>
+          <td class="cell-num">${formatNum(dL)}</td>
+          <td class="cell-num">${formatNum(dS)}</td>
+          <td class="cell-num ${dNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(dNet)}</td>
+          <td class="cell-num">${formatNum(aL)}</td>
+          <td class="cell-num">${formatNum(aS)}</td>
+          <td class="cell-num ${aNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(aNet)}</td>
+          <td class="cell-num">${formatNum(lL)}</td>
+          <td class="cell-num">${formatNum(lS)}</td>
+          <td class="cell-num ${lNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(lNet)}</td>
+          <td class="cell-num">${formatNum(oL)}</td>
+          <td class="cell-num">${formatNum(oS)}</td>
+          <td class="cell-num ${oNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(oNet)}</td>
+          <td class="cell-num">${formatNum(nrL)}</td>
+          <td class="cell-num">${formatNum(nrS)}</td>
+          <td class="cell-num ${nrNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(nrNet)}</td>
+          <td class="cell-num">${formatNum(oi)}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    } else if (reportKey === "DISAGG") {
+      sorted.forEach(row => {
+        const pL  = parseNumber(row.prod_merc_positions_long);
+        const pS  = parseNumber(row.prod_merc_positions_short);
+        const sL  = parseNumber(row.swap_positions_long_all);
+        const sS  = parseNumber(row.swap__positions_short_all);
+        const mL  = parseNumber(row.m_money_positions_long_all);
+        const mS  = parseNumber(row.m_money_positions_short_all);
+        const oL  = parseNumber(row.other_rept_positions_long);
+        const oS  = parseNumber(row.other_rept_positions_short);
+        const nrL = parseNumber(row.nonrept_positions_long_all);
+        const nrS = parseNumber(row.nonrept_positions_short_all);
+        const oi  = parseNumber(row.open_interest_all);
+
+        const pNet  = (pL  ?? 0) - (pS  ?? 0);
+        const sNet  = (sL  ?? 0) - (sS  ?? 0);
+        const mNet  = (mL  ?? 0) - (mS  ?? 0);
+        const oNet  = (oL  ?? 0) - (oS  ?? 0);
+        const nrNet = (nrL ?? 0) - (nrS ?? 0);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="cell-date">${formatDateShort(row.report_date_as_yyyy_mm_dd)}</td>
+          <td class="cell-num">${formatNum(pL)}</td>
+          <td class="cell-num">${formatNum(pS)}</td>
+          <td class="cell-num ${pNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(pNet)}</td>
+          <td class="cell-num">${formatNum(sL)}</td>
+          <td class="cell-num">${formatNum(sS)}</td>
+          <td class="cell-num ${sNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(sNet)}</td>
+          <td class="cell-num">${formatNum(mL)}</td>
+          <td class="cell-num">${formatNum(mS)}</td>
+          <td class="cell-num ${mNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(mNet)}</td>
+          <td class="cell-num">${formatNum(oL)}</td>
+          <td class="cell-num">${formatNum(oS)}</td>
+          <td class="cell-num ${oNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(oNet)}</td>
+          <td class="cell-num">${formatNum(nrL)}</td>
+          <td class="cell-num">${formatNum(nrS)}</td>
+          <td class="cell-num ${nrNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(nrNet)}</td>
+          <td class="cell-num">${formatNum(oi)}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    } else {
+      // CIT
+      sorted.forEach(row => {
+        const nL  = parseNumber(row.ncomm_postions_long_all_nocit);
+        const nS  = parseNumber(row.ncomm_postions_short_all_nocit);
+        const cL  = parseNumber(row.comm_positions_long_all_nocit);
+        const cS  = parseNumber(row.comm_positions_short_all_nocit);
+        const ciL = parseNumber(row.cit_positions_long_all);
+        const ciS = parseNumber(row.cit_positions_short_all);
+        const nrL = parseNumber(row.nonrept_positions_long_all);
+        const nrS = parseNumber(row.nonrept_positions_short_all);
+        const oi  = parseNumber(row.open_interest_all);
+
+        const nNet  = (nL  ?? 0) - (nS ?? 0);
+        const cNet  = (cL  ?? 0) - (cS ?? 0);
+        const ciNet = (ciL ?? 0) - (ciS ?? 0);
+        const nrNet = (nrL ?? 0) - (nrS ?? 0);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="cell-date">${formatDateShort(row.report_date_as_yyyy_mm_dd)}</td>
+          <td class="cell-num">${formatNum(nL)}</td>
+          <td class="cell-num">${formatNum(nS)}</td>
+          <td class="cell-num ${nNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(nNet)}</td>
+          <td class="cell-num">${formatNum(cL)}</td>
+          <td class="cell-num">${formatNum(cS)}</td>
+          <td class="cell-num ${cNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(cNet)}</td>
+          <td class="cell-num">${formatNum(ciL)}</td>
+          <td class="cell-num">${formatNum(ciS)}</td>
+          <td class="cell-num ${ciNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(ciNet)}</td>
+          <td class="cell-num">${formatNum(nrL)}</td>
+          <td class="cell-num">${formatNum(nrS)}</td>
+          <td class="cell-num ${nrNet >= 0 ? "cell-pos-pos" : "cell-pos-neg"}">${formatNum(nrNet)}</td>
+          <td class="cell-num">${formatNum(oi)}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    tableMeta.textContent = `${rows.length} rows`;
+  }
+
+  // =============================
+  // LOAD HANDLERS
+  // =============================
+  async function handleLoad() {
+    const contract  = contractSelect.value;
+    const reportKey = currentReport;
+
+    if (!contract) {
+      setStatus("No contract selected.", "error");
+      clearChartsWhenEmpty();
+      return;
+    }
+
+    const cfg = REPORTS[reportKey];
+    loadBtn.disabled = true;
+    setStatus(`Loading ${cfg.labelShort} COT for "${contract}" from ${MIN_YEAR}…`, "loading");
+
+    try {
+      const rows = await fetchCOT(reportKey, contract);
+
+      if (!rows.length) {
+        tableContractLabel.textContent = contract;
+        tableReportLabel.textContent   = `(${cfg.labelShort})`;
+        buildTable([], reportKey);
+        buildCharts([], contract, reportKey);
+        setStatus(`No data for "${contract}" (${cfg.labelShort}) from ${MIN_YEAR}.`, "ok");
+        return;
+      }
+
+      buildTable(rows, reportKey);
+      buildCharts(rows, contract, reportKey);
+
+      const first = rows[0];
+      tableContractLabel.textContent = first.contract_market_name || contract;
+      tableReportLabel.textContent   = `(${cfg.labelShort})`;
+
+      const firstDate = formatDateShort(rows[0].report_date_as_yyyy_mm_dd);
+      const lastDate  = formatDateShort(rows[rows.length-1].report_date_as_yyyy_mm_dd);
+      setStatus(`Loaded ${rows.length} rows for "${contract}" – ${cfg.labelShort} (${firstDate} → ${lastDate}).`, "ok");
+    } catch (err) {
+      console.error(err);
+      setStatus(`Error: ${err.message}`, "error");
+      clearChartsWhenEmpty();
+    } finally {
+      loadBtn.disabled = false;
+    }
+  }
+
+  async function initForReport(reportKey) {
+    currentReport = reportKey;
+    const cfg = REPORTS[reportKey];
+
+    loadBtn.disabled = true;
+    contractSelect.innerHTML = `<option value="">Loading ${cfg.labelShort} contracts…</option>`;
+    setStatus(`Loading ${cfg.labelShort} contract list…`, "loading");
+
+    try {
+      const list = await fetchContractList(reportKey);
+
+      const assets = filterToKuantaraAssets(list);
+
+      contractSelect.innerHTML = "";
+      if (!assets.length) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No whitelisted assets found for this report";
+        contractSelect.appendChild(opt);
+        setStatus(`No whitelisted assets found for ${cfg.labelShort} dataset.`, "error");
+        clearChartsWhenEmpty();
+        return;
+      }
+
+      assets.forEach(asset => {
+        const opt = document.createElement("option");
+        opt.value = asset.contractName;
+        opt.textContent = `[${asset.assetGroup}] ${asset.assetLabel}`;
+        contractSelect.appendChild(opt);
+      });
+
+      contractSelect.selectedIndex = 0;
+      setStatus(`Whitelisted assets loaded (${cfg.labelShort}). Fetching default data (from ${MIN_YEAR})…`, "loading");
+
+      await handleLoad();
+    } catch (err) {
+      console.error(err);
+      setStatus(`Init error (${cfg.labelShort}): ${err.message}`, "error");
+      clearChartsWhenEmpty();
+    } finally {
+      loadBtn.disabled = false;
+    }
+  }
+
+  async function initApp() {
+    reportSelect.value = "LEGACY";
+    await initForReport("LEGACY");
+  }
+
+  loadBtn.addEventListener("click", () => {
+    handleLoad().catch(console.error);
+  });
+
+  reportSelect.addEventListener("change", () => {
+    const val = reportSelect.value;
+    initForReport(val).catch(console.error);
+  });
+
+  window.addEventListener("load", () => {
+    initApp().catch(console.error);
+  });
+</script>
 </body>
 </html>
