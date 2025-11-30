@@ -1,1 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>US Recession Dashboard – Kuantara Terminal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+  <style>
+    :root {
+      /* Kuantara Terminal Dark Theme */
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --bg-card:#151515;
+      --bg-soft:#101010;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+      --accent-soft:rgba(255,191,0,0.16);
+      --danger:#ef4444;
+      --green:#22c55e;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code", monospace;
+    }
+
+    html, body {
+      height:100%;
+    }
+
+    body {
+      background:var(--bg-root);
+      color:var(--text-main);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      padding:16px;
+      overflow-y:auto;
+    }
+
+    body::-webkit-scrollbar {
+      width:6px;
+    }
+    body::-webkit-scrollbar-track {
+      background:transparent;
+    }
+    body::-webkit-scrollbar-thumb {
+      background:rgba(0,0,0,0.6);
+      border-radius:3px;
+    }
+
+    .shell {
+      width:100%;
+      max-width:1200px;
+      background:var(--bg-main);
+      border-radius:10px;
+      border:1px solid var(--border-soft);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:12px;
+    }
+
+    .top-bar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .status-text {
+      font-size:11px;
+      color:var(--text-muted);
+    }
+
+    .status-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      font-size:11px;
+    }
+
+    .badge {
+      padding:2px 6px;
+      border-radius:999px;
+      font-size:10px;
+      border:1px solid var(--border-soft);
+      color:var(--text-muted);
+    }
+
+    .badge.ok {
+      border-color:var(--green);
+      color:var(--green);
+    }
+
+    .badge.error {
+      border-color:var(--danger);
+      color:var(--danger);
+    }
+
+    .chip {
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:10px;
+      border:1px solid var(--border-soft);
+      background:#101010;
+      color:var(--text-muted);
+      white-space:nowrap;
+    }
+
+    .controls-bar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:4px;
+      margin-bottom:4px;
+    }
+
+    .range-buttons {
+      display:flex;
+      gap:4px;
+      flex-wrap:wrap;
+    }
+
+    .btn-pill {
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      font-size:10px;
+      background:#111111;
+      color:var(--text-muted);
+      cursor:pointer;
+      transition:background 0.15s,border-color 0.15s,color 0.15s;
+    }
+
+    .btn-pill.active {
+      background:var(--accent-soft);
+      color:var(--accent);
+      border-color:var(--accent);
+    }
+
+    .variant-select-wrap {
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    select {
+      background:#111111;
+      color:var(--text-main);
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:4px 10px;
+      font-size:10px;
+      outline:none;
+    }
+
+    .main-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      min-height:0;
+      margin-top:4px;
+    }
+
+    @media (max-width:900px) {
+      .main-grid {
+        grid-template-columns:1fr;
+      }
+    }
+
+    .card {
+      background:var(--bg-card);
+      border-radius:8px;
+      border:1px solid var(--border-soft);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .card-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .card-title {
+      font-size:13px;
+      font-weight:500;
+    }
+
+    .card-subtitle {
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .chart-box {
+      width:100%;
+      height:260px;
+    }
+
+    @media (max-width:900px) {
+      .chart-box {
+        height:260px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <!-- Top status bar -->
+  <div class="top-bar">
+    <div class="status-text" id="statusText">Initializing…</div>
+    <div class="status-right">
+      <div id="statusBadge" class="badge">IDLE</div>
+      <div class="chip">Source: FRED</div>
+      <div class="chip">Sample: since 1967</div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls-bar">
+    <div class="range-buttons">
+      <button class="btn-pill active" data-range="10" id="btn10Y">10Y</button>
+      <button class="btn-pill" data-range="5" id="btn5Y">5Y</button>
+      <button class="btn-pill" data-range="2" id="btn2Y">2Y</button>
+      <button class="btn-pill" data-range="max" id="btnMax">Max</button>
+    </div>
+    <div class="variant-select-wrap">
+      <span>Panel-4 Variant:</span>
+      <select id="panel4Select">
+        <option value="Recession Prob (12m)">Recession Prob (12m)</option>
+        <option value="Weekly Economic Index">Weekly Economic Index</option>
+        <option value="Leading Index (USSLIND)">Leading Index (USSLIND)</option>
+        <option value="Term Spread 10Y–2Y">Term Spread 10Y–2Y</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Charts grid -->
+  <div class="main-grid">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">NBER Recessions (USREC, shaded)</div>
+          <div class="card-subtitle">USREC baseline (0/1) with recession shading</div>
+        </div>
+      </div>
+      <div id="recChart" class="chart-box"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Sahm Rule Recession Indicator</div>
+          <div class="card-subtitle">SAHMCURRENT with 0.5 threshold</div>
+        </div>
+      </div>
+      <div id="sahmChart" class="chart-box"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Term Spread: 10Y − 3M (T10Y3M)</div>
+          <div class="card-subtitle">Curve inversion when spread &lt; 0</div>
+        </div>
+      </div>
+      <div id="spreadChart" class="chart-box"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Panel-4: Variants</div>
+          <div class="card-subtitle" id="panel4Subtitle">Recession Prob (12m)</div>
+        </div>
+      </div>
+      <div id="panel4Chart" class="chart-box"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // =========================
+  // CONFIG & CORS PROXY
+  // =========================
+  const PROXIES = [
+    "https://cors-anywhere-proxy-six.vercel.app/",
+    "https://cors.eu.org/",
+    ""
+  ];
+
+  // New API key as requested
+  const API_KEY  = "8a60bcfed2f8d08cae9615b367eb85e5";
+  const FRED_OBS = "https://api.stlouisfed.org/fred/series/observations";
+  const START    = "1967-01-01";
+
+  const statusText      = document.getElementById("statusText");
+  const statusBadge     = document.getElementById("statusBadge");
+  const panel4Subtitle  = document.getElementById("panel4Subtitle");
+  const panel4Select    = document.getElementById("panel4Select");
+
+  const btn2Y  = document.getElementById("btn2Y");
+  const btn5Y  = document.getElementById("btn5Y");
+  const btn10Y = document.getElementById("btn10Y");
+  const btnMax = document.getElementById("btnMax");
+
+  const rangeButtons = [btn10Y, btn5Y, btn2Y, btnMax];
+
+  let recChart   = null;
+  let sahmChart  = null;
+  let spreadChart= null;
+  let panel4Chart= null;
+
+  let globalData = {
+    usrec:null,
+    sahm:null,
+    spread:null,
+    panel4Data:{},
+    spans:[],
+    allSeriesForRange:[]
+  };
+
+  function setStatus(text, mode = "idle") {
+    statusText.textContent = text;
+    statusBadge.textContent = mode.toUpperCase();
+    statusBadge.classList.remove("ok","error");
+    if (mode === "ok") statusBadge.classList.add("ok");
+    if (mode === "error") statusBadge.classList.add("error");
+  }
+
+  function buildProxyUrl(proxy, url) {
+    if (!proxy) return url;
+    const isCorsAnywhere = proxy.includes("cors-anywhere") || proxy.includes("vercel.app");
+    if (isCorsAnywhere) {
+      return proxy.endsWith("/") ? `${proxy}${url}` : `${proxy}/${url}`;
+    }
+    const clean = url.replace(/^https?:\/\//, "");
+    return proxy.endsWith("/") ? `${proxy}${clean}` : `${proxy}/${clean}`;
+  }
+
+  async function fetchWithProxies(url, options = {}, proxies = PROXIES) {
+    let lastError = null;
+    for (const proxy of proxies) {
+      const target = buildProxyUrl(proxy, url);
+      try {
+        const res = await fetch(target, options);
+        if (res.ok) return res;
+        lastError = new Error(`HTTP ${res.status} via ${proxy || "direct"}`);
+      } catch (e) {
+        lastError = e;
+      }
+    }
+    throw lastError || new Error("Request failed");
+  }
+
+  function buildFredObsUrl(seriesId, start, end) {
+    const params = new URLSearchParams({
+      series_id: seriesId,
+      api_key: API_KEY,
+      file_type: "json",
+      observation_start: start,
+      observation_end: end
+    });
+    return `${FRED_OBS}?${params.toString()}`;
+  }
+
+  async function fetchFredSeries(seriesId, start, end) {
+    const url = buildFredObsUrl(seriesId, start, end);
+    const res = await fetchWithProxies(url);
+    const js  = await res.json();
+    const obs = js.observations || [];
+    const dates = [];
+    const values = [];
+    for (const o of obs) {
+      const v = o.value;
+      if (v === "" || v === "." || v == null) continue;
+      const num = parseFloat(v);
+      if (Number.isNaN(num)) continue;
+      dates.push(o.date);
+      values.push(num);
+    }
+    return { dates, values };
+  }
+
+  function recessionSpans(usrecDates, usrecValues) {
+    const spans = [];
+    const n = usrecDates.length;
+    if (!n) return spans;
+
+    const rec = usrecValues.map(v => (v >= 0.5 ? 1 : 0));
+    let currentStart = null;
+
+    for (let i = 0; i < n; i++) {
+      const val = rec[i];
+      const prev = i === 0 ? 0 : rec[i-1];
+      const date = usrecDates[i];
+
+      if (prev === 0 && val === 1) {
+        currentStart = date;
+      }
+      if (prev === 1 && val === 0 && currentStart !== null) {
+        spans.push({ start: currentStart, end: date });
+        currentStart = null;
+      }
+    }
+    if (currentStart !== null) {
+      spans.push({ start: currentStart, end: usrecDates[n-1] });
+    }
+    return spans;
+  }
+
+  function toDate(d) {
+    return new Date(d);
+  }
+
+  function globalMaxDate(seriesList) {
+    let maxD = null;
+    for (const s of seriesList) {
+      if (!s || !s.dates || !s.dates.length) continue;
+      const last = toDate(s.dates[s.dates.length - 1]);
+      if (!maxD || last > maxD) maxD = last;
+    }
+    return maxD;
+  }
+
+  function xRangeYears(seriesList, years) {
+    if (years == null) return null;
+    const end = globalMaxDate(seriesList);
+    if (!end) return null;
+    const start = new Date(end.getTime());
+    start.setFullYear(start.getFullYear() - years);
+    const endStr   = end.toISOString().slice(0,10);
+    const startStr = start.toISOString().slice(0,10);
+    return [startStr, endStr];
+  }
+
+  function buildRecessionMarkArea(spans) {
+    return {
+      silent:true,
+      itemStyle:{
+        color:"rgba(255,255,255,0.06)"
+      },
+      data: spans.map(s => [
+        { xAxis: s.start },
+        { xAxis: s.end }
+      ])
+    };
+  }
+
+  // =========================
+  // CHART BUILDERS
+  // =========================
+  function buildRecOption(usrec, spans, range) {
+    const markArea = buildRecessionMarkArea(spans);
+    const xAxis = {
+      type:"time",
+      axisLine:{ lineStyle:{ color:"#444" } },
+      axisLabel:{ color:"#aaaaaa", fontSize:9 },
+      splitLine:{ show:false }
+    };
+    if (range) {
+      xAxis.min = range[0];
+      xAxis.max = range[1];
+    }
+    return {
+      backgroundColor:"#111111",
+      grid:{ left:50, right:20, top:20, bottom:30 },
+      tooltip:{
+        trigger:"axis",
+        axisPointer:{ type:"cross" },
+        formatter: params => {
+          if (!params.length) return "";
+          const p = params[0];
+          return `${echarts.format.formatTime("yyyy-MM-dd", p.value[0])}<br/>USREC: ${p.value[1].toFixed(0)}`;
+        }
+      },
+      xAxis,
+      yAxis:{
+        type:"value",
+        min:-0.1,
+        max:1.1,
+        axisLine:{ lineStyle:{ color:"#444" } },
+        axisLabel:{ color:"#aaaaaa", fontSize:9 },
+        splitLine:{ lineStyle:{ color:"#222" } }
+      },
+      series:[{
+        name:"USREC (0/1)",
+        type:"line",
+        step:"middle",
+        showSymbol:false,
+        lineStyle:{ width:1.4, color:"#e5e5e5" },
+        data: usrec.dates.map((d,i)=>[d, usrec.values[i]]),
+        markArea
+      }]
+    };
+  }
+
+  function buildSahmOption(sahm, spans, range) {
+    const markArea = buildRecessionMarkArea(spans);
+    const xAxis = {
+      type:"time",
+      axisLine:{ lineStyle:{ color:"#444" } },
+      axisLabel:{ color:"#aaaaaa", fontSize:9 },
+      splitLine:{ show:false }
+    };
+    if (range) {
+      xAxis.min = range[0];
+      xAxis.max = range[1];
+    }
+    const thresholdData =
+      sahm.dates.length
+        ? [[sahm.dates[0],0.5],[sahm.dates[sahm.dates.length-1],0.5]]
+        : [];
+
+    return {
+      backgroundColor:"#111111",
+      grid:{ left:55, right:20, top:20, bottom:30 },
+      tooltip:{
+        trigger:"axis",
+        axisPointer:{ type:"cross" },
+        formatter: params => {
+          if (!params.length) return "";
+          const lines = params.map(p=>{
+            const v = p.value[1];
+            return `${p.seriesName}: ${v.toFixed(2)}`;
+          }).join("<br/>");
+          const date = echarts.format.formatTime("yyyy-MM-dd", params[0].value[0]);
+          return `${date}<br/>${lines}`;
+        }
+      },
+      xAxis,
+      yAxis:{
+        type:"value",
+        axisLine:{ lineStyle:{ color:"#444" } },
+        axisLabel:{ color:"#aaaaaa", fontSize:9 },
+        splitLine:{ lineStyle:{ color:"#222" } }
+      },
+      series:[
+        {
+          name:"Sahm Rule",
+          type:"line",
+          showSymbol:false,
+          lineStyle:{ width:2.0, color:"#f97316" },
+          data: sahm.dates.map((d,i)=>[d, sahm.values[i]]),
+          markArea
+        },
+        {
+          name:"Threshold 0.5",
+          type:"line",
+          showSymbol:false,
+          lineStyle:{ width:1.4, type:"dashed", color:"#888" },
+          data: thresholdData
+        }
+      ]
+    };
+  }
+
+  function buildSpreadOption(spread, spans, range) {
+    const markArea = buildRecessionMarkArea(spans);
+    const xAxis = {
+      type:"time",
+      axisLine:{ lineStyle:{ color:"#444" } },
+      axisLabel:{ color:"#aaaaaa", fontSize:9 },
+      splitLine:{ show:false }
+    };
+    if (range) {
+      xAxis.min = range[0];
+      xAxis.max = range[1];
+    }
+    const zeroData =
+      spread.dates.length
+        ? [[spread.dates[0],0],[spread.dates[spread.dates.length-1],0]]
+        : [];
+
+    return {
+      backgroundColor:"#111111",
+      grid:{ left:55, right:20, top:20, bottom:30 },
+      tooltip:{
+        trigger:"axis",
+        axisPointer:{ type:"cross" },
+        formatter: params => {
+          if (!params.length) return "";
+          const lines = params.map(p=>{
+            const v = p.value[1];
+            return `${p.seriesName}: ${v.toFixed(2)}%`;
+          }).join("<br/>");
+          const date = echarts.format.formatTime("yyyy-MM-dd", params[0].value[0]);
+          return `${date}<br/>${lines}`;
+        }
+      },
+      xAxis,
+      yAxis:{
+        type:"value",
+        axisLine:{ lineStyle:{ color:"#444" } },
+        axisLabel:{ color:"#aaaaaa", fontSize:9 },
+        splitLine:{ lineStyle:{ color:"#222" } }
+      },
+      series:[
+        {
+          name:"10Y-3M Spread",
+          type:"line",
+          showSymbol:false,
+          lineStyle:{ width:2.0, color:"#60a5fa" },
+          data: spread.dates.map((d,i)=>[d, spread.values[i]]),
+          markArea
+        },
+        {
+          name:"Zero (Inversion)",
+          type:"line",
+          showSymbol:false,
+          lineStyle:{ width:1.4, type:"dashed", color:"#888" },
+          data: zeroData
+        }
+      ]
+    };
+  }
+
+  function buildPanel4Option(label, panel4Data, spans, range) {
+    const s = panel4Data[label] || { dates:[], values:[] };
+    const hasData = s.dates && s.dates.length;
+    const markArea = buildRecessionMarkArea(spans);
+    const xAxis = {
+      type:"time",
+      axisLine:{ lineStyle:{ color:"#444" } },
+      axisLabel:{ color:"#aaaaaa", fontSize:9 },
+      splitLine:{ show:false }
+    };
+    if (range) {
+      xAxis.min = range[0];
+      xAxis.max = range[1];
+    }
+
+    const series = [];
+    if (hasData) {
+      series.push({
+        name:label,
+        type:"line",
+        showSymbol:false,
+        lineStyle:{ width:2.0, color:"#22c55e" },
+        data: s.dates.map((d,i)=>[d, s.values[i]]),
+        markArea
+      });
+
+      // Guide lines depending on variant
+      if (label === "Recession Prob (12m)") {
+        const d0 = s.dates[0];
+        const d1 = s.dates[s.dates.length-1];
+        series.push({
+          name:"Guide 30%",
+          type:"line",
+          showSymbol:false,
+          lineStyle:{ width:1.4, type:"dashed", color:"#888" },
+          data:[[d0,30],[d1,30]]
+        });
+      }
+      if (label === "Leading Index (USSLIND)" || label === "Term Spread 10Y–2Y") {
+        const d0 = s.dates[0];
+        const d1 = s.dates[s.dates.length-1];
+        series.push({
+          name:"Zero Line",
+          type:"line",
+          showSymbol:false,
+          lineStyle:{ width:1.4, type:"dashed", color:"#888" },
+          data:[[d0,0],[d1,0]]
+        });
+      }
+    }
+
+    const option = {
+      backgroundColor:"#111111",
+      grid:{ left:55, right:20, top:20, bottom:30 },
+      tooltip:{
+        trigger:"axis",
+        axisPointer:{ type:"cross" },
+        formatter: params => {
+          if (!params.length) return "";
+          const lines = params.map(p=>{
+            const v = p.value[1];
+            return `${p.seriesName}: ${v.toFixed(2)}`;
+          }).join("<br/>");
+          const date = echarts.format.formatTime("yyyy-MM-dd", params[0].value[0]);
+          return `${date}<br/>${lines}`;
+        }
+      },
+      xAxis,
+      yAxis:{
+        type:"value",
+        axisLine:{ lineStyle:{ color:"#444" } },
+        axisLabel:{ color:"#aaaaaa", fontSize:9 },
+        splitLine:{ lineStyle:{ color:"#222" } }
+      },
+      series
+    };
+
+    if (!hasData) {
+      option.graphic = {
+        type:"text",
+        left:"center",
+        top:"middle",
+        style:{
+          text:"No data for this variant",
+          fill:"#9b9b9b",
+          fontSize:12
+        }
+      };
+    }
+
+    return option;
+  }
+
+  function applyRangeToAll(rangeYears) {
+    const allSeries = globalData.allSeriesForRange;
+    let range = null;
+    if (rangeYears !== "max") {
+      range = xRangeYears(allSeries, parseInt(rangeYears,10));
+    }
+
+    const activeVariant = panel4Select.value;
+
+    // Rebuild options with updated xAxis range
+    if (recChart && globalData.usrec) {
+      recChart.setOption(
+        buildRecOption(globalData.usrec, globalData.spans, range),
+        true
+      );
+    }
+    if (sahmChart && globalData.sahm) {
+      sahmChart.setOption(
+        buildSahmOption(globalData.sahm, globalData.spans, range),
+        true
+      );
+    }
+    if (spreadChart && globalData.spread) {
+      spreadChart.setOption(
+        buildSpreadOption(globalData.spread, globalData.spans, range),
+        true
+      );
+    }
+    if (panel4Chart) {
+      panel4Chart.setOption(
+        buildPanel4Option(activeVariant, globalData.panel4Data, globalData.spans, range),
+        true
+      );
+      panel4Subtitle.textContent = activeVariant;
+    }
+  }
+
+  // =========================
+  // INIT DASHBOARD
+  // =========================
+  async function initDashboard() {
+    try {
+      setStatus("Loading FRED series…", "idle");
+      const END = new Date().toISOString().slice(0,10);
+
+      const SERIES = {
+        USREC:  "USREC",
+        SAHM:   "SAHMCURRENT",
+        SPREAD: "T10Y3M"
+      };
+
+      const PANEL4_VARIANTS = {
+        "Recession Prob (12m)": "RECPROUSM156N",
+        "Weekly Economic Index": "WEI",
+        "Leading Index (USSLIND)": "USSLIND",
+        "Term Spread 10Y–2Y": "T10Y2Y"
+      };
+
+      // Fetch main series
+      const [usrec, sahm, spread] = await Promise.all([
+        fetchFredSeries(SERIES.USREC,  START, END),
+        fetchFredSeries(SERIES.SAHM,   START, END),
+        fetchFredSeries(SERIES.SPREAD, START, END)
+      ]);
+
+      // Fetch panel-4 variants
+      const panel4Data = {};
+      const labels = Object.keys(PANEL4_VARIANTS);
+      await Promise.all(
+        labels.map(async label => {
+          const code = PANEL4_VARIANTS[label];
+          try {
+            panel4Data[label] = await fetchFredSeries(code, START, END);
+          } catch (e) {
+            console.warn("[WARN] Failed to fetch", label, code, e);
+            panel4Data[label] = { dates:[], values:[] };
+          }
+        })
+      );
+
+      const spans = recessionSpans(usrec.dates, usrec.values);
+
+      const allSeriesForRange = [
+        usrec,
+        sahm,
+        spread,
+        ...Object.values(panel4Data)
+      ];
+
+      globalData.usrec   = usrec;
+      globalData.sahm    = sahm;
+      globalData.spread  = spread;
+      globalData.panel4Data = panel4Data;
+      globalData.spans   = spans;
+      globalData.allSeriesForRange = allSeriesForRange;
+
+      // Init ECharts instances
+      recChart    = echarts.init(document.getElementById("recChart"));
+      sahmChart   = echarts.init(document.getElementById("sahmChart"));
+      spreadChart = echarts.init(document.getElementById("spreadChart"));
+      panel4Chart = echarts.init(document.getElementById("panel4Chart"));
+
+      // Default range: 10Y
+      applyRangeToAll("10");
+
+      window.addEventListener("resize", () => {
+        recChart && recChart.resize();
+        sahmChart && sahmChart.resize();
+        spreadChart && spreadChart.resize();
+        panel4Chart && panel4Chart.resize();
+      });
+
+      setStatus("Dashboard ready", "ok");
+    } catch (err) {
+      console.error(err);
+      setStatus("Init error: " + err.message, "error");
+    }
+  }
+
+  // =========================
+  // EVENT LISTENERS
+  // =========================
+  rangeButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      rangeButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const range = btn.getAttribute("data-range");
+      applyRangeToAll(range);
+    });
+  });
+
+  panel4Select.addEventListener("change", () => {
+    const active = panel4Select.value;
+    panel4Subtitle.textContent = active;
+    const activeRangeBtn = rangeButtons.find(b => b.classList.contains("active"));
+    const range = activeRangeBtn ? activeRangeBtn.getAttribute("data-range") : "10";
+    applyRangeToAll(range);
+  });
+
+  window.addEventListener("load", () => {
+    initDashboard();
+  });
+</script>
+</body>
+</html>
