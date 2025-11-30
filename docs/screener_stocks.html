@@ -1,1114 +1,192 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Kuantara – Multi Screener</title>
+  <title>Kuantara – Stocks Screener</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Fira Code -->
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
-    :root{
+    :root {
       --bg-root:#000000;
       --bg-main:#111111;
+      --bg-tab:#151515;
+      --bg-tab-active:#1f1f1f;
       --border-soft:#2b2b2b;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
       --accent:#ffbf00;
-      --up:#22c55e;
-      --down:#ef4444;
-      --fs-title:14px;
-      --fs-body:11px;
-      --fs-small:9.5px;
-    }
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:"Fira Code",monospace;
-    }
-    body{
-      background:var(--bg-root);
-      color:var(--text-main);
-      padding:12px;
-    }
-    .shell{
-      max-width:1120px;
-      margin:0 auto;
-      background:var(--bg-main);
-      border:1px solid var(--border-soft);
-      border-radius:8px;
-      padding:12px;
-    }
-    .block{
-      margin-bottom:18px;
-    }
-    header.block-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-      margin-bottom:10px;
-    }
-    header.block-header h1{
-      font-size:var(--fs-title);
-      letter-spacing:0.03em;
-    }
-    button{
-      padding:6px 12px;
-      font-size:var(--fs-body);
-      border-radius:4px;
-      border:1px solid var(--accent);
-      background:var(--accent);
-      color:#000;
-      cursor:pointer;
-      margin-bottom:4px;
-    }
-    button:disabled{
-      opacity:0.6;
-      cursor:wait;
-    }
-    .status{
-      font-size:var(--fs-small);
-      margin-left:8px;
-    }
-    .status.ok{color:var(--up);}
-    .status.err{color:var(--down);}
-    .table-wrapper{
-      margin-top:8px;
-      border:1px solid var(--border-soft);
-      border-radius:6px;
-      overflow-x:auto;
-      overflow-y:hidden;
-    }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:var(--fs-body);
-      min-width:640px;
-    }
-    thead{
-      background:#141414;
-    }
-    th,td{
-      border-bottom:1px solid var(--border-soft);
-      padding:6px 8px;
-      text-align:right;
-      white-space:nowrap;
-    }
-    th:first-child,td:first-child{
-      text-align:left;
-    }
-    tbody tr:hover{
-      background:#181818;
-    }
-    hr.line{
-      border:none;
-      border-top:1px solid #222;
-      margin:10px 0;
     }
 
-    @media (max-width:768px){
-      body{
-        padding:8px;
-      }
-      .shell{
-        padding:10px;
-      }
-      header.block-header{
-        flex-direction:row;
-        justify-content:space-between;
-        align-items:center;
-      }
-      header.block-header h1{
-        font-size:13px;
-      }
-      table{
-        font-size:10px;
-        min-width:580px;
-      }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Fira Code", monospace;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: var(--bg-root);
+      color: var(--text-main);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: var(--bg-main);
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-soft);
+      background: var(--bg-main);
+    }
+
+    .tab {
+      flex: 0 0 auto;
+      padding: 10px 16px;
+      font-size: 12px;
+      cursor: pointer;
+      border-right: 1px solid var(--border-soft);
+      background: var(--bg-tab);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+
+    .tab span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--border-soft);
+    }
+
+    .tab.active {
+      background: var(--bg-tab-active);
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .tab.active span.dot {
+      background: var(--accent);
+    }
+
+    .content {
+      flex: 1;
+      position: relative;
+      overflow: auto;
+      padding: 8px;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .tradingview-widget-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    .tradingview-widget-container__widget {
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
 <body>
-<div class="shell">
-
-  <!-- PANEL 0 – BANDAR ACTIVITY -->
-  <section class="block" id="panel-bpjp">
-    <header class="block-header">
-      <h1>BANDAR ACTIVITY</h1>
-      <div></div>
-    </header>
-
-    <div>
-      <button id="run-btn-bpjp">RUN SCREENER</button>
-      <span id="status-bpjp" class="status"></span>
+  <div class="app-shell">
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-target="panel-us">
+        <span class="dot"></span>
+        <span>US Stocks</span>
+      </div>
+      <div class="tab" data-target="panel-id">
+        <span class="dot"></span>
+        <span>ID Stocks</span>
+      </div>
     </div>
 
-    <div class="table-wrapper">
-      <table>
-        <thead>
-        <tr>
-          <th>Symbol</th>
-          <th>Price</th>
-          <th>Value</th>
-          <th>ROC(1)</th>
-          <th>Vol / Prev</th>
-          <th>Price &gt; MA5</th>
-          <th>Price / 52W High</th>
-        </tr>
-        </thead>
-        <tbody id="results-body-bpjp">
-        <tr>
-          <td colspan="7" style="text-align:center;color:var(--text-muted);">
-            Tekan <b>RUN SCREENER</b> untuk mencari saham potensial aktivitas bandar.
-          </td>
-        </tr>
-        </tbody>
-      </table>
+    <!-- Content -->
+    <div class="content">
+      <!-- Panel US Stocks -->
+      <div id="panel-us" class="panel active">
+        <div class="tradingview-widget-container" style="height: 550px;">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript"
+                  src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js"
+                  async>
+{
+  "width": "100%",
+  "height": "550",
+  "defaultColumn": "overview",
+  "defaultScreen": "most_capitalized",
+  "showToolbar": true,
+  "locale": "en",
+  "market": "us",
+  "colorTheme": "dark"
+}
+          </script>
+        </div>
+      </div>
+
+      <!-- Panel ID Stocks – pakai snippet yang kamu kirim -->
+      <div id="panel-id" class="panel">
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript"
+                  src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js"
+                  async>
+{
+  "market": "indonesia",
+  "showToolbar": true,
+  "defaultColumn": "overview",
+  "defaultScreen": "most_capitalized",
+  "isTransparent": false,
+  "locale": "en",
+  "colorTheme": "dark",
+  "width": "100%",
+  "height": 550
+}
+          </script>
+        </div>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <hr class="line">
+  <script>
+    // Simple tab switcher
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.panel');
 
-  <!-- PANEL 1 – VOLUME BREAKOUT -->
-  <section class="block" id="panel-k01">
-    <header class="block-header">
-      <h1>VOLUME BREAKOUT</h1>
-      <div></div>
-    </header>
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const targetId = tab.getAttribute('data-target');
 
-    <div>
-      <button id="run-btn-k01">RUN SCREENER</button>
-      <span id="status-k01" class="status"></span>
-    </div>
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
 
-    <div class="table-wrapper">
-      <table>
-        <thead>
-        <tr>
-          <th>Symbol</th>
-          <th>Last Price</th>
-          <th>Last Volume</th>
-          <th>Prev Value</th>
-          <th>ROC(1)</th>
-          <th>Vol Spike</th>
-          <th>Breakout Above</th>
-        </tr>
-        </thead>
-        <tbody id="results-body-k01">
-        <tr>
-          <td colspan="7" style="text-align:center;color:var(--text-muted);">
-            Tekan <b>RUN SCREENER</b> untuk memulai scan.
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <hr class="line">
-
-  <!-- PANEL 2 – VOLUME & TREND (MA Trend Rules) -->
-  <section class="block" id="panel-ma">
-    <header class="block-header">
-      <h1>VOLUME &amp; TREND</h1>
-      <div></div>
-    </header>
-
-    <div>
-      <button id="run-btn-ma">RUN SCREENER</button>
-      <span id="status-ma" class="status"></span>
-    </div>
-
-    <div class="table-wrapper">
-      <table>
-        <thead>
-        <tr>
-          <th>Symbol</th>
-          <th>Price</th>
-          <th>Volume</th>
-          <th>Value</th>
-          <th>ROC(1)</th>
-          <th>Vol / VMA20</th>
-          <th>Price / MA100</th>
-        </tr>
-        </thead>
-        <tbody id="results-body-ma">
-        <tr>
-          <td colspan="7" style="text-align:center;color:var(--text-muted);">
-            Tekan <b>RUN SCREENER</b> untuk memulai scan.
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <hr class="line">
-
-  <!-- PANEL 3 – TREND FOLLOWING (Strong Uptrend) -->
-  <section class="block" id="panel-trend">
-    <header class="block-header">
-      <h1>TREND FOLLOWING</h1>
-      <div></div>
-    </header>
-
-    <div>
-      <button id="run-btn-trend">RUN SCREENER</button>
-      <span id="status-trend" class="status"></span>
-    </div>
-
-    <div class="table-wrapper">
-      <table>
-        <thead>
-        <tr>
-          <th>Symbol</th>
-          <th>Price</th>
-          <th>Trend Score</th>
-          <th>ROC 20</th>
-          <th>ROC 50</th>
-          <th>Price / MA100</th>
-          <th>Above MA20 (20)</th>
-        </tr>
-        </thead>
-        <tbody id="results-body-trend">
-        <tr>
-          <td colspan="7" style="text-align:center;color:var(--text-muted);">
-            Tekan <b>RUN SCREENER</b> untuk memulai scan.
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <hr class="line">
-
-  <!-- PANEL 4 – MOMENTUM (MACD Golden Cross, EMA50, H4) -->
-  <section class="block" id="panel-mom">
-    <header class="block-header">
-      <h1>MOMENTUM</h1>
-      <div></div>
-    </header>
-
-    <div>
-      <button id="run-btn-mom">RUN SCREENER</button>
-      <span id="status-mom" class="status"></span>
-    </div>
-
-    <div class="table-wrapper">
-      <table>
-        <thead>
-        <tr>
-          <th>Symbol</th>
-          <th>Price</th>
-          <th>MACD Hist</th>
-          <th>EMA50</th>
-          <th>Last 3 &gt; EMA50</th>
-          <th>Signal</th>
-          <th>Momentum Score</th>
-        </tr>
-        </thead>
-        <tbody id="results-body-mom">
-        <tr>
-          <td colspan="7" style="text-align:center;color:var(--text-muted);">
-            Tekan <b>RUN SCREENER</b> untuk memulai scan.
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-</div>
-
-<script>
-  const BASE_URL   = "https://kuancloud.loclx.io/api/tvohlc/ohlcv";
-  const INTERVAL   = "5";    // intraday
-  const INTERVAL_D = "D";    // daily
-  const INTERVAL_H4 = "240"; // H4
-
-  // Bars count
-  const BARS_K01  = 25;    // Volume breakout
-  const BARS_MA   = 120;   // Volume & Trend, Trend Following
-  const BARS_MOM  = 120;   // Momentum (H4)
-  const BARS_BSJP = 280;   // BANDAR ACTIVITY – daily, ~1y
-
-  // ======================================
-  //   ISI SENDIRI: UNIVERSE SAHAM
-  // ======================================
-  const UNIVERSE = [
-    "AALI","ABBA","ABDA","ABMM","ACES","ACST","ADES","ADHI","ADMF","ADMG","ADRO","AGII","AGRO","AGRS",
-    "AHAP","AIMS","AISA","AKKU","AKPI","AKRA","AKSI","ALDO","ALKA","ALMI","ALTO","AMAG","AMFG","AMIN",
-    "AMRT","ANJT","ANTM","APEX","APIC","APII","APLI","APLN","ARGO","ARII","ARNA","ARTA","ARTI","ARTO",
-    "ASBI","ASDM","ASGR","ASII","ASJT","ASMI","ASRI","ASRM","ASSA","ATIC","AUTO","BABP","BACA","BAJA",
-    "BALI","BAPA","BATA","BAYU","BBCA","BBHI","BBKP","BBLD","BBMD","BBNI","BBRI","BBRM","BBTN","BBYB",
-    "BCAP","BCIC","BCIP","BDMN","BEKS","BEST","BFIN","BGTG","BHIT","BIKA","BIMA","BINA","BIPI","BIPP",
-    "BIRD","BISI","BJBR","BJTM","BKDP","BKSL","BKSW","BLTA","BLTZ","BMAS","BMRI","BMSR","BMTR","BNBA",
-    "BNBR","BNGA","BNII","BNLI","BOLT","BPFI","BPII","BRAM","BRMS","BRNA","BRPT","BSDE","BSIM","BSSR",
-    "BSWD","BTEK","BTEL","BTON","BTPN","BUDI","BUKK","BULL","BUMI","BUVA","BVIC","BWPT","BYAN","CANI",
-    "CASS","CEKA","CENT","CFIN","CINT","CITA","CLPI","CMNP","CMPP","CNKO","CNTX","COWL","CPIN","CPRO",
-    "CSAP","CTBN","CTRA","CTTH","DART","DEFI","DEWA","DGIK","DILD","DKFT","DLTA","DMAS","DNAR","DNET",
-    "DOID","DPNS","DSFI","DSNG","DSSA","DUTI","DVLA","DYAN","ECII","EKAD","ELSA","ELTY","EMDE","EMTK",
-    "ENRG","EPMT","ERAA","ERTX","ESSA","ESTI","ETWA","EXCL","FAST","FASW","FISH","FMII","FORU","FPNI",
-    "GAMA","GDST","GDYR","GEMA","GEMS","GGRM","GIAA","GJTL","GLOB","GMTD","GOLD","GOLL","GPRA","GSMF",
-    "GTBO","GWSA","GZCO","HADE","HDFA","HERO","HEXA","HITS","HMSP","HOME","HOTL","HRUM","IATA","IBFN",
-    "IBST","ICBP","ICON","IGAR","IIKP","IKAI","IKBI","IMAS","IMJS","IMPC","INAF","INAI","INCI","INCO",
-    "INDF","INDR","INDS","INDX","INDY","INKP","INPC","INPP","INRU","INTA","INTD","INTP","IPOL","ISAT",
-    "ISSP","ITMA","ITMG","JAWA","JECC","JIHD","JKON","JPFA","JRPT","JSMR","JSPT","JTPE","KAEF","KARW",
-    "KBLI","KBLM","KBLV","KBRI","KDSI","KIAS","KICI","KIJA","KKGI","KLBF","KOBX","KOIN","KONI","KOPI",
-    "KPIG","KRAS","KREN","LAPD","LCGP","LEAD","LINK","LION","LMAS","LMPI","LMSH","LPCK","LPGI","LPIN",
-    "LPKR","LPLI","LPPF","LPPS","LRNA","LSIP","LTLS","MAGP","MAIN","MAPI","MAYA","MBAP","MBSS","MBTO",
-    "MCOR","MDIA","MDKA","MDLN","MDRN","MEDC","MEGA","MERK","META","MFMI","MGNA","MICE","MIDI","MIKA",
-    "MIRA","MITI","MKPI","MLBI","MLIA","MLPL","MLPT","MMLP","MNCN","MPMX","MPPA","MRAT","MREI","MSKY",
-    "MTDL","MTFN","MTLA","MTSM","MYOH","MYOR","MYTX","NELY","NIKL","NIRO","NISP","NOBU","NRCA","OCAP",
-    "OKAS","OMRE","PADI","PALM","PANR","PANS","PBRX","PDES","PEGE","PGAS","PGLI","PICO","PJAA","PKPK",
-    "PLAS","PLIN","PNBN","PNBS","PNIN","PNLF","PNSE","POLY","POOL","PPRO","PSAB","PSDN","PSKT","PTBA",
-    "PTIS","PTPP","PTRO","PTSN","PTSP","PUDP","PWON","PYFA","RAJA","RALS","RANC","RBMS","RDTX","RELI",
-    "RICY","RIGS","RIMO","RODA","ROTI","RUIS","SAFE","SAME","SCCO","SCMA","SCPI","SDMU","SDPC","SDRA",
-    "SGRO","SHID","SIDO","SILO","SIMA","SIMP","SIPD","SKBM","SKLT","SKYB","SMAR","SMBR","SMCB","SMDM",
-    "SMDR","SMGR","SMMA","SMMT","SMRA","SMRU","SMSM","SOCI","SONA","SPMA","SQMI","SRAJ","SRIL","SRSN",
-    "SRTG","SSIA","SSMS","SSTM","STAR","STTP","SUGI","SULI","SUPR","TALF","TARA","TAXI","TBIG","TBLA",
-    "TBMS","TCID","TELE","TFCO","TGKA","TIFA","TINS","TIRA","TIRT","TKIM","TLKM","TMAS","TMPO","TOBA",
-    "TOTL","TOTO","TOWR","TPIA","TPMA","TRAM","TRIL","TRIM","TRIO","TRIS","TRST","TRUS","TSPC","ULTJ",
-    "UNIC","UNIT","UNSP","UNTR","UNVR","VICO","VINS","VIVA","VOKS","VRNA","WAPO","WEHA","WICO","WIIM",
-    "WIKA","WINS","WOMF","WSKT","WTON","YPAS","YULE","ZBRA","SHIP","CASA","DAYA","DPUM","IDPR","JGLE",
-    "KINO","MARI","MKNT","MTRA","OASA","POWR","INCF","WSBP","PBSA","PRDA","BOGA","BRIS","PORT","CARS",
-    "MINA","CLEO","TAMU","CSIS","TGRA","FIRE","TOPS","KMTR","ARMY","MAPB","WOOD","HRTA","MABA","HOKI",
-    "MPOW","MARK","NASA","MDKI","BELL","KIOS","GMFI","MTWI","ZINC","MCAS","PPRE","WEGE","PSSI","MORA",
-    "DWGL","PBID","JMAS","CAMP","IPCM","PCAR","LCKM","BOSS","HELI","JSKY","INPS","GHON","TDPM","DFAM",
-    "NICK","BTPS","SPTO","PRIM","HEAL","TRUK","PZZA","TUGU","MSIN","SWAT","TNCA","MAPA","TCPI","IPCC",
-    "RISE","BPTR","POLL","NFCX","MGRO","NUSA","FILM","ANDI","LAND","MOLI","PANI","DIGI","CITY","SAPX",
-    "SURE","HKMU","MPRO","DUCK","GOOD","SKRN","YELO","CAKK","SATU","SOTS","DEAL","POLA","DIVA","LUCK",
-    "URBN","SOTS","ZONE","PEHA","FOOD","BEEF","POLI","CLAY","NATO","JAYA","COCO","MTPS","CPRI","HRME",
-    "POSA","JAST","FITT","BOLA","CCSI","SFAN","POLU","KJEN","KAYU","ITIC","PAMG","IPTV","BLUE","ENVY",
-    "EAST","LIFE","FUJI","KOTA","INOV","ARKA","SMKL","HDIT","KEEN","BAPI","TFAS","GGRP","OPMS","NZIA",
-    "SLIS","PURE","IRRA","DMMX","SINI","WOWS","ESIP","TEBE","KEJU","PSGO","AGAR","IFSH","REAL","IFII",
-    "PMJS","UCID","GLVA","PGJO","AMAR","CSRA","INDO","AMOR","TRIN","DMND","PURA","PTPW","TAMA","IKAN",
-    "SAMF","SBAT","KBAG","CBMF","RONY","CSMI","BBSS","BHAT","CASH","TECH","EPAC","UANG","PGUN","SOFA",
-    "PPGL","TOYS","SGER","TRJA","PNGO","SCNP","BBSI","KMDS","PURI","SOHO","HOMI","ROCK","ENZO","PLAN",
-    "PTDU","ATAP","VICI","PMMP","BANK","WMUU","EDGE","UNIQ","BEBS","SNLK","ZYRX","LFLO","FIMP","TAPG",
-    "NPGF","LUCY","ADCP","HOPE","MGLV","TRUE","LABA","ARCI","IPAC","MASB","BMHS","FLMC","NICL","UVCR",
-    "BUKA","HAIS","OILS","GPSO","MCOL","RSGK","RUNS","SBMA","CMNT","GTSI","IDEA","KUAS","BOBA","MTEL",
-    "DEPO","BINO","CMRY","WGSH","TAYS","WMPP","RMKE","OBMD","AVIA","IPPE","NASI","BSML","DRMA","ADMR",
-    "SEMA","ASLC","NETV","BAUT","ENAK","NTBK","SMKM","STAA","NANO","BIKE","WIRG","SICO","GOTO","TLDN",
-    "MTMH","WINR","IBOS","OLIV","ASHA","SWID","TRGU","ARKO","CHEM","DEWI","AXIO","KRYA","HATM","RCCC",
-    "GULA","JARR","AMMS","RAFI","KKES","ELPI","EURO","KLIN","TOOL","BUAH","CRAB","MEDS","COAL","PRAY",
-    "CBUT","BELI","MKTR","OMED","BSBK","PDPP","KDTN","ZATA","NINE","MMIX","PADA","ISAP","VTNY","SOUL",
-    "ELIT","BEER","CBPE","SUNI","CBRE","WINE","BMBL","PEVE","LAJU","FWCT","NAYZ","IRSX","PACK","VAST",
-    "CHIP","HALO","KING","PGEO","FUTR","HILL","BDKR","PTMP","SAGE","TRON","CUAN","NSSS","GTRA","HAJJ",
-    "JATI","TYRE","MPXL","SMIL","KLAS","MAXI","VKTR","RELF","AMMN","CRSN","GRPM","WIDI","TGUK","INET",
-    "MAHA","RMKO","CNMA","FOLK","HBAT","GRIA","PPRI","ERAL","CYBR","MUTU","LMAX","HUMI","MSIE","RSCH",
-    "BABY","AEGS","IOTF","KOCI","PTPS","BREN","STRK","KOKA","LOPI","UDNG","RGAS","MSTI","IKPM","AYAM",
-    "SURI","ASLI","GRPH","SMGA","UNTD","TOSK","MPIX","ALII","MKAP","MEJA","LIVE","HYGN","BAIK","VISI",
-    "AREA","MHKI","ATLA","DATA","SOLA","BATR","SPRE","PART","GOLF","ISEA","BLES","GUNA","LABS","DOSS",
-    "NEST","PTMR","VERN","DAAZ","BOAT","NAIK","AADI","MDIY","KSIX","RATU","YOII","HGII","BRRC","DGWG",
-    "CBDK","OBAT","MINE","ASPR","PSAT","COIN","CDIA","BLOG","MERI","CHEK","PMUI","EMAS","PJHB","KAQI",
-    "YUPI","FORE","MDLA","DKHH","AYLS","DADA","ASPI","ESTA","BESS","AMAN","CARE","PIPA","NCKL","MENN",
-    "AWAN","MBMA","RAAM","DOOH","CGAS","NICE","MSJA","SMLE","ACRO","MANG","WIFI","FAPA","DCII","KETR",
-    "DGNS","UFOE"
-  ];
-
-  // ===== Util =====
-  function sma(values, length){
-    if (values.length < length) return NaN;
-    const slice = values.slice(-length);
-    const sum   = slice.reduce((a,b)=>a+b,0);
-    return sum / slice.length;
-  }
-
-  function ema(values, length){
-    if(values.length < length) return NaN;
-    const k = 2 / (length + 1);
-    let emaPrev = values.slice(0, length).reduce((a,b)=>a+b,0) / length;
-    for(let i = length; i < values.length; i++){
-      emaPrev = values[i]*k + emaPrev*(1-k);
-    }
-    return emaPrev;
-  }
-
-  // EMA series (untuk cek 3 candle terakhir vs EMA50)
-  function emaSeries(values, length){
-    if(values.length < length) return [];
-    const k = 2/(length+1);
-    let emaPrev = values.slice(0,length).reduce((a,b)=>a+b,0)/length;
-    const series = [];
-    series.push(emaPrev); // ini untuk index (length-1)
-    for(let i=length;i<values.length;i++){
-      emaPrev = values[i]*k + emaPrev*(1-k);
-      series.push(emaPrev);
-    }
-    return series;
-  }
-
-  function calcRSI(closes, length=14){
-    if(closes.length <= length) return NaN;
-    let gains = 0, losses = 0;
-    for(let i=1; i<=length; i++){
-      const diff = closes[i] - closes[i-1];
-      if(diff >= 0) gains += diff;
-      else losses -= diff;
-    }
-    gains /= length;
-    losses /= length;
-    if(losses === 0) return 100;
-
-    let rs = gains / losses;
-    let rsi = 100 - (100 / (1+rs));
-
-    for(let i=length+1; i<closes.length; i++){
-      const diff = closes[i] - closes[i-1];
-      let gain = diff > 0 ? diff : 0;
-      let loss = diff < 0 ? -diff : 0;
-      gains = (gains*(length-1) + gain) / length;
-      losses = (losses*(length-1) + loss) / length;
-      if(losses === 0){
-        rs = Infinity;
-        rsi = 100;
-      } else {
-        rs = gains / losses;
-        rsi = 100 - (100 / (1+rs));
-      }
-    }
-    return rsi;
-  }
-
-  function calcStochastic(highs, lows, closes, period=14, smoothD=3){
-    if(highs.length < period || lows.length < period || closes.length < period) {
-      return {k:NaN, d:NaN};
-    }
-    const hh = Math.max.apply(null, highs.slice(-period));
-    const ll = Math.min.apply(null, lows.slice(-period));
-    const lastClose = closes[closes.length-1];
-    const k = (hh === ll) ? 50 : ((lastClose - ll)/(hh - ll))*100;
-
-    const kSeries = [];
-    for(let i=closes.length - period - (smoothD-1); i<closes.length - (period-1); i++){
-      if(i < period) continue;
-      const hh2 = Math.max.apply(null, highs.slice(i-period+1, i+1));
-      const ll2 = Math.min.apply(null, lows.slice(i-period+1, i+1));
-      const c2  = closes[i];
-      const k2 = (hh2 === ll2) ? 50 : ((c2 - ll2)/(hh2 - ll2))*100;
-      kSeries.push(k2);
-    }
-    let d;
-    if(kSeries.length === 0) d = k;
-    else d = kSeries.reduce((a,b)=>a+b,0) / kSeries.length;
-
-    return {k, d};
-  }
-
-  // === NEW: Fetch sekali untuk semua saham ===
-  async function fetchAllOHLC(barsCount, interval){
-    const useInterval = interval || INTERVAL;
-    const symbolsParam = encodeURIComponent(UNIVERSE.join(","));
-    const url = BASE_URL +
-      "?symbols=" + symbolsParam +
-      "&interval=" + useInterval +
-      "&bars_count=" + barsCount;
-
-    const res = await fetch(url);
-    if(!res.ok) throw new Error("HTTP " + res.status);
-    const data = await res.json();
-    if(!data.ok || !data.results || !data.results.length) return {};
-
-    const map = {};
-    data.results.forEach(item => {
-      const sym = item.symbol || item.ticker || item.code;
-      const barsRaw = item.bars || [];
-      if(!sym || !barsRaw.length) return;
-      map[sym] = barsRaw.map(b => ({
-        time:   b.timestamp,
-        open:   b.open,
-        high:   b.high,
-        low:    b.low,
-        close:  b.close,
-        volume: b.volume ?? 0
-      }));
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(targetId).classList.add('active');
+      });
     });
-    return map;
-  }
-
-  function formatNumber(n,digits){
-    digits = digits ?? 2;
-    if(n===null || n===undefined || isNaN(n)) return "-";
-    if(Math.abs(n) >= 1_000_000_000) return (n/1_000_000_000).toFixed(digits)+"B";
-    if(Math.abs(n) >= 1_000_000)     return (n/1_000_000).toFixed(digits)+"M";
-    if(Math.abs(n) >= 1_000)         return (n/1_000).toFixed(digits)+"K";
-    return n.toFixed(digits);
-  }
-
-  // ===== BANDAR ACTIVITY (BSJP Style) =====
-  function applyBigPlayerEntry(bars){
-    if(!bars || bars.length < 30) return null;
-
-    const closes  = bars.map(b=>b.close);
-    const highs   = bars.map(b=>b.high);
-    const volumes = bars.map(b=>b.volume);
-
-    const last = bars[bars.length-1];
-    const prev = bars[bars.length-2];
-
-    const value        = last.close * last.volume; // Value > 100M
-    const roc1         = prev.close !== 0 ? (last.close - prev.close)/prev.close : 0;
-    const ma5          = sma(closes,5);
-    const ma10         = sma(closes,10);
-
-    const lookback     = Math.min(260, bars.length);
-    const high52       = Math.max.apply(null, highs.slice(-lookback));
-    const ratio52      = high52 > 0 ? last.close / high52 : 0;
-
-    const condValue        = value > 100_000_000;
-    const condPriceVsPrev  = last.close >= prev.close;
-    const condReturn1D     = roc1 > 0.03;
-    const condPriceAboveM5 = last.close > ma5;
-    const condVol2xPrev    = last.volume >= 2 * Math.max(prev.volume,1);
-    const condPrevVsMA10   = prev.close <= 2 * ma10;
-    const condPriceMin     = last.close > 50;
-    const condNear52W      = last.close >= 0.95 * high52;
-
-    const passed =
-      condValue &&
-      condPriceVsPrev &&
-      condReturn1D &&
-      condPriceAboveM5 &&
-      condVol2xPrev &&
-      condPrevVsMA10 &&
-      condPriceMin &&
-      condNear52W;
-
-    if(!passed) return null;
-
-    return {
-      last,
-      value,
-      roc1,
-      volRatio: last.volume / Math.max(prev.volume,1),
-      ratio52,
-      ma5
-    };
-  }
-
-  function renderResultsBigPlayer(rows){
-    const tbody = document.getElementById("results-body-bpjp");
-    tbody.innerHTML = "";
-    if(!rows.length){
-      tbody.innerHTML =
-        '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Tidak ada saham yang lolos BANDAR ACTIVITY.</td></tr>';
-      return;
-    }
-
-    rows.sort((a,b)=>b.value-a.value);
-
-    rows.forEach(row=>{
-      const tr = document.createElement("tr");
-      const priceAboveMa5 = row.price > row.ma5 ? "Ya" : "Tidak";
-      tr.innerHTML =
-        '<td>'+row.symbol+'</td>'+
-        '<td>'+row.price.toFixed(2)+'</td>'+
-        '<td>'+formatNumber(row.value,0)+'</td>'+
-        '<td>'+ (row.roc1*100).toFixed(2)+'%</td>'+
-        '<td>'+row.volRatio.toFixed(2)+'x</td>'+
-        '<td>'+priceAboveMa5+'</td>'+
-        '<td>'+ (row.ratio52*100).toFixed(1)+'%</td>';
-      tbody.appendChild(tr);
-    });
-  }
-
-  // ===== VOLUME BREAKOUT (KUANTARA 01) =====
-  const VALUE_PREV_MIN_K01   = 1_000_000_000;  // prev value > 1B
-  const VALUE_TODAY_MIN_K01  = 2_000_000_000;  // value hari ini > 2B
-  const VOLUME_MIN_K01       = 1_500_000;      // prev volume > 1.5M
-  const PRICE_MIN_K01        = 100;            // price > 100
-  const SMA_LEN_K01          = 20;
-  const HHV_LEN_K01          = 20;
-
-  function applyKuantara01(bars){
-    if(!bars || bars.length < Math.max(SMA_LEN_K01,HHV_LEN_K01)+2) return null;
-
-    const closes  = bars.map(b=>b.close);
-    const volumes = bars.map(b=>b.volume);
-
-    const last = bars[bars.length-1];
-    const prev = bars[bars.length-2];
-
-    const volSma20  = sma(volumes.slice(0,-1),SMA_LEN_K01);
-    const condVol   = last.volume > volSma20 * 8;  // volume spike 8x
-
-    const roc1      = prev.close !== 0 ? (last.close - prev.close) / prev.close : 0;
-    const condRocUp = roc1 > 0.01;                 // > 1%
-
-    const prevRange = closes.slice(-HHV_LEN_K01-1,-1);
-    const prevHHV20 = Math.max.apply(null,prevRange);
-    const condBreak = last.close > prevHHV20;
-
-    const prevValue  = prev.close * prev.volume;
-    const todayValue = last.close * last.volume;
-
-    const condPrevValue  = prevValue > VALUE_PREV_MIN_K01;
-    const condPrevVol    = prev.volume > VOLUME_MIN_K01;
-    const condTodayValue = todayValue > VALUE_TODAY_MIN_K01;
-    const condPrice      = last.close > PRICE_MIN_K01;
-
-    const passed =
-      condVol &&
-      condRocUp &&
-      condBreak &&
-      condPrevValue &&
-      condPrevVol &&
-      condTodayValue &&
-      condPrice;
-
-    if(!passed) return null;
-
-    const volSpikeX = volSma20 > 0 ? last.volume / volSma20 : 0;
-
-    return {
-      last,
-      prev,
-      roc1,
-      volSpikeX,
-      prevValue,
-      breakoutAbove: prevHHV20
-    };
-  }
-
-  function renderResultsK01(rows){
-    const tbody = document.getElementById("results-body-k01");
-    tbody.innerHTML = "";
-    if(!rows.length){
-      tbody.innerHTML =
-        '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Tidak ada saham yang lolos VOLUME BREAKOUT.</td></tr>';
-      return;
-    }
-    rows.forEach(row=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML =
-        '<td>'+row.symbol+'</td>'+
-        '<td>'+row.lastPrice.toFixed(2)+'</td>'+
-        '<td>'+formatNumber(row.lastVolume,0)+'</td>'+
-        '<td>'+formatNumber(row.prevValue,0)+'</td>'+
-        '<td>'+ (row.roc1*100).toFixed(2)+'%</td>'+
-        '<td>'+row.volSpikeX.toFixed(1)+'x</td>'+
-        '<td>'+row.breakoutAbove.toFixed(2)+'</td>';
-      tbody.appendChild(tr);
-    });
-  }
-
-  // ===== VOLUME & TREND (MA Rules) =====
-  function applyMaTrend(bars){
-    if(!bars || bars.length < 102) return null;
-
-    const closes  = bars.map(b=>b.close);
-    const volumes = bars.map(b=>b.volume);
-
-    const last = bars[bars.length-1];
-    const prev = bars[bars.length-2];
-
-    const ma5   = sma(closes,5);
-    const ma20  = sma(closes,20);
-    const ma50  = sma(closes,50);
-    const ma100 = sma(closes,100);
-    const vma20 = sma(volumes,20);
-
-    const value = last.close * last.volume;
-
-    const condValue       = value > 5_000_000_000;
-    const condPrevPrice   = prev.close > 50;
-    const condVol2x       = last.volume >= 2 * vma20;
-    const condMa5GeMa20   = ma5 >= ma20;
-    const condPriceGeOpen = last.close >= last.open;
-    const condPriceGeMa5  = last.close >= ma5;
-    const condPriceGe105Prev = last.close >= 1.05 * prev.close;
-    const condMa20GeMa50  = ma20 >= ma50;
-    const condPriceGe11Ma100 = last.close >= 1.1 * ma100;
-
-    const passed =
-      condValue &&
-      condPrevPrice &&
-      condVol2x &&
-      condMa5GeMa20 &&
-      condPriceGeOpen &&
-      condPriceGeMa5 &&
-      condPriceGe105Prev &&
-      condMa20GeMa50 &&
-      condPriceGe11Ma100;
-
-    if(!passed) return null;
-
-    const roc1 = prev.close !== 0 ? (last.close - prev.close)/prev.close : 0;
-    const volSpike = vma20 > 0 ? last.volume / vma20 : 0;
-    const priceMa100Ratio = ma100 > 0 ? last.close / ma100 : 0;
-
-    return {
-      last,
-      prev,
-      value,
-      roc1,
-      volSpike,
-      priceMa100Ratio
-    };
-  }
-
-  function renderResultsMa(rows){
-    const tbody = document.getElementById("results-body-ma");
-    tbody.innerHTML = "";
-    if(!rows.length){
-      tbody.innerHTML =
-        '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Tidak ada saham yang lolos VOLUME &amp; TREND.</td></tr>';
-      return;
-    }
-    rows.forEach(row=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML =
-        '<td>'+row.symbol+'</td>'+
-        '<td>'+row.lastPrice.toFixed(2)+'</td>'+
-        '<td>'+formatNumber(row.lastVolume,0)+'</td>'+
-        '<td>'+formatNumber(row.value,0)+'</td>'+
-        '<td>'+ (row.roc1*100).toFixed(2)+'%</td>'+
-        '<td>'+row.volSpike.toFixed(1)+'x</td>'+
-        '<td>'+ (row.priceMa100Ratio*100).toFixed(1)+'%</td>';
-      tbody.appendChild(tr);
-    });
-  }
-
-  // ===== TREND FOLLOWING – Strong Uptrend =====
-  function applyTrendFollowing(bars){
-    if(!bars || bars.length < 110) return null;
-
-    const closes = bars.map(b=>b.close);
-    const last   = bars[bars.length-1];
-    const price  = last.close;
-
-    const ma20  = sma(closes,20);
-    const ma50  = sma(closes,50);
-    const ma100 = sma(closes,100);
-
-    if(!isFinite(ma20) || !isFinite(ma50) || !isFinite(ma100)) return null;
-
-    const c20back = closes[closes.length-21];
-    const c50back = closes[closes.length-51];
-
-    const roc20 = c20back ? (price - c20back)/c20back : 0;
-    const roc50 = c50back ? (price - c50back)/c50back : 0;
-
-    const distMa100 = ma100 > 0 ? (price - ma100)/ma100 : 0;
-
-    const last20 = closes.slice(-20);
-    const above20Count = last20.filter(c => c > ma20).length;
-
-    const alignUp      = ma20 > ma50 && ma50 > ma100;
-    const strongMom    = roc20 > 0.05 && roc50 > 0.10;
-    const priceAboveMA = price > ma20*1.02 && price > ma50*1.04 && price > ma100*1.10;
-    const persistence  = above20Count >= 14;
-
-    const passed = alignUp && strongMom && priceAboveMA && persistence;
-    if(!passed) return null;
-
-    const trendScore = (roc20*100)*0.6 + (roc50*100)*0.3 + (distMa100*100)*0.1;
-
-    return {
-      last,
-      price,
-      roc20,
-      roc50,
-      distMa100,
-      above20Count,
-      trendScore
-    };
-  }
-
-  function renderResultsTrend(rows){
-    const tbody = document.getElementById("results-body-trend");
-    tbody.innerHTML = "";
-    if(!rows.length){
-      tbody.innerHTML =
-        '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Belum ada saham yang memenuhi kriteria TREND FOLLOWING.</td></tr>';
-      return;
-    }
-    rows.forEach(row=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML =
-        '<td>'+row.symbol+'</td>'+
-        '<td>'+row.price.toFixed(2)+'</td>'+
-        '<td>'+row.trendScore.toFixed(1)+'</td>'+
-        '<td>'+ (row.roc20*100).toFixed(2)+'%</td>'+
-        '<td>'+ (row.roc50*100).toFixed(2)+'%</td>'+
-        '<td>'+ (row.distMa100*100).toFixed(1)+'%</td>'+
-        '<td>'+row.above20Count+'/20</td>';
-      tbody.appendChild(tr);
-    });
-  }
-
-  // ===== MOMENTUM – MACD Golden Cross + EMA50 (H4) =====
-  function applyMomentum(bars){
-    if(!bars || bars.length < 60) return null;
-
-    const closes = bars.map(b=>b.close);
-    const last   = bars[bars.length-1];
-
-    // EMA50 series untuk cek 3 candle terakhir
-    const ema50Series = emaSeries(closes,50);
-    if(!ema50Series.length) return null;
-
-    const n = closes.length;
-    const ema50Last = ema50Series[ema50Series.length-1];
-
-    // 3 candle terakhir close di atas EMA50 (berdasarkan masing-masing EMA50 point)
-    let last3Above = true;
-    for(let i = n-3; i < n; i++){
-      const emaIdx = i - (50 - 1); // mapping index close ke index ema50Series
-      const emaVal = ema50Series[emaIdx];
-      if(emaVal === undefined || closes[i] <= emaVal){
-        last3Above = false;
-        break;
-      }
-    }
-
-    const priceAboveEma50 = last.close > ema50Last;
-
-    // MACD 12-26-9 untuk Golden Cross
-    if(closes.length < 26 + 9) return null;
-
-    let e12 = closes.slice(0,12).reduce((a,b)=>a+b,0)/12;
-    let e26 = closes.slice(0,26).reduce((a,b)=>a+b,0)/26;
-    const k12 = 2/(12+1);
-    const k26 = 2/(26+1);
-    const macdSeries = [];
-    for(let i=26;i<closes.length;i++){
-      e12 = closes[i]*k12 + e12*(1-k12);
-      e26 = closes[i]*k26 + e26*(1-k26);
-      macdSeries.push(e12 - e26);
-    }
-    if(macdSeries.length < 10) return null;
-
-    const macdLine   = macdSeries[macdSeries.length-1];
-    const macdPrev   = macdSeries[macdSeries.length-2];
-    const signal     = ema(macdSeries,9);
-    const signalPrev = ema(macdSeries.slice(0,-1),9);
-    const hist       = macdLine - signal;
-    const histPrev   = macdPrev - signalPrev;
-
-    // Golden Cross: MACD line cross up signal (hist dari <=0 ke >0)
-    const goldenCross = (macdLine > signal) && (hist > 0) && (histPrev <= 0);
-
-    const passed = goldenCross && priceAboveEma50 && last3Above;
-    if(!passed) return null;
-
-    // Momentum score simpel: kombinasi hist & distance ke EMA50
-    const distEma50 = (last.close - ema50Last) / ema50Last;
-    const momentumScore = (hist * 100) + (distEma50 * 100);
-
-    return {
-      last,
-      macdHist: hist,
-      ema50: ema50Last,
-      above3: last3Above,
-      goldenCross,
-      momentumScore
-    };
-  }
-
-  function renderResultsMomentum(rows){
-    const tbody = document.getElementById("results-body-mom");
-    tbody.innerHTML = "";
-    if(!rows.length){
-      tbody.innerHTML =
-        '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Tidak ada saham yang lolos MOMENTUM.</td></tr>';
-      return;
-    }
-    rows.forEach(row=>{
-      const tr = document.createElement("tr");
-      const aboveLabel  = row.above3 ? "3/3" : "Tidak";
-      const signalLabel = row.goldenCross ? "Golden Cross" : "-";
-      tr.innerHTML =
-        '<td>'+row.symbol+'</td>'+
-        '<td>'+row.price.toFixed(2)+'</td>'+
-        '<td>'+row.macdHist.toFixed(4)+'</td>'+
-        '<td>'+row.ema50.toFixed(2)+'</td>'+
-        '<td>'+aboveLabel+'</td>'+
-        '<td>'+signalLabel+'</td>'+
-        '<td>'+row.momentumScore.toFixed(1)+'</td>';
-      tbody.appendChild(tr);
-    });
-  }
-
-  // ===== Handlers – Single API Call per Screen =====
-  async function runScreen(name, barsCount, applyFn, renderFn, statusId, interval){
-    const statusEl = document.getElementById(statusId);
-    const btnMap = {
-      "status-bpjp":"run-btn-bpjp",
-      "status-k01":"run-btn-k01",
-      "status-ma":"run-btn-ma",
-      "status-trend":"run-btn-trend",
-      "status-mom":"run-btn-mom"
-    };
-    const btn = document.getElementById(btnMap[statusId]);
-
-    if(!UNIVERSE.length){
-      statusEl.textContent = "UNIVERSE kosong – isi dulu daftar saham.";
-      statusEl.className   = "status err";
-      return;
-    }
-
-    btn.disabled         = true;
-    statusEl.textContent = `${name}: fetch data untuk ${UNIVERSE.length} saham...`;
-    statusEl.className   = "status";
-
-    try {
-      // 1x call API untuk semua saham
-      const allBarsMap = await fetchAllOHLC(barsCount, interval);
-      const symbols = Object.keys(allBarsMap);
-      const total   = symbols.length;
-
-      if(!total){
-        statusEl.textContent = `${name} gagal – tidak ada data diterima dari API.`;
-        statusEl.className   = "status err";
-        btn.disabled         = false;
-        return;
-      }
-
-      const results = [];
-
-      for(let i = 0; i < total; i++){
-        const sym   = symbols[i];
-        const bars  = allBarsMap[sym];
-        const progress = Math.round(((i+1)/total)*100);
-
-        statusEl.textContent =
-          `${name} – proses ${i+1}/${total} saham (${progress}%)`;
-
-        if(!bars || !bars.length) continue;
-
-        const hit = applyFn(bars, sym);
-        if(hit){
-          results.push({symbol:sym, ...hit});
-        }
-      }
-
-      renderFn(results);
-
-      const hitPercent = Math.round((results.length / total) * 100);
-      statusEl.textContent = `${name} selesai. ${results.length} saham lolos dari ${total} (${hitPercent}%).`;
-      statusEl.className   = "status ok";
-      btn.disabled         = false;
-    } catch(e){
-      console.error(name, e);
-      statusEl.textContent = `${name} gagal: ${e.message}`;
-      statusEl.className   = "status err";
-      btn.disabled         = false;
-    }
-  }
-
-  // BANDAR ACTIVITY – daily timeframe
-  document.getElementById("run-btn-bpjp").addEventListener("click", ()=>{
-    runScreen(
-      "BANDAR ACTIVITY",
-      BARS_BSJP,
-      applyBigPlayerEntry,
-      (rows)=>{
-        const mapped = rows.map(r => ({
-          symbol:r.symbol,
-          price:r.last.close,
-          value:r.value,
-          roc1:r.roc1,
-          volRatio:r.volRatio,
-          ma5:r.ma5,
-          ratio52:r.ratio52
-        }));
-        renderResultsBigPlayer(mapped);
-      },
-      "status-bpjp",
-      INTERVAL_D
-    );
-  });
-
-  document.getElementById("run-btn-k01").addEventListener("click", ()=>{
-    runScreen(
-      "VOLUME BREAKOUT",
-      BARS_K01,
-      applyKuantara01,
-      (rows)=>{
-        const mapped = rows.map(r => ({
-          symbol:r.symbol,
-          lastPrice:r.last.close,
-          lastVolume:r.last.volume,
-          prevValue:r.prevValue,
-          roc1:r.roc1,
-          volSpikeX:r.volSpikeX,
-          breakoutAbove:r.breakoutAbove
-        }));
-        renderResultsK01(mapped);
-      },
-      "status-k01"
-    );
-  });
-
-  document.getElementById("run-btn-ma").addEventListener("click", ()=>{
-    runScreen(
-      "VOLUME & TREND",
-      BARS_MA,
-      applyMaTrend,
-      (rows)=>{
-        const mapped = rows.map(r => ({
-          symbol:r.symbol,
-          lastPrice:r.last.close,
-          lastVolume:r.last.volume,
-          value:r.value,
-          roc1:r.roc1,
-          volSpike:r.volSpike,
-          priceMa100Ratio:r.priceMa100Ratio
-        }));
-        renderResultsMa(mapped);
-      },
-      "status-ma"
-    );
-  });
-
-  document.getElementById("run-btn-trend").addEventListener("click", ()=>{
-    runScreen(
-      "TREND FOLLOWING",
-      BARS_MA,
-      applyTrendFollowing,
-      (rows)=>{
-        const mapped = rows.map(r => ({
-          symbol:r.symbol,
-          price:r.price,
-          trendScore:r.trendScore,
-          roc20:r.roc20,
-          roc50:r.roc50,
-          distMa100:r.distMa100,
-          above20Count:r.above20Count
-        }));
-        renderResultsTrend(mapped);
-      },
-      "status-trend"
-    );
-  });
-
-  document.getElementById("run-btn-mom").addEventListener("click", ()=>{
-    runScreen(
-      "MOMENTUM",
-      BARS_MOM,
-      applyMomentum,
-      (rows)=>{
-        const mapped = rows.map(r => ({
-          symbol:r.symbol,
-          price:r.last.close,
-          macdHist:r.macdHist,
-          ema50:r.ema50,
-          above3:r.above3,
-          goldenCross:r.goldenCross,
-          momentumScore:r.momentumScore
-        }));
-        renderResultsMomentum(mapped);
-      },
-      "status-mom",
-      INTERVAL_H4   // H4 timeframe
-    );
-  });
-</script>
+  </script>
 </body>
 </html>
