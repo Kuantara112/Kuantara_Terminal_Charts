@@ -73,7 +73,7 @@
   
     /* ===== IFRAME LAYER ===== */  
     .kt-iframe-layer{  
-      position: fixed; left: 0; right: 0; top: 38px; bottom: 46px;  
+      position: fixed; left: 0; right: 0; top: 34px; bottom: 46px;  
       z-index: 1;  
       background: #050505;  
       transition: top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), bottom 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);  
@@ -111,7 +111,7 @@
     body.kt-pinned .kt-submenu-strip {  
       transform: translateY(0) !important; opacity: 1 !important; pointer-events: auto !important;  
     }  
-    body.kt-pinned .kt-iframe-layer { top: 108px; bottom: 112px; }  
+    body.kt-pinned .kt-iframe-layer { top: 104px; bottom: 112px; }  
     body.kt-pinned .kt-submenu-strip { bottom: 46px !important; }  
     body.kt-pinned .kt-statusbar { bottom: 80px !important; border-top: 1px solid var(--border-soft); background: #050505; }  
   
@@ -121,7 +121,8 @@
       background: rgba(5, 5, 5, 0.9);  
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border-soft);  
-      padding: 8px 12px; font-size: 10px; z-index: 3000; user-select: none;  
+      padding: 5px 12px; /* lebih tipis, teks & chips tetap */  
+      font-size: 10px; z-index: 3000; user-select: none;  
     }  
     .kt-topbar-left{ display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; flex-wrap: wrap; }  
       
@@ -159,7 +160,7 @@
   
     /* MAIN MENU (TOP) */  
     .kt-mainmenu-strip{  
-      top: 38px; left: 0; right: 0; display: flex; gap: 4px; padding: 6px 8px;  
+      top: 34px; left: 0; right: 0; display: flex; gap: 4px; padding: 6px 8px;  
       background: var(--bg-glass);  
       border-bottom: 1px solid var(--border-soft);  
       overflow-x: auto; scrollbar-width: thin;  
@@ -200,7 +201,7 @@
   
     /* CONTENT HEADER */  
     .kt-content-header{  
-      top: 78px; left: 0; right: 0;  
+      top: 74px; left: 0; right: 0;  
       border-bottom: 1px solid var(--border-soft); padding: 6px 10px; display: flex;  
       justify-content: space-between; align-items: center; font-size: 11px; gap: 8px; flex-wrap: wrap;  
       background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -282,7 +283,6 @@
     .kt-bottom-item.active::before { opacity: 1; }
 
     /* ICONS FOR BOTTOM NAV */
-    /* Pakai warna asli dari SVG (amber), tanpa diutak-atik filter */
     .kt-bottom-icon{
       width: 22px;
       height: 22px;
@@ -297,60 +297,15 @@
       opacity: 1;
     }
 
-    /* State active: cukup mainkan sedikit posisi/scale, warna tetap dari SVG */
     .kt-bottom-item.active .kt-bottom-icon{
       filter: none;
       opacity: 1;
       transform: translateY(-1px);
     }
   
-    /* PROFILE PAGE (MINIMAL) */  
-    .kt-profile-page{  
-      position: fixed; left: 0; right: 0; top: 38px; bottom: 46px; padding: 0; z-index: 2; display: none;  
-      overflow: auto; background: #050505; box-sizing: border-box;  
-    }  
-    .kt-profile-inner{  
-      width: 100%; height: 100%; max-width: none; margin: 0;  
-      background: #0e0e0e; border-top: 1px solid var(--border-soft);  
-      padding: 16px 18px; box-shadow: none; font-size: 11px; color: var(--text-muted); box-sizing: border-box;  
-    }  
-    .kt-profile-header{ display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }  
-    .kt-profile-title{ font-size: 12px; color: var(--amber); font-weight: 600; text-shadow: 0 0 5px var(--amber-glow); }  
-    .kt-profile-name{ font-size: 13px; color: var(--text-main); font-weight: 600; margin-top: 4px; }  
-    .kt-profile-meta{ font-size: 10px; color: var(--text-muted); margin-top: 4px; }  
-        
-    .kt-badge{  
-      display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 999px;  
-      border: 1px solid var(--amber); background: rgba(255,191,0,0.1);  
-      font-size: 10px; color: var(--amber); gap: 4px; box-shadow: 0 0 5px var(--amber-glow);
-    }  
-    .kt-profile-grid{ display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 10px; margin-top: 8px; }  
-        
-    .kt-profile-card{  
-      border-radius: 8px; border: 1px solid var(--border-soft);  
-      background: linear-gradient(145deg, rgba(20,20,20,1), rgba(10,10,10,1));
-      padding: 8px 10px;  
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 2px 5px rgba(0,0,0,0.3);
-    }  
-    .kt-profile-card-title{ font-size: 10px; color: var(--amber); margin-bottom: 4px; opacity: 0.9; }  
-    .kt-profile-card-body{ font-size: 10px; line-height: 1.5; color: #ccc; }  
-  
-    .kt-profile-menu{ margin-top: 14px; display: none; }  
-    .kt-profile-menu-btn{  
-      padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border-soft);  
-      background: linear-gradient(180deg, rgba(30,30,30,0.5), rgba(15,15,15,0.8));
-      color: var(--text-main); font-size: 10px; cursor: pointer;  
-      box-shadow: var(--shadow-tactile);
-      transition: all 0.15s ease;  
-    }  
-    .kt-profile-menu-btn:hover{ background: rgba(50,50,50,0.5); border-color: var(--border-highlight); }  
-    .kt-profile-menu-btn:active{ transform: translateY(1px); box-shadow: var(--shadow-active); border-color: transparent;}  
-        
-    .kt-profile-footer{ margin-top: 14px; padding-top: 8px; border-top: 1px solid var(--border-soft); font-size: 9px; color: var(--text-muted); line-height: 1.4; opacity: 0.7; }  
-  
     /* WORKSPACE */  
     .kt-workspace-page{  
-      position: fixed; left: 0; right: 0; top: 38px; bottom: 46px; z-index: 2;  
+      position: fixed; left: 0; right: 0; top: 34px; bottom: 46px; z-index: 2;  
       display: none; background: #050505; overflow: hidden; box-sizing: border-box;  
     }  
     .kt-workspace-toolbar{ position: absolute; top: 10px; left: 10px; display: flex; flex-wrap: wrap; gap: 6px; z-index: 3; }  
@@ -562,8 +517,7 @@
       .kt-session-clock{ gap: 2px; font-size: 8px; }  
       .kt-session-item{ padding: 0 3px; }  
       .kt-session-label, .kt-session-time{ font-size: 8px; }  
-      .kt-mainmenu-strip{ justify-content: flex-start; top: 32px; }  
-      .kt-profile-inner{ padding: 12px 12px; }  
+      .kt-mainmenu-strip{ justify-content: flex-start; top: 30px; }  
       .kt-workspace-window{ width: 88vw; height: 45vh; }  
       .kt-bottom-icon{ width: 18px; height: 18px; }
     }  
@@ -644,7 +598,7 @@
       <button class="kt-submenu-btn" data-menu="0" data-sub-index="3">Fixed</button>  
       <button class="kt-submenu-btn" data-menu="0" data-sub-index="4">Commodities</button>  
       <button class="kt-submenu-btn" data-menu="0" data-sub-index="5">Equities</button>  
-      <button class="kt-submenu-btn" data-menu="0" data-sub-index="6">Crypto</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="6">Cryptocurrency</button>  
     </div>  
 
     <div class="kt-submenu-group" data-menu-sub="1">  
@@ -656,7 +610,7 @@
       <button class="kt-submenu-btn" data-menu="1" data-sub-index="5">Indonesia</button>  
     </div>  
 
-    <!-- Macroeconomic: US Macro removed, order: Central Bank - Major - All Countries -->
+    <!-- Macroeconomic -->
     <div class="kt-submenu-group" data-menu-sub="2">  
       <button class="kt-submenu-btn" data-menu="2" data-sub-index="0">Central Bank</button>  
       <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">Major</button>  
@@ -676,7 +630,7 @@
       <button class="kt-submenu-btn" data-menu="4" data-sub-index="2">Sentiment Lab</button>  
     </div>  
 
-    <!-- Companies menu updated: NASDAQ100, DJI30, JKSE, FOREIGN -->
+    <!-- Companies menu updated -->
     <div class="kt-submenu-group" data-menu-sub="5">  
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="0">S&amp;P500</button>  
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="1">NASDAQ100</button>  
@@ -686,27 +640,28 @@
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="5">Blockchain Projects</button>  
     </div>  
 
-    <!-- Charts: Fundamental removed, indexes realigned -->
+    <!-- Charts -->
     <div class="kt-submenu-group" data-menu-sub="6">  
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="0">Technical</button>  
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="1">Economy</button>  
       <button class="kt-submenu-btn" data-menu="6" data-sub-index="2">Real-Time</button>  
     </div>  
 
-    <!-- Screener: Stocks -> IDX Stocks, Custom -> (Cap Flow moved to Markets) -->
+    <!-- Screener: baru Stocks / FX / Crypto -->
     <div class="kt-submenu-group" data-menu-sub="7">  
-      <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">IDX Stocks</button>  
-      <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">Crypto</button>  
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">Stocks</button>  
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">FX</button>  
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="2">Crypto</button>  
     </div>  
 
-    <!-- Research: swap Reports & Quantitative -->
+    <!-- Research -->
     <div class="kt-submenu-group" data-menu-sub="8">  
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Institutions</button>  
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Quantitative</button>  
       <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Reports</button>  
     </div>  
 
-    <!-- Tools: swap Education & Calculator -->
+    <!-- Tools -->
     <div class="kt-submenu-group" data-menu-sub="9">  
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Trading Journal</button>  
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Calculator</button>  
@@ -714,36 +669,6 @@
       <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Others</button>  
     </div>  
   </nav>  
-
-  <div class="kt-profile-page" id="kt-profile-page">  
-    <div class="kt-profile-inner">  
-      <div class="kt-profile-header">  
-        <div>  
-          <div class="kt-profile-title">Profile</div>  
-          <div class="kt-profile-name">Guest User</div>  
-          <div class="kt-profile-meta">  
-            Kuantara Terminal · Standard Plan<br/>  
-            Single-seat license  
-          </div>  
-        </div>  
-      </div>  
-
-      <div class="kt-profile-grid">  
-        <div class="kt-profile-card">  
-          <div class="kt-profile-card-title">Account</div>  
-          <div class="kt-profile-card-body">  
-            Name  : Guest User<br/>  
-            Role  : Trader / Analyst<br/>  
-            Status: Trial  
-          </div>  
-        </div>  
-      </div>  
-
-      <div class="kt-profile-footer">  
-        Developed by Kuantara Analytics · Informasi di dalam terminal ini bersifat edukatif dan bukan merupakan saran investasi atau ajakan untuk melakukan transaksi finansial.  
-      </div>  
-    </div>  
-  </div>  
 
   <div class="kt-workspace-page" id="kt-workspace-page">  
     <div class="kt-workspace-toolbar">  
@@ -779,7 +704,7 @@
     <button class="kt-ai-menu-btn" data-pane="mini"><span>MC</span><span>Mini Chart</span></button>  
     <button class="kt-ai-menu-btn" data-pane="notes"><span>NT</span><span>Notes</span></button>  
     <button class="kt-ai-menu-btn" data-pane="signals"><span>AL</span><span>Alerts</span></button>  
-    <button class="kt-ai-menu-btn" data-pane="profile"><span>PR</span><span>Profile</span></button>  
+    <button class="kt-ai-menu-btn" data-pane="settings"><span>ST</span><span>Settings</span></button>  
   </div>  
 
   <div class="kt-ai-panel" id="kt-ai-panel">  
@@ -805,7 +730,7 @@
   </div>  
 
   <div class="kt-cheatsheet" id="kt-cheatsheet">  
-    <div><b>Alt+0–9</b> Menu · <b>Ctrl+1–9</b> Sub · <b>Esc</b>=Alt+0 · <b>Ctrl+F</b> Search · <b>Tab</b> Profile</div>  
+    <div><b>Alt+0–9</b> Menu · <b>Ctrl+1–9</b> Sub · <b>Esc</b>=Alt+0 · <b>Ctrl+F</b> Search</div>  
   </div>  
 
   <script>  
@@ -843,7 +768,6 @@
       const statusbar     = document.getElementById("kt-statusbar");  
       const submenuStrip  = document.getElementById("kt-submenu-strip");  
       const bottomNav     = document.getElementById("kt-bottom-nav");  
-      const profilePage   = document.getElementById("kt-profile-page");  
       const workspacePage = document.getElementById("kt-workspace-page");  
       const workspaceBoard = document.getElementById("kt-workspace-board");  
       const workspaceAddBtn = document.getElementById("kt-workspace-add-current");  
@@ -871,6 +795,7 @@
       const FEED_247_URL    = "https://kuantara112.github.io/Kuantara_Terminal_Charts/news_feeds_247.html";  
       const MINI_CHART_URL  = "https://kuantara112.github.io/Kuantara_Terminal_Charts/xauusd_tradingview.html";  
       const KUANTARA_AI_URL = "https://kuantara112.github.io/Kuantara_Terminal_Charts/kuantara_ai.html";  
+      const SETTINGS_URL    = "https://kuantara112.github.io/Kuantara_Terminal_Charts/settings.html";  
   
       const IFRAME_MAP = {  
         // Markets  
@@ -890,7 +815,7 @@
         "1:4":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_channel.html",  
         "1:5":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_indonesia.html",  
   
-        // Macroeconomic (US Macro removed, indices realigned)
+        // Macroeconomic
         "2:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_centralbank.html",  
         "2:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_majorcountry.html",  
         "2:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_countries.html",  
@@ -900,34 +825,35 @@
         "3:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_tradeshipping.html",  
         "3:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_resources.html",  
   
-        // Metrics Labs (updated URLs)
+        // Metrics Labs
         "4:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macrolab.html",  
         "4:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_marketlab.html",  
         "4:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentimentlab.html",  
   
-        // Companies (updated)
+        // Companies
         "5:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us.html",  
-        "5:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us2.html",   // NASDAQ100
-        "5:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us3.html",   // DJI30
-        "5:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_indo.html",  // JKSE
-        "5:4":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_foreign.html", // FOREIGN
+        "5:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us2.html",  
+        "5:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us3.html",  
+        "5:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_indo.html",  
+        "5:4":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_foreign.html",  
         "5:5":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_blockchain.html",  
   
-        // Charts (Fundamental removed, realigned)
+        // Charts
         "6:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/technical_charts.html",  
         "6:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_economy.html",  
         "6:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_realtime.html",  
   
-        // Screener (IDX Stocks + Crypto)
+        // Screener (baru)
         "7:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_stocks.html",  
-        "7:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_crypto.html",  
+        "7:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_forex.html",  
+        "7:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_crypto.html",  
   
-        // Research (Reports and Quant swapped)
+        // Research
         "8:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_institutions.html",  
         "8:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_quant.html",  
         "8:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_reports.html",  
   
-        // Tools (Education and Calculator swapped)
+        // Tools
         "9:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_journal.html",  
         "9:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_calc.html",  
         "9:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_edu.html",  
@@ -1031,13 +957,6 @@
         });  
       }  
   
-      function showProfilePage(){  
-        profilePage.style.display="block";  
-      }  
-      function hideProfilePage(){  
-        profilePage.style.display="none";  
-      }  
-  
       function showWorkspacePage(){  
         workspacePage.style.display="block";  
       }  
@@ -1052,7 +971,6 @@
             e.stopPropagation();  
             if(activeBottom!=="home"){  
               setBottomActive("home");  
-              hideProfilePage();  
               hideWorkspacePage();  
             }  
             setActiveMenu(Number(btn.getAttribute("data-menu")));  
@@ -1066,7 +984,6 @@
             e.stopPropagation();  
             if(activeBottom!=="home"){  
               setBottomActive("home");  
-              hideProfilePage();  
               hideWorkspacePage();  
             }  
             const menuIndex = Number(btn.getAttribute("data-menu"));  
@@ -1084,7 +1001,6 @@
   
             if(role==="home"){  
               setBottomActive("home");  
-              hideProfilePage();  
               hideWorkspacePage();  
               setActiveMenu(0);  
               setActiveSub(0,0);  
@@ -1092,7 +1008,7 @@
             }  
             else if(role==="workspace"){  
               setBottomActive("workspace");  
-              hideProfilePage();  
+              hideWorkspacePage(); // just to reset, then show again
               hideAllBars();  
               injectIframe("");  
               showWorkspacePage();  
@@ -1101,7 +1017,6 @@
               // Search is an action button (center), tidak mengubah mode "home/workspace"
               if(activeBottom!=="home"){  
                 setBottomActive("home");  
-                hideProfilePage();  
                 hideWorkspacePage();  
                 setActiveMenu(0);  
                 setActiveSub(0,0);  
@@ -1186,7 +1101,6 @@
         if(!match) return;
         if(activeBottom!=="home"){  
           setBottomActive("home");  
-          hideProfilePage();  
           hideWorkspacePage();  
         }  
         setActiveMenu(match.menu);  
@@ -1247,10 +1161,9 @@
         clearSearchChips();
         if(!searchIndex || !searchIndex.length) return;
 
-        const candidates = searchIndex.slice(); // menu + sub
+        const candidates = searchIndex.slice();
         if(!candidates.length) return;
 
-        // shuffle sederhana
         for(let i = candidates.length - 1; i > 0; i--){
           const j = Math.floor(Math.random() * (i + 1));
           const tmp = candidates[i];
@@ -1496,14 +1409,16 @@
           aiFooter.innerHTML = '';  
           aiPanel.style.display="flex";  
           if(activeBottom==="home") showAllBars();  
-        }else if(mode==="profile"){  
-          aiPanel.style.display="none";  
-          toggleAiMenu(false);  
-          setBottomActive("home");  
-          hideWorkspacePage();  
-          hideAllBars();  
-          injectIframe("");  
-          showProfilePage();  
+        }else if(mode==="settings"){  
+          aiTitle.textContent = "Settings";  
+          aiSubtitle.textContent = "Pengaturan Kuantara Terminal.";  
+          aiBody.innerHTML =  
+            '<iframe src="'+SETTINGS_URL+'" ' +  
+            'title="Settings" loading="lazy" ' +  
+            'style="width:100%;height:100%;border:0;display:block;"></iframe>';  
+          aiFooter.innerHTML = '';  
+          aiPanel.style.display="flex";  
+          if(activeBottom==="home") showAllBars();  
         }  
       }  
   
@@ -1714,7 +1629,6 @@
             e.preventDefault();  
             if(activeBottom!=="home"){  
               setBottomActive("home");  
-              hideProfilePage();  
               hideWorkspacePage();  
             }  
             setActiveMenu(Number(k));  
@@ -1727,7 +1641,6 @@
             e.preventDefault();  
             if(activeBottom!=="home"){  
               setBottomActive("home");  
-              hideProfilePage();  
               hideWorkspacePage();  
             }  
             setActiveSub(activeMenu, Number(k)-1);  
@@ -1738,20 +1651,10 @@
         if(e.key==="Escape"){  
           e.preventDefault();  
           setBottomActive("home");  
-          hideProfilePage();  
           hideWorkspacePage();  
           setActiveMenu(0);  
           setActiveSub(0,0);  
           if(!isPinned) { showAllBars(); scheduleHide(); }  
-          return;  
-        }  
-        if(e.key==="Tab"){  
-          e.preventDefault();  
-          setBottomActive("home");  
-          hideWorkspacePage();  
-          hideAllBars();  
-          injectIframe("");  
-          showProfilePage();  
           return;  
         }  
         if(e.key==="Shift" && !e.repeat && !e.ctrlKey && !e.altKey){  
@@ -1812,7 +1715,6 @@
       setupEventListeners();  
       setActiveMenu(0);  
       setBottomActive("home");  
-      hideProfilePage();  
       hideWorkspacePage();  
       ensureWorkspacePlaceholder();  
       showAllBars();  
