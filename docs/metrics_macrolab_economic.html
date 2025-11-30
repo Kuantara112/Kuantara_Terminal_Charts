@@ -1,143 +1,1455 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>US Macro Dashboard – Kuantara Model</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Font -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
   <style>
     :root {
-      --bg:#050505;
-      --card:#151515;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --bg-card:#151515;
+      --border-soft:#2b2b2b;
       --accent:#ffbf00;
+      --accent-soft:rgba(255,191,0,0.16);
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --danger:#ef4444;
+      --green:#22c55e;
+      --orange:#f97316;
+      --red:#ef4444;
     }
 
-    *{
+    * {
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:"Fira Code", monospace;
     }
 
-    body{
+    html, body {
+      height:100%;
+    }
+
+    body {
+      background:var(--bg-root);
+      color:var(--text-main);
       min-height:100vh;
       display:flex;
-      align-items:center;
       justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
-      color:var(--text-main);
+      padding:16px;
+      overflow-y:auto;
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
-      text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    /* Scrollbar hitam transparan */
+    body::-webkit-scrollbar,
+    .scrollable::-webkit-scrollbar {
+      width:6px;
+    }
+    body::-webkit-scrollbar-track,
+    .scrollable::-webkit-scrollbar-track {
+      background:transparent;
+    }
+    body::-webkit-scrollbar-thumb,
+    .scrollable::-webkit-scrollbar-thumb {
+      background:rgba(0,0,0,0.6);
+      border-radius:3px;
     }
 
-    .badge{
-      display:inline-flex;
+    .shell {
+      width:100%;
+      max-width:1200px;
+      background:var(--bg-main);
+      border-radius:10px;
+      border:1px solid var(--border-soft);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:12px;
+    }
+
+    .top-bar {
+      display:flex;
+      justify-content:space-between;
       align-items:center;
       gap:8px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
-      color:var(--accent);
-      margin-bottom:18px;
+      flex-wrap:wrap;
     }
 
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
-    }
-
-    h1{
-      font-size:22px;
-      margin-bottom:8px;
-    }
-
-    p{
-      font-size:14px;
-      line-height:1.6;
-      color:var(--text-muted);
-      margin-bottom:18px;
-    }
-
-    .time-estimate{
-      font-size:13px;
-      color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
-    }
-
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
-    }
-
-    .btn:hover{
-      background:var(--accent);
-      color:#000;
-      transform:translateY(-1px);
-    }
-
-    .footer-text{
-      margin-top:16px;
+    .status-text {
       font-size:11px;
-      color:#666;
+      color:var(--text-muted);
+    }
+
+    .status-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .badge {
+      padding:2px 6px;
+      border-radius:999px;
+      font-size:10px;
+      border:1px solid var(--border-soft);
+      color:var(--text-muted);
+    }
+
+    .badge.ok {
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+
+    .badge.error {
+      border-color:var(--danger);
+      color:var(--danger);
+    }
+
+    .chip {
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:10px;
+      border:1px solid var(--border-soft);
+      background:#101010;
+      color:var(--text-muted);
+      white-space:nowrap;
+    }
+
+    button {
+      border:none;
+      border-radius:6px;
+      padding:6px 10px;
+      font-size:11px;
+      font-weight:500;
+      cursor:pointer;
+      background:var(--accent-soft);
+      color:var(--accent);
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    button:hover {
+      background:rgba(255,191,0,0.26);
+    }
+
+    button:disabled {
+      opacity:0.6;
+      cursor:not-allowed;
+    }
+
+    .main-grid {
+      display:grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap:10px;
+      min-height:0;
+    }
+
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .left-col {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:0;
+    }
+
+    .card {
+      background:var(--bg-card);
+      border-radius:8px;
+      border:1px solid var(--border-soft);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .card-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .card-title {
+      font-size:13px;
+      font-weight:500;
+    }
+
+    .card-subtitle {
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .card-toggle {
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+
+    .toggle-btn {
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#111111;
+      font-size:10px;
+      color:var(--text-muted);
+      cursor:pointer;
+    }
+
+    .toggle-btn.active {
+      background:var(--accent-soft);
+      color:var(--accent);
+      border-color:var(--accent);
+    }
+
+    #macroCompositeChart {
+      width:100%;
+      height:260px;
+    }
+
+    #macroCreditChart {
+      width:100%;
+      height:260px;
+    }
+
+    .health-header {
+      font-size:12px;
+      color:var(--text-muted);
+    }
+
+    .health-label {
+      font-size:11px;
+      color:var(--text-muted);
+    }
+
+    .health-score {
+      font-size:32px;
+      font-weight:600;
+    }
+
+    .score-good {
+      color:var(--green);
+    }
+
+    .score-neutral {
+      color:var(--accent);
+    }
+
+    .score-bad {
+      color:var(--red);
+    }
+
+    .health-tag {
+      border-radius:999px;
+      padding:2px 8px;
+      font-size:10px;
+      border:1px solid var(--border-soft);
+    }
+
+    .health-tag.bullish {
+      border-color:var(--green);
+      color:var(--green);
+    }
+    .health-tag.neutral {
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+    .health-tag.bearish {
+      border-color:var(--red);
+      color:var(--red);
+    }
+
+    .pillar-row {
+      display:flex;
+      justify-content:space-between;
+      font-size:11px;
+      margin-top:4px;
+    }
+
+    .health-main {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:0;
+    }
+
+    .health-summary {
+      border-bottom:1px solid var(--border-soft);
+      padding-bottom:8px;
+    }
+
+    .health-table {
+      font-size:11px;
+      color:var(--text-muted);
+      max-height:360px;
+      overflow:auto;
+    }
+
+    .health-table table {
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    .health-table th,
+    .health-table td {
+      border-bottom:1px solid #1f1f1f;
+      padding:4px 6px;
+      text-align:left;
+      white-space:nowrap;
+    }
+
+    .health-table th {
+      position:sticky;
+      top:0;
+      background:#151515;
+    }
+
+    .health-table tr:nth-child(even) td {
+      background:#101010;
+    }
+
+    .note {
+      font-size:10px;
+      color:var(--text-muted);
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
+<div class="shell">
+  <!-- Top status bar -->
+  <div class="top-bar">
+    <div class="status-text" id="statusText">Initializing…</div>
+    <div class="status-right">
+      <div id="statusBadge" class="badge">IDLE</div>
+      <div class="chip">Source: FRED</div>
+      <div class="chip">Sample: since 2000</div>
+      <button id="refreshBtn">⟳ Refresh All</button>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <!-- LEFT: 2 panels -->
+    <div class="left-col">
+      <!-- Macro Regime — Key Pillars -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Macro Regime — Key Pillars (YoY%, since 2000)</div>
+            <div class="card-subtitle">
+              Core PCE YoY, Unemployment Rate (level), Industrial Production YoY
+            </div>
+          </div>
+        </div>
+        <div id="macroCompositeChart"></div>
+      </div>
+
+      <!-- Macro + Credit Regime Dashboard -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Macro + Credit Regime — NBER-anchored (Macro &amp; Credit Cycle)</div>
+            <div class="card-subtitle">
+              GDP YoY, CPI YoY, IP YoY, HY Spread, Chicago FCI, NBER USREC
+            </div>
+          </div>
+          <div class="card-toggle">
+            <button class="toggle-btn active" id="btnHeatmap">Heatmap Snapshot</button>
+            <button class="toggle-btn" id="btnYearly">Yearly Scores + 3Y Rolling</button>
+          </div>
+        </div>
+        <div id="macroCreditChart"></div>
+      </div>
     </div>
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
-
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
+    <!-- RIGHT: Macro Health Score -->
+    <div class="card">
+      <div class="health-main">
+        <div class="health-summary">
+          <div class="health-header">US Macro Health Score – Kuantara Model</div>
+          <div id="macroHealthSummary" style="margin-top:6px;">
+            <span class="note">Waiting for data…</span>
+          </div>
+        </div>
+        <div class="health-table scrollable" id="macroHeatmap">
+          <div class="note">Heatmap will appear after data load.</div>
+        </div>
+        <div class="note">
+          Scoring uses direction-aware z-normalization per indicator and pillar aggregation
+          (Growth, Inflation, Labor, Consumption, Production, Housing).
+        </div>
+      </div>
     </div>
+  </div>
+</div>
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
+<script>
+  // =========================
+  // CONFIG & CONSTANTS
+  // =========================
 
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
-    </div>
-  </main>
+  const PROXIES = [
+    "https://cors-anywhere-proxy-six.vercel.app/",
+    "https://cors.eu.org/",
+    ""
+  ];
 
-  <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+  const FRED_API_KEY = "8a60bcfed2f8d08cae9615b367eb85e5"; // ganti dengan API key FRED kamu
+  const OBS_URL    = "https://api.stlouisfed.org/fred/series/observations";
+  const SERIES_URL = "https://api.stlouisfed.org/fred/series";
+
+  const statusText         = document.getElementById("statusText");
+  const statusBadge        = document.getElementById("statusBadge");
+  const refreshBtn         = document.getElementById("refreshBtn");
+  const macroHealthSummary = document.getElementById("macroHealthSummary");
+  const macroHeatmap       = document.getElementById("macroHeatmap");
+  const btnHeatmap         = document.getElementById("btnHeatmap");
+  const btnYearly          = document.getElementById("btnYearly");
+
+  let macroCompositeChart = null;
+  let macroCreditChart    = null;
+
+  function setStatus(text, mode = "idle") {
+    statusText.textContent = text;
+    statusBadge.textContent = mode.toUpperCase();
+    statusBadge.classList.remove("ok", "error");
+    if (mode === "ok") statusBadge.classList.add("ok");
+    if (mode === "error") statusBadge.classList.add("error");
+  }
+
+  function buildProxyUrl(proxy, url){
+    if(!proxy) return url;
+    const isCorsAnywhere = proxy.includes("cors-anywhere") || proxy.includes("vercel.app");
+    if(isCorsAnywhere){
+      return proxy.endsWith("/") ? `${proxy}${url}` : `${proxy}/${url}`;
+    }
+    const clean = url.replace(/^https?:\/\//, "");
+    return proxy.endsWith("/") ? `${proxy}${clean}` : `${proxy}/${clean}`;
+  }
+
+  async function fetchWithProxies(url, options = {}, proxies = PROXIES){
+    let lastError = null;
+    for(const proxy of proxies){
+      const target = buildProxyUrl(proxy, url);
+      try{
+        const res = await fetch(target, options);
+        if(res.ok) return res;
+        lastError = new Error(`HTTP ${res.status} via ${proxy || "direct"}`);
+      }catch(e){
+        lastError = e;
+      }
+    }
+    throw lastError || new Error("Request failed");
+  }
+
+  function buildFredUrl(base, params) {
+    const p = new URLSearchParams({
+      ...params,
+      api_key: FRED_API_KEY,
+      file_type: "json",
+    });
+    return `${base}?${p.toString()}`;
+  }
+
+  // =========================
+  // US MACRO SERIES (YoY / level)
+  // =========================
+
+  const US_MACRO = {
+    growth: {
+      "GDP":   "Nominal GDP (Quarterly)",
+      "GDPC1": "Real GDP (Chained 2017 $, SAAR, Quarterly)",
+      "A191RL1Q225SBEA": "Real GDP (Quarterly)",
+    },
+    inflation: {
+      "PCEPI":     "PCE Price Index (Monthly)",
+      "PCEPILFE":  "Core PCE Price Index (Monthly, ex F&E)",
+      "CPIAUCSL":  "CPI All Items SA (Monthly)",
+      "CPILFESL":  "Core CPI SA (Monthly)",
+      "PPIACO":    "PPI: All Commodities (Monthly)",
+    },
+    labor: {
+      "UNRATE":   "Unemployment Rate (Monthly)",
+      "PAYEMS":   "Nonfarm Payrolls: Total Employees (Monthly, SA)",
+      "CIVPART":  "Labor Force Participation Rate (Monthly)",
+      "ICSA":     "Initial Jobless Claims (Weekly, SA)",
+      "JTSJOL":   "Job Openings: Total Nonfarm (Monthly, JOLTS)",
+    },
+    consumption_income: {
+      "PCEC96": "Real PCE (Monthly)",
+      "DSPIC96":"Real Disposable Personal Income (Monthly)",
+      "RSAFS":  "Advance Retail & Food Services Sales (Monthly, Nominal)",
+      "PSAVERT":"Personal Saving Rate (Monthly)",
+    },
+    production: {
+      "INDPRO":"Industrial Production Index (Monthly)",
+      "TCU":"Capacity Utilization: Total Industry (Monthly)",
+    },
+    housing: {
+      "HOUST":"Housing Starts: Total (Monthly, SAAR)",
+      "PERMIT":"Building Permits: Total (Monthly, SAAR)",
+    },
+  };
+
+  const SCORE_RULES = {
+    // Growth
+    "GDP":   { pillar:"growth", direction:"high_good" },
+    "GDPC1": { pillar:"growth", direction:"high_good" },
+    "A191RL1Q225SBEA": { pillar:"growth", direction:"high_good" },
+
+    // Inflation (Goldilocks di sekitar 2%)
+    "PCEPI":     { pillar:"inflation", direction:"mid_good", target:2 },
+    "PCEPILFE":  { pillar:"inflation", direction:"mid_good", target:2 },
+    "CPIAUCSL":  { pillar:"inflation", direction:"mid_good", target:2 },
+    "CPILFESL":  { pillar:"inflation", direction:"mid_good", target:2 },
+    "PPIACO":    { pillar:"inflation", direction:"mid_good", target:2 },
+
+    // Labor
+    "UNRATE":  { pillar:"labor", direction:"low_good" },
+    "ICSA":    { pillar:"labor", direction:"low_good" },
+    "PAYEMS":  { pillar:"labor", direction:"high_good" },
+    "CIVPART": { pillar:"labor", direction:"high_good" },
+    "JTSJOL":  { pillar:"labor", direction:"high_good" },
+
+    // Consumption / Income
+    "PCEC96": { pillar:"consumption", direction:"high_good" },
+    "DSPIC96":{ pillar:"consumption", direction:"high_good" },
+    "RSAFS":  { pillar:"consumption", direction:"high_good" },
+    "PSAVERT":{ pillar:"consumption", direction:"mid_good", target:5 },
+
+    // Production
+    "INDPRO": { pillar:"production", direction:"high_good" },
+    "TCU":    { pillar:"production", direction:"high_good" },
+
+    // Housing
+    "HOUST":  { pillar:"housing", direction:"high_good" },
+    "PERMIT": { pillar:"housing", direction:"high_good" },
+  };
+
+  const SERIES_LIST = [];
+  for (const [cat, mp] of Object.entries(US_MACRO)) {
+    for (const [sid, label] of Object.entries(mp)) {
+      SERIES_LIST.push({ category: cat, id: sid, label });
+    }
+  }
+
+  const seriesCache = new Map(); // cache for macro YoY/level
+
+  function inferPeriods(frequency) {
+    const f = (frequency || "").toLowerCase();
+    if (f.includes("quarter")) return 4;
+    if (f.includes("week"))    return 52;
+    return 12;
+  }
+
+  // Series yang SUDAH YoY dari FRED
+  function seriesIsAlreadyYoY(meta, seriesId) {
+    const id = (seriesId || "").toUpperCase();
+
+    // Override: Real GDP YoY resmi FRED
+    if (id === "A191RL1Q225SBEA") return true;
+
+    const parts = [
+      meta?.units,
+      meta?.units_short,
+      meta?.seasonal_adjustment_short,
+      meta?.notes,
+    ].map(x => (x ?? "").toString().toLowerCase());
+
+    const fields = parts.join(" ");
+
+    const hasYear = fields.includes("year") || fields.includes("yr") || fields.includes("y/y") || fields.includes("yoy");
+    const hasPct  =
+      fields.includes("percent") ||
+      fields.includes("per cent") ||
+      fields.includes("pct") ||
+      fields.includes("pct.") ||
+      fields.includes("%");
+
+    if (hasYear && hasPct) return true;
+    if (fields.includes("year ago") && (fields.includes("chg") || fields.includes("change"))) return true;
+
+    return false;
+  }
+
+  // Series yang harus pakai LEVEL (bukan YoY) – terutama UNRATE
+  function seriesUseLevel(seriesId) {
+    const id = (seriesId || "").toUpperCase();
+    if (id === "UNRATE") return true;
+    return false;
+  }
+
+  async function getMeta(seriesId) {
+    const url = buildFredUrl(SERIES_URL, { series_id: seriesId });
+    const res = await fetchWithProxies(url);
+    const data = await res.json();
+    const arr = data.seriess || [];
+    return arr[0] || null;
+  }
+
+  async function fetchFull(seriesId) {
+    const url = buildFredUrl(OBS_URL, {
+      series_id: seriesId,
+      observation_start: "2000-01-01",
+    });
+    const res = await fetchWithProxies(url);
+    const data = await res.json();
+    const obs = data.observations || [];
+
+    const dates = [];
+    const values = [];
+    for (const o of obs) {
+      const d = o.date;
+      let v = o.value;
+      if (v === "" || v === ".") {
+        dates.push(d);
+        values.push(null);
+        continue;
+      }
+      const num = parseFloat(v);
+      dates.push(d);
+      values.push(Number.isNaN(num) ? null : num);
+    }
+    return { dates, values };
+  }
+
+  function prepareYoY(dates, values, meta, seriesId) {
+    const outDates = [];
+    const outVals  = [];
+
+    if (!dates.length) return { dates: outDates, values: outVals };
+
+    // 1) Seri yang pakai LEVEL (contoh: UNRATE) → gunakan raw level
+    if (seriesUseLevel(seriesId)) {
+      for (let i = 0; i < dates.length; i++) {
+        const v = values[i];
+        if (v == null || Number.isNaN(v)) continue;
+        outDates.push(dates[i]);
+        outVals.push(v);
+      }
+      return { dates: outDates, values: outVals };
+    }
+
+    // 2) Seri yang SUDAH YoY (contoh: A191RL1Q225SBEA) → gunakan raw YoY
+    if (seriesIsAlreadyYoY(meta, seriesId)) {
+      for (let i = 0; i < dates.length; i++) {
+        const v = values[i];
+        if (v == null || Number.isNaN(v)) continue;
+        outDates.push(dates[i]);
+        outVals.push(v);
+      }
+      return { dates: outDates, values: outVals };
+    }
+
+    // 3) Default: hitung YoY dari level
+    const periods = inferPeriods(meta?.frequency || "Monthly");
+    for (let i = 0; i < dates.length; i++) {
+      if (i < periods) continue;
+      const cur  = values[i];
+      const prev = values[i - periods];
+      if (cur == null || prev == null || Number.isNaN(cur) || Number.isNaN(prev) || prev === 0) continue;
+      const pct = (cur / prev - 1) * 100.0;
+      outDates.push(dates[i]);
+      outVals.push(pct);
+    }
+    return { dates: outDates, values: outVals };
+  }
+
+  async function loadSeries(seriesId) {
+    if (seriesCache.has(seriesId)) {
+      return seriesCache.get(seriesId);
+    }
+    setStatus(`Loading ${seriesId}…`, "idle");
+    const meta = await getMeta(seriesId);
+    const raw  = await fetchFull(seriesId);
+    const yoy  = prepareYoY(raw.dates, raw.values, meta, seriesId);
+
+    const payload = {
+      meta,
+      rawDates: raw.dates,
+      rawValues: raw.values,
+      yoyDates: yoy.dates,
+      yoyValues: yoy.values,
+    };
+    seriesCache.set(seriesId, payload);
+    return payload;
+  }
+
+  // =========================
+  // MACRO HEALTH SCORING
+  // =========================
+
+  function getLastValidYoY(info) {
+    const { yoyDates, yoyValues } = info;
+    for (let i = yoyValues.length - 1; i >= 0; i--) {
+      const v = yoyValues[i];
+      if (v != null && !Number.isNaN(v)) {
+        return { value: v, date: yoyDates[i] };
+      }
+    }
+    return null;
+  }
+
+  function computeSeriesScore(id, def, info, rule) {
+    const { yoyValues } = info;
+    if (!yoyValues || !yoyValues.length) return null;
+
+    const last = getLastValidYoY(info);
+    if (!last) return null;
+
+    let min = Infinity, max = -Infinity;
+    for (const v of yoyValues) {
+      if (v == null || Number.isNaN(v)) continue;
+      if (v < min) min = v;
+      if (v > max) max = v;
+    }
+    if (!Number.isFinite(min) || !Number.isFinite(max) || max === min) return null;
+
+    let norm = 0.5;
+    const val = last.value;
+    const dir = rule.direction;
+    const target = rule.target ?? 2;
+
+    if (dir === "high_good") {
+      const pct = (val - min) / (max - min);
+      norm = Math.max(0, Math.min(1, pct));
+    } else if (dir === "low_good") {
+      const pct = (val - min) / (max - min);
+      norm = 1 - Math.max(0, Math.min(1, pct));
+    } else if (dir === "mid_good") {
+      let worst = 0;
+      for (const v of yoyValues) {
+        if (v == null || Number.isNaN(v)) continue;
+        const d = Math.abs(v - target);
+        if (d > worst) worst = d;
+      }
+      if (worst === 0) {
+        norm = 1;
+      } else {
+        const dist = Math.abs(val - target);
+        norm = 1 - Math.max(0, Math.min(1, dist / worst));
+      }
+    }
+
+    const score = Math.round(norm * 100);
+
+    return {
+      id,
+      label: def.label,
+      pillar: rule.pillar,
+      score,
+      latestValue: val,
+      latestDate: last.date
+    };
+  }
+
+  function classifyScore(score) {
+    if (score >= 70) return { cls:"score-good", label:"Supportive" };
+    if (score >= 40) return { cls:"score-neutral", label:"Neutral" };
+    return { cls:"score-bad", label:"Weak / Stress" };
+  }
+
+  function classifyHeadline(score) {
+    if (score == null) return { label:"N/A", cls:"", tagClass:"", tagText:"No Data" };
+    if (score >= 70) return { label:"Macro Risk-On", cls:"score-good", tagClass:"health-tag bullish", tagText:"Bullish" };
+    if (score >= 40) return { label:"Macro Balanced", cls:"score-neutral", tagClass:"health-tag neutral", tagText:"Neutral" };
+    return { label:"Macro Risk-Off", cls:"score-bad", tagClass:"health-tag bearish", tagText:"Bearish" };
+  }
+
+  function computeAndRenderMacroHealth() {
+    const pillarScores = {};
+    const seriesScores = [];
+
+    for (const def of SERIES_LIST) {
+      const rule = SCORE_RULES[def.id];
+      if (!rule) continue;
+      const info = seriesCache.get(def.id);
+      if (!info) continue;
+      const res = computeSeriesScore(def.id, def, info, rule);
+      if (!res) continue;
+
+      const { pillar, score } = res;
+      if (!pillarScores[pillar]) pillarScores[pillar] = { sum:0, count:0 };
+      pillarScores[pillar].sum += score;
+      pillarScores[pillar].count += 1;
+
+      seriesScores.push(res);
+    }
+
+    const pillarList = [];
+    let totalSum = 0;
+    let totalCount = 0;
+    for (const [pillar, agg] of Object.entries(pillarScores)) {
+      const avg = agg.sum / agg.count;
+      pillarList.push({ pillar, score: Math.round(avg) });
+      totalSum += avg;
+      totalCount++;
+    }
+
+    const composite = totalCount ? Math.round(totalSum / totalCount) : null;
+    renderMacroHealth(composite, pillarList, seriesScores);
+  }
+
+  function renderMacroHealth(composite, pillarList, seriesScores) {
+    const headline = classifyHeadline(composite);
+
+    let html = "";
+    html += `<div class="health-label">Kuantara Macro Health</div>`;
+    html += `<div style="display:flex; align-items:baseline; gap:8px; margin-top:4px;">`;
+    html += `<div class="health-score ${headline.cls}">${composite != null ? composite : "N/A"}</div>`;
+    html += `<div>${headline.label}</div>`;
+    html += `<div class="${headline.tagClass}">${headline.tagText}</div>`;
+    html += `</div>`;
+
+    html += `<div style="margin-top:8px; font-size:11px; color:var(--text-muted);">Pillar breakdown:</div>`;
+    for (const p of pillarList.sort((a,b) => b.score - a.score)) {
+      const c = classifyScore(p.score);
+      html += `
+        <div class="pillar-row">
+          <div>${p.pillar.toUpperCase()}</div>
+          <div class="${c.cls}">${p.score}</div>
+        </div>
+      `;
+    }
+
+    macroHealthSummary.innerHTML = html;
+
+    // Heatmap list
+    seriesScores.sort((a,b) => {
+      if (a.pillar === b.pillar) return b.score - a.score;
+      return a.pillar.localeCompare(b.pillar);
+    });
+
+    let h = `<table><thead><tr>
+      <th>Pillar</th><th>Series</th><th>Last Value</th><th>Score</th><th>Regime</th>
+    </tr></thead><tbody>`;
+
+    for (const s of seriesScores) {
+      const c = classifyScore(s.score);
+      h += `<tr>
+        <td>${s.pillar.toUpperCase()}</td>
+        <td>${s.label}</td>
+        <td>${s.latestValue.toFixed(2)}</td>
+        <td class="${c.cls}">${s.score}</td>
+        <td class="${c.cls}">${c.label}</td>
+      </tr>`;
+    }
+    h += `</tbody></table>`;
+
+    macroHeatmap.innerHTML = h;
+  }
+
+  // =========================
+  // MACRO REGIME — KEY PILLARS CHART (tanpa GDP YoY)
+  // =========================
+
+  function initMacroCompositeChart() {
+    if (!macroCompositeChart) {
+      macroCompositeChart = echarts.init(document.getElementById("macroCompositeChart"));
+      window.addEventListener("resize", () => {
+        macroCompositeChart && macroCompositeChart.resize();
+        macroCreditChart && macroCreditChart.resize();
+      });
+    }
+  }
+
+  function renderMacroCompositeChart() {
+    initMacroCompositeChart();
+
+    const KEY_SERIES = [
+      { id:"PCEPILFE", name:"Core PCE YoY" },
+      { id:"UNRATE",   name:"Unemployment Rate" },
+      { id:"INDPRO",   name:"Industrial Production YoY" },
+    ];
+
+    const seriesOpts = [];
+
+    for (const ks of KEY_SERIES) {
+      const info = seriesCache.get(ks.id);
+      if (!info || !info.yoyDates.length) continue;
+
+      const data = [];
+      for (let i = 0; i < info.yoyDates.length; i++) {
+        const v = info.yoyValues[i];
+        if (v == null || Number.isNaN(v)) continue;
+        data.push([info.yoyDates[i], v]);
+      }
+      if (!data.length) continue;
+
+      seriesOpts.push({
+        name: ks.name,
+        type: "line",
+        data,
+        showSymbol: false,
+        smooth: true,
+        lineStyle: { width:1.4 }
+      });
+    }
+
+    if (!seriesOpts.length) {
+      macroCompositeChart.clear();
+      macroCompositeChart.setOption({
+        backgroundColor:"#111111",
+        graphic: {
+          type:"text",
+          left:"center",
+          top:"middle",
+          style:{
+            text:"No key series data loaded.",
+            fill:"#9b9b9b",
+            fontSize:12
+          }
+        }
+      });
+      return;
+    }
+
+    const option = {
+      backgroundColor:"#111111",
+      tooltip: {
+        trigger:"axis",
+        axisPointer: { type:"cross" }
+      },
+      legend: {
+        top:8,
+        textStyle:{ color:"#f5f5f5", fontSize:10 }
+      },
+      grid: { left:55, right:20, top:40, bottom:35 },
+      xAxis: {
+        type:"time",
+        axisLabel:{ color:"#aaaaaa", fontSize:9 },
+        axisLine:{ lineStyle:{ color:"#444444" } }
+      },
+      yAxis: {
+        type:"value",
+        name:"YoY % / level",
+        axisLabel:{ color:"#aaaaaa", fontSize:9 },
+        splitLine:{ lineStyle:{ color:"#222222" } }
+      },
+      series: seriesOpts
+    };
+
+    macroCompositeChart.setOption(option, true);
+  }
+
+  // =========================
+  // MACRO + CREDIT REGIME (JS VERSION)
+  // =========================
+
+  function toMonthly(data, startDate) {
+    const monthlyMap = new Map(); // key YYYY-MM -> {sum, count}
+
+    for (const o of data) {
+      const d = new Date(o.date);
+      if (isNaN(d)) continue;
+      if (startDate && d < new Date(startDate)) continue;
+      const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+      const val = o.value;
+      if (val == null || Number.isNaN(val)) continue;
+      const prev = monthlyMap.get(ym) || { sum:0, count:0 };
+      prev.sum += val;
+      prev.count += 1;
+      monthlyMap.set(ym, prev);
+    }
+
+    const keys = Array.from(monthlyMap.keys()).sort();
+    const dates = [];
+    const values = [];
+    for (const k of keys) {
+      const e = monthlyMap.get(k);
+      const v = e.sum / e.count;
+      dates.push(`${k}-01`);
+      values.push(v);
+    }
+    return { dates, values };
+  }
+
+  async function fetchRawMonthlySeries(seriesId, startDate) {
+    const url = buildFredUrl(OBS_URL, {
+      series_id: seriesId,
+      observation_start: startDate,
+    });
+    const res = await fetchWithProxies(url);
+    const data = await res.json();
+    const obs = data.observations || [];
+    const arr = [];
+    for (const o of obs) {
+      let v = o.value;
+      if (v === "" || v === ".") continue;
+      const num = parseFloat(v);
+      if (Number.isNaN(num)) continue;
+      arr.push({ date:o.date, value:num });
+    }
+    return toMonthly(arr, startDate);
+  }
+
+  function calcYoY(dates, values) {
+    const outDates = [];
+    const outValues = [];
+    for (let i = 0; i < dates.length; i++) {
+      if (i < 12) continue;
+      const cur  = values[i];
+      const prev = values[i-12];
+      if (cur == null || prev == null || prev === 0 || Number.isNaN(cur) || Number.isNaN(prev)) continue;
+      const pct = (cur / prev - 1) * 100;
+      outDates.push(dates[i]);
+      outValues.push(pct);
+    }
+    return { dates: outDates, values: outValues };
+  }
+
+  function scoring(val, indicator) {
+    if (val == null || Number.isNaN(val)) return 0;
+    if (indicator === "GDP YoY") {
+      return (val > 2) ? 1 : ((0 <= val && val <= 2) ? 0 : ((-2 <= val && val < 0) ? -1 : -2));
+    }
+    if (indicator === "Unemployment") {
+      return (val < 4.5) ? 1 : ((4.5 <= val && val < 6) ? 0 : ((6 <= val && val <= 8) ? -1 : -2));
+    }
+    if (indicator === "CPI YoY") {
+      return (val < -1) ? -2 : ((-1 <= val && val <= 3) ? 1 : -1);
+    }
+    if (indicator === "IP YoY") {
+      return (val > 2) ? 1 : ((0 <= val && val <= 2) ? 0 : ((-5 <= val && val < 0) ? -1 : -2));
+    }
+    if (indicator === "HY Spread") {
+      return (val < 3) ? 1 : ((3 <= val && val <= 5) ? 0 : ((5 < val && val <= 7) ? -1 : -2));
+    }
+    if (indicator === "Chicago FCI") {
+      return (val <= 0) ? 1 : ((0 < val && val <= 0.5) ? 0 : ((0.5 < val && val <= 1.0) ? -1 : -2));
+    }
+    return 0;
+  }
+
+  function classifyPhaseRow(row) {
+    const s = scoring(row.gdp, "GDP YoY") +
+              scoring(row.unemp, "Unemployment") +
+              scoring(row.cpi, "CPI YoY") +
+              scoring(row.ip,  "IP YoY") +
+              scoring(row.hy,  "HY Spread") +
+              scoring(row.nfci,"Chicago FCI");
+
+    const crisisFlag = (row.hy > 7) || (row.nfci > 1.0);
+
+    let phase;
+    if (row.usrec === 1) {
+      phase = crisisFlag ? "Crisis" : "Recession";
+      return { score:s, phase };
+    }
+
+    if (s >= 4)            phase = "Early Expansion";
+    else if (2 <= s && s <= 3) phase = "Late Expansion";
+    else                   phase = "Slowdown";
+
+    if (crisisFlag) phase = "Crisis";
+    return { score:s, phase };
+  }
+
+  const phaseColorsHex = {
+    "Early Expansion": "#22c55e",
+    "Late Expansion":  "#bef264",
+    "Slowdown":        "#f97316",
+    "Recession":       "#ef4444",
+    "Crisis":          "#7f1d1d",
+    "Default":         "#6b7280"
+  };
+
+  let macroCreditOptions = { heatmap:null, yearly:null };
+
+  async function buildMacroCreditDashboard() {
+    const START = "1990-01-01";
+
+    setStatus("Loading Macro+Credit regime series…", "idle");
+
+    const [
+      cpiRaw,
+      ipRaw,
+      gdpSeries,
+      unempSeries,
+      hySeries,
+      nfciSeries,
+      usrecSeries
+    ] = await Promise.all([
+      fetchRawMonthlySeries("CPIAUCSL", START),
+      fetchRawMonthlySeries("INDPRO",   START),
+      fetchRawMonthlySeries("A191RL1Q225SBEA", START), // already YoY
+      fetchRawMonthlySeries("UNRATE",   START),        // level
+      fetchRawMonthlySeries("BAMLH0A0HYM2", START),    // HY spread
+      fetchRawMonthlySeries("NFCI",     START),        // Chicago FCI
+      fetchRawMonthlySeries("USREC",    START)         // NBER recession dummy
+    ]);
+
+    const cpiY = calcYoY(cpiRaw.dates, cpiRaw.values);
+    const ipY  = calcYoY(ipRaw.dates,  ipRaw.values);
+
+    function toMap(dates, values) {
+      const m = new Map();
+      for (let i = 0; i < dates.length; i++) {
+        const v = values[i];
+        if (v == null || Number.isNaN(v)) continue;
+        m.set(dates[i], v);
+      }
+      return m;
+    }
+
+    const mGDP   = toMap(gdpSeries.dates,   gdpSeries.values);   // YoY ready
+    const mUN    = toMap(unempSeries.dates, unempSeries.values); // level
+    const mCPI   = toMap(cpiY.dates,        cpiY.values);        // YoY
+    const mIP    = toMap(ipY.dates,         ipY.values);         // YoY
+    const mHY    = toMap(hySeries.dates,    hySeries.values);    // level
+    const mNFCI  = toMap(nfciSeries.dates,  nfciSeries.values);  // level
+    const mUSREC = toMap(usrecSeries.dates, usrecSeries.values.map(x => x >= 0.5 ? 1 : 0));
+
+    const baseDates = Array.from(mGDP.keys()).sort();
+    const rows = [];
+
+    for (const d of baseDates) {
+      if (!mUN.has(d) || !mCPI.has(d) || !mIP.has(d) || !mHY.has(d) || !mNFCI.has(d) || !mUSREC.has(d)) continue;
+      const row = {
+        date: d,
+        gdp: mGDP.get(d),
+        unemp: mUN.get(d),
+        cpi: mCPI.get(d),
+        ip: mIP.get(d),
+        hy: mHY.get(d),
+        nfci: mNFCI.get(d),
+        usrec: mUSREC.get(d)
+      };
+      const cls = classifyPhaseRow(row);
+      row.score = cls.score;
+      row.phase = cls.phase;
+      rows.push(row);
+    }
+
+    if (!rows.length) {
+      setStatus("Macro+Credit regime: no overlapping data.", "error");
+      return;
+    }
+
+    // YEARLY aggregation
+    const yearMap = new Map(); // year -> {scores, phases, usrecFlags}
+    for (const r of rows) {
+      const year = new Date(r.date).getFullYear();
+      const slot = yearMap.get(year) || { scores:[], phases:[], usrec:[] };
+      slot.scores.push(r.score);
+      slot.phases.push(r.phase);
+      slot.usrec.push(r.usrec);
+      yearMap.set(year, slot);
+    }
+
+    const years = Array.from(yearMap.keys()).sort((a,b)=>a-b);
+    const yearlyScore = [];
+    const yearlyPhase = [];
+
+    for (const y of years) {
+      const g = yearMap.get(y);
+      const avgScore = g.scores.reduce((a,b)=>a+b,0) / g.scores.length;
+      let phase_y;
+      if (g.usrec.some(v => v === 1)) {
+        const crisisShare = g.phases.filter(p => p === "Crisis").length / g.phases.length;
+        phase_y = crisisShare > 0.4 ? "Crisis" : "Recession";
+      } else {
+        const counts = {};
+        for (const p of g.phases) counts[p] = (counts[p]||0)+1;
+        let mode = null, best = -1;
+        for (const [p,c] of Object.entries(counts)) {
+          if (c>best) { best=c; mode=p; }
+        }
+        phase_y = (mode === "Recession") ? "Slowdown" : mode;
+      }
+      yearlyScore.push(avgScore);
+      yearlyPhase.push(phase_y);
+    }
+
+    const rolling3Y = [];
+    for (let i=0; i<yearlyScore.length; i++) {
+      const start = Math.max(0, i-2);
+      const slice = yearlyScore.slice(start, i+1);
+      const avg = slice.reduce((a,b)=>a+b,0) / slice.length;
+      rolling3Y.push(avg);
+    }
+
+    const latest = rows[rows.length-1];
+    const latestPhase = latest.phase;
+    const latestScore = latest.score;
+
+    buildMacroCreditOptions({
+      latestPhase,
+      latestScore,
+      rows,
+      years,
+      yearlyScore,
+      yearlyPhase,
+      rolling3Y
+    });
+    renderMacroCreditHeatmap();
+    setStatus("Dashboard ready", "ok");
+  }
+
+  function buildMacroCreditOptions(data) {
+    const indicators = ["GDP YoY","Unemployment","CPI YoY","IP YoY","HY Spread","Chicago FCI"];
+    const latestRow = data.rows[data.rows.length-1];
+    const latestValues = [
+      latestRow.gdp,
+      latestRow.unemp,
+      latestRow.cpi,
+      latestRow.ip,
+      latestRow.hy,
+      latestRow.nfci
+    ];
+    const latestScores = [
+      scoring(latestRow.gdp,  "GDP YoY"),
+      scoring(latestRow.unemp,"Unemployment"),
+      scoring(latestRow.cpi,  "CPI YoY"),
+      scoring(latestRow.ip,   "IP YoY"),
+      scoring(latestRow.hy,   "HY Spread"),
+      scoring(latestRow.nfci, "Chicago FCI")
+    ];
+
+    const heatmapData = indicators.map((_, i) => {
+      return [i, 0, latestScores[i]];
+    });
+
+    const heatmapOption = {
+      backgroundColor:"#111111",
+      tooltip: {
+        trigger:"item",
+        formatter: params => {
+          const idx = params.data[0];
+          const ind = indicators[idx];
+          const val = latestValues[idx];
+          const sc  = latestScores[idx];
+          return `<b>${ind}</b><br/>Value: ${val.toFixed(2)}<br/>Score: ${sc}`;
+        }
+      },
+      grid: { left:60, right:160, top:40, bottom:40 },
+      xAxis: {
+        type:"category",
+        data:indicators,
+        axisLabel:{ color:"#f5f5f5", fontSize:10, rotate:30 },
+        axisLine:{ lineStyle:{ color:"#444" } }
+      },
+      yAxis: {
+        type:"category",
+        data:["Macro Score"],
+        axisLabel:{ color:"#f5f5f5", fontSize:10 },
+        axisLine:{ lineStyle:{ color:"#444" } }
+      },
+      visualMap: {
+        min:-2,
+        max:1,
+        calculable:false,
+        orient:"vertical",
+        right:10,
+        top:"middle",
+        textStyle:{ color:"#f5f5f5", fontSize:10 },
+        inRange: {
+          color:["#7f1d1d","#f97316","#facc15","#22c55e"]
+        }
+      },
+      series:[{
+        type:"heatmap",
+        data:heatmapData,
+        label:{
+          show:true,
+          formatter:(p)=>{
+            const idx = p.data[0];
+            return latestValues[idx].toFixed(2);
+          },
+          color:"#f5f5f5",
+          fontSize:10
+        },
+        emphasis:{
+          itemStyle:{ borderColor:"#fff", borderWidth:1 }
+        }
+      }],
+      title:{
+        text:"Macro & Credit Regime – Heatmap Snapshot",
+        left:"center",
+        top:6,
+        textStyle:{ color:"#f5f5f5", fontSize:13, fontWeight:500 }
+      },
+      graphic:{
+        type:"text",
+        right:10,
+        top:10,
+        style:{
+          text:`Phase: ${data.latestPhase}\nScore: ${data.latestScore}`,
+          fill:"#f5f5f5",
+          fontSize:12
+        }
+      }
+    };
+
+    const yearlyData = data.years.map((y,i)=>({
+      year:y,
+      score:data.yearlyScore[i],
+      phase:data.yearlyPhase[i]
+    }));
+
+    const barData = yearlyData.map(o=>o.score);
+    const barColors = yearlyData.map(o=>phaseColorsHex[o.phase] || phaseColorsHex.Default);
+    const lineData = data.rolling3Y;
+
+    const yearlyOption = {
+      backgroundColor:"#111111",
+      tooltip:{
+        trigger:"axis",
+        formatter: params => {
+          const year = params[0].axisValue;
+          const idx  = data.years.indexOf(parseInt(year,10));
+          const phase = data.yearlyPhase[idx];
+          let s = `Year ${year}<br/>Avg Score: ${data.yearlyScore[idx].toFixed(2)}<br/>Phase: ${phase}`;
+          const lineP = params.find(p=>p.seriesName==="3Y Rolling Avg");
+          if (lineP) s += `<br/>3Y Avg: ${lineP.data.toFixed(2)}`;
+          return s;
+        }
+      },
+      legend:{
+        top:8,
+        textStyle:{ color:"#f5f5f5", fontSize:10 }
+      },
+      grid:{ left:60, right:20, top:40, bottom:40 },
+      xAxis:{
+        type:"category",
+        data:data.years,
+        axisLabel:{ color:"#f5f5f5", fontSize:10, rotate:30 },
+        axisLine:{ lineStyle:{ color:"#444" } }
+      },
+      yAxis:{
+        type:"value",
+        axisLabel:{ color:"#f5f5f5", fontSize:10 },
+        splitLine:{ lineStyle:{ color:"#222" } },
+        name:"Score"
+      },
+      series:[
+        {
+          name:"Avg Score per Year",
+          type:"bar",
+          data:barData,
+          itemStyle:{
+            color:(p)=>barColors[p.dataIndex]
+          },
+          barWidth:"60%"
+        },
+        {
+          name:"3Y Rolling Avg",
+          type:"line",
+          data:lineData,
+          smooth:true,
+          showSymbol:true,
+          symbolSize:4,
+          lineStyle:{ width:2, type:"dotted" }
+        }
+      ],
+      title:{
+        text:"Macro & Credit Regime – Yearly Scores & 3Y Rolling",
+        left:"center",
+        top:6,
+        textStyle:{ color:"#f5f5f5", fontSize:13, fontWeight:500 }
+      },
+      graphic:{
+        type:"text",
+        right:10,
+        top:10,
+        style:{
+          text:`Latest Phase: ${data.latestPhase}\nLatest Score: ${data.latestScore}`,
+          fill:"#f5f5f5",
+          fontSize:12
+        }
+      }
+    };
+
+    macroCreditOptions.heatmap = heatmapOption;
+    macroCreditOptions.yearly  = yearlyOption;
+  }
+
+  function initMacroCreditChart() {
+    if (!macroCreditChart) {
+      macroCreditChart = echarts.init(document.getElementById("macroCreditChart"));
+    }
+  }
+
+  function renderMacroCreditHeatmap() {
+    initMacroCreditChart();
+    btnHeatmap.classList.add("active");
+    btnYearly.classList.remove("active");
+    if (macroCreditOptions.heatmap) {
+      macroCreditChart.setOption(macroCreditOptions.heatmap, true);
+    }
+  }
+
+  function renderMacroCreditYearly() {
+    initMacroCreditChart();
+    btnHeatmap.classList.remove("active");
+    btnYearly.classList.add("active");
+    if (macroCreditOptions.yearly) {
+      macroCreditChart.setOption(macroCreditOptions.yearly, true);
+    }
+  }
+
+  // =========================
+  // INIT / REFRESH
+  // =========================
+
+  async function preloadMacroSeries() {
+    setStatus("Preloading macro YoY / level series…", "idle");
+    const tasks = SERIES_LIST.map(def =>
+      loadSeries(def.id).catch(err => {
+        console.error("Failed to load", def.id, err);
+        return null;
+      })
+    );
+    await Promise.all(tasks);
+  }
+
+  async function initApp() {
+    try {
+      setStatus("Initializing dashboard…", "idle");
+      await preloadMacroSeries();
+      computeAndRenderMacroHealth();
+      renderMacroCompositeChart();
+      await buildMacroCreditDashboard();
+    } catch (err) {
+      console.error(err);
+      setStatus("Init error: " + err.message, "error");
+    }
+  }
+
+  refreshBtn.addEventListener("click", async () => {
+    seriesCache.clear();
+    macroCreditOptions = { heatmap:null, yearly:null };
+    setStatus("Refreshing all data…", "idle");
+    await initApp();
+    setStatus("Refreshed", "ok");
+  });
+
+  btnHeatmap.addEventListener("click", () => {
+    renderMacroCreditHeatmap();
+  });
+
+  btnYearly.addEventListener("click", () => {
+    renderMacroCreditYearly();
+  });
+
+  window.addEventListener("load", () => {
+    initApp();
+  });
+</script>
 </body>
 </html>
