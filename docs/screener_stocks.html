@@ -38,6 +38,25 @@
     body {
       display: flex;
       flex-direction: column;
+      /* global scrollbar (kalau body ikut scroll) */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0,0,0,0.6) transparent;
+    }
+
+    /* WebKit global scrollbar */
+    body::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    body::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.6);
+      border-radius: 999px;
+    }
+    body::-webkit-scrollbar-thumb:hover {
+      background: rgba(0,0,0,0.8);
     }
 
     .app-shell {
@@ -89,6 +108,24 @@
       position: relative;
       overflow: auto;
       padding: 8px;
+
+      /* Scrollbar hitam transparan khusus area content */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0,0,0,0.6) transparent;
+    }
+
+    .content::-webkit-scrollbar {
+      width: 8px;
+    }
+    .content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .content::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.6);
+      border-radius: 999px;
+    }
+    .content:hover::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.8);
     }
 
     .panel {
@@ -147,7 +184,7 @@
         </div>
       </div>
 
-      <!-- Panel ID Stocks – pakai snippet yang kamu kirim -->
+      <!-- Panel ID Stocks -->
       <div id="panel-id" class="panel">
         <div class="tradingview-widget-container">
           <div class="tradingview-widget-container__widget"></div>
