@@ -32,12 +32,51 @@
       display:flex;
       align-items:stretch;
       justify-content:stretch;
+
+      /* Scrollbar (Firefox) */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0,0,0,0.6) transparent;
+    }
+
+    /* Scrollbar (Chrome, Edge, Safari) */
+    body::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    body::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.6);
+      border-radius: 999px;
+    }
+    body::-webkit-scrollbar-thumb:hover {
+      background: rgba(0,0,0,0.85);
     }
 
     .shell {
       flex:1;
       background:var(--bg-main);
       padding:8px;
+      overflow:auto;
+
+      /* Scrollbar khusus container */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0,0,0,0.6) transparent;
+    }
+
+    .shell::-webkit-scrollbar {
+      width: 8px;
+    }
+    .shell::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .shell::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.6);
+      border-radius: 999px;
+    }
+    .shell:hover::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.85);
     }
 
     .tradingview-widget-container {
