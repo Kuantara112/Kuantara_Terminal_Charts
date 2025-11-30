@@ -1,143 +1,591 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>US Money & Macro Risk – Kuantara Terminal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
   <style>
     :root {
-      --bg:#050505;
-      --card:#151515;
-      --accent:#ffbf00;
+      /* Kuantara Terminal Dark Theme */
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --bg-card:#151515;
+      --bg-soft:#101010;
+      --border-soft:#2b2b2b;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+      --accent-soft:rgba(255,191,0,0.16);
+      --danger:#ef4444;
+      --green:#22c55e;
     }
 
-    *{
+    * {
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:"Fira Code", monospace;
     }
 
-    body{
+    html, body {
+      height:100%;
+    }
+
+    body {
+      background:var(--bg-root);
+      color:var(--text-main);
       min-height:100vh;
       display:flex;
-      align-items:center;
       justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
-      color:var(--text-main);
+      padding:16px;
+      overflow-y:auto;
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
-      text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    body::-webkit-scrollbar {
+      width:6px;
+    }
+    body::-webkit-scrollbar-track {
+      background:transparent;
+    }
+    body::-webkit-scrollbar-thumb {
+      background:rgba(0,0,0,0.6);
+      border-radius:3px;
     }
 
-    .badge{
-      display:inline-flex;
+    .shell {
+      width:100%;
+      max-width:1200px;
+      background:var(--bg-main);
+      border-radius:10px;
+      border:1px solid var(--border-soft);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:12px;
+    }
+
+    .top-bar {
+      display:flex;
+      justify-content:space-between;
       align-items:center;
       gap:8px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
-      color:var(--accent);
-      margin-bottom:18px;
+      flex-wrap:wrap;
     }
 
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
-    }
-
-    h1{
-      font-size:22px;
-      margin-bottom:8px;
-    }
-
-    p{
-      font-size:14px;
-      line-height:1.6;
-      color:var(--text-muted);
-      margin-bottom:18px;
-    }
-
-    .time-estimate{
-      font-size:13px;
-      color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
-    }
-
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
-    }
-
-    .btn:hover{
-      background:var(--accent);
-      color:#000;
-      transform:translateY(-1px);
-    }
-
-    .footer-text{
-      margin-top:16px;
+    .status-text {
       font-size:11px;
-      color:#666;
+      color:var(--text-muted);
+    }
+
+    .status-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      font-size:11px;
+    }
+
+    .badge {
+      padding:2px 6px;
+      border-radius:999px;
+      font-size:10px;
+      border:1px solid var(--border-soft);
+      color:var(--text-muted);
+    }
+
+    .badge.ok {
+      border-color:var(--green);
+      color:var(--green);
+    }
+
+    .badge.error {
+      border-color:var(--danger);
+      color:var(--danger);
+    }
+
+    .chip {
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:10px;
+      border:1px solid var(--border-soft);
+      background:#101010;
+      color:var(--text-muted);
+      white-space:nowrap;
+    }
+
+    .main-grid {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:4px;
+    }
+
+    .card {
+      background:var(--bg-card);
+      border-radius:8px;
+      border:1px solid var(--border-soft);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .card-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .card-title {
+      font-size:13px;
+      font-weight:500;
+    }
+
+    .card-subtitle {
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .chart-box {
+      width:100%;
+      height:260px;
+    }
+
+    .chart-box-big {
+      width:100%;
+      height:320px;
+    }
+
+    @media (max-width:900px) {
+      .chart-box {
+        height:260px;
+      }
+      .chart-box-big {
+        height:320px;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
+<div class="shell">
+  <!-- Top status bar -->
+  <div class="top-bar">
+    <div class="status-text" id="statusText">Initializing…</div>
+    <div class="status-right">
+      <div id="statusBadge" class="badge">IDLE</div>
+      <div class="chip">Source: FRED</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <!-- Panel 1: M2 Money Supply -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">US M2 Money Supply &amp; MoM Change</div>
+          <div class="card-subtitle">M2SL level (left axis) vs MoM % (right axis) – since 2015</div>
+        </div>
+      </div>
+      <div id="m2Chart" class="chart-box"></div>
     </div>
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
-
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
+    <!-- Panel 2: BBB OAS vs M2 YoY vs Bitcoin -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">BBB OAS vs M2 YoY vs Bitcoin</div>
+          <div class="card-subtitle">
+            Macro risk appetite proxy – BBB OAS (bps, left), M2 YoY (%) as bars, Bitcoin (USD, right axes), NBER recessions shaded
+          </div>
+        </div>
+      </div>
+      <div id="riskChart" class="chart-box-big"></div>
     </div>
+  </div>
+</div>
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
+<script>
+  // =========================
+  // CONFIG & CORS PROXY
+  // =========================
+  const PROXIES = [
+    "https://cors-anywhere-proxy-six.vercel.app/",
+    "https://cors.eu.org/",
+    ""
+  ];
 
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
-    </div>
-  </main>
+  const API_KEY  = "8a60bcfed2f8d08cae9615b367eb85e5";
+  const FRED_OBS = "https://api.stlouisfed.org/fred/series/observations";
 
-  <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+  const statusText  = document.getElementById("statusText");
+  const statusBadge = document.getElementById("statusBadge");
+
+  let m2Chart   = null;
+  let riskChart = null;
+
+  function setStatus(text, mode = "idle") {
+    statusText.textContent = text;
+    statusBadge.textContent = mode.toUpperCase();
+    statusBadge.classList.remove("ok","error");
+    if (mode === "ok") statusBadge.classList.add("ok");
+    if (mode === "error") statusBadge.classList.add("error");
+  }
+
+  function buildProxyUrl(proxy, url) {
+    if (!proxy) return url;
+    const isCorsAnywhere = proxy.includes("cors-anywhere") || proxy.includes("vercel.app");
+    if (isCorsAnywhere) {
+      return proxy.endsWith("/") ? `${proxy}${url}` : `${proxy}/${url}`;
+    }
+    const clean = url.replace(/^https?:\/\//, "");
+    return proxy.endsWith("/") ? `${proxy}${clean}` : `${proxy}/${clean}`;
+  }
+
+  async function fetchWithProxies(url, options = {}, proxies = PROXIES) {
+    let lastError = null;
+    for (const proxy of proxies) {
+      const target = buildProxyUrl(proxy, url);
+      try {
+        const res = await fetch(target, options);
+        if (res.ok) return res;
+        lastError = new Error(`HTTP ${res.status} via ${proxy || "direct"}`);
+      } catch (e) {
+        lastError = e;
+      }
+    }
+    throw lastError || new Error("Request failed");
+  }
+
+  function buildFredObsUrl(seriesId, start, end) {
+    const params = new URLSearchParams({
+      series_id: seriesId,
+      api_key: API_KEY,
+      file_type: "json",
+      observation_start: start,
+      observation_end: end
+    });
+    return `${FRED_OBS}?${params.toString()}`;
+  }
+
+  async function fetchFredSeries(seriesId, start, end) {
+    const url = buildFredObsUrl(seriesId, start, end);
+    const res = await fetchWithProxies(url);
+    const js  = await res.json();
+    const obs = js.observations || [];
+    const dates = [];
+    const values = [];
+    for (const o of obs) {
+      const v = o.value;
+      if (v === "" || v === "." || v == null) continue;
+      const num = parseFloat(v);
+      if (Number.isNaN(num)) continue;
+      dates.push(o.date);
+      values.push(num);
+    }
+    return { dates, values };
+  }
+
+  function calcPctChangeByLag(dates, values, lag) {
+    const outDates = [];
+    const outVals  = [];
+    for (let i = 0; i < dates.length; i++) {
+      if (i < lag) continue;
+      const cur  = values[i];
+      const prev = values[i-lag];
+      if (prev == null || prev === 0 || Number.isNaN(cur) || Number.isNaN(prev)) continue;
+      const pct = (cur / prev - 1) * 100.0;
+      outDates.push(dates[i]);
+      outVals.push(pct);
+    }
+    return { dates: outDates, values: outVals };
+  }
+
+  function filterSeriesFromDate(series, startDate) {
+    const d = series.dates;
+    const v = series.values;
+    const outDates = [];
+    const outVals  = [];
+    for (let i = 0; i < d.length; i++) {
+      if (d[i] >= startDate) {
+        outDates.push(d[i]);
+        outVals.push(v[i]);
+      }
+    }
+    return { dates: outDates, values: outVals };
+  }
+
+  function recessionSpans(usrecDates, usrecValues) {
+    const spans = [];
+    const n = usrecDates.length;
+    if (!n) return spans;
+
+    const rec = usrecValues.map(v => (v >= 0.5 ? 1 : 0));
+    let currentStart = null;
+
+    for (let i = 0; i < n; i++) {
+      const val = rec[i];
+      const prev = i === 0 ? 0 : rec[i-1];
+      const date = usrecDates[i];
+
+      if (prev === 0 && val === 1) {
+        currentStart = date;
+      }
+      if (prev === 1 && val === 0 && currentStart !== null) {
+        spans.push({ start: currentStart, end: date });
+        currentStart = null;
+      }
+    }
+    if (currentStart !== null) {
+      spans.push({ start: currentStart, end: usrecDates[n-1] });
+    }
+    return spans;
+  }
+
+  function buildRecessionMarkArea(spans) {
+    return {
+      silent:true,
+      itemStyle:{
+        color:"rgba(255,255,255,0.06)"
+      },
+      data: spans.map(s => [
+        { xAxis: s.start },
+        { xAxis: s.end }
+      ])
+    };
+  }
+
+  // =========================
+  // CHART OPTIONS
+  // =========================
+  function buildM2Option(m2Series, m2MoMSeries) {
+    return {
+      backgroundColor:"#111111",
+      grid:{ left:55, right:55, top:20, bottom:30 },
+      tooltip:{
+        trigger:"axis",
+        axisPointer:{ type:"cross" },
+        formatter: params => {
+          if (!params.length) return "";
+          const date = echarts.format.formatTime("yyyy-MM-dd", params[0].value[0]);
+          let lines = `${date}<br/>`;
+          params.forEach(p => {
+            const v = p.value[1];
+            const unit = p.seriesName.includes("MoM") ? "%" : "";
+            lines += `${p.marker}${p.seriesName}: ${v.toFixed(2)}${unit}<br/>`;
+          });
+          return lines;
+        }
+      },
+      legend:{
+        top:4,
+        textStyle:{ color:"#f5f5f5", fontSize:10 }
+      },
+      xAxis:{
+        type:"time",
+        axisLine:{ lineStyle:{ color:"#444" } },
+        axisLabel:{ color:"#aaaaaa", fontSize:9 },
+        splitLine:{ show:false }
+      },
+      yAxis:[
+        {
+          type:"value",
+          name:"M2 level",
+          axisLine:{ lineStyle:{ color:"#444" } },
+          axisLabel:{ color:"#aaaaaa", fontSize:9 },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        {
+          type:"value",
+          name:"MoM (%)",
+          axisLine:{ lineStyle:{ color:"#444" } },
+          axisLabel:{ color:"#aaaaaa", fontSize:9 },
+          splitLine:{ show:false }
+        }
+      ],
+      series:[
+        {
+          name:"M2 Money Supply",
+          type:"line",
+          showSymbol:false,
+          yAxisIndex:0,
+          lineStyle:{ width:1.8, color:"#60a5fa" },
+          data: m2Series.dates.map((d,i)=>[d, m2Series.values[i]])
+        },
+        {
+          name:"MoM Change (%)",
+          type:"bar",
+          yAxisIndex:1,
+          itemStyle:{ color: "#fbbf24", opacity:0.6 },
+          data: m2MoMSeries.dates.map((d,i)=>[d, m2MoMSeries.values[i]])
+        }
+      ]
+    };
+  }
+
+  function buildRiskOption(bbb, m2YoY, btc, usrec, spans) {
+    const markArea = buildRecessionMarkArea(spans);
+
+    return {
+      backgroundColor:"#111111",
+      grid:{ left:60, right:80, top:28, bottom:40 },
+      tooltip:{
+        trigger:"axis",
+        axisPointer:{ type:"cross" },
+        formatter: params => {
+          if (!params.length) return "";
+          const date = echarts.format.formatTime("yyyy-MM-dd", params[0].value[0]);
+          let lines = `${date}<br/>`;
+          params.forEach(p => {
+            const v = p.value[1];
+            let unit = "";
+            if (p.seriesName.includes("OAS")) unit = " bps";
+            else if (p.seriesName.includes("YoY")) unit = " %";
+            lines += `${p.marker}${p.seriesName}: ${v.toFixed(2)}${unit}<br/>`;
+          });
+          return lines;
+        }
+      },
+      legend:{
+        top:4,
+        textStyle:{ color:"#f5f5f5", fontSize:10 }
+      },
+      xAxis:{
+        type:"time",
+        axisLine:{ lineStyle:{ color:"#444" } },
+        axisLabel:{ color:"#aaaaaa", fontSize:9 },
+        splitLine:{ show:false }
+      },
+      yAxis:[
+        {
+          type:"value",
+          name:"BBB OAS (bps)",
+          axisLine:{ lineStyle:{ color:"#444" } },
+          axisLabel:{ color:"#aaaaaa", fontSize:9 },
+          splitLine:{ lineStyle:{ color:"#222" } }
+        },
+        {
+          type:"value",
+          name:"M2 YoY (%)",
+          axisLine:{ lineStyle:{ color:"#444" } },
+          axisLabel:{ color:"#aaaaaa", fontSize:9 },
+          splitLine:{ show:false }
+        },
+        {
+          type:"value",
+          name:"Bitcoin (USD)",
+          axisLine:{ lineStyle:{ color:"#444" } },
+          axisLabel:{ color:"#aaaaaa", fontSize:9 },
+          splitLine:{ show:false },
+          offset:40
+        }
+      ],
+      series:[
+        {
+          name:"BBB OAS (bps)",
+          type:"line",
+          showSymbol:false,
+          yAxisIndex:0,
+          lineStyle:{ width:1.8, color:"#f97316" },
+          data: bbb.dates.map((d,i)=>[d, bbb.values[i]]),
+          markArea
+        },
+        {
+          name:"M2 YoY (%)",
+          type:"bar",
+          yAxisIndex:1,
+          itemStyle:{ color:"#22c55e", opacity:0.7 },
+          data: m2YoY.dates.map((d,i)=>[d, m2YoY.values[i]])
+        },
+        {
+          name:"Bitcoin (USD)",
+          type:"line",
+          showSymbol:false,
+          yAxisIndex:2,
+          lineStyle:{ width:1.4, color:"#38bdf8" },
+          data: btc.dates.map((d,i)=>[d, btc.values[i]])
+        }
+      ]
+    };
+  }
+
+  // =========================
+  // INIT APP
+  // =========================
+  async function initApp() {
+    try {
+      setStatus("Loading FRED series…", "idle");
+      const END   = new Date().toISOString().slice(0,10);
+
+      // Start dates:
+      // - Fetch M2 from 2014 to allow 12-month lag for YoY calc,
+      //   but all visible charts are filtered from 2015 onward.
+      const M2_START_ALL   = "2014-01-01";
+      const RISK_START     = "2015-01-01";  // Risk panel & visible window from 2015
+
+      const SERIES = {
+        M2:      "M2SL",
+        BBB_OAS: "BAMLC0A4CBBB",
+        BTC_USD: "CBBTCUSD",
+        USREC:   "USREC"
+      };
+
+      // Fetch all required series
+      const [m2Raw, bbbRaw, btcRaw, usrecRaw] = await Promise.all([
+        fetchFredSeries(SERIES.M2,      M2_START_ALL, END),
+        fetchFredSeries(SERIES.BBB_OAS, RISK_START,   END),
+        fetchFredSeries(SERIES.BTC_USD, RISK_START,   END),
+        fetchFredSeries(SERIES.USREC,   M2_START_ALL, END)
+      ]);
+
+      // --- Panel 1: M2 + MoM (visible from 2015) ---
+      const m2 = filterSeriesFromDate(m2Raw, "2015-01-01");
+      const m2MoM = calcPctChangeByLag(m2.dates, m2.values, 1);
+
+      // --- Panel 2: BBB OAS vs M2 YoY vs BTC, shading by USREC (all from 2015) ---
+      // M2 YoY: 12-period (approx 12-month) YoY, then filter to 2015
+      const m2YoYAll = calcPctChangeByLag(m2Raw.dates, m2Raw.values, 12);
+      const m2YoY = filterSeriesFromDate(m2YoYAll, RISK_START);
+
+      const bbb = bbbRaw; // already from 2015
+      const btc = btcRaw; // already from 2015
+
+      const usrec = filterSeriesFromDate(usrecRaw, RISK_START);
+      const spans = recessionSpans(usrec.dates, usrec.values);
+
+      // Init ECharts instances
+      m2Chart   = echarts.init(document.getElementById("m2Chart"));
+      riskChart = echarts.init(document.getElementById("riskChart"));
+
+      // Set options
+      m2Chart.setOption(buildM2Option(m2, m2MoM), true);
+      riskChart.setOption(buildRiskOption(bbb, m2YoY, btc, usrec, spans), true);
+
+      window.addEventListener("resize", () => {
+        m2Chart && m2Chart.resize();
+        riskChart && riskChart.resize();
+      });
+
+      setStatus("Dashboard ready", "ok");
+    } catch (err) {
+      console.error(err);
+      setStatus("Init error: " + err.message, "error");
+    }
+  }
+
+  window.addEventListener("load", () => {
+    initApp();
+  });
+</script>
 </body>
 </html>
