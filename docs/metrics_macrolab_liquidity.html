@@ -43,12 +43,11 @@
       background:var(--bg-root);
       color:var(--text-main);
       min-height:100vh;
-      display:flex;
-      justify-content:center;
       padding:16px;
       overflow-y:auto;
     }
 
+    /* Scrollbar hitam transparan */
     body::-webkit-scrollbar {
       width:6px;
     }
@@ -63,6 +62,7 @@
     .shell {
       width:100%;
       max-width:1200px;
+      margin:0 auto;
       background:var(--bg-main);
       border-radius:10px;
       border:1px solid var(--border-soft);
@@ -167,12 +167,25 @@
       height:320px;
     }
 
+    /* Mobile tuning */
     @media (max-width:900px) {
       .chart-box {
-        height:260px;
+        height:240px;
       }
       .chart-box-big {
-        height:320px;
+        height:300px;
+      }
+    }
+
+    @media (max-width:600px) {
+      body {
+        padding:10px 6px;
+      }
+      .shell {
+        padding:10px;
+      }
+      .top-bar {
+        align-items:flex-start;
       }
     }
   </style>
