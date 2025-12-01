@@ -583,7 +583,7 @@
         <div class="kt-card-header">
           <div>
             <div class="kt-card-title">AI Macro Summary</div>
-            <div class="kt-card-subtitle">Synthesized Macro &amp; Trade Ideas</div>
+            <div class="kt-card-subtitle">Synthesized Macro &amp; Trade Ideas<span id="kt-timestamp"></span></div>
           </div>
           <button class="kt-card-btn" onclick="generateSummary()">REFRESH AI</button>
         </div>
@@ -737,7 +737,7 @@
     function updateTimestamp(ts) {
       const el = document.getElementById("kt-timestamp");
       if (!el) return;
-      el.textContent = "· Last: " + ts;
+      el.textContent = " · Last: " + ts;
     }
 
     // ============================
@@ -1190,7 +1190,7 @@
     const AI_STRUCTURED_PROMPT = `Bertindak sebagai **macro strategist** dan **trader multi-aset**.
 
 Tugasmu:
-1. Jelaskan kondisi global makro **terbaru (<= 2 hari terakhir,WAJIB INFORMASI TERBARU!) dari sumber Reuters,Bloomberg,Invesinglive,Livesquawk,Yahoo Finance atau sebagainya** mencakup: 
+1. Jelaskan kondisi global makro **terkini** (anggap data 1–2 hari terakhir) mencakup:
    - headlines berita utama,
    - speech/komentar bank sentral,
    - informasi suku bunga dan probabilitas hikes/cuts/hold,
@@ -1198,7 +1198,7 @@ Tugasmu:
    - data ekonomi kunci,
    - sentimen risk-on/risk-off,
    - kekuatan dolar AS,
-   - faktor geopolitik utama **(pilih hanya yang betul-betul relevan & terbaru)**.
+   - faktor geopolitik utama **yang relevan sekarang**.
 2. Buat ide trade **hari ini** untuk 4 kelompok aset:
    - Forex – 3–5 pasangan mayor/cross,
    - Komoditas utama – emas, perak, minyak, dsb,
@@ -1215,7 +1215,8 @@ Tugasmu:
 4. Berikan \`risk_score\` 0–100 dimana 0 = sangat Risk-Off, 50 = netral, 100 = sangat Risk-On.
 
 **Aturan Penting:**
-- Gunakan **hanya informasi yang wajar terjadi dalam 5 hari terakhir**; jika ragu, buat asumsi yang realistis.
+- Gunakan **hanya informasi yang wajar terjadi dalam 5 hari terakhir**; jika ragu, buat asumsi yang realistis berdasarkan pola historis pasar.
+- **Jangan lakukan browsing atau pencarian web**; cukup gunakan pengetahuan makro umum dan pola pasar yang masuk akal.
 - **Jangan** tampilkan harga, level teknikal, atau timeframe spesifik.
 - Fokus pada **bias** & **alasan makro**.
 - Jawab dalam **Bahasa Indonesia**.
@@ -1305,9 +1306,12 @@ Struktur JSON yang HARUS kamu ikuti:
             user_input_text: "Generate macro market summary & trades"
           }
         ],
-        tools: { auto: ["search"] },
+        // OPTIM: matikan tools search biar latency jauh berkurang
+        tools: {},
         stream: true,
-        output_language: "id"
+        output_language: "id",
+        // OPTIM: batasi panjang output supaya respon lebih cepat
+        max_output_tokens: 900
       };
 
       const resp = await fetch(`${API_BASE}/completions`, {
@@ -1477,7 +1481,8 @@ Struktur JSON yang HARUS kamu ikuti:
         btn.style.opacity = "0.7";
       }
 
-      updateAiSummary("Memahami kondisi market sekitar 20 detik, harap bersabar...");
+      // UX: info waktu tunggu lebih pendek
+      updateAiSummary("Memahami kondisi market sekitar 8–10 detik, harap tunggu sebentar...");
       updateTradingSignals([]);
       updateHeadlines([]);
 
@@ -1503,7 +1508,7 @@ Struktur JSON yang HARUS kamu ikuti:
     function initDashboard() {
       renderStaticNonMarket();  // lightweight dummy untuk first paint
       loadMarketDataOnce();     // Fetch TV data sekali saat user buka page
-      generateSummary();        // 🔥 Auto-jalankan AI saat halaman dibuka
+      generateSummary();        // Auto-jalankan AI saat halaman dibuka
     }
 
     window.addEventListener("DOMContentLoaded", initDashboard);
