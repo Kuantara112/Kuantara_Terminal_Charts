@@ -448,7 +448,7 @@
 
       <div class="panel-note" id="statusNote">
         &gt; SYSTEM STATUS: INIT<br>
-        &gt; DATA FEED: Connecting to Kuantara TradingView REST…
+        &gt; DATA FEED: Connecting…
       </div>
     </div>
 
@@ -586,7 +586,7 @@
   // ==========================
   async function refreshSnapshots() {
     const statusEl = document.getElementById("statusNote");
-    statusEl.innerHTML = "&gt; SYSTEM STATUS: LOADING…<br>&gt; DATA FEED: /api/tvohlc/ohlcv (daily)";
+    statusEl.innerHTML = "&gt; SYSTEM STATUS: LOADING…<br>&gt; DATA FEED: Kuantara Analytics";
 
     let ok = 0;
     let fail = 0;
@@ -609,7 +609,7 @@
     if (fail === 0) {
       statusEl.innerHTML =
         "&gt; SYSTEM STATUS: ONLINE<br>" +
-        "&gt; DATA FEED: Kuantara TradingView REST (D 1D, ~1Y history)";
+        "&gt; DATA FEED: Kuantara Analytics";
     } else if (ok > 0) {
       statusEl.innerHTML =
         `&gt; SYSTEM STATUS: PARTIAL (${ok} OK / ${fail} FAIL)<br>` +
@@ -617,7 +617,7 @@
     } else {
       statusEl.innerHTML =
         "&gt; SYSTEM STATUS: ERROR<br>" +
-        "&gt; DATA FEED: Cannot reach /api/tvohlc/ohlcv – verify backend.";
+        "&gt; DATA FEED: Cannot reach – verify backend.";
     }
   }
 
