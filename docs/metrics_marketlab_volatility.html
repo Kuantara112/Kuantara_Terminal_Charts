@@ -1,143 +1,544 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuantara – Cross-Asset Volatility Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap">
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
 
   <style>
-    :root {
-      --bg:#050505;
-      --card:#151515;
-      --accent:#ffbf00;
+    :root{
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#2b2b2b;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+      --green:#22c55e;
+      --red:#ef4444;
     }
-
     *{
-      box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      box-sizing:border-box;
+      font-family:"Fira Code",monospace;
     }
-
+    html, body{
+      height:100%;
+    }
     body{
-      min-height:100vh;
+      background:var(--bg-root);
+      color:var(--text-main);
+      padding:10px;
       display:flex;
+      align-items:stretch;
+      justify-content:center;
+    }
+    .shell{
+      width:100%;
+      max-width:1600px;
+      min-height:calc(100vh - 20px);
+      margin:0 auto;
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:10px;
+      padding:8px 10px 10px 10px;
+      display:flex;
+      flex-direction:column;
+    }
+    .header{
+      display:flex;
+      flex-direction:column;
       align-items:center;
       justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
-      color:var(--text-main);
+      gap:4px;
+      margin-bottom:4px;
     }
-
-    .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
+    .title{
+      font-size:15px;
+      font-weight:600;
       text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
     }
 
-    .badge{
+    .status-row{
+      display:flex;
+      justify-content:center;
+      width:100%;
+    }
+    .chip{
       display:inline-flex;
       align-items:center;
-      gap:8px;
-      padding:6px 12px;
+      gap:6px;
+      padding:3px 8px;
       border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
-      color:var(--accent);
-      margin-bottom:18px;
+      font-size:10px;
+      border:1px solid var(--border-soft);
+      background:#181818;
+      color:var(--text-muted);
     }
-
-    .dot{
-      width:8px;
-      height:8px;
+    .chip-dot{
+      width:7px;
+      height:7px;
       border-radius:50%;
+    }
+    .chip-loading .chip-dot{
       background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
+      animation:pulse 1s infinite ease-in-out;
+    }
+    .chip-ready{
+      border-color:rgba(34,197,94,0.5);
+      color:#bbf7d0;
+    }
+    .chip-ready .chip-dot{
+      background:var(--green);
+    }
+    .chip-error{
+      border-color:rgba(239,68,68,0.6);
+      color:#fecaca;
+    }
+    .chip-error .chip-dot{
+      background:var(--red);
+    }
+    @keyframes pulse{
+      0%{ transform:scale(0.9); opacity:0.4; }
+      50%{ transform:scale(1.2); opacity:1; }
+      100%{ transform:scale(0.9); opacity:0.4; }
     }
 
-    h1{
-      font-size:22px;
-      margin-bottom:8px;
+    #vol-chart{
+      flex:1;
+      width:100%;
+      min-height:300px;
     }
 
-    p{
-      font-size:14px;
-      line-height:1.6;
-      color:var(--text-muted);
-      margin-bottom:18px;
+    /* ====== Responsive tweaks ====== */
+    @media (max-width: 900px){
+      body{
+        padding:8px;
+      }
+      .shell{
+        padding:6px 8px 8px 8px;
+        border-radius:9px;
+      }
+      .title{
+        font-size:14px;
+      }
+      #vol-chart{
+        min-height:280px;
+      }
     }
 
-    .time-estimate{
-      font-size:13px;
-      color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
-    }
-
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
-    }
-
-    .btn:hover{
-      background:var(--accent);
-      color:#000;
-      transform:translateY(-1px);
-    }
-
-    .footer-text{
-      margin-top:16px;
-      font-size:11px;
-      color:#666;
+    @media (max-width: 600px){
+      body{
+        padding:6px;
+      }
+      .shell{
+        padding:6px;
+        border-radius:8px;
+      }
+      .title{
+        font-size:13px;
+      }
+      #vol-chart{
+        min-height:260px;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
+<div class="shell">
+  <div class="header">
+    <div class="title">Cross-Asset Volatility Risk Dashboard – Kuantara</div>
+    <div class="status-row">
+      <div id="status-chip" class="chip chip-loading">
+        <span class="chip-dot"></span>
+        <span id="status-text">Loading volatility data…</span>
+      </div>
     </div>
+  </div>
+  <div id="vol-chart"></div>
+</div>
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
+<script>
+/* ===========================
+   CONFIG
+=========================== */
+const API_BASE = "https://kuancloud.loclx.io/api/tvohlc/ohlcv";
+const INTERVAL = "1D";
+const BASELINE_BARS = 520;
+const LOOKBACK_DAYS = 30;
 
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
-    </div>
+const VOL_TICKERS = {
+  "Gold Vol (GVZ)":   "GVZ",
+  "Oil Vol (OVX)":    "OVX",
+  "S&P 500 Vol (VIX)": "VIX",
+  "Nasdaq-100 Vol (VXN)": "VXN",
+  "Treasury/Bond Vol (MOVE)": "MOVE"
+};
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
+const LEFT_SERIES  = ["Gold Vol (GVZ)", "S&P 500 Vol (VIX)", "Nasdaq-100 Vol (VXN)"];
+const RIGHT_SERIES = ["Oil Vol (OVX)",  "Treasury/Bond Vol (MOVE)"];
 
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
-    </div>
-  </main>
+const COLORS = {
+  "Gold Vol (GVZ)": "#B8860B",
+  "Oil Vol (OVX)": "#1976D2",
+  "S&P 500 Vol (VIX)": "#D32F2F",
+  "Nasdaq-100 Vol (VXN)": "#7B1FA2",
+  "Treasury/Bond Vol (MOVE)": "#00897B"
+};
+const COMPOSITE_COLOR = "#ff9800";
 
-  <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+let cache = {};
+
+/* ===========================
+   STATUS CHIP HELPERS
+=========================== */
+const statusChip = document.getElementById("status-chip");
+const statusText = document.getElementById("status-text");
+
+function setStatusLoading(){
+  statusChip.classList.remove("chip-ready","chip-error");
+  statusChip.classList.add("chip-loading");
+  statusText.textContent = "Loading volatility data…";
+}
+function setStatusReady(){
+  statusChip.classList.remove("chip-loading","chip-error");
+  statusChip.classList.add("chip-ready");
+  statusText.textContent = "Ready • Live from Kuantara TV feed";
+}
+function setStatusError(msg){
+  statusChip.classList.remove("chip-loading","chip-ready");
+  statusChip.classList.add("chip-error");
+  statusText.textContent = msg || "Error loading data";
+}
+
+/* ===========================
+   FETCH + PREP
+=========================== */
+async function fetchSeries(symbol){
+  if (cache[symbol]) return cache[symbol];
+
+  const url = `${API_BASE}?symbol=${encodeURIComponent(symbol)}&interval=${INTERVAL}&bars_count=${BASELINE_BARS}`;
+  const res = await fetch(url);
+  const js  = await res.json();
+  if (!js.ok || !js.results || !js.results[0]?.bars){
+    cache[symbol] = [];
+    return [];
+  }
+  const bars = js.results[0].bars
+    .slice()
+    .sort((a,b)=>a.timestamp - b.timestamp)
+    .map(b => ({
+      t: b.timestamp * 1000,
+      v: b.close
+    }))
+    .filter(p => Number.isFinite(p.v));
+
+  cache[symbol] = bars;
+  return bars;
+}
+
+const mean = arr => arr.reduce((a,b)=>a+b,0) / (arr.length || 1);
+function std(arr){
+  if (!arr.length) return 1;
+  const m = mean(arr);
+  const v = arr.reduce((s,x)=>s+(x-m)*(x-m),0) / arr.length;
+  return v === 0 ? 1 : Math.sqrt(v);
+}
+
+/* ===========================
+   BUILD DATA
+=========================== */
+async function buildVolData(){
+  const entries = Object.entries(VOL_TICKERS);
+  const seriesMap = {};
+
+  await Promise.all(entries.map(async ([name, sym]) => {
+    const bars = await fetchSeries(sym);
+    if (!bars.length) return;
+    seriesMap[name] = bars;
+  }));
+
+  const compAccumulator = {};
+  let globalMaxT = 0;
+
+  for (const [name, bars] of Object.entries(seriesMap)){
+    const values = bars.map(p => p.v);
+    const m = mean(values);
+    const s = std(values);
+    const zSeries = bars.map(p => ({
+      t: p.t,
+      z: (p.v - m) / s
+    }));
+
+    for (const pt of zSeries){
+      if (!Number.isFinite(pt.z)) continue;
+      const key = pt.t;
+      if (!compAccumulator[key]) compAccumulator[key] = {sum:0,count:0};
+      compAccumulator[key].sum   += pt.z;
+      compAccumulator[key].count += 1;
+      if (pt.t > globalMaxT) globalMaxT = pt.t;
+    }
+  }
+
+  const composite = Object.entries(compAccumulator)
+    .map(([t,obj]) => ({
+      t: Number(t),
+      z: obj.sum / obj.count
+    }))
+    .sort((a,b)=>a.t - b.t);
+
+  const cutoff = globalMaxT - LOOKBACK_DAYS * 24*60*60*1000;
+
+  const focusSeries = {};
+  for (const [name,bars] of Object.entries(seriesMap)){
+    focusSeries[name] = bars.filter(p => p.t >= cutoff);
+  }
+  const compositeFocus = composite.filter(p => p.t >= cutoff);
+
+  return { focusSeries, compositeFocus };
+}
+
+/* ===========================
+   MARK AREA HELPERS
+=========================== */
+function buildBands(points, threshold){
+  const bands = [];
+  if (!points.length) return bands;
+
+  let start = null;
+  for (let i=0;i<points.length;i++){
+    const over = points[i].z > threshold;
+    if (over && start === null){
+      start = points[i].t;
+    }
+    const isLast = (i === points.length - 1);
+    if ((!over && start !== null) || (isLast && over)){
+      const end = isLast && over ? points[i].t : points[i-1].t;
+      bands.push([{ xAxis: start }, { xAxis: end }]);
+      start = null;
+    }
+  }
+  return bands;
+}
+
+/* ===========================
+   RENDER ECHARTS
+=========================== */
+function renderVolChart(focusSeries, compositeFocus){
+  const chartDom = document.getElementById("vol-chart");
+  const chart = echarts.init(chartDom);
+
+  const xData = {};
+  for (const [name, arr] of Object.entries(focusSeries)){
+    xData[name] = arr.map(p => [p.t, p.v]);
+  }
+  const compData = compositeFocus.map(p => [p.t, p.z]);
+
+  const vixArr = focusSeries["S&P 500 Vol (VIX)"] || [];
+  const vixBands = [];
+  if (vixArr.length){
+    let start = null;
+    for (let i=0;i<vixArr.length;i++){
+      const over = vixArr[i].v > 20;
+      if (over && start===null) start=vixArr[i].t;
+      const isLast = (i===vixArr.length-1);
+      if ((!over && start!==null) || (isLast && over)){
+        const end = isLast && over ? vixArr[i].t : vixArr[i-1].t;
+        vixBands.push([{ xAxis:start }, { xAxis:end }]);
+        start=null;
+      }
+    }
+  }
+
+  const compBands = buildBands(compositeFocus, 2);
+
+  const series = [];
+
+  LEFT_SERIES.forEach(name => {
+    if (!xData[name]) return;
+    series.push({
+      name,
+      type:"line",
+      xAxisIndex:0,
+      yAxisIndex:0,
+      data:xData[name],
+      smooth:true,
+      showSymbol:false,
+      lineStyle:{ width:2, color:COLORS[name] }
+    });
+  });
+
+  RIGHT_SERIES.forEach(name => {
+    if (!xData[name]) return;
+    series.push({
+      name,
+      type:"line",
+      xAxisIndex:0,
+      yAxisIndex:1,
+      data:xData[name],
+      smooth:true,
+      showSymbol:false,
+      lineStyle:{ width:2, color:COLORS[name] }
+    });
+  });
+
+  if (xData["S&P 500 Vol (VIX)"]){
+    series.push({
+      name:"",
+      type:"line",
+      xAxisIndex:0,
+      yAxisIndex:0,
+      data:[],
+      markArea:{
+        itemStyle:{ color:"rgba(220,38,38,0.18)" },
+        data:vixBands
+      },
+      silent:true
+    });
+  }
+
+  const compositeName = "Composite Vol Risk (avg z-score)";
+  series.push({
+    name: compositeName,
+    type:"line",
+    xAxisIndex:1,
+    yAxisIndex:2,
+    data:compData,
+    smooth:true,
+    showSymbol:false,
+    lineStyle:{ width:2, color:COMPOSITE_COLOR },
+    areaStyle:{ color:"rgba(255,152,0,0.15)" },
+    markLine:{
+      symbol:"none",
+      lineStyle:{ type:"dashed", color:"#e5e5e5" },
+      label:{ color:"#e5e5e5", fontSize:10 },
+      data:[
+        { yAxis:0, label:{ formatter:"Neutral (0σ)" } },
+        { yAxis:1, label:{ formatter:"+1σ Elevated" } },
+        { yAxis:2, label:{ formatter:"+2σ Stress" } }
+      ]
+    },
+    markArea:{
+      itemStyle:{ color:"rgba(244,67,54,0.18)" },
+      data:compBands
+    }
+  });
+
+  const legendNames = [...LEFT_SERIES, ...RIGHT_SERIES, compositeName];
+
+  chart.setOption({
+    backgroundColor:"#111111",
+    color:[
+      COLORS["Gold Vol (GVZ)"],
+      COLORS["S&P 500 Vol (VIX)"],
+      COLORS["Nasdaq-100 Vol (VXN)"],
+      COLORS["Oil Vol (OVX)"],
+      COLORS["Treasury/Bond Vol (MOVE)"],
+      COMPOSITE_COLOR
+    ],
+    animation:true,
+    title:{
+      text:"Cross-Asset Volatility Risk Dashboard",
+      left:"center",
+      top:4,
+      textStyle:{ color:"#f5f5f5", fontSize:13, fontWeight:600 }
+    },
+    tooltip:{
+      trigger:"axis",
+      axisPointer:{ type:"cross" }
+    },
+    legend:{
+      type:"scroll",
+      top:26,
+      left:40,
+      right:40,
+      orient:"horizontal",
+      data:legendNames,
+      selectedMode:"multiple",
+      itemWidth:12,
+      itemHeight:8,
+      itemGap:16,
+      textStyle:{ color:"#f5f5f5", fontSize:10 },
+      icon:"roundRect"
+    },
+    grid:[
+      { left:56, right:40, top:60, height:"50%" },
+      { left:56, right:40, top:"68%", height:"24%" }
+    ],
+    xAxis:[
+      {
+        type:"time",
+        gridIndex:0,
+        axisLabel:{ color:"#d4d4d4" },
+        axisLine:{ lineStyle:{ color:"#555" } },
+        splitLine:{ lineStyle:{ color:"rgba(255,255,255,0.08)" } }
+      },
+      {
+        type:"time",
+        gridIndex:1,
+        axisLabel:{ color:"#d4d4d4" },
+        axisLine:{ lineStyle:{ color:"#555" } },
+        splitLine:{ lineStyle:{ color:"rgba(255,255,255,0.08)" } }
+      }
+    ],
+    yAxis:[
+      {
+        type:"value",
+        gridIndex:0,
+        name:"Vol (GVZ / VIX / VXN)",
+        nameTextStyle:{ color:"#e5e5e5", fontSize:10 },
+        axisLabel:{ color:"#d4d4d4" },
+        axisLine:{ lineStyle:{ color:"#555" } },
+        splitLine:{ lineStyle:{ color:"rgba(255,255,255,0.08)" } }
+      },
+      {
+        type:"value",
+        gridIndex:0,
+        name:"Vol (OVX / MOVE)",
+        nameTextStyle:{ color:"#e5e5e5", fontSize:10 },
+        axisLabel:{ color:"#d4d4d4" },
+        axisLine:{ lineStyle:{ color:"#555" } },
+        splitLine:{ show:false }
+      },
+      {
+        type:"value",
+        gridIndex:1,
+        name:"Composite z-score",
+        nameTextStyle:{ color:"#e5e5e5", fontSize:10 },
+        axisLabel:{ color:"#d4d4d4" },
+        axisLine:{ lineStyle:{ color:"#555" } },
+        splitLine:{ lineStyle:{ color:"rgba(255,255,255,0.10)" } }
+      }
+    ],
+    series
+  });
+
+  const resizeHandler = () => chart.resize();
+  window.addEventListener("resize", resizeHandler);
+  window.addEventListener("orientationchange", resizeHandler);
+}
+
+/* ===========================
+   RUN
+=========================== */
+(async function init(){
+  try{
+    setStatusLoading();
+    const { focusSeries, compositeFocus } = await buildVolData();
+    renderVolChart(focusSeries, compositeFocus);
+    setStatusReady();
+  }catch(err){
+    console.error("Error building volatility dashboard:", err);
+    setStatusError("Error loading data");
+  }
+})();
+</script>
 </body>
 </html>
