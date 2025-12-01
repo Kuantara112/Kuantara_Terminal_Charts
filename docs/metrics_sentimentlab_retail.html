@@ -1,1 +1,507 @@
-testt
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuantara – Retail Trader Positioning Explorer</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <!-- PapaParse for CSV -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <style>
+    :root {
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --bg-card:#151515;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+      --accent-soft:rgba(255,191,0,0.14);
+      --green:#22c55e;
+      --red:#ef4444;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace;
+    }
+
+    html, body{
+      width:100%;
+      height:100%;
+    }
+
+    body{
+      background:var(--bg-root);
+      color:var(--text-main);
+      padding:14px;
+    }
+
+    .shell{
+      max-width:1400px;
+      width:100%;
+      margin:0 auto;
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:10px;
+      padding:14px 16px 12px;
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .title-block{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .title{
+      font-size:14px;
+      font-weight:600;
+      letter-spacing:0.04em;
+    }
+
+    .subtitle{
+      font-size:11px;
+      color:var(--text-muted);
+    }
+
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    select, button{
+      background:#181818;
+      color:var(--text-main);
+      border:1px solid var(--border-soft);
+      border-radius:6px;
+      padding:5px 8px;
+      font-size:11px;
+      outline:none;
+    }
+
+    select:focus, button:focus{
+      border-color:var(--accent);
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    button#refreshBtn{
+      padding:4px 10px;
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      background:var(--accent-soft);
+      border-color:var(--accent);
+    }
+
+    .legend-inline{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:8px;
+      font-size:10.5px;
+      color:var(--text-muted);
+      margin-top:6px;
+      margin-bottom:8px;
+    }
+
+    .legend-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#141414;
+      font-size:10px;
+    }
+
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+    }
+    .dot.green{ background:var(--green); }
+    .dot.red{ background:var(--red); }
+
+    /* Layout: chart + insight side-by-side (desktop) */
+    .chart-layout{
+      display:flex;
+      gap:12px;
+      align-items:stretch;
+    }
+
+    #chart{
+      flex:3;
+      width:100%;
+      min-height:320px;
+      height:420px; /* default desktop */
+    }
+
+    .insight-box{
+      flex:1;
+      padding:8px 10px;
+      border-radius:6px;
+      background:#050505;
+      border:1px solid #3b3b3b;
+      font-size:10.5px;
+      white-space:pre-wrap;
+      color:#ffb86c;
+      overflow-y:auto;
+      max-height:420px;
+    }
+
+    /* Tablet breakpoint: sedikit lebih pendek & fleksibel */
+    @media (max-width:1024px){
+      #chart{
+        height:360px;
+      }
+      .insight-box{
+        max-height:360px;
+      }
+    }
+
+    /* Mobile breakpoint */
+    @media (max-width:768px){
+      body{
+        padding:8px;
+      }
+
+      .shell{
+        padding:10px 10px 8px;
+        width:100%;
+        max-width:100%;
+      }
+
+      .header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:6px;
+      }
+
+      .toolbar{
+        width:100%;
+        justify-content:space-between;
+      }
+
+      .chart-layout{
+        flex-direction:column;
+      }
+
+      #chart{
+        /* kombinasi px + vh supaya nyaman di berbagai tinggi layar */
+        height:min(360px, 55vh);
+        min-height:260px;
+      }
+
+      .insight-box{
+        max-height:none;   /* biar ikut tinggi konten, tinggal scroll page */
+        width:100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <div class="header">
+    <div class="title-block">
+      <div class="title">Retail Trader Positioning (Contrarian Signal)</div>
+      <!-- subtitle/source removed as requested -->
+    </div>
+    <div class="toolbar">
+      <label style="font-size:11px;color:var(--text-muted);">Instrument:</label>
+      <select id="symbolSelect"></select>
+      <button id="refreshBtn">Refresh</button>
+    </div>
+  </div>
+
+  <div class="legend-inline">
+    <span>Metric:</span>
+    <span class="legend-chip">
+      <span class="dot green"></span> Net Volume &gt; 0 (Long biased)
+    </span>
+    <span class="legend-chip">
+      <span class="dot red"></span> Net Volume &lt; 0 (Short biased)
+    </span>
+  </div>
+
+  <div class="chart-layout">
+    <div id="chart"></div>
+    <div id="insightBox" class="insight-box">
+      Loading data…
+    </div>
+  </div>
+</div>
+
+<script>
+  // ====== CONFIG ======
+  const CSV_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWayEkrZWh7grHVehTR9ItvwUvmX_JoWZmLxjbkyQQmduwuglDcxOu-8EYbGDnv1_ZCqsCahVEUWdU/pub?gid=0&single=true&output=csv";
+
+  const chart = echarts.init(document.getElementById('chart'));
+
+  let symbolDataMap = {}; // { 'AUDUSD': [{time, netVolume, longPct, shortPct, ...}, ...] }
+
+  // Konversi angka format lokal (contoh: "10.709,39" atau "10709,39") ke Number JS
+  function parseNumberLocal(str) {
+    if (str == null) return null;
+    str = String(str).trim();
+    if (str === "") return null;
+    // hapus spasi
+    str = str.replace(/\s/g, '');
+    // kalau ada titik sebagai pemisah ribuan, hapus
+    // lalu koma jadi titik
+    return Number(str.replace(/\./g, '').replace(',', '.'));
+  }
+
+  // Parse tanggal "DD/MM/YYYY" atau "DD/MM/YYYY HH:MM:SS"
+  function parseDateDMY(str) {
+    if (!str) return new Date(NaN);
+    const [datePart, timePart] = String(str).split(' ');
+    const [d, m, y] = datePart.split(/[\/-]/).map(Number);
+    if (!d || !m || !y) return new Date(str); // fallback
+    if (timePart) {
+      const [hh, mm, ss] = timePart.split(':').map(v => Number(v) || 0);
+      return new Date(y, m - 1, d, hh, mm, ss);
+    }
+    return new Date(y, m - 1, d);
+  }
+
+  function formatDateLabel(d) {
+    if (!(d instanceof Date) || isNaN(d)) return '';
+    return d.toLocaleString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  function loadCSVAndRender() {
+    document.getElementById('insightBox').textContent = 'Loading data…';
+
+    Papa.parse(CSV_URL, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: function (results) {
+        const rows = results.data;
+        if (!rows || !rows.length) {
+          document.getElementById('insightBox').textContent = 'No data.';
+          return;
+        }
+
+        // Bangun map per symbol
+        symbolDataMap = {};
+
+        rows.forEach(row => {
+          const sym = row.symbol || row.Symbol || row.SYMBOL;
+          if (!sym) return;
+
+          const ts = row.timestamp || row.Timestamp || row.TIMESTAMP;
+          const dt = parseDateDMY(ts);
+
+          const point = {
+            rawTimestamp: ts,
+            date: dt,
+            netVolume: parseNumberLocal(row.netVolume),
+            longPct: parseNumberLocal(row.longPct),
+            shortPct: parseNumberLocal(row.shortPct),
+            longVolume: parseNumberLocal(row.longVolume),
+            shortVolume: parseNumberLocal(row.shortVolume),
+            longPositions: parseNumberLocal(row.longPositions),
+            shortPositions: parseNumberLocal(row.shortPositions),
+            totalPositions: parseNumberLocal(row.totalPositions),
+            avgLongPrice: parseNumberLocal(row.avgLongPrice),
+            avgShortPrice: parseNumberLocal(row.avgShortPrice)
+          };
+
+          if (!symbolDataMap[sym]) symbolDataMap[sym] = [];
+          symbolDataMap[sym].push(point);
+        });
+
+        // Sort tiap symbol berdasarkan waktu
+        Object.keys(symbolDataMap).forEach(sym => {
+          symbolDataMap[sym].sort((a, b) => a.date - b.date);
+        });
+
+        // Isi dropdown
+        const select = document.getElementById('symbolSelect');
+        select.innerHTML = '';
+        Object.keys(symbolDataMap).forEach(sym => {
+          const opt = document.createElement('option');
+          opt.value = sym;
+          opt.textContent = sym;
+          select.appendChild(opt);
+        });
+
+        // Render default: symbol pertama
+        const defaultSym = select.value || Object.keys(symbolDataMap)[0];
+        if (defaultSym) {
+          renderSymbol(defaultSym);
+        } else {
+          document.getElementById('insightBox').textContent = 'No symbol data found.';
+        }
+      },
+      error: function (err) {
+        document.getElementById('insightBox').textContent =
+          'Error loading CSV: ' + err;
+      }
+    });
+  }
+
+  function renderSymbol(symbol) {
+    const seriesData = symbolDataMap[symbol];
+    if (!seriesData || !seriesData.length) {
+      document.getElementById('insightBox').textContent =
+        'No data for symbol ' + symbol;
+      chart.clear();
+      return;
+    }
+
+    const xLabels = seriesData.map(p => formatDateLabel(p.date));
+    const netVolumes = seriesData.map(p => p.netVolume);
+
+    // Bagi ke positif/negatif untuk warna berbeda
+    const positive = netVolumes.map(v => v > 0 ? v : null);
+    const negative = netVolumes.map(v => v < 0 ? v : null);
+
+    const option = {
+      backgroundColor: '#111111',
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'cross' },
+        formatter: function (params) {
+          const p = params.find(x => x.seriesName === 'Net Volume');
+          if (!p) return '';
+          const idx = p.dataIndex;
+          const row = seriesData[idx];
+          return [
+            '<b>' + symbol + '</b> – ' + xLabels[idx],
+            'Net Volume: ' + row.netVolume.toFixed(2) + ' lots',
+            'Long/Short %: ' + row.longPct.toFixed(1) + '% / ' + row.shortPct.toFixed(1) + '%',
+            'Volume L/S: ' + row.longVolume.toFixed(2) + ' / ' + row.shortVolume.toFixed(2),
+            'Positions L/S: ' + row.longPositions + ' / ' + row.shortPositions,
+            'Avg Prices L/S: ' + row.avgLongPrice.toFixed(4) + ' / ' + row.avgShortPrice.toFixed(4)
+          ].join('<br>');
+        }
+      },
+      grid: {
+        left: 60,
+        right: 20,
+        top: 30,
+        bottom: 70
+      },
+      xAxis: {
+        type: 'category',
+        data: xLabels,
+        axisLabel: {
+          color: '#9b9b9b',
+          fontSize: 10,
+          rotate: 45
+        },
+        axisLine: { lineStyle: { color: '#444' } }
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: { color: '#9b9b9b', fontSize: 10 },
+        axisLine: { lineStyle: { color: '#444' } },
+        splitLine: { lineStyle: { color: '#222' } },
+        name: 'Net Volume (lots)',
+        nameTextStyle: { color: '#9b9b9b', fontSize: 10 }
+      },
+      series: [
+        {
+          name: 'Net Volume',
+          type: 'line',
+          data: netVolumes,
+          symbol: 'circle',
+          symbolSize: 3,
+          lineStyle: { width: 1.3, color: '#cfcfcf' },
+          areaStyle: { opacity: 0 }, // garis utama untuk tooltip
+          showSymbol: false,
+          z: 3
+        },
+        {
+          name: 'Positive',
+          type: 'line',
+          data: positive,
+          symbol: 'none',
+          lineStyle: { width: 0 },
+          areaStyle: { opacity: 0.35, color: '#22c55e' },
+          z: 2
+        },
+        {
+          name: 'Negative',
+          type: 'line',
+          data: negative,
+          symbol: 'none',
+          lineStyle: { width: 0 },
+          areaStyle: { opacity: 0.35, color: '#ef4444' },
+          z: 1
+        }
+      ]
+    };
+
+    chart.setOption(option);
+
+    // Insight terakhir (moved to side box)
+    const latest = seriesData[seriesData.length - 1];
+    const tsLabel = formatDateLabel(latest.date);
+    const netStr  = latest.netVolume.toFixed(2);
+    const dir = latest.netVolume > 0 ? 'Net Long' : 'Net Short';
+
+    const insightLines = [
+      `Retail Insights for ${symbol} (${tsLabel})`,
+      ``,
+      `Net Volume : ${netStr} lots (${dir})`,
+      `Long/Short % : ${latest.longPct.toFixed(1)}% / ${latest.shortPct.toFixed(1)}%`,
+      `Volume L/S : ${latest.longVolume.toFixed(2)} / ${latest.shortVolume.toFixed(2)}`,
+      `Positions L/S : ${latest.longPositions} / ${latest.shortPositions}`,
+      `Total Positions : ${latest.totalPositions}`,
+      `Avg Prices L/S : ${latest.avgLongPrice.toFixed(4)} / ${latest.avgShortPrice.toFixed(4)}`
+    ];
+
+    document.getElementById('insightBox').textContent =
+      insightLines.join('\n');
+  }
+
+  // Event listeners
+  document.getElementById('symbolSelect').addEventListener('change', function () {
+    const sym = this.value;
+    renderSymbol(sym);
+  });
+
+  document.getElementById('refreshBtn').addEventListener('click', function () {
+    loadCSVAndRender();
+  });
+
+  // Init
+  loadCSVAndRender();
+  window.addEventListener('resize', () => chart.resize());
+</script>
+</body>
+</html>
