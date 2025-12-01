@@ -59,7 +59,7 @@
     .header{
       display:flex;
       justify-content:space-between;
-      align-items:center;
+      align-items:flex-start;
       gap:12px;
       margin-bottom:12px;
     }
@@ -83,10 +83,27 @@
 
     .toolbar{
       display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:4px;
+      min-width:210px;
+    }
+
+    .toolbar-top{
+      display:flex;
       flex-wrap:wrap;
       gap:8px;
       justify-content:flex-end;
       align-items:center;
+    }
+
+    .toolbar-bottom{
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .last-update-label{
+      opacity:0.9;
     }
 
     select, button{
@@ -146,6 +163,21 @@
     .dot.green{ background:var(--green); }
     .dot.red{ background:var(--red); }
 
+    .contrarian-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      font-size:10px;
+      background:#151515;
+    }
+
+    .contrarian-dir{
+      font-weight:600;
+    }
+
     /* Layout: chart + insight side-by-side (desktop) */
     .chart-layout{
       display:flex;
@@ -198,10 +230,15 @@
       .header{
         flex-direction:column;
         align-items:flex-start;
-        gap:6px;
+        gap:8px;
       }
 
       .toolbar{
+        align-items:flex-start;
+        width:100%;
+      }
+
+      .toolbar-top{
         width:100%;
         justify-content:space-between;
       }
@@ -217,7 +254,7 @@
       }
 
       .insight-box{
-        max-height:none;   /* biar ikut tinggi konten, tinggal scroll page */
+        max-height:none;
         width:100%;
       }
     }
@@ -228,12 +265,18 @@
   <div class="header">
     <div class="title-block">
       <div class="title">Retail Trader Positioning (Contrarian Signal)</div>
-      <!-- subtitle/source removed as requested -->
+      <div class="subtitle">Based on Myfxbook Community Outlook · Updated intraday</div>
     </div>
     <div class="toolbar">
-      <label style="font-size:11px;color:var(--text-muted);">Instrument:</label>
-      <select id="symbolSelect"></select>
-      <button id="refreshBtn">Refresh</button>
+      <div class="toolbar-top">
+        <label style="font-size:11px;color:var(--text-muted);">Instrument:</label>
+        <select id="symbolSelect"></select>
+        <button id="refreshBtn">Refresh</button>
+      </div>
+      <div class="toolbar-bottom">
+        <span style="margin-right:6px;">Last update:</span>
+        <span id="lastUpdateLabel" class="last-update-label">—</span>
+      </div>
     </div>
   </div>
 
@@ -244,6 +287,11 @@
     </span>
     <span class="legend-chip">
       <span class="dot red"></span> Net Volume &lt; 0 (Short biased)
+    </span>
+    <span id="contrarianChip" class="contrarian-chip" style="display:none;">
+      <span>Contrarian bias:</span>
+      <span id="contrarianDir" class="contrarian-dir"></span>
+      <span id="contrarianDetail" style="color:var(--text-muted);"></span>
     </span>
   </div>
 
@@ -263,6 +311,17 @@
   const chart = echarts.init(document.getElementById('chart'));
 
   let symbolDataMap = {}; // { 'AUDUSD': [{time, netVolume, longPct, shortPct, ...}, ...] }
+
+  // Helpers formatting number aman (hindari toFixed di null/NaN)
+  function fmtNum(v, dec = 2) {
+    if (v === null || v === undefined || isNaN(v)) return '-';
+    return Number(v).toFixed(dec);
+  }
+
+  function fmtNumNoDec(v) {
+    if (v === null || v === undefined || isNaN(v)) return '-';
+    return String(v);
+  }
 
   // Konversi angka format lokal (contoh: "10.709,39" atau "10709,39") ke Number JS
   function parseNumberLocal(str) {
@@ -302,6 +361,8 @@
 
   function loadCSVAndRender() {
     document.getElementById('insightBox').textContent = 'Loading data…';
+    document.getElementById('lastUpdateLabel').textContent = '—';
+    document.getElementById('contrarianChip').style.display = 'none';
 
     Papa.parse(CSV_URL, {
       download: true,
@@ -348,10 +409,11 @@
           symbolDataMap[sym].sort((a, b) => a.date - b.date);
         });
 
-        // Isi dropdown
+        // Isi dropdown (sorted supaya rapi)
         const select = document.getElementById('symbolSelect');
         select.innerHTML = '';
-        Object.keys(symbolDataMap).forEach(sym => {
+        const symbols = Object.keys(symbolDataMap).sort();
+        symbols.forEach(sym => {
           const opt = document.createElement('option');
           opt.value = sym;
           opt.textContent = sym;
@@ -359,7 +421,7 @@
         });
 
         // Render default: symbol pertama
-        const defaultSym = select.value || Object.keys(symbolDataMap)[0];
+        const defaultSym = select.value || symbols[0];
         if (defaultSym) {
           renderSymbol(defaultSym);
         } else {
@@ -379,6 +441,8 @@
       document.getElementById('insightBox').textContent =
         'No data for symbol ' + symbol;
       chart.clear();
+      document.getElementById('lastUpdateLabel').textContent = '—';
+      document.getElementById('contrarianChip').style.display = 'none';
       return;
     }
 
@@ -386,26 +450,29 @@
     const netVolumes = seriesData.map(p => p.netVolume);
 
     // Bagi ke positif/negatif untuk warna berbeda
-    const positive = netVolumes.map(v => v > 0 ? v : null);
-    const negative = netVolumes.map(v => v < 0 ? v : null);
+    const positive = netVolumes.map(v => (v !== null && v > 0) ? v : null);
+    const negative = netVolumes.map(v => (v !== null && v < 0) ? v : null);
 
     const option = {
       backgroundColor: '#111111',
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'cross' },
+        confine: true,
         formatter: function (params) {
           const p = params.find(x => x.seriesName === 'Net Volume');
           if (!p) return '';
           const idx = p.dataIndex;
           const row = seriesData[idx];
+
           return [
             '<b>' + symbol + '</b> – ' + xLabels[idx],
-            'Net Volume: ' + row.netVolume.toFixed(2) + ' lots',
-            'Long/Short %: ' + row.longPct.toFixed(1) + '% / ' + row.shortPct.toFixed(1) + '%',
-            'Volume L/S: ' + row.longVolume.toFixed(2) + ' / ' + row.shortVolume.toFixed(2),
-            'Positions L/S: ' + row.longPositions + ' / ' + row.shortPositions,
-            'Avg Prices L/S: ' + row.avgLongPrice.toFixed(4) + ' / ' + row.avgShortPrice.toFixed(4)
+            'Net Volume: ' + fmtNum(row.netVolume, 2) + ' lots',
+            'Long/Short %: ' + fmtNum(row.longPct, 1) + '% / ' + fmtNum(row.shortPct, 1) + '%',
+            'Volume L/S: ' + fmtNum(row.longVolume, 2) + ' / ' + fmtNum(row.shortVolume, 2),
+            'Positions L/S: ' + fmtNumNoDec(row.longPositions) + ' / ' + fmtNumNoDec(row.shortPositions),
+            'Total Positions: ' + fmtNumNoDec(row.totalPositions),
+            'Avg Prices L/S: ' + fmtNum(row.avgLongPrice, 4) + ' / ' + fmtNum(row.avgShortPrice, 4)
           ].join('<br>');
         }
       },
@@ -468,21 +535,56 @@
 
     chart.setOption(option);
 
-    // Insight terakhir (moved to side box)
+    // Insight terakhir (side box + contrarian)
     const latest = seriesData[seriesData.length - 1];
     const tsLabel = formatDateLabel(latest.date);
-    const netStr  = latest.netVolume.toFixed(2);
-    const dir = latest.netVolume > 0 ? 'Net Long' : 'Net Short';
+    const netStr  = fmtNum(latest.netVolume, 2);
+    const dir = (latest.netVolume !== null && latest.netVolume > 0) ? 'Net Long' :
+                (latest.netVolume !== null && latest.netVolume < 0) ? 'Net Short' :
+                'Flat';
+
+    const longPct = latest.longPct || 0;
+    const shortPct = latest.shortPct || 0;
+
+    // Contrarian logic sederhana: kalau retail >60% long, kita bias short, dll
+    let contrarianBias = 'Neutral / Wait';
+    let contrarianDetail = '';
+    if (longPct >= 60) {
+      contrarianBias = 'Short bias';
+      contrarianDetail = `(retail ~${fmtNum(longPct,1)}% long)`;
+    } else if (shortPct >= 60) {
+      contrarianBias = 'Long bias';
+      contrarianDetail = `(retail ~${fmtNum(shortPct,1)}% short)`;
+    } else {
+      contrarianBias = 'Neutral';
+      contrarianDetail = '(tidak ada dominasi posisi retail)';
+    }
+
+    const contrarianChip = document.getElementById('contrarianChip');
+    const contrarianDirEl = document.getElementById('contrarianDir');
+    const contrarianDetailEl = document.getElementById('contrarianDetail');
+
+    contrarianDirEl.textContent = contrarianBias;
+    contrarianDetailEl.textContent = ' ' + contrarianDetail;
+    contrarianChip.style.display = 'inline-flex';
+
+    // Last update di toolbar
+    document.getElementById('lastUpdateLabel').textContent = tsLabel || latest.rawTimestamp || '—';
 
     const insightLines = [
-      `Retail Insights for ${symbol} (${tsLabel})`,
+      `Retail Insights for ${symbol}`,
+      `Snapshot: ${tsLabel}`,
       ``,
       `Net Volume : ${netStr} lots (${dir})`,
-      `Long/Short % : ${latest.longPct.toFixed(1)}% / ${latest.shortPct.toFixed(1)}%`,
-      `Volume L/S : ${latest.longVolume.toFixed(2)} / ${latest.shortVolume.toFixed(2)}`,
-      `Positions L/S : ${latest.longPositions} / ${latest.shortPositions}`,
-      `Total Positions : ${latest.totalPositions}`,
-      `Avg Prices L/S : ${latest.avgLongPrice.toFixed(4)} / ${latest.avgShortPrice.toFixed(4)}`
+      `Long/Short % : ${fmtNum(longPct,1)}% / ${fmtNum(shortPct,1)}%`,
+      `Volume L/S : ${fmtNum(latest.longVolume,2)} / ${fmtNum(latest.shortVolume,2)}`,
+      `Positions L/S : ${fmtNumNoDec(latest.longPositions)} / ${fmtNumNoDec(latest.shortPositions)}`,
+      `Total Positions : ${fmtNumNoDec(latest.totalPositions)}`,
+      `Avg Prices L/S : ${fmtNum(latest.avgLongPrice,4)} / ${fmtNum(latest.avgShortPrice,4)}`,
+      ``,
+      `Contrarian view (simplified):`,
+      `• ${contrarianBias} ${contrarianDetail}`,
+      `• Gunakan hanya sebagai lapisan konfirmasi, bukan sinyal entry tunggal.`
     ];
 
     document.getElementById('insightBox').textContent =
