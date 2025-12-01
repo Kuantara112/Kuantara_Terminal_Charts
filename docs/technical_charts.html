@@ -855,13 +855,17 @@
     return rec.bars;
   }
 
+  // === NORMALISASI BAR: gunakan timestamp (ms) + offset zona waktu ===
   function normalizeBars(rawBars) {
-    const dates  = [];
-    const values = [];
+    const TIME_OFFSET_MINUTES = 60; // +60 = tambah 1 jam; ubah kalau perlu
+    const OFFSET_MS = TIME_OFFSET_MINUTES * 60 * 1000;
+
+    const times   = [];
+    const values  = [];
     const volumes = [];
-    const highs = [];
-    const lows  = [];
-    const closes = [];
+    const highs   = [];
+    const lows    = [];
+    const closes  = [];
 
     for (let i = 0; i < rawBars.length; i++) {
       const b = rawBars[i];
@@ -871,45 +875,45 @@
       const c = Number(b.close);
       const v = Number(b.volume || b.vol || 0);
 
-      let dLabel = "";
-      if (b.time != null) {
-        const t = (typeof b.time === "number" || typeof b.time === "bigint")
-          ? new Date(Number(b.time) * 1000)
-          : new Date(b.time);
-        if (!isNaN(t.getTime())) {
-          // Tanggal-bulan-tahun + jam:menit:detik (lokal ID)
-          dLabel = t.toLocaleString("id-ID", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false
-          });
-        }
-      }
-      if (!dLabel) dLabel = String(i + 1);
+      let tMs = null;
 
-      dates.push(dLabel);
-      values.push([o, c, l, h]);
+      if (b.time != null) {
+        tMs = (typeof b.time === "number" || typeof b.time === "bigint")
+          ? Number(b.time) * 1000
+          : new Date(b.time).getTime();
+      }
+
+      if (!Number.isFinite(tMs)) {
+        // fallback kalau ada bar aneh
+        tMs = Date.now() - (rawBars.length - i) * 60 * 60 * 1000;
+      }
+
+      // === APPLY OFFSET DI SINI ===
+      tMs += OFFSET_MS;
+
+      times.push(tMs);
+      // data candlestick: [timestamp, open, close, low, high]
+      values.push([tMs, o, c, l, h]);
       highs.push(h);
       lows.push(l);
       closes.push(c);
+
+      // volume pakai [timestamp, volume] supaya ikut sumbu waktu
       volumes.push({
-        value: v,
+        value: [tMs, v],
         itemStyle: { color: c >= o ? "#22c55e" : "#ef4444" }
       });
     }
 
-    return { dates, values, volumes, highs, lows, closes };
+    return { times, values, volumes, highs, lows, closes };
   }
 
   // ===== ECHARTS INIT =====
   const mainChart = echarts.init(document.getElementById('mainChart'));
   const gaugeChart = echarts.init(document.getElementById('gaugeChart'));
 
-  function renderMainChart(dates, values, volumes, ma20Arr, ma50Arr) {
+  // === CHART UTAMA: X-axis time + OHLC ===
+  function renderMainChart(times, values, volumes, ma20Arr, ma50Arr) {
     const option = {
       backgroundColor:'transparent',
       tooltip:{
@@ -925,18 +929,25 @@
       ],
       xAxis:[
         {
-          type:'category',
-          data:dates,
+          type:'time',
           scale:true,
           boundaryGap:false,
           axisLine:{ lineStyle:{ color:'#333' } },
-          axisLabel:{ color:'#777', fontSize:9 },
+          axisLabel:{
+            color:'#777',
+            fontSize:9,
+            formatter: value => {
+              const d = new Date(value);
+              return d.toLocaleString('id-ID', {
+                day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
+              });
+            }
+          },
           splitLine:{ show:false }
         },
         {
-          type:'category',
+          type:'time',
           gridIndex:1,
-          data:dates,
           axisLabel:{ show:false },
           axisLine:{ show:false },
           splitLine:{ show:false }
@@ -967,6 +978,7 @@
       series:[
         {
           type:'candlestick',
+          encode:{ x:0, y:[1,2,3,4] },
           data:values,
           itemStyle:{
             color:'#22c55e',
@@ -978,7 +990,8 @@
         {
           name:'MA 20',
           type:'line',
-          data:ma20Arr,
+          encode:{ x:0, y:1 },
+          data:times.map((t,i)=> ma20Arr[i] == null ? [t,null] : [t,ma20Arr[i]]),
           smooth:true,
           showSymbol:false,
           connectNulls:true,
@@ -987,7 +1000,8 @@
         {
           name:'MA 50',
           type:'line',
-          data:ma50Arr,
+          encode:{ x:0, y:1 },
+          data:times.map((t,i)=> ma50Arr[i] == null ? [t,null] : [t,ma50Arr[i]]),
           smooth:true,
           showSymbol:false,
           connectNulls:true,
@@ -998,6 +1012,7 @@
           type:'bar',
           xAxisIndex:1,
           yAxisIndex:1,
+          encode:{ x:0, y:1 },
           data:volumes
         }
       ]
@@ -1222,7 +1237,7 @@
     highEl.textContent = formatNum(lastH, 2);
     lowEl.textContent  = formatNum(lastL, 2);
 
-    const lastVol = volumesArr[lastIdx]?.value ?? 0;
+    const lastVol = volumesArr[lastIdx]?.value?.[1] ?? 0;
     volEl.textContent = Math.round(lastVol).toLocaleString();
 
     const perfWEl   = document.getElementById("perfW");
@@ -1300,7 +1315,7 @@
       const ma20Arr = calcMA(20, closes);
       const ma50Arr = calcMA(50, closes);
 
-      renderMainChart(norm.dates, norm.values, norm.volumes, ma20Arr, ma50Arr);
+      renderMainChart(norm.times, norm.values, norm.volumes, ma20Arr, ma50Arr);
 
       const rsiVal  = rsi(closes, 14);
       const macdObj = macd(closes, 12, 26, 9);
