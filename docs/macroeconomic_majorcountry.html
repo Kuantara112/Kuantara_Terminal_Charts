@@ -1,13 +1,13 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
-  <title>Kuantara – G10+ Macroeconomic Monitor</title>
+  <title>Global Macro Matrix</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
-
-  <!-- ECharts -->
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
     :root {
@@ -17,1417 +17,290 @@
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
       --accent:#ffbf00;
-
-      --fs-title:14px;
-      --fs-subtitle:12px;
-      --fs-body:11px;
-      --fs-small:9.5px;
+      --row-hover:#181818;
     }
 
     * {
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family:"Fira Code",monospace!important;
-      scrollbar-width:thin;
-      scrollbar-color:#333 #000;
-    }
-    *::-webkit-scrollbar{
-      width:6px;
-      height:6px;
-    }
-    *::-webkit-scrollbar-track{
-      background:#000;
-    }
-    *::-webkit-scrollbar-thumb{
-      background:#333;
-      border-radius:3px;
+      font-family:"Fira Code", monospace;
     }
 
-    html,body{
-      width:100%;
-      height:100%;
-      background-color:var(--bg-root);
-      color:var(--text-main);
-    }
-
-    body{
-      padding:16px;
-    }
-
-    .page-root{
+    html, body {
       width:100%;
       height:100%;
       background:var(--bg-root);
       color:var(--text-main);
+      overflow:hidden;
+    }
+
+    .page {
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
       display:flex;
-      flex-direction:column;
-      gap:12px;
     }
 
-    .page-title{
-      font-size:var(--fs-title);
-      font-weight:600;
-      letter-spacing:0.03em;
-      color:var(--text-main);
-    }
-
-    .page-subtitle{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .columns{
-      flex:1 1 auto;
-      display:flex;
-      gap:12px;
-      min-height:0;
-      margin-top:6px;
-    }
-
-    .panel{
-      flex:1 1 0;
+    .table-wrapper {
+      flex:1;
       background:var(--bg-main);
       border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:12px 14px;
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-    }
-
-    .panel-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-      margin-bottom:10px;
-      flex-wrap:wrap;
-    }
-
-    .panel-title{
-      font-size:var(--fs-subtitle);
-      font-weight:500;
-      color:var(--text-main);
-    }
-
-    .panel-subtitle{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .chip{
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      padding:2px 8px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      white-space:nowrap;
-    }
-
-    .select-country{
-      background:#000;
-      color:var(--text-main);
-      border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:4px 8px;
-      font-size:var(--fs-small);
-      outline:none;
-    }
-
-    .select-country:focus{
-      border-color:var(--accent);
-    }
-
-    /* Composite chart (top of panel 1) */
-    .composite-card{
-      background:#000000;
-      border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:8px 8px 6px;
-      margin-bottom:8px;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-
-    .composite-header{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-
-    .composite-title{
-      font-size:var(--fs-body);
-      font-weight:500;
-      color:var(--accent);
-    }
-
-    .composite-subtitle{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .composite-chart{
-      width:100%;
-      height:190px;
-    }
-
-    /* Charts panel */
-    .charts-body{
-      flex:1 1 auto;
-      min-height:0;
+      border-radius:0;
       overflow:auto;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
     }
 
-    .metrics-grid{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:8px;
-    }
-
-    .metric-card{
-      background:#000000;
-      border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:6px 6px 4px;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-
-    .metric-title{
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .metric-chart{
+    table {
       width:100%;
-      height:90px;
+      border-collapse:collapse;
+      font-size:11px;
+      table-layout:auto;
     }
 
-    .panel-footer-note{
-      margin-top:6px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
+    thead {
+      background:#151515;
+      position:sticky;
+      top:0;
+      z-index:1;
     }
 
-    /* AI explanation panel */
-    .ai-body{
-      flex:1 1 auto;
-      min-height:0;
-      overflow:auto;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .ai-header-row{
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .ai-country-label{
-      color:var(--accent);
-    }
-
-    .ai-section{
-      border:1px solid var(--border-soft);
-      border-radius:4px;
-      padding:8px 9px;
-      background:#000000;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-
-    .ai-section-title{
-      font-size:var(--fs-body);
-      font-weight:500;
-      color:var(--accent);
-    }
-
-    .ai-section-body{
-      font-size:var(--fs-body);
-      color:var(--text-main);
-      line-height:1.4;
-    }
-
-    .ai-section-body span.muted{
-      color:var(--text-muted);
-    }
-
-    .ai-tags{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      margin-top:2px;
-    }
-
-    .ai-tag{
-      font-size:var(--fs-small);
-      border-radius:999px;
-      padding:2px 7px;
-      border:1px solid var(--border-soft);
-      color:var(--text-muted);
-    }
-
-    .ai-footer-hint{
-      margin-top:4px;
-      font-size:var(--fs-small);
-      color:var(--text-muted);
-    }
-
-    .ai-generate-btn{
-      font-size:var(--fs-small);
-      padding:4px 10px;
-      border-radius:4px;
-      border:1px solid var(--accent);
-      background:#000000;
-      color:var(--accent);
-      cursor:pointer;
+    th, td {
+      padding:6px 8px;
+      border-bottom:1px solid #1f1f1f;
       white-space:nowrap;
     }
 
-    .ai-generate-btn:hover{
-      background:#181818;
-    }
-
-    .ai-generate-btn:active{
-      background:#222222;
-    }
-
-    .ai-generate-status{
-      font-size:var(--fs-small);
+    th {
+      text-align:left;
+      font-weight:500;
+      font-size:11px;
       color:var(--text-muted);
-      margin-top:2px;
     }
 
-    @media (max-width:960px){
-      .columns{
-        flex-direction:column;
-      }
-      .metrics-grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-      }
-      .composite-chart{
-        height:180px;
-      }
+    tbody tr:hover {
+      background:var(--row-hover);
     }
 
-    @media (max-width:600px){
-      body{
-        padding:10px;
-      }
-      .panel{
-        padding:10px;
-      }
-      .metrics-grid{
-        grid-template-columns:repeat(1,minmax(0,1fr));
-      }
-      .metric-chart{
-        height:110px;
-      }
-      .composite-chart{
-        height:170px;
-      }
+    a.matrix-country {
+      color:var(--text-main);
+      text-decoration:none;
+    }
+
+    a.matrix-country:hover {
+      color:var(--accent);
+    }
+
+    td a {
+      text-decoration:none;
+    }
+
+    /* Scrollbar halus */
+    .table-wrapper::-webkit-scrollbar {
+      height:6px;
+      width:6px;
+    }
+    .table-wrapper::-webkit-scrollbar-track {
+      background:#111;
+    }
+    .table-wrapper::-webkit-scrollbar-thumb {
+      background:#333;
+      border-radius:999px;
     }
   </style>
-<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 2147483647;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.immersive-translate-attach-loading::after {
-  content: " ";
-
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-2000%, -50%);
-  z-index: 100;
-}
-
-.immersive-translate-loading-spinner {
-  vertical-align: middle !important;
-  width: 10px !important;
-  height: 10px !important;
-  display: inline-block !important;
-  margin: 0 4px !important;
-  border: 2px rgba(221, 244, 255, 0.6) solid !important;
-  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-}
-
-@-webkit-keyframes immersive-translate-loading-animation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-
-@keyframes immersive-translate-loading-animation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.immersive-translate-input-loading {
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-}
-
-@keyframes immersiveTranslateShadowRolling {
-  0% {
-    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  12% {
-    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  25% {
-    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  36% {
-    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
-      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  50% {
-    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
-      110px 0 var(--loading-color), 100px 0 var(--loading-color);
-  }
-
-  62% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
-      120px 0 var(--loading-color), 110px 0 var(--loading-color);
-  }
-
-  75% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      130px 0 var(--loading-color), 120px 0 var(--loading-color);
-  }
-
-  87% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
-  }
-
-  100% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.immersive-translate-toast {
-  display: flex;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  right: 0;
-  top: 1%;
-  width: fit-content;
-  padding: 12px 20px;
-  margin: auto;
-  overflow: auto;
-  background: #fef6f9;
-  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
-  font-size: 15px;
-  border-radius: 8px;
-  color: #333;
-}
-
-.immersive-translate-toast-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.immersive-translate-toast-hidden {
-  margin: 0 20px 0 72px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.immersive-translate-toast-close {
-  color: #666666;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-toast {
-    top: 0;
-    padding: 12px 0px 0 10px;
-  }
-  .immersive-translate-toast-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .immersive-translate-toast-hidden {
-    margin: 10px auto;
-  }
-}
-
-.immersive-translate-dialog {
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  display: flex;
-  width: 300px;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: fit-content;
-  border-radius: 20px;
-  background-color: #fff;
-}
-
-.immersive-translate-modal {
-  display: none;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-}
-
-.immersive-translate-modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 40px 24px 24px;
-  border-radius: 12px;
-  width: 350px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
-    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-content {
-    margin: 25% auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .immersive-translate-modal-content {
-    width: 80vw !important;
-    margin: 20vh auto !important;
-    padding: 20px 12px 12px !important;
-  }
-
-  .immersive-translate-modal-title {
-    font-size: 14px !important;
-  }
-
-  .immersive-translate-modal-body {
-    font-size: 13px !important;
-    max-height: 60vh !important;
-  }
-
-  .immersive-translate-btn {
-    font-size: 13px !important;
-    padding: 8px 16px !important;
-    margin: 0 4px !important;
-  }
-
-  .immersive-translate-modal-footer {
-    gap: 6px !important;
-    margin-top: 16px !important;
-  }
-}
-
-.immersive-translate-modal .immersive-translate-modal-content-in-input {
-  max-width: 500px;
-}
-.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
-  text-align: left;
-  max-height: unset;
-}
-
-.immersive-translate-modal-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333333;
-}
-
-.immersive-translate-modal-body {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #333333;
-  margin-top: 24px;
-  word-break: break-all;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-body {
-    max-height: 250px;
-    overflow-y: auto;
-  }
-}
-
-.immersive-translate-close {
-  color: #666666;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.immersive-translate-close:hover,
-.immersive-translate-close:focus {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.immersive-translate-modal-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.immersive-translate-btn {
-  width: fit-content;
-  color: #fff;
-  background-color: #ea4c89;
-  border: none;
-  font-size: 14px;
-  margin: 0 8px;
-  padding: 9px 30px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.immersive-translate-btn-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.immersive-translate-btn:hover {
-  background-color: #f082ac;
-}
-.immersive-translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.immersive-translate-btn:disabled:hover {
-  background-color: #ea4c89;
-}
-
-.immersive-translate-link-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: none;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-}
-
-.immersive-translate-cancel-btn {
-  /* gray color */
-  background-color: rgb(89, 107, 120);
-}
-
-.immersive-translate-cancel-btn:hover {
-  background-color: hsl(205, 20%, 32%);
-}
-
-.immersive-translate-action-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: 1px solid #ea4c89;
-}
-
-.immersive-translate-btn svg {
-  margin-right: 5px;
-}
-
-.immersive-translate-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-primary-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-modal input[type="radio"] {
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.immersive-translate-modal label {
-  cursor: pointer;
-}
-
-.immersive-translate-close-action {
-  position: absolute;
-  top: 2px;
-  right: 0px;
-  cursor: pointer;
-}
-
-.imt-image-status {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 16px !important;
-}
-.imt-image-status img,
-.imt-image-status svg,
-.imt-img-loading {
-  width: 28px !important;
-  height: 28px !important;
-  margin: 0 0 8px 0 !important;
-  min-height: 28px !important;
-  min-width: 28px !important;
-  position: relative !important;
-}
-.imt-img-loading {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
-  background-size: 28px 28px;
-  animation: image-loading-rotate 1s linear infinite !important;
-}
-
-.imt-image-status span {
-  color: var(--bg-2, #fff) !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
-  font-weight: 500 !important;
-  font-family: "PingFang SC", Arial, sans-serif !important;
-}
-
-.imt-primary-button {
-  display: flex;
-  padding: 12px 80px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #ea4c89;
-  color: #fff;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.imt-retry-text {
-  color: #999;
-  text-align: center;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  cursor: pointer;
-}
-
-.imt-action-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.imt-modal-content-text {
-  text-align: left;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-@keyframes image-loading-rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.imt-linear-gradient-text {
-  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.imt-flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.imt-linear-black-btn {
-  border-radius: 50px;
-  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
-  height: 48px;
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
-</style></head>
+</head>
 <body>
-  <div class="page-root">
-    
+  <div class="page">
+    <div class="table-wrapper">
+      <table id="matrix" class="table table-hover sortable-theme-minimal table-heatmap"
+             data-sortable="" data-sortable-initialized="true">
+        <thead class="te-sort">
+          <tr>
+            <th><span class="matrix-country">Country</span></th>
+            <th data-heatmap="1" data-heatmap-limit="20000" data-heatmap-dncolor="#78c1ff">GDP</th>
+            <th data-heatmap="1" data-heatmap-limit="5">GDP Growth</th>
+            <th data-heatmap="1" data-heatmap-limit="10" data-heatmap-dncolor="#78c1ff">Interest Rate</th>
+            <th data-heatmap="1" data-heatmap-limit="20">Inflation Rate</th>
+            <th data-heatmap="1" data-heatmap-limit="20">Jobless Rate</th>
+            <th data-heatmap="1" data-heatmap-limit="20">Gov. Budget</th>
+            <th data-heatmap="1" data-heatmap-limit="200" data-heatmap-dncolor="#78c1ff">Debt/GDP</th>
+            <th data-heatmap="1" data-heatmap-limit="10">Current Account</th>
+            <th data-heatmap="1" data-heatmap-limit="1000" data-heatmap-dncolor="#78c1ff">Population</th>
+          </tr>
+        </thead>
 
-    <div class="columns">
-      <!-- PANEL 1: MACRO CHARTS -->
-      <div class="panel" id="panel-charts">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">Macro Data – Line Charts</div>
-            <div class="panel-subtitle">Economic Health Composite + monthly Interest Rates, CPI, Unemployment, GDP, Sentiment, Retail Sales &amp; PMI</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span class="chip">Source: Dummy data (placeholder)</span>
-            <select id="country-select" class="select-country">
-              <option value="United States">United States</option>
-              <option value="Euro Zone">Euro Zone</option>
-              <option value="Canada">Canada</option>
-              <option value="Japan">Japan</option>
-              <option value="Switzerland">Switzerland</option>
-              <option value="United Kingdom">United Kingdom</option>
-              <option value="Australia">Australia</option>
-              <option value="New Zealand">New Zealand</option>
-              <option value="China">China</option>
-              <option value="India">India</option>
-              <option value="Russia">Russia</option>
-              <option value="Thailand">Thailand</option>
-              <option value="Indonesia">Indonesia</option>
-            </select>
-          </div>
-        </div>
+        <tbody>
+          <tr>
+            <td><a class="matrix-country" href="/united-states/indicators">United States</a></td>
+            <td data-heatmap-value="29185"><a href="/united-states/gdp" style="color: rgb(120, 193, 255);">29185</a></td>
+            <td data-heatmap-value="3.80"><a href="/united-states/gdp-growth" style="color: rgb(113, 226, 143);">3.80</a></td>
+            <td data-heatmap-value="4.00"><a href="/united-states/interest-rate" style="color: rgb(201, 230, 255);">4.00</a></td>
+            <td data-heatmap-value="-3.00"><a href="/united-states/inflation-cpi" style="color: rgb(254, 235, 235);">3.00</a></td>
+            <td data-heatmap-value="-4.40"><a href="/united-states/unemployment-rate" style="color: rgb(254, 215, 215);">4.40</a></td>
+            <td data-heatmap-value="-6.40"><a href="/united-states/government-budget" style="color: rgb(253, 195, 196);">-6.40</a></td>
+            <td data-heatmap-value="124.30"><a href="/united-states/government-debt-to-gdp" style="color: rgb(174, 218, 255);">124.30</a></td>
+            <td data-heatmap-value="-3.90"><a href="/united-states/current-account-to-gdp" style="color: rgb(253, 195, 196);">-3.90</a></td>
+            <td data-heatmap-value="341.15"><a href="/united-states/population" style="color: rgb(215, 236, 255);">341.15</a></td>
+          </tr>
 
-        <div class="charts-body">
-          <!-- Composite Chart -->
-          <div class="composite-card">
-            <div class="composite-header">
-              <div class="composite-title">Economic Health Composite</div>
-              <div class="composite-subtitle">
-                Simple composite score from all monthly macro indicators (dummy). In production, plug your weighting &amp; normalization.
-              </div>
-            </div>
-            <div id="chart-composite" class="composite-chart" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1763823497679"><div style="position: relative; width: 637px; height: 180px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="955" height="270" style="position: absolute; left: 0px; top: 0px; width: 637px; height: 180px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(0, 0, 0); border-width: 1px; border-radius: 4px; color: rgb(245, 245, 245); font: 11px / 17px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(318px, 90px, 0px); border-color: rgb(51, 51, 51); pointer-events: none; visibility: hidden; opacity: 0;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="font-size:11px;color:#f5f5f5;font-weight:400;line-height:1;">2025-11</div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#5470c6;"></span><span style="font-size:11px;color:#f5f5f5;font-weight:400;margin-left:2px">Economic Health Composite</span><span style="float:right;margin-left:20px;font-size:11px;color:#f5f5f5;font-weight:900">28.71</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div></div></div>
-          </div>
+          <tr>
+            <td><a class="matrix-country" href="/china/indicators">China</a></td>
+            <td data-heatmap-value="18744"><a href="/china/gdp" style="color: rgb(134, 199, 255);">18744</a></td>
+            <td data-heatmap-value="1.10"><a href="/china/gdp-growth" style="color: rgb(214, 247, 223);">1.10</a></td>
+            <td data-heatmap-value="3.00"><a href="/china/interest-rate" style="color: rgb(215, 236, 255);">3.00</a></td>
+            <td data-heatmap-value="-0.20"><a href="/china/inflation-cpi" style="color: rgb(255, 255, 255);">0.20</a></td>
+            <td data-heatmap-value="-5.10"><a href="/china/unemployment-rate" style="color: rgb(254, 215, 215);">5.10</a></td>
+            <td data-heatmap-value="-6.50"><a href="/china/government-budget" style="color: rgb(253, 195, 196);">-6.50</a></td>
+            <td data-heatmap-value="88.30"><a href="/china/government-debt-to-gdp" style="color: rgb(201, 230, 255);">88.30</a></td>
+            <td data-heatmap-value="2.20"><a href="/china/current-account-to-gdp" style="color: rgb(214, 247, 223);">2.20</a></td>
+            <td data-heatmap-value="1408.00"><a href="/china/population" style="color: rgb(120, 193, 255);">1408.00</a></td>
+          </tr>
 
-          <!-- Grid of individual metrics -->
-          <div class="metrics-grid">
-            <div class="metric-card">
-              <div class="metric-title">Interest Rates (%)</div>
-              <div id="chart-interest" class="metric-chart" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1763823497680"><div style="position: relative; width: 310px; height: 90px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="465" height="135" style="position: absolute; left: 0px; top: 0px; width: 310px; height: 90px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-title">CPI Inflation (y/y %)</div>
-              <div id="chart-cpi" class="metric-chart" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1763823497681"><div style="position: relative; width: 310px; height: 90px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="465" height="135" style="position: absolute; left: 0px; top: 0px; width: 310px; height: 90px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-title">Unemployment Rate (%)</div>
-              <div id="chart-unemployment" class="metric-chart" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1763823497682"><div style="position: relative; width: 310px; height: 90px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="465" height="135" style="position: absolute; left: 0px; top: 0px; width: 310px; height: 90px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-title">Real GDP Growth (y/y %)</div>
-              <div id="chart-gdp" class="metric-chart" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1763823497683"><div style="position: relative; width: 310px; height: 90px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="465" height="135" style="position: absolute; left: 0px; top: 0px; width: 310px; height: 90px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-title">Consumer Sentiment Index</div>
-              <div id="chart-sentiment" class="metric-chart" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1763823497684"><div style="position: relative; width: 310px; height: 90px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="465" height="135" style="position: absolute; left: 0px; top: 0px; width: 310px; height: 90px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-title">Retail Sales (y/y %)</div>
-              <div id="chart-retail" class="metric-chart" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1763823497685"><div style="position: relative; width: 310px; height: 90px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="465" height="135" style="position: absolute; left: 0px; top: 0px; width: 310px; height: 90px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-title">ISM Manufacturing PMI</div>
-              <div id="chart-ism-manu" class="metric-chart" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1763823497686"><div style="position: relative; width: 310px; height: 90px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="465" height="135" style="position: absolute; left: 0px; top: 0px; width: 310px; height: 90px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-title">ISM Services PMI</div>
-              <div id="chart-ism-serv" class="metric-chart" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1763823497687"><div style="position: relative; width: 310px; height: 90px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="465" height="135" style="position: absolute; left: 0px; top: 0px; width: 310px; height: 90px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-title">S&amp;P Global Composite PMI</div>
-              <div id="chart-sp-composite" class="metric-chart" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1763823497688"><div style="position: relative; width: 310px; height: 90px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="465" height="135" style="position: absolute; left: 0px; top: 0px; width: 310px; height: 90px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
-            </div>
-          </div>
+          <tr>
+            <td><a class="matrix-country" href="/euro-area/indicators">Euro Area</a></td>
+            <td data-heatmap-value="16406"><a href="/euro-area/gdp" style="color: rgb(147, 205, 255);">16406</a></td>
+            <td data-heatmap-value="0.20"><a href="/euro-area/gdp-growth" style="color: rgb(255, 255, 255);">0.20</a></td>
+            <td data-heatmap-value="2.15"><a href="/euro-area/interest-rate" style="color: rgb(228, 243, 255);">2.15</a></td>
+            <td data-heatmap-value="-2.10"><a href="/euro-area/inflation-cpi" style="color: rgb(254, 235, 235);">2.10</a></td>
+            <td data-heatmap-value="-6.30"><a href="/euro-area/unemployment-rate" style="color: rgb(253, 195, 196);">6.30</a></td>
+            <td data-heatmap-value="-3.10"><a href="/euro-area/government-budget" style="color: rgb(254, 235, 235);">-3.10</a></td>
+            <td data-heatmap-value="87.10"><a href="/euro-area/government-debt-to-gdp" style="color: rgb(201, 230, 255);">87.10</a></td>
+            <td data-heatmap-value="2.70"><a href="/euro-area/current-account-to-gdp" style="color: rgb(214, 247, 223);">2.70</a></td>
+            <td data-heatmap-value="351.38"><a href="/euro-area/population" style="color: rgb(215, 236, 255);">351.38</a></td>
+          </tr>
 
-          <div class="panel-footer-note">
-            Dummy monthly series for the last 12 months. Hook up real feeds later (FRED / OECD / central banks / PMI providers) + your composite engine.
-          </div>
-        </div>
-      </div>
+          <tr>
+            <td><a class="matrix-country" href="/germany/indicators">Germany</a></td>
+            <td data-heatmap-value="4660"><a href="/germany/gdp" style="color: rgb(228, 243, 255);">4660</a></td>
+            <td data-heatmap-value="0.00"><a href="/germany/gdp-growth" style="color: rgb(255, 255, 255);">0.00</a></td>
+            <td data-heatmap-value="2.15"><a href="/germany/interest-rate" style="color: rgb(228, 243, 255);">2.15</a></td>
+            <td data-heatmap-value="-2.30"><a href="/germany/inflation-cpi" style="color: rgb(254, 235, 235);">2.30</a></td>
+            <td data-heatmap-value="-6.30"><a href="/germany/unemployment-rate" style="color: rgb(253, 195, 196);">6.30</a></td>
+            <td data-heatmap-value="-2.80"><a href="/germany/government-budget" style="color: rgb(254, 235, 235);">-2.80</a></td>
+            <td data-heatmap-value="62.20"><a href="/germany/government-debt-to-gdp" style="color: rgb(215, 236, 255);">62.20</a></td>
+            <td data-heatmap-value="5.80"><a href="/germany/current-account-to-gdp" style="color: rgb(154, 235, 175);">5.80</a></td>
+            <td data-heatmap-value="83.58"><a href="/germany/population" style="color: rgb(255, 255, 255);">83.58</a></td>
+          </tr>
 
-      <!-- PANEL 2: AI EXPLANATION -->
-      <div class="panel" id="panel-ai">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">AI Macro Narrative</div>
-            <div class="panel-subtitle">
-              Automated read-through of the current macro state for
-              <span id="ai-country-label" class="ai-country-label">United States</span>.
-            </div>
-          </div>
-          <div class="ai-header-row">
-            <span class="chip">AI Insight – Beta</span>
-            <button id="ai-generate-btn" class="ai-generate-btn">Generate Economic Summary</button>
-          </div>
-        </div>
+          <tr>
+            <td><a class="matrix-country" href="/japan/indicators">Japan</a></td>
+            <td data-heatmap-value="4026"><a href="/japan/gdp" style="color: rgb(228, 243, 255);">4026</a></td>
+            <td data-heatmap-value="-0.40"><a href="/japan/gdp-growth" style="color: rgb(255, 255, 255);">-0.40</a></td>
+            <td data-heatmap-value="0.50"><a href="/japan/interest-rate" style="color: rgb(255, 255, 255);">0.50</a></td>
+            <td data-heatmap-value="-3.00"><a href="/japan/inflation-cpi" style="color: rgb(254, 235, 235);">3.00</a></td>
+            <td data-heatmap-value="-2.60"><a href="/japan/unemployment-rate" style="color: rgb(254, 235, 235);">2.60</a></td>
+            <td data-heatmap-value="-2.30"><a href="/japan/government-budget" style="color: rgb(254, 235, 235);">-2.30</a></td>
+            <td data-heatmap-value="236.70"><a href="/japan/government-debt-to-gdp" style="color: rgb(120, 193, 255);">236.70</a></td>
+            <td data-heatmap-value="4.70"><a href="/japan/current-account-to-gdp" style="color: rgb(174, 239, 191);">4.70</a></td>
+            <td data-heatmap-value="123.80"><a href="/japan/population" style="color: rgb(242, 249, 255);">123.80</a></td>
+          </tr>
 
-        <div class="ai-body">
-          <div class="ai-section">
-            <div class="ai-section-title">1. Current Economic State</div>
-            <div class="ai-section-body" id="ai-current-state">United States is currently in a late-cycle to mid-cycle transition. Read the last-12-month composite score together with individual indicators (rates, inflation, labor, demand, and PMIs) to understand where we are in the macro regime.</div>
-          </div>
+          <tr>
+            <td><a class="matrix-country" href="/india/indicators">India</a></td>
+            <td data-heatmap-value="3913"><a href="/india/gdp" style="color: rgb(242, 249, 255);">3913</a></td>
+            <td data-heatmap-value="1.70"><a href="/india/gdp-growth" style="color: rgb(194, 243, 207);">1.70</a></td>
+            <td data-heatmap-value="5.50"><a href="/india/interest-rate" style="color: rgb(188, 224, 255);">5.50</a></td>
+            <td data-heatmap-value="-0.25"><a href="/india/inflation-cpi" style="color: rgb(255, 255, 255);">0.25</a></td>
+            <td data-heatmap-value="-5.20"><a href="/india/unemployment-rate" style="color: rgb(254, 215, 215);">5.20</a></td>
+            <td data-heatmap-value="-4.80"><a href="/india/government-budget" style="color: rgb(254, 215, 215);">-4.80</a></td>
+            <td data-heatmap-value="81.92"><a href="/india/government-debt-to-gdp" style="color: rgb(201, 230, 255);">81.92</a></td>
+            <td data-heatmap-value="-0.60"><a href="/india/current-account-to-gdp" style="color: rgb(255, 255, 255);">-0.60</a></td>
+            <td data-heatmap-value="1398.60"><a href="/india/population" style="color: rgb(120, 193, 255);">1398.60</a></td>
+          </tr>
 
-          <div class="ai-section">
-            <div class="ai-section-title">2. Inflation Expectations</div>
-            <div class="ai-section-body" id="ai-inflation">disinflation is progressing, but core components remain sticky.</div>
-          </div>
+          <tr>
+            <td><a class="matrix-country" href="/united-kingdom/indicators">United Kingdom</a></td>
+            <td data-heatmap-value="3644"><a href="/united-kingdom/gdp" style="color: rgb(242, 249, 255);">3644</a></td>
+            <td data-heatmap-value="0.10"><a href="/united-kingdom/gdp-growth" style="color: rgb(255, 255, 255);">0.10</a></td>
+            <td data-heatmap-value="4.00"><a href="/united-kingdom/interest-rate" style="color: rgb(201, 230, 255);">4.00</a></td>
+            <td data-heatmap-value="-3.60"><a href="/united-kingdom/inflation-cpi" style="color: rgb(254, 235, 235);">3.60</a></td>
+            <td data-heatmap-value="-5.00"><a href="/united-kingdom/unemployment-rate" style="color: rgb(254, 215, 215);">5.00</a></td>
+            <td data-heatmap-value="-5.10"><a href="/united-kingdom/government-budget" style="color: rgb(254, 215, 215);">-5.10</a></td>
+            <td data-heatmap-value="93.60"><a href="/united-kingdom/government-debt-to-gdp" style="color: rgb(201, 230, 255);">93.60</a></td>
+            <td data-heatmap-value="-2.20"><a href="/united-kingdom/current-account-to-gdp" style="color: rgb(254, 215, 215);">-2.20</a></td>
+            <td data-heatmap-value="69.28"><a href="/united-kingdom/population" style="color: rgb(255, 255, 255);">69.28</a></td>
+          </tr>
 
-          <div class="ai-section">
-            <div class="ai-section-title">3. Monetary Policy Outlook</div>
-            <div class="ai-section-body" id="ai-policy">The central bank is leaning towards a data-dependent, gradual easing bias once inflation is firmly anchored.</div>
-          </div>
+          <tr>
+            <td><a class="matrix-country" href="/france/indicators">France</a></td>
+            <td data-heatmap-value="3162"><a href="/france/gdp" style="color: rgb(242, 249, 255);">3162</a></td>
+            <td data-heatmap-value="0.50"><a href="/france/gdp-growth" style="color: rgb(235, 251, 239);">0.50</a></td>
+            <td data-heatmap-value="2.15"><a href="/france/interest-rate" style="color: rgb(228, 243, 255);">2.15</a></td>
+            <td data-heatmap-value="-0.90"><a href="/france/inflation-cpi" style="color: rgb(255, 255, 255);">0.90</a></td>
+            <td data-heatmap-value="-7.70"><a href="/france/unemployment-rate" style="color: rgb(253, 195, 196);">7.70</a></td>
+            <td data-heatmap-value="-5.80"><a href="/france/government-budget" style="color: rgb(254, 215, 215);">-5.80</a></td>
+            <td data-heatmap-value="113.00"><a href="/france/government-debt-to-gdp" style="color: rgb(188, 224, 255);">113.00</a></td>
+            <td data-heatmap-value="0.10"><a href="/france/current-account-to-gdp" style="color: rgb(255, 255, 255);">0.10</a></td>
+            <td data-heatmap-value="68.44"><a href="/france/population" style="color: rgb(255, 255, 255);">68.44</a></td>
+          </tr>
 
-          <div class="ai-section">
-            <div class="ai-section-title">4. Growth Trajectory</div>
-            <div class="ai-section-body" id="ai-growth">Growth in United States currently looks resilient but gradually normalizing. High-frequency monthly data from retail sales, PMIs, labor markets, and your composite health score will be crucial to confirm if the current phase extends, accelerates, or rolls over.</div>
-          </div>
+          <tr>
+            <td><a class="matrix-country" href="/italy/indicators">Italy</a></td>
+            <td data-heatmap-value="2373"><a href="/italy/gdp" style="color: rgb(242, 249, 255);">2373</a></td>
+            <td data-heatmap-value="0.10"><a href="/italy/gdp-growth" style="color: rgb(255, 255, 255);">0.10</a></td>
+            <td data-heatmap-value="2.15"><a href="/italy/interest-rate" style="color: rgb(228, 243, 255);">2.15</a></td>
+            <td data-heatmap-value="-1.20"><a href="/italy/inflation-cpi" style="color: rgb(255, 255, 255);">1.20</a></td>
+            <td data-heatmap-value="-6.10"><a href="/italy/unemployment-rate" style="color: rgb(253, 195, 196);">6.10</a></td>
+            <td data-heatmap-value="-3.40"><a href="/italy/government-budget" style="color: rgb(254, 235, 235);">-3.40</a></td>
+            <td data-heatmap-value="135.30"><a href="/italy/government-debt-to-gdp" style="color: rgb(174, 218, 255);">135.30</a></td>
+            <td data-heatmap-value="1.10"><a href="/italy/current-account-to-gdp" style="color: rgb(235, 251, 239);">1.10</a></td>
+            <td data-heatmap-value="58.93"><a href="/italy/population" style="color: rgb(255, 255, 255);">58.93</a></td>
+          </tr>
 
-          <div class="ai-section">
-            <div class="ai-section-title">5. Risks &amp; Opportunities</div>
-            <div class="ai-section-body" id="ai-risks">Key risks for United States include external shocks (energy, geopolitics, global demand) and domestic factors (politics, regulation, and credit conditions). For traders, this translates into opportunities around rates volatility, FX trends, and equity sector rotation when macro and composite surprises hit.</div>
-            <div class="ai-tags" id="ai-tags"><span class="ai-tag">Macro Regime</span><span class="ai-tag">Inflation Cycle</span><span class="ai-tag">Policy Path</span><span class="ai-tag">Growth Risk</span><span class="ai-tag">FX &amp; Rates</span></div>
-          </div>
+          <tr>
+            <td><a class="matrix-country" href="/canada/indicators">Canada</a></td>
+            <td data-heatmap-value="2241"><a href="/canada/gdp" style="color: rgb(242, 249, 255);">2241</a></td>
+            <td data-heatmap-value="0.60"><a href="/canada/gdp-growth" style="color: rgb(235, 251, 239);">0.60</a></td>
+            <td data-heatmap-value="2.25"><a href="/canada/interest-rate" style="color: rgb(228, 243, 255);">2.25</a></td>
+            <td data-heatmap-value="-2.20"><a href="/canada/inflation-cpi" style="color: rgb(254, 235, 235);">2.20</a></td>
+            <td data-heatmap-value="-6.90"><a href="/canada/unemployment-rate" style="color: rgb(253, 195, 196);">6.90</a></td>
+            <td data-heatmap-value="-1.20"><a href="/canada/government-budget" style="color: rgb(255, 255, 255);">-1.20</a></td>
+            <td data-heatmap-value="110.80"><a href="/canada/government-debt-to-gdp" style="color: rgb(188, 224, 255);">110.80</a></td>
+            <td data-heatmap-value="-1.00"><a href="/canada/current-account-to-gdp" style="color: rgb(254, 235, 235);">-1.00</a></td>
+            <td data-heatmap-value="41.53"><a href="/canada/population" style="color: rgb(255, 255, 255);">41.53</a></td>
+          </tr>
 
-          <div class="ai-footer-hint">
-            <span class="muted">Hint:</span> “Generate Economic Summary” = trigger Kuantara AI baca last-12-month macro series + composite score + Global Macro rulebook kamu.
-          </div>
-          <div id="ai-generate-status" class="ai-generate-status">Generated summary for United States at 21:58 (local time).</div>
-        </div>
-      </div>
+          <tr>
+            <td><a class="matrix-country" href="/brazil/indicators">Brazil</a></td>
+            <td data-heatmap-value="2179"><a href="/brazil/gdp" style="color: rgb(242, 249, 255);">2179</a></td>
+            <td data-heatmap-value="0.40"><a href="/brazil/gdp-growth" style="color: rgb(255, 255, 255);">0.40</a></td>
+            <td data-heatmap-value="15.00"><a href="/brazil/interest-rate" style="color: rgb(120, 193, 255);">15.00</a></td>
+            <td data-heatmap-value="-4.68"><a href="/brazil/inflation-cpi" style="color: rgb(254, 215, 215);">4.68</a></td>
+            <td data-heatmap-value="-5.40"><a href="/brazil/unemployment-rate" style="color: rgb(254, 215, 215);">5.40</a></td>
+            <td data-heatmap-value="-8.50"><a href="/brazil/government-budget" style="color: rgb(253, 175, 176);">-8.50</a></td>
+            <td data-heatmap-value="76.50"><a href="/brazil/government-debt-to-gdp" style="color: rgb(215, 236, 255);">76.50</a></td>
+            <td data-heatmap-value="-2.55"><a href="/brazil/current-account-to-gdp" style="color: rgb(254, 215, 215);">-2.55</a></td>
+            <td data-heatmap-value="212.58"><a href="/brazil/population" style="color: rgb(228, 243, 255);">212.58</a></td>
+          </tr>
+
+          <tr>
+            <td><a class="matrix-country" href="/russia/indicators">Russia</a></td>
+            <td data-heatmap-value="2174"><a href="/russia/gdp" style="color: rgb(242, 249, 255);">2174</a></td>
+            <td data-heatmap-value="-0.80"><a href="/russia/gdp-growth" style="color: rgb(254, 235, 235);">-0.80</a></td>
+            <td data-heatmap-value="16.50"><a href="/russia/interest-rate" style="color: rgb(120, 193, 255);">16.50</a></td>
+            <td data-heatmap-value="-7.70"><a href="/russia/inflation-cpi" style="color: rgb(253, 195, 196);">7.70</a></td>
+            <td data-heatmap-value="-2.20"><a href="/russia/unemployment-rate" style="color: rgb(254, 235, 235);">2.20</a></td>
+            <td data-heatmap-value="-1.70"><a href="/russia/government-budget" style="color: rgb(255, 255, 255);">-1.70</a></td>
+            <td data-heatmap-value="16.40"><a href="/russia/government-debt-to-gdp" style="color: rgb(255, 255, 255);">16.40</a></td>
+            <td data-heatmap-value="2.90"><a href="/russia/current-account-to-gdp" style="color: rgb(214, 247, 223);">2.90</a></td>
+            <td data-heatmap-value="146.20"><a href="/russia/population" style="color: rgb(242, 249, 255);">146.20</a></td>
+          </tr>
+
+          <tr>
+            <td><a class="matrix-country" href="/mexico/indicators">Mexico</a></td>
+            <td data-heatmap-value="1853"><a href="/mexico/gdp" style="color: rgb(255, 255, 255);">1853</a></td>
+            <td data-heatmap-value="-0.30"><a href="/mexico/gdp-growth" style="color: rgb(255, 255, 255);">-0.30</a></td>
+            <td data-heatmap-value="7.25"><a href="/mexico/interest-rate" style="color: rgb(161, 212, 255);">7.25</a></td>
+            <td data-heatmap-value="-3.57"><a href="/mexico/inflation-cpi" style="color: rgb(254, 235, 235);">3.57</a></td>
+            <td data-heatmap-value="-2.60"><a href="/mexico/unemployment-rate" style="color: rgb(254, 235, 235);">2.60</a></td>
+            <td data-heatmap-value="-5.70"><a href="/mexico/government-budget" style="color: rgb(254, 215, 215);">-5.70</a></td>
+            <td data-heatmap-value="49.70"><a href="/mexico/government-debt-to-gdp" style="color: rgb(228, 243, 255);">49.70</a></td>
+            <td data-heatmap-value="-0.80"><a href="/mexico/current-account-to-gdp" style="color: rgb(255, 255, 255);">-0.80</a></td>
+            <td data-heatmap-value="130.86"><a href="/mexico/population" style="color: rgb(242, 249, 255);">130.86</a></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
-
-  <script>
-    // =========================
-    // Config
-    // =========================
-    const COUNTRIES = [
-      "United States",
-      "Euro Zone",
-      "Canada",
-      "Japan",
-      "Switzerland",
-      "United Kingdom",
-      "Australia",
-      "New Zealand",
-      "China",
-      "India",
-      "Russia",
-      "Thailand",
-      "Indonesia"
-    ];
-
-    const METRICS = [
-      { key:"interest",      id:"chart-interest",      label:"Interest Rates (%)",           base:3.0,  vol:1.0 },
-      { key:"cpi",           id:"chart-cpi",           label:"CPI Inflation (y/y %)",        base:4.0,  vol:1.5 },
-      { key:"unemp",         id:"chart-unemployment",  label:"Unemployment Rate (%)",        base:5.0,  vol:1.0 },
-      { key:"gdp",           id:"chart-gdp",           label:"Real GDP Growth (y/y %)",      base:2.0,  vol:1.5 },
-      { key:"sentiment",     id:"chart-sentiment",     label:"Consumer Sentiment Index",     base:90.0, vol:5.0 },
-      { key:"retail",        id:"chart-retail",        label:"Retail Sales (y/y %)",         base:3.0,  vol:1.5 },
-      { key:"ism_manu",      id:"chart-ism-manu",      label:"ISM Manufacturing PMI",        base:52.0, vol:3.0 },
-      { key:"ism_serv",      id:"chart-ism-serv",      label:"ISM Services PMI",             base:53.0, vol:3.0 },
-      { key:"sp_composite",  id:"chart-sp-composite",  label:"S&P Global Composite PMI",     base:52.0, vol:3.0 }
-    ];
-
-    // Monthly dates: last 12 months from current month
-    const DATES = (() => {
-      const arr = [];
-      const now = new Date();
-      // start 11 months ago (inclusive) sampai bulan ini (total 12)
-      const start = new Date(now.getFullYear(), now.getMonth() - 11, 1);
-      for(let i=0;i<12;i++){
-        const d = new Date(start.getFullYear(), start.getMonth()+i, 1);
-        const y = d.getFullYear();
-        const m = String(d.getMonth()+1).padStart(2,"0");
-        arr.push(`${y}-${m}`);
-      }
-      return arr;
-    })();
-
-    // =========================
-    // Dummy data generator
-    // =========================
-    function makeRandomSeries(base, vol){
-      const arr = [];
-      let last = base;
-      for(let i=0;i<DATES.length;i++){
-        const shock = (Math.random()-0.5)*vol*2;
-        last = last + shock;
-        arr.push(parseFloat(last.toFixed(2)));
-      }
-      return arr;
-    }
-
-    const DATA_STORE = {};
-    COUNTRIES.forEach(country=>{
-      DATA_STORE[country] = {};
-      METRICS.forEach(metric=>{
-        DATA_STORE[country][metric.key] = makeRandomSeries(metric.base, metric.vol);
-      });
-    });
-
-    // =========================
-    // ECharts init
-    // =========================
-    const chartInstances = {};
-
-    function initCharts(){
-      // composite chart
-      const compDom = document.getElementById("chart-composite");
-      if(compDom){
-        chartInstances["composite"] = echarts.init(compDom,null,{renderer:"canvas"});
-      }
-
-      // metric charts
-      METRICS.forEach(metric=>{
-        const dom = document.getElementById(metric.id);
-        if(dom){
-          const inst = echarts.init(dom,null,{renderer:"canvas"});
-          chartInstances[metric.key] = inst;
-        }
-      });
-
-      updateChartsForCountry("United States");
-      window.addEventListener("resize",()=>{
-        Object.values(chartInstances).forEach(c=>c && c.resize());
-      });
-    }
-
-    function getYAxisRange(metricKey){
-      switch(metricKey){
-        case "interest":
-          return [0,10];
-        case "cpi":
-          return [-1,10];
-        case "unemp":
-          return [0,15];
-        case "gdp":
-          return [-5,8];
-        case "sentiment":
-          return [60,120];
-        case "retail":
-          return [-5,10];
-        case "ism_manu":
-        case "ism_serv":
-        case "sp_composite":
-          return [40,60];
-        default:
-          return null;
-      }
-    }
-
-    function updateChartsForCountry(country){
-      const countryData = DATA_STORE[country];
-      if(!countryData) return;
-
-      // individual metric charts
-      METRICS.forEach(metric=>{
-        const inst = chartInstances[metric.key];
-        if(!inst) return;
-        const seriesData = countryData[metric.key];
-
-        const range = getYAxisRange(metric.key);
-        const option = {
-          animation:true,
-          grid:{left:32,right:8,top:18,bottom:24},
-          xAxis:{
-            type:"category",
-            data:DATES,
-            axisLine:{lineStyle:{color:"#555"}},
-            axisLabel:{
-              color:"#888",
-              fontSize:9,
-              interval:1
-            },
-            axisTick:{show:false}
-          },
-          yAxis:{
-            type:"value",
-            min:range ? range[0] : null,
-            max:range ? range[1] : null,
-            axisLine:{show:false},
-            splitLine:{lineStyle:{color:"#1f1f1f"}},
-            axisLabel:{
-              color:"#777",
-              fontSize:9
-            }
-          },
-          tooltip:{
-            trigger:"axis",
-            backgroundColor:"#000",
-            borderColor:"#333",
-            borderWidth:1,
-            textStyle:{color:"#f5f5f5",fontSize:10},
-            axisPointer:{type:"line",lineStyle:{color:"#ffbf00"}}
-          },
-          series:[
-            {
-              name:metric.label,
-              type:"line",
-              data:seriesData,
-              smooth:true,
-              showSymbol:false,
-              lineStyle:{
-                width:1.5
-              }
-            }
-          ]
-        };
-        inst.setOption(option,true);
-      });
-
-      // composite chart (simple average of all indicators per month)
-      const compInst = chartInstances["composite"];
-      if(compInst){
-        const compositeSeries = DATES.map((_, idx)=>{
-          let sum = 0;
-          METRICS.forEach(m=>{
-            sum += countryData[m.key][idx];
-          });
-          return parseFloat((sum / METRICS.length).toFixed(2));
-        });
-
-        const minVal = Math.min(...compositeSeries);
-        const maxVal = Math.max(...compositeSeries);
-        const padding = (maxVal - minVal) * 0.15 || 1;
-
-        const compOption = {
-          animation:true,
-          grid:{left:38,right:12,top:24,bottom:26},
-          xAxis:{
-            type:"category",
-            data:DATES,
-            axisLine:{lineStyle:{color:"#555"}},
-            axisLabel:{
-              color:"#aaa",
-              fontSize:10,
-              interval:1
-            },
-            axisTick:{show:false}
-          },
-          yAxis:{
-            type:"value",
-            min:Math.floor(minVal - padding),
-            max:Math.ceil(maxVal + padding),
-            axisLine:{show:false},
-            splitLine:{lineStyle:{color:"#1f1f1f"}},
-            axisLabel:{
-              color:"#888",
-              fontSize:10
-            }
-          },
-          tooltip:{
-            trigger:"axis",
-            backgroundColor:"#000",
-            borderColor:"#333",
-            borderWidth:1,
-            textStyle:{color:"#f5f5f5",fontSize:11},
-            axisPointer:{type:"line",lineStyle:{color:"#ffbf00"}}
-          },
-          series:[
-            {
-              name:"Economic Health Composite",
-              type:"line",
-              data:compositeSeries,
-              smooth:true,
-              showSymbol:false,
-              lineStyle:{
-                width:2.0
-              },
-              areaStyle:{
-                opacity:0.12
-              }
-            }
-          ]
-        };
-
-        compInst.setOption(compOption,true);
-      }
-    }
-
-    // =========================
-    // AI narrative (dummy)
-    // =========================
-    const aiCurrentEl   = ()=>document.getElementById("ai-current-state");
-    const aiInflationEl = ()=>document.getElementById("ai-inflation");
-    const aiPolicyEl    = ()=>document.getElementById("ai-policy");
-    const aiGrowthEl    = ()=>document.getElementById("ai-growth");
-    const aiRisksEl     = ()=>document.getElementById("ai-risks");
-    const aiTagsEl      = ()=>document.getElementById("ai-tags");
-    const aiCountryLbl  = ()=>document.getElementById("ai-country-label");
-    const aiStatusEl    = ()=>document.getElementById("ai-generate-status");
-
-    function buildDummyNarrative(country){
-      const growthTone = {
-        "United States": "resilient but gradually normalizing",
-        "Euro Zone": "fragile and uneven across members",
-        "Japan": "recovering with pockets of structural change",
-        "China": "slowing but still driven by policy support",
-        "India": "high-growth and domestically driven",
-        "Russia": "distorted by sanctions and war-related spending",
-        "Australia": "commodity-linked and rate-sensitive",
-        "New Zealand": "interest-sensitive and housing-centric",
-        "Canada": "energy-linked with housing spillovers",
-        "Switzerland": "stable, safe-haven-driven",
-        "United Kingdom": "post-Brexit adjustment with sticky inflation",
-        "Thailand": "tourism-led with external sector swings",
-        "Indonesia": "domestically driven, commodity-linked, and sensitive to global financial conditions"
-      }[country] || "in a transition phase";
-
-      const inflationTone = {
-        "United States": "disinflation is progressing, but core components remain sticky.",
-        "Euro Zone": "headline inflation has cooled, yet services prices are elevated.",
-        "Japan": "inflation is finally positive after decades of deflationary bias.",
-        "China": "inflation is low, with intermittent deflationary pressures.",
-        "India": "inflation is manageable but sensitive to food and energy shocks.",
-        "Russia": "inflation is volatile amid sanctions and FX moves.",
-        "Australia": "inflation is easing, but still above target on services.",
-        "New Zealand": "inflation has peaked, with policy firmly restrictive.",
-        "Canada": "inflation is trending down, yet wage dynamics matter.",
-        "Switzerland": "inflation is low and within the central bank’s comfort zone.",
-        "United Kingdom": "inflation has been sticky, reflecting wages and services.",
-        "Thailand": "inflation remains contained, with a focus on growth support.",
-        "Indonesia": "inflasi relatif terkendali, namun tetap dipengaruhi harga pangan, energi, dan kebijakan subsidi."
-      }[country] || "inflation is mixed and highly data-dependent.";
-
-      const policyBias = {
-        "United States": "The central bank is leaning towards a data-dependent, gradual easing bias once inflation is firmly anchored.",
-        "Euro Zone": "The ECB is cautious, balancing weak growth against still-elevated inflation.",
-        "Japan": "The BoJ is slowly exiting ultra-easy policy while watching yields and FX closely.",
-        "China": "Policy remains supportive, using targeted easing and fiscal tools.",
-        "India": "The RBI keeps a cautious stance, prioritizing inflation stability.",
-        "Russia": "Policy is heavily influenced by FX, sanctions, and fiscal needs.",
-        "Australia": "The RBA keeps a mild tightening bias while inflation normalizes.",
-        "New Zealand": "The RBNZ is restrictive and waits for clear evidence of demand cooling.",
-        "Canada": "The BoC is watching labor and housing before committing to cuts.",
-        "Switzerland": "The SNB calibrates policy mainly through FX and low inflation.",
-        "United Kingdom": "The BoE faces a tough trade-off between growth and sticky inflation.",
-        "Thailand": "The BoT focuses on growth support while keeping inflation anchored.",
-        "Indonesia": "Bank Indonesia menjaga keseimbangan antara stabilitas rupiah, inflasi, dan dukungan pertumbuhan, dengan kombinasi kebijakan suku bunga dan makroprudensial."
-      }[country] || "Policy is explicitly data-dependent with no clear easing or tightening path.";
-
-      const growthPath = `Growth in ${country} currently looks ${growthTone}. High-frequency monthly data from retail sales, PMIs, labor markets, and your composite health score will be crucial to confirm if the current phase extends, accelerates, or rolls over.`;
-
-      const riskText = `Key risks for ${country} include external shocks (energy, geopolitics, global demand) and domestic factors (politics, regulation, and credit conditions). For traders, this translates into opportunities around rates volatility, FX trends, and equity sector rotation when macro and composite surprises hit.`;
-
-      const tags = [
-        "Macro Regime",
-        "Inflation Cycle",
-        "Policy Path",
-        "Growth Risk",
-        "FX & Rates"
-      ];
-
-      return { growthTone, inflationTone, policyBias, growthPath, riskText, tags };
-    }
-
-    function updateAINarrative(country){
-      const narrative = buildDummyNarrative(country);
-      const { inflationTone, policyBias, growthPath, riskText, tags } = narrative;
-
-      aiCountryLbl().textContent = country;
-
-      aiCurrentEl().textContent =
-        `${country} is currently in a ${
-          narrative.growthTone.includes("resilient")
-            ? "late-cycle to mid-cycle transition"
-            : "delicate balance between growth and stability"
-        }. Read the last-12-month composite score together with individual indicators (rates, inflation, labor, demand, and PMIs) to understand where we are in the macro regime.`;
-
-      aiInflationEl().textContent = inflationTone;
-      aiPolicyEl().textContent = policyBias;
-      aiGrowthEl().textContent = growthPath;
-      aiRisksEl().textContent = riskText;
-
-      const tagsContainer = aiTagsEl();
-      tagsContainer.innerHTML = "";
-      tags.forEach(t=>{
-        const span = document.createElement("span");
-        span.className = "ai-tag";
-        span.textContent = t;
-        tagsContainer.appendChild(span);
-      });
-    }
-
-    function markGenerated(country){
-      const el = aiStatusEl();
-      if(!el) return;
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2,"0");
-      const mm = String(now.getMinutes()).padStart(2,"0");
-      el.textContent = `Generated summary for ${country} at ${hh}:${mm} (local time).`;
-    }
-
-    // =========================
-    // Wiring
-    // =========================
-    document.addEventListener("DOMContentLoaded",()=>{
-      initCharts();
-      updateAINarrative("United States");
-      markGenerated("United States");
-
-      const selectEl = document.getElementById("country-select");
-      const btnEl = document.getElementById("ai-generate-btn");
-
-      selectEl.addEventListener("change",e=>{
-        const country = e.target.value;
-        updateChartsForCountry(country);
-        // AI baru di-generate saat tombol di-klik
-      });
-
-      btnEl.addEventListener("click",()=>{
-        const country = selectEl.value;
-        // Di production: panggil backend Global Makro + AI engine di sini
-        updateAINarrative(country);
-        markGenerated(country);
-      });
-    });
-  </script>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
-
-
-</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar></html>
+</body>
+</html>
