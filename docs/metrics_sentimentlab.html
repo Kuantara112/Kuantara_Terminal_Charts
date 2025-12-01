@@ -101,16 +101,16 @@
   <div class="kt-layout">
     <section class="kt-card">
       <header class="kt-card-header">
-        <div id="quotesTitle">Broad</div>
+        <!-- Default title sekarang COT -->
+        <div id="quotesTitle">COT</div>
         <div class="kt-page-tabs">
-          <div class="kt-pill-page active" data-page="broad">Broad</div>
-          <div class="kt-pill-page" data-page="cot">COT</div>
+          <div class="kt-pill-page active" data-page="cot">COT</div>
           <div class="kt-pill-page" data-page="retail">Retail</div>
         </div>
       </header>
 
       <div class="kt-panel-body">
-        <iframe id="broadFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentimentlab_broad.html"></iframe>
+        <!-- Broad dihapus, hanya COT & Retail -->
         <iframe id="cotFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentimentlab_cot.html"></iframe>
         <iframe id="retailFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentimentlab_retail.html"></iframe>
       </div>
@@ -120,7 +120,6 @@
 
 <script>
   const frames = {
-    broad: document.getElementById("broadFrame"),
     cot: document.getElementById("cotFrame"),
     retail: document.getElementById("retailFrame"),
   };
@@ -128,11 +127,10 @@
   const pagePills = document.querySelectorAll(".kt-pill-page");
   const titleEl = document.getElementById("quotesTitle");
 
-  const TITLES = { broad: "Broad", cot: "COT", retail: "Retail" };
+  const TITLES = { cot: "COT", retail: "Retail" };
 
   function updatePanel(key) {
     titleEl.textContent = TITLES[key];
-
     Object.values(frames).forEach(f => f.style.display = "none");
     frames[key].style.display = "block";
   }
@@ -145,7 +143,8 @@
     });
   });
 
-  updatePanel("broad");
+  // Default sekarang COT
+  updatePanel("cot");
 </script>
 
 </body>
