@@ -1,1 +1,712 @@
-testing dulu
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuantara – Relative Rotation Graph (RRG-Style)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+  <style>
+    :root {
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --bg-card:#151515;
+      --bg-soft:#101010;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+      --accent-soft:rgba(255,191,0,0.16);
+      --green:#22c55e;
+      --red:#ef4444;
+      --blue:#3b82f6;
+      --yellow:#eab308;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace;
+    }
+
+    html, body {
+      height:100%;
+      width:100%;
+      background:var(--bg-root);
+      color:var(--text-main);
+    }
+
+    body {
+      display:flex;
+      align-items:stretch;
+      justify-content:center;
+      padding:8px;
+    }
+
+    .shell {
+      flex:1;
+      max-width:1200px;
+      background:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:10px;
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .header {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
+
+    .title {
+      font-size:14px;
+      font-weight:600;
+      letter-spacing:0.03em;
+    }
+
+    .controls {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      font-size:11px;
+      align-items:center;
+    }
+
+    .chip {
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:var(--bg-soft);
+      display:flex;
+      align-items:center;
+      gap:4px;
+      cursor:default;
+      font-size:10.5px;
+    }
+
+    .chip-label {
+      color:var(--text-muted);
+    }
+
+    button {
+      background:var(--bg-soft);
+      border:1px solid var(--border-soft);
+      color:var(--text-main);
+      font-size:10.5px;
+      border-radius:6px;
+      padding:2px 7px; /* lebih pendek */
+      outline:none;
+      cursor:pointer;
+    }
+
+    button:hover {
+      border-color:var(--accent);
+    }
+
+    #rrg-chart {
+      flex:1;
+      min-height:320px;
+      height:65vh;
+      border-radius:8px;
+      overflow:hidden;
+    }
+
+    .legend-panel {
+      font-size:10.5px;
+      color:var(--text-muted);
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:4px;
+      align-items:flex-start;
+    }
+
+    .legend-item {
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
+
+    .color-dot {
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:var(--accent);
+    }
+
+    .dot-leading { background:var(--green); }
+    .dot-weakening { background:var(--yellow); }
+    .dot-lagging { background:var(--red); }
+    .dot-improving { background:var(--blue); }
+
+    @media (max-width:768px) {
+      body {
+        padding:4px;
+      }
+      .shell {
+        padding:8px;
+      }
+      #rrg-chart {
+        height:60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <div class="header">
+    <div>
+      <div class="title">Relative Rotation Graph (RRG-Style) – Kuantara</div>
+    </div>
+    <div class="controls">
+      <div class="chip">
+        <span class="chip-label">Benchmark:</span>
+        <span>SPY</span>
+      </div>
+      <button id="refresh-btn">Refresh</button>
+    </div>
+  </div>
+
+  <div id="rrg-chart"></div>
+
+  <div class="legend-panel">
+    <div class="legend-item">
+      <span class="color-dot dot-leading"></span> Leading (+RS, +Momentum)
+    </div>
+    <div class="legend-item">
+      <span class="color-dot dot-weakening"></span> Weakening (+RS, -Momentum)
+    </div>
+    <div class="legend-item">
+      <span class="color-dot dot-lagging"></span> Lagging (-RS, -Momentum)
+    </div>
+    <div class="legend-item">
+      <span class="color-dot dot-improving"></span> Improving (-RS, +Momentum)
+    </div>
+  </div>
+</div>
+
+<script>
+  // ==============================
+  // 1) CONFIG
+  // ==============================
+  const KUANTARA_TV_BASE = "https://kuancloud.loclx.io";
+
+  const BENCHMARK_SYMBOL = "SPY";
+
+  // Universe ETF (IYE, IYR, OIH, GDXJ removed)
+  const SYMBOLS = [
+    { ticker: "KBE",  label: "Bank"  },
+    { ticker: "XHB",  label: "Homebuilders"  },
+    { ticker: "VNQ",  label: "Real Estate"  },
+    { ticker: "ITB",  label: "Construction"  },
+    { ticker: "XME",  label: "Metals & Mining"  },
+    { ticker: "XRT",  label: "Retail"  },
+    { ticker: "KRE",  label: "Regional Banking"  },
+    { ticker: "XOP",  label: "Oil & Gas"  },
+    { ticker: "XLB",  label: "Materials"  },
+    { ticker: "XLE",  label: "Energy"  },
+    { ticker: "XLF",  label: "Financial"  },
+    { ticker: "XLI",  label: "Industrial"  },
+    { ticker: "XLK",  label: "Technology"  },
+    { ticker: "XLP",  label: "Consumer Staples"  },
+    { ticker: "XLU",  label: "Utilities"  },
+    { ticker: "XLV",  label: "Health Care"  },
+    { ticker: "XLY",  label: "Consumer Discretionary"  },
+    { ticker: "IBB",  label: "Biotechnology"  },
+    { ticker: "GDX",  label: "Gold"  },
+    { ticker: "SMH",  label: "Semiconductor"  },
+    { ticker: "XTL",  label: "Telecom"  }
+  ];
+
+  const INTERVAL   = "1D";
+  const BARS_COUNT = 200;   // cukup panjang untuk lookback 20+10
+
+  // axis auto-fit (Deepnote-style)
+  const MIN_SPAN    = 1.2;
+  const PAD_RATIO   = 0.18;
+  const PAD_ABS_MIN = 0.15;
+
+  // trail length fixed to 7 bars (no dropdown)
+  const FIXED_TRAIL_LEN = 7;
+
+  // assign unique color for each symbol
+  const SYMBOL_COLOR_MAP = {};
+  (function assignColors() {
+    const n = SYMBOLS.length;
+    for (let i = 0; i < n; i++) {
+      const h = (360 * i) / n; // evenly spaced hues
+      const color = `hsl(${h}, 70%, 55%)`;
+      SYMBOL_COLOR_MAP[SYMBOLS[i].ticker] = color;
+    }
+  })();
+
+  // ==============================
+  // 2) DATA HELPERS
+  // ==============================
+
+  async function fetchBars(symbol, interval = INTERVAL, barsCount = BARS_COUNT) {
+    const url = `${KUANTARA_TV_BASE}/api/tvohlc/ohlcv` +
+      `?symbol=${encodeURIComponent(symbol)}` +
+      `&interval=${encodeURIComponent(interval)}` +
+      `&bars_count=${barsCount}`;
+
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} for ${symbol}`);
+    }
+    const json = await res.json();
+    if (!json.ok || !json.results || !json.results.length) {
+      throw new Error(`API not ok / no results for ${symbol}`);
+    }
+    const r = json.results[0];
+    if (!r.ok || !r.bars || !r.bars.length) {
+      throw new Error(`Result not ok / bars empty for ${symbol}`);
+    }
+    // sort by timestamp ascending
+    return r.bars.slice().sort((a, b) => a.timestamp - b.timestamp);
+  }
+
+  // SMA: identical idea dengan pandas rolling.mean (full window)
+  function sma(values, length) {
+    return values.map((_, i) => {
+      if (i < length) return null;
+      const slice = values.slice(i - length, i);
+      const valid = slice.filter(v => v != null);
+      return valid.length === length
+        ? valid.reduce((a, b) => a + b, 0) / length
+        : null;
+    });
+  }
+
+  // EMA: span-style (like pandas ewm(span=...))
+  function ema(values, span) {
+    const k = 2 / (span + 1);
+    const out = new Array(values.length).fill(null);
+    let prev = null;
+    values.forEach((v, i) => {
+      if (v == null || isNaN(v)) return;
+      if (prev == null) {
+        prev = v;
+      } else {
+        prev = v * k + prev * (1 - k);
+      }
+      out[i] = prev;
+    });
+    return out;
+  }
+
+  // ==============================
+  // 3) ALIGN + JdK-LIKE CALC
+  // ==============================
+
+  function computeRRGPoints(symbolBars, benchBars) {
+    // map timestamp -> bar
+    const symMap   = new Map(symbolBars.map(b => [String(b.timestamp), b]));
+    const benchMap = new Map(benchBars.map(b => [String(b.timestamp), b]));
+
+    const timestamps = [];
+    for (const k of symMap.keys()) {
+      if (benchMap.has(k)) timestamps.push(k);
+    }
+    if (timestamps.length < 40) return []; // butuh min lookback
+
+    // sort ascending by numeric timestamp
+    timestamps.sort((a, b) => parseFloat(a) - parseFloat(b));
+
+    const closesSym   = [];
+    const closesBench = [];
+    const timesIso    = [];
+
+    for (const k of timestamps) {
+      const s = symMap.get(k);
+      const b = benchMap.get(k);
+      if (!s || !b || b.close == null || b.close === 0 || s.close == null) continue;
+      closesSym.push(s.close);
+      closesBench.push(b.close);
+      timesIso.push(s.time_iso);
+    }
+
+    const n = closesSym.length;
+    if (n < 40) return [];
+
+    // RS
+    const rs = closesSym.map((v, i) => closesBench[i] ? v / closesBench[i] : null);
+
+    const LOOKBACK_RS  = 20;
+    const LOOKBACK_MOM = 10;
+    const EMA_SMOOTH   = 3;
+
+    // RS-Ratio raw: 100 * (RS / SMA_RS)
+    const rsSma = sma(rs, LOOKBACK_RS);
+    const rsRatioRaw = rs.map((v, i) => (rsSma[i] ? 100 * (v / rsSma[i]) : null));
+    const rsRatio = ema(rsRatioRaw, EMA_SMOOTH);
+
+    // RS-Momentum raw: 100 * (RS-Ratio / SMA_RSR)
+    const rsrSma = sma(rsRatio, LOOKBACK_MOM);
+    const rsMomRaw = rsRatio.map((v, i) => (rsrSma[i] ? 100 * (v / rsrSma[i]) : null));
+    const rsMom = ema(rsMomRaw, EMA_SMOOTH);
+
+    const points = [];
+    for (let i = 0; i < n; i++) {
+      const x = rsRatio[i];
+      const y = rsMom[i];
+      if (x == null || y == null || isNaN(x) || isNaN(y)) continue;
+      points.push({
+        x,
+        y,
+        time_iso: timesIso[i]
+      });
+    }
+    return points;
+  }
+
+  // ==============================
+  // 4) QUADRANTS
+  // ==============================
+
+  function classifyQuadrant(x, y) {
+    if (x >= 100 && y >= 100) return "leading";
+    if (x >= 100 && y < 100)  return "weakening";
+    if (x < 100  && y < 100)  return "lagging";
+    if (x < 100  && y >= 100) return "improving";
+    return "unknown";
+  }
+
+  // ==============================
+  // 5) ECHARTS
+  // ==============================
+  const chartEl  = document.getElementById("rrg-chart");
+  const rrgChart = echarts.init(chartEl, null, { renderer: "canvas" });
+
+  function buildOption(seriesData, xRange, yRange, xTail, yTail) {
+    return {
+      backgroundColor: "#111111",
+      animation: true,
+      tooltip: {
+        trigger: "item",
+        axisPointer: {
+          type: "cross",
+          crossStyle: {
+            color: "#666",
+            type: "dashed"
+          }
+        },
+        formatter: function (params) {
+          const d = params.data;
+          if (!d) return "";
+          return [
+            `<b>${params.seriesName}</b>`,
+            `RS-Ratio: ${d[0].toFixed(2)}`,
+            `RS-Momentum: ${d[1].toFixed(2)}`,
+            d[2] ? `Time: ${d[2]}` : ""
+          ].join("<br>");
+        }
+      },
+      grid: { left: 50, right: 20, top: 30, bottom: 40 },
+      xAxis: {
+        type: "value",
+        name: "RS-Ratio",
+        nameTextStyle: { color: "#9b9b9b", fontSize: 10 },
+        axisLine: { lineStyle: { color: "#555" } },
+        axisLabel: { color: "#9b9b9b", fontSize: 10 },
+        splitLine: { lineStyle: { color: "#222" } },
+        min: xRange[0],
+        max: xRange[1]
+      },
+      yAxis: {
+        type: "value",
+        name: "RS-Momentum",
+        nameLocation: "middle",
+        nameGap: 40,
+        nameTextStyle: { color: "#9b9b9b", fontSize: 10 },
+        axisLine: { lineStyle: { color: "#555" } },
+        axisLabel: { color: "#9b9b9b", fontSize: 10 },
+        splitLine: { lineStyle: { color: "#222" } },
+        min: yRange[0],
+        max: yRange[1]
+      },
+      // biar label ticker gak terlalu tabrakan
+      labelLayout: {
+        moveOverlap: "shiftY"
+      },
+      series: seriesData,
+      // quadrant titles ala RRG
+      graphic: [
+        {
+          type: "text",
+          left: "76%",
+          top: "8%",
+          style: {
+            text: "LEADING",
+            fill: "#22c55e",
+            fontSize: 18,
+            fontWeight: 600,
+            opacity: 0.18
+          }
+        },
+        {
+          type: "text",
+          left: "76%",
+          bottom: "8%",
+          style: {
+            text: "WEAKENING",
+            fill: "#eab308",
+            fontSize: 16,
+            fontWeight: 600,
+            opacity: 0.18
+          }
+        },
+        {
+          type: "text",
+          right: "76%",
+          bottom: "8%",
+          style: {
+            text: "LAGGING",
+            fill: "#ef4444",
+            fontSize: 18,
+            fontWeight: 600,
+            opacity: 0.18
+          }
+        },
+        {
+          type: "text",
+          right: "76%",
+          top: "8%",
+          style: {
+            text: "IMPROVING",
+            fill: "#3b82f6",
+            fontSize: 16,
+            fontWeight: 600,
+            opacity: 0.18
+          }
+        }
+      ]
+    };
+  }
+
+  function renderRRG(payload, trailLen) {
+    if (!payload || !payload.length) {
+      rrgChart.clear();
+      rrgChart.setOption({
+        title: {
+          text: "No data",
+          left: "center",
+          top: "middle",
+          textStyle: { color: "#9b9b9b", fontSize: 12 }
+        }
+      });
+      return;
+    }
+
+    const series = [];
+    const xTailAll = [];
+    const yTailAll = [];
+
+    payload.forEach(item => {
+      const color = item.color || "#ffbf00";
+      const tail  = item.points.slice(-trailLen);
+      if (!tail.length) return;
+
+      const data = tail.map(p => {
+        xTailAll.push(p.x);
+        yTailAll.push(p.y);
+        return [p.x, p.y, p.time_iso];
+      });
+
+      const seriesName = `${item.ticker} – ${item.label}`;
+
+      // dotted trail
+      series.push({
+        name: seriesName,
+        type: "line",
+        data,
+        showSymbol: true,
+        symbolSize: 3,
+        smooth: false,
+        lineStyle: {
+          width: 1.5,
+          color,
+          type: "dotted",
+          opacity: 0.9
+        },
+        itemStyle: { color },
+        emphasis: { focus: "series" }
+      });
+
+      const last = data[data.length - 1];
+
+      // last point dengan label ticker di ujung (ala RRG)
+      series.push({
+        name: seriesName,
+        type: "scatter",
+        data: [last],
+        symbolSize: 11,
+        itemStyle: {
+          color,
+          borderColor: "#000",
+          borderWidth: 1
+        },
+        label: {
+          show: true,
+          formatter: () => item.ticker,
+          position: "right",
+          distance: 4,
+          color: "#f5f5f5",
+          fontSize: 9.5
+        },
+        zlevel: 10
+      });
+    });
+
+    if (!xTailAll.length || !yTailAll.length) {
+      rrgChart.clear();
+      rrgChart.setOption({
+        title: {
+          text: "No valid tail data",
+          left: "center",
+          top: "middle",
+          textStyle: { color: "#9b9b9b", fontSize: 12 }
+        }
+      });
+      return;
+    }
+
+    const xMin = Math.min(...xTailAll);
+    const xMax = Math.max(...xTailAll);
+    const yMin = Math.min(...yTailAll);
+    const yMax = Math.max(...yTailAll);
+
+    let spanX = xMax - xMin;
+    let spanY = yMax - yMin;
+    let span  = Math.max(spanX, spanY);
+    span = Math.max(span, MIN_SPAN);
+    let pad = Math.max(span * PAD_RATIO, PAD_ABS_MIN);
+
+    const cx = 100.0;
+    const cy = 100.0;
+    const half = span / 2.0;
+
+    const xRange = [cx - half - pad, cx + half + pad];
+    const yRange = [cy - half - pad, cy + half + pad];
+
+    const option = buildOption(series, xRange, yRange, xTailAll, yTailAll);
+
+    // Quadrant background
+    option.series.push({
+      type: "scatter",
+      name: "_quadrants",
+      data: [],
+      markArea: {
+        silent: true,
+        itemStyle: { opacity: 0.06 },
+        data: [
+          [ { xAxis: 100, yAxis: 100, itemStyle: { color: "#22c55e" } }, { xAxis: xRange[1], yAxis: yRange[1] } ],
+          [ { xAxis: 100, yAxis: yRange[0], itemStyle: { color: "#eab308" } }, { xAxis: xRange[1], yAxis: 100 } ],
+          [ { xAxis: xRange[0], yAxis: yRange[0], itemStyle: { color: "#ef4444" } }, { xAxis: 100, yAxis: 100 } ],
+          [ { xAxis: xRange[0], yAxis: 100, itemStyle: { color: "#3b82f6" } }, { xAxis: 100, yAxis: yRange[1] } ]
+        ]
+      }
+    });
+
+    // crosshair 100/100 (static)
+    option.series.push({
+      name: "_cross_v",
+      type: "line",
+      data: [[100, yRange[0]], [100, yRange[1]]],
+      lineStyle: { color: "#444", type: "dashed", width: 0.8 },
+      symbol: "none",
+      zlevel: 5
+    });
+    option.series.push({
+      name: "_cross_h",
+      type: "line",
+      data: [[xRange[0], 100], [xRange[1], 100]],
+      lineStyle: { color: "#444", type: "dashed", width: 0.8 },
+      symbol: "none",
+      zlevel: 5
+    });
+
+    rrgChart.clear();
+    rrgChart.setOption(option);
+  }
+
+  // ==============================
+  // 6) MAIN FLOW
+  // ==============================
+  const refreshBtn = document.getElementById("refresh-btn");
+
+  function initControls() {
+    refreshBtn.addEventListener("click", () => loadAndRender());
+  }
+
+  async function loadAndRender() {
+    try {
+      rrgChart.showLoading("default", {
+        text: "Loading RRG data...",
+        textColor: "#ffbf00",
+        maskColor: "rgba(0,0,0,0.7)"
+      });
+
+      const trailLen = FIXED_TRAIL_LEN;
+      const benchBars = await fetchBars(BENCHMARK_SYMBOL);
+
+      const payload = [];
+
+      for (const sym of SYMBOLS) {
+        try {
+          const bars = await fetchBars(sym.ticker);
+          const points = computeRRGPoints(bars, benchBars);
+          if (!points.length) continue;
+          const last = points[points.length - 1];
+          const quadrant = classifyQuadrant(last.x, last.y);
+          payload.push({
+            label: sym.label,
+            ticker: sym.ticker,
+            quadrant,
+            color: SYMBOL_COLOR_MAP[sym.ticker],
+            points
+          });
+        } catch (e) {
+          console.warn("Failed:", sym.ticker, e);
+        }
+      }
+
+      renderRRG(payload, trailLen);
+    } catch (err) {
+      console.error(err);
+      rrgChart.clear();
+      rrgChart.setOption({
+        title: {
+          text: "Error loading data",
+          left: "center",
+          top: "middle",
+          textStyle: { color: "#ef4444", fontSize: 12 }
+        }
+      });
+    } finally {
+      rrgChart.hideLoading();
+    }
+  }
+
+  window.addEventListener("resize", () => {
+    rrgChart.resize();
+  });
+
+  initControls();
+  loadAndRender();
+</script>
+</body>
+</html>
