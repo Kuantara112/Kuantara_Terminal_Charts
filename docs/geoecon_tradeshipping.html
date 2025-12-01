@@ -1,10 +1,12 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
-  <title>Kuantara – Trade &amp; Shipping</title>
+  <title>Kuantara – Trade & Shipping</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Fira Code -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
     :root {
@@ -343,526 +345,7 @@
       }
     }
   </style>
-<style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 2147483647;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.immersive-translate-attach-loading::after {
-  content: " ";
-
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-2000%, -50%);
-  z-index: 100;
-}
-
-.immersive-translate-loading-spinner {
-  vertical-align: middle !important;
-  width: 10px !important;
-  height: 10px !important;
-  display: inline-block !important;
-  margin: 0 4px !important;
-  border: 2px rgba(221, 244, 255, 0.6) solid !important;
-  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
-}
-
-@-webkit-keyframes immersive-translate-loading-animation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-
-@keyframes immersive-translate-loading-animation {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.immersive-translate-input-loading {
-  --loading-color: #f78fb6;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: block;
-  margin: 12px auto;
-  position: relative;
-  color: white;
-  left: -100px;
-  box-sizing: border-box;
-  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
-}
-
-@keyframes immersiveTranslateShadowRolling {
-  0% {
-    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  12% {
-    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  25% {
-    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
-      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  36% {
-    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
-      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
-  }
-
-  50% {
-    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
-      110px 0 var(--loading-color), 100px 0 var(--loading-color);
-  }
-
-  62% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
-      120px 0 var(--loading-color), 110px 0 var(--loading-color);
-  }
-
-  75% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      130px 0 var(--loading-color), 120px 0 var(--loading-color);
-  }
-
-  87% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
-  }
-
-  100% {
-    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
-      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.immersive-translate-toast {
-  display: flex;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  right: 0;
-  top: 1%;
-  width: fit-content;
-  padding: 12px 20px;
-  margin: auto;
-  overflow: auto;
-  background: #fef6f9;
-  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
-  font-size: 15px;
-  border-radius: 8px;
-  color: #333;
-}
-
-.immersive-translate-toast-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.immersive-translate-toast-hidden {
-  margin: 0 20px 0 72px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.immersive-translate-toast-close {
-  color: #666666;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-toast {
-    top: 0;
-    padding: 12px 0px 0 10px;
-  }
-  .immersive-translate-toast-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .immersive-translate-toast-hidden {
-    margin: 10px auto;
-  }
-}
-
-.immersive-translate-dialog {
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  display: flex;
-  width: 300px;
-  flex-direction: column;
-  align-items: center;
-  font-size: 15px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: fit-content;
-  border-radius: 20px;
-  background-color: #fff;
-}
-
-.immersive-translate-modal {
-  display: none;
-  position: fixed;
-  z-index: 2147483647;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-}
-
-.immersive-translate-modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 40px 24px 24px;
-  border-radius: 12px;
-  width: 350px;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
-    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  position: relative;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-content {
-    margin: 25% auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .immersive-translate-modal-content {
-    width: 80vw !important;
-    margin: 20vh auto !important;
-    padding: 20px 12px 12px !important;
-  }
-
-  .immersive-translate-modal-title {
-    font-size: 14px !important;
-  }
-
-  .immersive-translate-modal-body {
-    font-size: 13px !important;
-    max-height: 60vh !important;
-  }
-
-  .immersive-translate-btn {
-    font-size: 13px !important;
-    padding: 8px 16px !important;
-    margin: 0 4px !important;
-  }
-
-  .immersive-translate-modal-footer {
-    gap: 6px !important;
-    margin-top: 16px !important;
-  }
-}
-
-.immersive-translate-modal .immersive-translate-modal-content-in-input {
-  max-width: 500px;
-}
-.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
-  text-align: left;
-  max-height: unset;
-}
-
-.immersive-translate-modal-title {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333333;
-}
-
-.immersive-translate-modal-body {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #333333;
-  margin-top: 24px;
-  word-break: break-all;
-}
-
-@media screen and (max-width: 768px) {
-  .immersive-translate-modal-body {
-    max-height: 250px;
-    overflow-y: auto;
-  }
-}
-
-.immersive-translate-close {
-  color: #666666;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.immersive-translate-close:hover,
-.immersive-translate-close:focus {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.immersive-translate-modal-footer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.immersive-translate-btn {
-  width: fit-content;
-  color: #fff;
-  background-color: #ea4c89;
-  border: none;
-  font-size: 14px;
-  margin: 0 8px;
-  padding: 9px 30px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.immersive-translate-btn-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.immersive-translate-btn:hover {
-  background-color: #f082ac;
-}
-.immersive-translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.immersive-translate-btn:disabled:hover {
-  background-color: #ea4c89;
-}
-
-.immersive-translate-link-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: none;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-}
-
-.immersive-translate-cancel-btn {
-  /* gray color */
-  background-color: rgb(89, 107, 120);
-}
-
-.immersive-translate-cancel-btn:hover {
-  background-color: hsl(205, 20%, 32%);
-}
-
-.immersive-translate-action-btn {
-  background-color: transparent;
-  color: #ea4c89;
-  border: 1px solid #ea4c89;
-}
-
-.immersive-translate-btn svg {
-  margin-right: 5px;
-}
-
-.immersive-translate-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-primary-link {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  text-decoration: none;
-  color: #ea4c89;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-}
-
-.immersive-translate-modal input[type="radio"] {
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.immersive-translate-modal label {
-  cursor: pointer;
-}
-
-.immersive-translate-close-action {
-  position: absolute;
-  top: 2px;
-  right: 0px;
-  cursor: pointer;
-}
-
-.imt-image-status {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 16px !important;
-}
-.imt-image-status img,
-.imt-image-status svg,
-.imt-img-loading {
-  width: 28px !important;
-  height: 28px !important;
-  margin: 0 0 8px 0 !important;
-  min-height: 28px !important;
-  min-width: 28px !important;
-  position: relative !important;
-}
-.imt-img-loading {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
-  background-size: 28px 28px;
-  animation: image-loading-rotate 1s linear infinite !important;
-}
-
-.imt-image-status span {
-  color: var(--bg-2, #fff) !important;
-  font-size: 14px !important;
-  line-height: 14px !important;
-  font-weight: 500 !important;
-  font-family: "PingFang SC", Arial, sans-serif !important;
-}
-
-.imt-primary-button {
-  display: flex;
-  padding: 12px 80px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #ea4c89;
-  color: #fff;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.imt-retry-text {
-  color: #999;
-  text-align: center;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 21px;
-  cursor: pointer;
-}
-
-.imt-action-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.imt-modal-content-text {
-  text-align: left;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-@keyframes image-loading-rotate {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.imt-linear-gradient-text {
-  background: linear-gradient(90deg, #00a6ff 0%, #c369ff 52.4%, #ff4590 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.imt-flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.imt-linear-black-btn {
-  border-radius: 50px;
-  background: linear-gradient(66deg, #222 19%, #696969 94.25%);
-  height: 48px;
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  justify-content: center;
-}
-</style></head>
+</head>
 <body>
 
   <div class="panel-row">
@@ -874,7 +357,8 @@
       </div>
 
       <div class="asset-grid">
-        <article class="asset-card">
+        <!-- BDI -->
+        <article class="asset-card" data-key="BDI">
           <div class="asset-card-header">
             <span class="ticker">BDI</span>
             <span class="exchange">INDEX</span>
@@ -884,18 +368,19 @@
           <div class="asset-meta-row">
             <span class="chip">Macro</span>
             <div class="price-block">
-              <span class="price-main">2,145</span>
+              <span class="price-main" id="price-BDI">--</span>
               <div class="price-line">
                 <span class="price-label">D:</span>
-                <span class="pos">+1.8%</span>
+                <span id="dchg-BDI" class="">--</span>
                 <span class="price-label">Y:</span>
-                <span class="pos">+12.4%</span>
+                <span id="ychg-BDI" class="">--</span>
               </div>
             </div>
           </div>
         </article>
 
-        <article class="asset-card">
+        <!-- BDRY -->
+        <article class="asset-card" data-key="BDRY">
           <div class="asset-card-header">
             <span class="ticker">BDRY</span>
             <span class="exchange">ETF</span>
@@ -905,39 +390,41 @@
           <div class="asset-meta-row">
             <span class="chip">Dry Bulk</span>
             <div class="price-block">
-              <span class="price-main">$24.32</span>
+              <span class="price-main" id="price-BDRY">--</span>
               <div class="price-line">
                 <span class="price-label">D:</span>
-                <span class="pos">+3.2%</span>
+                <span id="dchg-BDRY" class="">--</span>
                 <span class="price-label">Y:</span>
-                <span class="pos">+27.9%</span>
+                <span id="ychg-BDRY" class="">--</span>
               </div>
             </div>
           </div>
         </article>
 
-        <article class="asset-card">
+        <!-- SEA -->
+        <article class="asset-card" data-key="SEA">
           <div class="asset-card-header">
             <span class="ticker">SEA</span>
             <span class="exchange">ETF</span>
           </div>
           <div class="asset-name">US Global Sea to Sky</div>
-          <div class="asset-desc">Global cargo &amp; logistics demand proxy.</div>
+          <div class="asset-desc">Global cargo & logistics demand proxy.</div>
           <div class="asset-meta-row">
             <span class="chip">Logistics</span>
             <div class="price-block">
-              <span class="price-main">$18.76</span>
+              <span class="price-main" id="price-SEA">--</span>
               <div class="price-line">
                 <span class="price-label">D:</span>
-                <span class="neg">-0.6%</span>
+                <span id="dchg-SEA" class="">--</span>
                 <span class="price-label">Y:</span>
-                <span class="pos">+4.1%</span>
+                <span id="ychg-SEA" class="">--</span>
               </div>
             </div>
           </div>
         </article>
 
-        <article class="asset-card">
+        <!-- BOAT -->
+        <article class="asset-card" data-key="BOAT">
           <div class="asset-card-header">
             <span class="ticker">BOAT</span>
             <span class="exchange">ETF</span>
@@ -947,21 +434,21 @@
           <div class="asset-meta-row">
             <span class="chip">Equities</span>
             <div class="price-block">
-              <span class="price-main">$22.41</span>
+              <span class="price-main" id="price-BOAT">--</span>
               <div class="price-line">
                 <span class="price-label">D:</span>
-                <span class="pos">+1.1%</span>
+                <span id="dchg-BOAT" class="">--</span>
                 <span class="price-label">Y:</span>
-                <span class="pos">+9.7%</span>
+                <span id="ychg-BOAT" class="">--</span>
               </div>
             </div>
           </div>
         </article>
       </div>
 
-      <div class="panel-note">
-        &gt; SYSTEM STATUS: ONLINE<br>
-        &gt; DATA FEED: DELAYED 15m (DUMMY)
+      <div class="panel-note" id="statusNote">
+        &gt; SYSTEM STATUS: INIT<br>
+        &gt; DATA FEED: Connecting to Kuantara TradingView REST…
       </div>
     </div>
 
@@ -973,9 +460,6 @@
       </div>
 
       <div class="map-wrapper" id="vf-map">
-        
-        
-
         <!-- Top blocker -->
         <div class="vf-header-blocker"></div>
         <!-- Bottom blocker -->
@@ -997,8 +481,9 @@
           var fleet_name = "";
           var fleet_timespan = "1440";
         </script>
-        <script type="text/javascript" src="https://www.vesselfinder.com/aismap.js"></script><iframe name="vesselfinder" id="vesselfinder" width="100%" height="400" frameborder="0" src="https://www.vesselfinder.com/aismap?zoom=9&amp;lat=36.00&amp;lon=-5.40&amp;width=100%25&amp;height=400&amp;names=true&amp;track=false&amp;fleet=&amp;fleet_name=&amp;fleet_timespan=1440&amp;fleet_hide_old_positions=false&amp;clicktoact=false&amp;store_pos=true&amp;ra=http%3A%2F%2F127.0.0.1%3A5500%2Fwebsite-project%2Fsrc%2Findex.html">Browser does not support embedded objects.<br/>Visit directly <a href="https://www.vesselfinder.com" target="_blank">www.vesselfinder.com</a></iframe>
-        <iframe name="vesselfinder" id="vesselfinder" width="100%" height="400" frameborder="0" src="https://www.vesselfinder.com/aismap?zoom=9&amp;lat=36.00&amp;lon=-5.40&amp;width=100%25&amp;height=400&amp;names=true&amp;track=false&amp;fleet=&amp;fleet_name=&amp;fleet_timespan=1440&amp;fleet_hide_old_positions=false&amp;clicktoact=false&amp;store_pos=true">
+        <script type="text/javascript" src="https://www.vesselfinder.com/aismap.js"></script>
+        <iframe name="vesselfinder" id="vesselfinder" width="100%" height="400" frameborder="0"
+                src="https://www.vesselfinder.com/aismap?zoom=9&lat=36.00&lon=-5.40&width=100%25&height=400&names=true&track=false&fleet=&fleet_name=&fleet_timespan=1440&fleet_hide_old_positions=false&clicktoact=false&store_pos=true">
           Browser does not support embedded objects.<br/>
           Visit directly <a href="https://www.vesselfinder.com" target="_blank">www.vesselfinder.com</a>
         </iframe>
@@ -1006,44 +491,143 @@
     </div>
   </div>
 
-<!-- Code injected by live-server -->
 <script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
+  // ================================
+  // 1) CONFIG – Kuantara TV REST API
+  // ================================
+  const BASE_URL = "https://kuancloud.loclx.io";
+
+  // mapping kartu -> TradingView symbol
+  const SNAPSHOT_CONFIG = {
+    BDI:  { tvSymbol: "INDEX:BDI" },          // sesuaikan dengan backend-mu
+    BDRY: { tvSymbol: "AMEX:BDRY" },
+    SEA:  { tvSymbol: "AMEX:SEA" },
+    BOAT: { tvSymbol: "AMEX:BOAT" }
+  };
+
+  const INTERVAL = "1D";      // daily bars
+  const BARS_COUNT = 260;     // ~1Y trading days
+
+  // ==========================
+  // 2) Helper number + format
+  // ==========================
+  function formatNum(x, d = 2) {
+    if (x == null || !isFinite(x)) return "--";
+    return Number(x).toFixed(d);
+  }
+  function formatPct(x) {
+    if (x == null || !isFinite(x)) return "--";
+    const v = Number(x);
+    const sign = v > 0 ? "+" : v < 0 ? "" : "";
+    return sign + v.toFixed(2) + "%";
+  }
+
+  // ==========================
+  // 3) Fetch OHLCV dari TV API
+  // ==========================
+  async function fetchOhlcv(tvSymbol) {
+    const url = `${BASE_URL}/api/tvohlc/ohlcv?symbol=${encodeURIComponent(tvSymbol)}&interval=${encodeURIComponent(INTERVAL)}&bars_count=${BARS_COUNT}`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const json = await res.json();
+    const rec = (json.results || []).find(r => r.symbol === tvSymbol) || (json.results || [])[0];
+    if (!rec || !rec.bars || !rec.bars.length) throw new Error("No bars");
+    return rec.bars;
+  }
+
+  // hitung daily & yearly change (%) dari deret close
+  function calcChanges(bars) {
+    if (!bars.length) return { last: null, dChg: null, yChg: null };
+
+    const closes = bars.map(b => Number(b.close));
+    const lastIdx = closes.length - 1;
+    const last = closes[lastIdx];
+    const prev = closes[lastIdx - 1] ?? last;
+
+    const daily = prev ? ((last / prev) - 1) * 100 : null;
+
+    // yearly: pakai bar ~252 hari yang lalu kalau ada
+    const baseIdx = Math.max(0, closes.length - 252);
+    const base = closes[baseIdx];
+    const yearly = base ? ((last / base) - 1) * 100 : null;
+
+    return { last, dChg: daily, yChg: yearly };
+  }
+
+  // ==========================
+  // 4) Update DOM satu kartu
+  // ==========================
+  function updateCard(key, data) {
+    const priceEl = document.getElementById(`price-${key}`);
+    const dEl     = document.getElementById(`dchg-${key}`);
+    const yEl     = document.getElementById(`ychg-${key}`);
+
+    if (!priceEl || !dEl || !yEl) return;
+
+    const { last, dChg, yChg } = data;
+
+    priceEl.textContent = formatNum(last);
+
+    function setChange(el, val) {
+      el.classList.remove("pos","neg");
+      const txt = formatPct(val);
+      el.textContent = txt;
+      if (val > 0) el.classList.add("pos");
+      else if (val < 0) el.classList.add("neg");
+    }
+
+    setChange(dEl, dChg);
+    setChange(yEl, yChg);
+  }
+
+  // ==========================
+  // 5) Main loader
+  // ==========================
+  async function refreshSnapshots() {
+    const statusEl = document.getElementById("statusNote");
+    statusEl.innerHTML = "&gt; SYSTEM STATUS: LOADING…<br>&gt; DATA FEED: /api/tvohlc/ohlcv (daily)";
+
+    let ok = 0;
+    let fail = 0;
+
+    const entries = Object.entries(SNAPSHOT_CONFIG);
+
+    await Promise.all(entries.map(async ([key, cfg]) => {
+      try {
+        const bars = await fetchOhlcv(cfg.tvSymbol);
+        const changes = calcChanges(bars);
+        updateCard(key, changes);
+        ok++;
+      } catch (err) {
+        console.error("Snapshot error", key, err);
+        fail++;
+        // biarkan card tetap "--"
+      }
+    }));
+
+    if (fail === 0) {
+      statusEl.innerHTML =
+        "&gt; SYSTEM STATUS: ONLINE<br>" +
+        "&gt; DATA FEED: Kuantara TradingView REST (D 1D, ~1Y history)";
+    } else if (ok > 0) {
+      statusEl.innerHTML =
+        `&gt; SYSTEM STATUS: PARTIAL (${ok} OK / ${fail} FAIL)<br>` +
+        "&gt; DATA FEED: Check symbol mapping in SNAPSHOT_CONFIG.";
+    } else {
+      statusEl.innerHTML =
+        "&gt; SYSTEM STATUS: ERROR<br>" +
+        "&gt; DATA FEED: Cannot reach /api/tvohlc/ohlcv – verify backend.";
+    }
+  }
+
+  // jalankan saat load
+  document.addEventListener("DOMContentLoaded", () => {
+    refreshSnapshots();
+    // kalau mau auto-refresh tiap beberapa menit, aktifkan:
+    // setInterval(refreshSnapshots, 300000); // 5 menit
+  });
 </script>
 
-
-</body><chatgpt-sidebar data-gpts-theme="light"></chatgpt-sidebar><div id="immersive-translate-browser-popup" style="all: initial"></div></html>
+</body>
+</html>
