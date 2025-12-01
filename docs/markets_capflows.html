@@ -361,19 +361,8 @@
 </div>
 
 <script>
-// ================== WEBSOCKET ENDPOINTS ==================
-const WS_ENDPOINTS = {
-  safe_haven:        "https://kuancloud.loclx.io/api/tv_stream/stream/trades/safe_haven",
-  risk_assets:       "https://kuancloud.loclx.io/api/tv_stream/stream/trades/risk_assets",
-  market_phase:      "https://kuancloud.loclx.io/api/tv_stream/stream/trades/market_phase",
-  us_sectors:        "https://kuancloud.loclx.io/api/tv_stream/stream/trades/us_sectors",
-  benchmarks:        "https://kuancloud.loclx.io/api/tv_stream/stream/trades/benchmarks",
-  macro:             "https://kuancloud.loclx.io/api/tv_stream/stream/trades/macro",
-  developed_markets: "https://kuancloud.loclx.io/api/tv_stream/stream/trades/developed_markets",
-  emerging_markets:  "https://kuancloud.loclx.io/api/tv_stream/stream/trades/emerging_markets",
-  fx_indices:        "https://kuancloud.loclx.io/api/tv_stream/stream/trades/fx_indices",
-  commodities:       "https://kuancloud.loclx.io/api/tv_stream/stream/trades/commodities_futures"
-};
+// ================== SINGLE WEBSOCKET ENDPOINT ==================
+const WS_URL = "https://kuancloud.loclx.io/api/tv_stream/stream/trades";
 
 // ================== CONFIG MAPS (SAMA DENGAN YANG KAMU PAKAI) ==================
 
@@ -774,7 +763,6 @@ function renderGaugeAndBars() {
 
 function renderPhaseSnapshot() {
   const elLoading = "phase-loading";
-  const elError   = "phase-error";
 
   // Ambil data dari state.phase sesuai PHASE_ASSETS
   const entries = Object.entries(PHASE_ASSETS).map(([label, tkr]) => {
@@ -922,7 +910,7 @@ function renderSectorSnapshot() {
 
   hideLoading(elLoading);
 
-  // Sort dari paling kuat ke paling lemah (optional, biar enak dibaca)
+  // Sort dari paling kuat ke paling lemah
   rows.sort((a, b) => b.val - a.val);
 
   const dom = document.getElementById("sector-chart");
@@ -1046,7 +1034,6 @@ function renderSectorSnapshot() {
 function renderRelGroup() {
   const groupKey = document.getElementById("rel-select").value;
   const elLoading = "rel-loading";
-  const elError   = "rel-error";
 
   let mapping;
   let valuesMap;
@@ -1058,7 +1045,6 @@ function renderRelGroup() {
     mapping  = MACRO;
     valuesMap = state.macro;
   } else {
-    // fallback default: Benchmarks (Sectors dihapus supaya tidak double)
     mapping  = BENCH;
     valuesMap = state.bench;
   }
@@ -1401,146 +1387,118 @@ function renderCommodities() {
   comdtChartInstance.setOption(option, true);
 }
 
-// ================== WEBSOCKET SETUP ==================
-function createWS(key, onPayload, errorId) {
-  const url = WS_ENDPOINTS[key];
-  if (!url) return;
+// ================== ROUTING PAYLOAD DARI SINGLE WS ==================
+function routePayload(payload) {
+  const norm = normalizeSymbol(payload.symbol);
+  if (!norm) return;
+  const chg = payload.change;
 
+  // SAFE / RISK GAUGE
+  if (SAFE_HAVEN.includes(norm)) {
+    state.safe[norm] = chg;
+    renderGaugeAndBars();
+  }
+  if (RISK_ASSETS.includes(norm)) {
+    state.risk[norm] = chg;
+    renderGaugeAndBars();
+  }
+
+  // MARKET PHASE
+  const usedPhase = Object.values(PHASE_ASSETS);
+  if (usedPhase.includes(norm)) {
+    state.phase[norm] = chg;
+    renderPhaseSnapshot();
+  }
+
+  // SECTORS
+  if (norm in SECTORS) {
+    state.sectors[norm] = chg;
+    renderSectorSnapshot();
+    renderRelGroup();
+  }
+
+  // BENCHMARKS
+  if (norm in BENCH) {
+    state.bench[norm] = chg;
+    renderSectorSnapshot();
+    renderRelGroup();
+  }
+
+  // MACRO
+  if (norm in MACRO) {
+    state.macro[norm] = chg;
+    renderSectorSnapshot();
+    renderRelGroup();
+  }
+
+  // DM / EM
+  const meta = DMEM_META[norm];
+  if (meta) {
+    state.dmem[norm] = { chg, cls: meta.cls, name: meta.name };
+    renderDMEM();
+  }
+
+  // FX INDICES (pakai full symbol TVC:XXX)
+  let fxCcy = null;
+  Object.entries(FX_INDEX_TV).forEach(([ccy, s])=>{
+    if (s === norm) fxCcy = ccy;
+  });
+  if (fxCcy) {
+    state.fxByCcy[fxCcy] = chg;
+    renderForex();
+  }
+
+  // COMMODITIES FUTURES
+  const isComdt = Object.values(COMDT_TV).includes(norm);
+  if (isComdt) {
+    state.comdt[norm] = chg;
+    renderCommodities();
+  }
+}
+
+// ================== SINGLE WEBSOCKET SETUP ==================
+function setupMainWS() {
   let ws = null;
+
+  function broadcastError(msg) {
+    const ids = [
+      "gauge-error","bars-error","phase-error","sector-error",
+      "rel-error","dm-error","fx-error","comdt-error"
+    ];
+    ids.forEach(id => showError(id, msg));
+  }
 
   function connect() {
     try {
-      ws = new WebSocket(url);
+      ws = new WebSocket(WS_URL);
     } catch (e) {
-      console.error("WS create error", key, e);
-      if (errorId) showError(errorId, `WS error (${key}): ${e.message || e}`);
+      console.error("WS create error", e);
+      broadcastError(`WS error: ${e.message || e}`);
       return;
     }
 
     ws.onopen = () => {
-      console.log("WS opened:", key);
+      console.log("WS opened (all assets)");
     };
 
     ws.onmessage = (event) => {
       const payload = parseWsPayload(event.data);
       if (!payload) return;
-      onPayload(payload);
+      routePayload(payload);
     };
 
     ws.onerror = (err) => {
-      console.error("WS error", key, err);
-      if (errorId) showError(errorId, `WS error (${key}) – lihat console log.`);
+      console.error("WS error", err);
+      broadcastError("WS error – lihat console log.");
     };
 
     ws.onclose = () => {
-      console.warn("WS closed, reconnecting:", key);
+      console.warn("WS closed, reconnecting...");
       setTimeout(connect, 5000);
     };
   }
 
   connect();
-}
-
-// ================== STREAM HANDLERS ==================
-function setupSafeRiskWS() {
-  // safe
-  createWS("safe_haven", (pl)=>{
-    const norm = normalizeSymbol(pl.symbol);
-    if (!norm) return;
-    if (!SAFE_HAVEN.includes(norm)) return;
-    state.safe[norm] = pl.change;
-    renderGaugeAndBars();
-  }, "gauge-error");
-
-  // risk
-  createWS("risk_assets", (pl)=>{
-    const norm = normalizeSymbol(pl.symbol);
-    if (!norm) return;
-    if (!RISK_ASSETS.includes(norm)) return;
-    state.risk[norm] = pl.change;
-    renderGaugeAndBars();
-  }, "gauge-error");
-}
-
-function setupMarketPhaseWS() {
-  createWS("market_phase", (pl)=>{
-    const norm = normalizeSymbol(pl.symbol);
-    if (!norm) return;
-    // cari apakah simbol ini dipakai di PHASE_ASSETS
-    const used = Object.values(PHASE_ASSETS);
-    if (!used.includes(norm)) return;
-    state.phase[norm] = pl.change;
-    renderPhaseSnapshot();
-  }, "phase-error");
-}
-
-function setupSectorBenchMacroWS() {
-  createWS("us_sectors", (pl)=>{
-    const norm = normalizeSymbol(pl.symbol);
-    if (!norm || !(norm in SECTORS)) return;
-    state.sectors[norm] = pl.change;
-    renderSectorSnapshot();
-    renderRelGroup();
-  }, "sector-error");
-
-  createWS("benchmarks", (pl)=>{
-    const norm = normalizeSymbol(pl.symbol);
-    if (!norm || !(norm in BENCH)) return;
-    state.bench[norm] = pl.change;
-    renderSectorSnapshot();
-    renderRelGroup();
-  }, "sector-error");
-
-  createWS("macro", (pl)=>{
-    const norm = normalizeSymbol(pl.symbol);
-    if (!norm || !(norm in MACRO)) return;
-    state.macro[norm] = pl.change;
-    renderSectorSnapshot();
-    renderRelGroup();
-  }, "sector-error");
-}
-
-function setupDMEMWS() {
-  createWS("developed_markets", (pl)=>{
-    const norm = normalizeSymbol(pl.symbol);
-    const meta = DMEM_META[norm];
-    if (!meta || meta.cls !== "DM") return;
-    state.dmem[norm] = {chg:pl.change, cls:meta.cls, name:meta.name};
-    renderDMEM();
-  }, "dm-error");
-
-  createWS("emerging_markets", (pl)=>{
-    const norm = normalizeSymbol(pl.symbol);
-    const meta = DMEM_META[norm];
-    if (!meta || meta.cls !== "EM") return;
-    state.dmem[norm] = {chg:pl.change, cls:meta.cls, name:meta.name};
-    renderDMEM();
-  }, "dm-error");
-}
-
-function setupFXWS() {
-  createWS("fx_indices", (pl)=>{
-    const symbol = normalizeSymbol(pl.symbol); // untuk TVC kita keep full
-    // mapping balik: symbol -> currency
-    let foundCcy = null;
-    Object.entries(FX_INDEX_TV).forEach(([ccy, s])=>{
-      if (s === symbol) foundCcy = ccy;
-    });
-    if (!foundCcy) return;
-    state.fxByCcy[foundCcy] = pl.change;
-    renderForex();
-  }, "fx-error");
-}
-
-function setupComdtWS() {
-  createWS("commodities", (pl)=>{
-    const symbol = normalizeSymbol(pl.symbol); // futures pakai full COMEX:GC1! dsb
-    // hanya simpan kalau ada di mapping
-    const exists = Object.values(COMDT_TV).includes(symbol);
-    if (!exists) return;
-    state.comdt[symbol] = pl.change;
-    renderCommodities();
-  }, "comdt-error");
 }
 
 // ================== INIT ==================
@@ -1556,12 +1514,7 @@ function initDashboardWS() {
     renderDMEM();
   });
 
-  setupSafeRiskWS();
-  setupMarketPhaseWS();
-  setupSectorBenchMacroWS();
-  setupDMEMWS();
-  setupFXWS();
-  setupComdtWS();
+  setupMainWS();
 }
 
 initDashboardWS();
