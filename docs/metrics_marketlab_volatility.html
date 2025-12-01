@@ -210,7 +210,7 @@ function setStatusLoading(){
 function setStatusReady(){
   statusChip.classList.remove("chip-loading","chip-error");
   statusChip.classList.add("chip-ready");
-  statusText.textContent = "Ready • Live from Kuantara TV feed";
+  statusText.textContent = "Ready";
 }
 function setStatusError(msg){
   statusChip.classList.remove("chip-loading","chip-ready");
@@ -444,19 +444,14 @@ function renderVolChart(focusSeries, compositeFocus){
       COMPOSITE_COLOR
     ],
     animation:true,
-    title:{
-      text:"Cross-Asset Volatility Risk Dashboard",
-      left:"center",
-      top:4,
-      textStyle:{ color:"#f5f5f5", fontSize:13, fontWeight:600 }
-    },
+    /* title panel dihapus sesuai permintaan */
     tooltip:{
       trigger:"axis",
       axisPointer:{ type:"cross" }
     },
     legend:{
       type:"scroll",
-      top:26,
+      top:10,
       left:40,
       right:40,
       orient:"horizontal",
@@ -469,7 +464,7 @@ function renderVolChart(focusSeries, compositeFocus){
       icon:"roundRect"
     },
     grid:[
-      { left:56, right:40, top:60, height:"50%" },
+      { left:56, right:40, top:44, height:"50%" },
       { left:56, right:40, top:"68%", height:"24%" }
     ],
     xAxis:[
