@@ -27,6 +27,13 @@
       --shadow-depth: 0 8px 30px rgba(0, 0, 0, 0.8);
       --shadow-tactile: 0 1px 2px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
       --shadow-active: inset 0 2px 4px rgba(0,0,0,0.6);
+
+      /* Height tokens supaya rapat & konsisten */
+      --topbar-h: 30px;
+      --mainmenu-h: 32px;
+      --header-h: 30px;
+      --submenu-h: 32px;
+      --bottomnav-h: 46px;
     }  
   
     /* GLOBAL RESET */  
@@ -73,10 +80,14 @@
   
     /* ===== IFRAME LAYER ===== */  
     .kt-iframe-layer{  
-      position: fixed; left: 0; right: 0; top: 34px; bottom: 46px;  
+      position: fixed; left: 0; right: 0; 
+      top: var(--topbar-h); 
+      bottom: var(--bottomnav-h);  
       z-index: 1;  
       background: #050505;  
-      transition: top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), bottom 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);  
+      transition: 
+        top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), 
+        bottom 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);  
       overflow: hidden;  
     }  
     .kt-iframe-layer iframe{  
@@ -111,17 +122,49 @@
     body.kt-pinned .kt-submenu-strip {  
       transform: translateY(0) !important; opacity: 1 !important; pointer-events: auto !important;  
     }  
-    body.kt-pinned .kt-iframe-layer { top: 104px; bottom: 112px; }  
-    body.kt-pinned .kt-submenu-strip { bottom: 46px !important; }  
-    body.kt-pinned .kt-statusbar { bottom: 80px !important; border-top: 1px solid var(--border-soft); background: #050505; }  
+
+    body.kt-pinned .kt-iframe-layer { 
+      top: calc(var(--topbar-h) + var(--mainmenu-h) + var(--header-h)); 
+      bottom: calc(var(--bottomnav-h) + var(--submenu-h)); 
+    }  
+
+    body.kt-pinned .kt-submenu-strip { 
+      bottom: var(--bottomnav-h) !important; 
+    }  
+
+    /* Jika topbar disembunyikan via settings */
+    body.kt-hide-topbar .kt-topbar{ display:none; }
+    body.kt-hide-topbar .kt-mainmenu-strip{ top: 0; }
+    body.kt-hide-topbar .kt-content-header{ top: var(--mainmenu-h); }
+    body.kt-hide-topbar .kt-iframe-layer{ top: 0; }
+    body.kt-hide-topbar .kt-workspace-page{ top: 0; }
+
+    body.kt-hide-topbar.kt-pinned .kt-iframe-layer{
+      top: calc(var(--mainmenu-h) + var(--header-h));
+    }
+
+    /* Jika bottom nav disembunyikan via settings */
+    body.kt-hide-bottomnav .kt-bottom-nav{ display:none; }
+    body.kt-hide-bottomnav .kt-iframe-layer{ bottom: 0; }
+    body.kt-hide-bottomnav .kt-submenu-strip{ bottom: 0; }
+    body.kt-hide-bottomnav .kt-statusbar{ bottom: 0; }
+
+    body.kt-hide-bottomnav.kt-pinned .kt-iframe-layer{
+      bottom: var(--submenu-h);
+    }
+    body.kt-hide-bottomnav.kt-pinned .kt-submenu-strip{
+      bottom: 0 !important;
+    }
   
     /* ===== TOPMOST BAR ===== */  
     .kt-topbar{  
-      position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center;  
+      position: fixed; top: 0; left: 0; right: 0; 
+      height: var(--topbar-h);
+      display: flex; align-items: center; justify-content: center;  
       background: rgba(5, 5, 5, 0.9);  
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border-soft);  
-      padding: 5px 12px; /* lebih tipis, teks & chips tetap */  
+      padding: 0 12px; 
       font-size: 10px; z-index: 3000; user-select: none;  
     }  
     .kt-topbar-left{ display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; flex-wrap: wrap; }  
@@ -160,12 +203,15 @@
   
     /* MAIN MENU (TOP) */  
     .kt-mainmenu-strip{  
-      top: 34px; left: 0; right: 0; display: flex; gap: 4px; padding: 6px 8px;  
+      top: var(--topbar-h); 
+      left: 0; right: 0; 
+      display: flex; gap: 4px; padding: 6px 8px;  
       background: var(--bg-glass);  
       border-bottom: 1px solid var(--border-soft);  
       overflow-x: auto; scrollbar-width: thin;  
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       justify-content: center;  
+      min-height: var(--mainmenu-h);
     }  
     .kt-hide-top{ transform: translateY(-100%); opacity: 0; pointer-events: none; }  
   
@@ -199,9 +245,10 @@
     }  
     .kt-mainmenu-btn.active span:first-child{ color: #000; text-shadow: none; }  
   
-    /* CONTENT HEADER */  
+    /* CONTENT HEADER – RAPAT DENGAN MAIN MENU */  
     .kt-content-header{  
-      top: 74px; left: 0; right: 0;  
+      top: calc(var(--topbar-h) + var(--mainmenu-h)); 
+      left: 0; right: 0;  
       border-bottom: 1px solid var(--border-soft); padding: 6px 10px; display: flex;  
       justify-content: space-between; align-items: center; font-size: 11px; gap: 8px; flex-wrap: wrap;  
       background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -210,18 +257,21 @@
     .kt-breadcrumb-main{ color: var(--amber); font-weight: 500; white-space: nowrap; text-shadow: 0 0 8px rgba(255,191,0,0.15); }  
     .kt-breadcrumb-sub{ color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }  
   
-    /* STATUS BAR */  
+    /* STATUS BAR – DIHILANGKAN (STRIP-NYA TAK TERLIHAT) */  
     .kt-statusbar{  
-      left: 0; right: 0; bottom: 46px; border-top: 1px solid var(--border-soft); padding: 4px 10px 6px; font-size: 10px; display: flex; align-items: center;  
+      left: 0; right: 0; bottom: var(--bottomnav-h); 
+      border-top: 1px solid var(--border-soft); padding: 4px 10px 6px; font-size: 10px; display: none; 
+      align-items: center;  
       background: rgba(5, 5, 5, 0.85); color: var(--text-muted); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     }  
     .kt-hide-bottom{ transform: translateY(100%); opacity: 0; pointer-events: none; }  
     .kt-status-msg{ font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; opacity: 0.8; }  
   
-    /* SUB MENU (BOTTOM STRIP) */  
+    /* SUB MENU (BOTTOM STRIP) – RAPAT DENGAN BOTTOM NAV */  
     .kt-submenu-strip{  
-      left: 0; right: 0; bottom: 46px; border-top: 1px solid var(--border-soft);  
-      background: rgba(10, 10, 10, 0.9); padding: 4px 6px 4px 8px; min-height: 32px;  
+      left: 0; right: 0; bottom: var(--bottomnav-h); 
+      border-top: 1px solid var(--border-soft);  
+      background: rgba(10, 10, 10, 0.9); padding: 4px 6px 4px 8px; min-height: var(--submenu-h);  
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     }  
     .kt-submenu-group{ display: none; gap: 4px; overflow-x: auto; padding-bottom: 2px; }  
@@ -254,7 +304,7 @@
   
     /* BOTTOM NAV */  
     .kt-bottom-nav{  
-      position: fixed; left: 0; right: 0; bottom: 0; height: 46px;  
+      position: fixed; left: 0; right: 0; bottom: 0; height: var(--bottomnav-h);  
       background: rgba(5, 5, 5, 0.95);  
       border-top: 1px solid var(--border-soft);  
       display: flex; justify-content: space-around; align-items: stretch; font-size: 10px;  
@@ -305,7 +355,10 @@
   
     /* WORKSPACE */  
     .kt-workspace-page{  
-      position: fixed; left: 0; right: 0; top: 34px; bottom: 46px; z-index: 2;  
+      position: fixed; left: 0; right: 0; 
+      top: var(--topbar-h); 
+      bottom: var(--bottomnav-h); 
+      z-index: 2;  
       display: none; background: #050505; overflow: hidden; box-sizing: border-box;  
     }  
     .kt-workspace-toolbar{ position: absolute; top: 10px; left: 10px; display: flex; flex-wrap: wrap; gap: 6px; z-index: 3; }  
@@ -509,29 +562,23 @@
       .kt-submenu-strip{ display: flex; justify-content: center; padding-left: 0; padding-right: 0; }  
       .kt-submenu-group{ max-width: 980px; }  
       .kt-submenu-group.active{ justify-content: center; }  
+
+      :root{
+        --bottomnav-h: 36px;
+      }
     }  
   
     @media (max-width: 600px){  
-      .kt-topbar{ padding: 4px 8px; }  
+      .kt-topbar{ padding: 0 8px; }  
       .kt-logo{ font-size: 12px; }  
       .kt-session-clock{ gap: 2px; font-size: 8px; }  
       .kt-session-item{ padding: 0 3px; }  
       .kt-session-label, .kt-session-time{ font-size: 8px; }  
-      .kt-mainmenu-strip{ justify-content: flex-start; top: 30px; }  
+      .kt-mainmenu-strip{ justify-content: flex-start; }  
       .kt-workspace-window{ width: 88vw; height: 45vh; }  
       .kt-bottom-icon{ width: 18px; height: 18px; }
     }  
 
-    /* Desktop: smaller bottom bar & adjusted offsets */
-    @media (min-width: 900px){
-      .kt-bottom-nav{ height: 36px; }
-      .kt-iframe-layer{ bottom: 36px; }
-      .kt-statusbar{ bottom: 36px; }
-      .kt-submenu-strip{ bottom: 36px; }
-      body.kt-pinned .kt-iframe-layer{ bottom: 102px; }
-      body.kt-pinned .kt-statusbar{ bottom: 68px !important; }
-      body.kt-pinned .kt-submenu-strip{ bottom: 36px !important; }
-    }
   </style>  
 </head>  
 <body>  
@@ -584,6 +631,7 @@
       </div>  
     </section>  
 
+    <!-- Strip status bar disembunyikan via CSS, tapi tetap ada untuk statusMsg internal -->
     <div class="kt-statusbar kt-hide-bottom" id="kt-statusbar">  
       <div class="kt-status-msg" id="kt-status-msg">READY</div>  
     </div>  
@@ -781,7 +829,6 @@
         
       /* Pin State (default: pinned / autohide disabled) */  
       let isPinned = true;  
-      document.body.classList.add("kt-pinned");  
   
       let activeMenu=0;  
       let activeBottom="home";  
@@ -795,7 +842,7 @@
       const FEED_247_URL    = "https://kuantara112.github.io/Kuantara_Terminal_Charts/news_feeds_247.html";  
       const MINI_CHART_URL  = "https://kuantara112.github.io/Kuantara_Terminal_Charts/xauusd_tradingview.html";  
       const KUANTARA_AI_URL = "https://kuantara112.github.io/Kuantara_Terminal_Charts/kuantara_ai.html";  
-      const SETTINGS_URL    = "https://kuantara112.github.io/Kuantara_Terminal_Charts/settings.html";  
+      const SETTINGS_URL    = "https://kuantara112.github.io/Kuantara_Terminal_Charts/settings.html"; // tidak dipakai lagi untuk panel settings
   
       const IFRAME_MAP = {  
         // Markets  
@@ -887,7 +934,7 @@
                 }  
               }, 350);  
             }  
-            if(!isPinned){  
+            if(!isPinned && statusMsg){  
               statusMsg.textContent = url ? "EMBED: "+url : "READY (No content)";  
             }  
           });  
@@ -904,7 +951,7 @@
         const key = menuIndex+":"+subIndex;  
         const url = IFRAME_MAP[key] || "";  
 
-        if(!isPinned){  
+        if(!isPinned && statusMsg){  
           statusMsg.textContent = url ? "LOADING: "+url : "READY (No content)";  
         }  
 
@@ -928,7 +975,7 @@
         const firstSub = document.querySelector('.kt-submenu-btn[data-menu="'+menuIndex+'"][data-sub-index="0"]');  
         if(firstSub){ setActiveSub(menuIndex,0); } else { breadcrumbSub.textContent=""; renderContent(menuIndex,-1); }  
   
-        if(!isPinned) statusMsg.textContent = "ACTIVE MENU: "+menuIndex;  
+        if(!isPinned && statusMsg) statusMsg.textContent = "ACTIVE MENU: "+menuIndex;  
       }  
   
       function setActiveSub(menuIndex, subIndex){  
@@ -940,11 +987,11 @@
         const sub = document.querySelector('.kt-submenu-btn[data-menu="'+menuIndex+'"][data-sub-index="'+subIndex+'"]');  
         if(sub){   
           breadcrumbSub.textContent=sub.textContent.trim();   
-          if(!isPinned) statusMsg.textContent="ACTIVE: "+menuIndex+" · "+breadcrumbSub.textContent;   
+          if(!isPinned && statusMsg) statusMsg.textContent="ACTIVE: "+menuIndex+" · "+breadcrumbSub.textContent;   
         }  
         else {   
           breadcrumbSub.textContent="";   
-          if(!isPinned) statusMsg.textContent="ACTIVE MENU: "+menuIndex+" · (no sub)";   
+          if(!isPinned && statusMsg) statusMsg.textContent="ACTIVE MENU: "+menuIndex+" · (no sub)";   
         }  
   
         renderContent(menuIndex, subIndex);  
@@ -963,99 +1010,113 @@
       function hideWorkspacePage(){  
         workspacePage.style.display="none";  
       }  
-  
-      function setupEventListeners() {  
-        /* Main menu */  
-        mainButtons.forEach(btn => {  
-          btn.addEventListener('click', (e) => {  
-            e.stopPropagation();  
-            if(activeBottom!=="home"){  
-              setBottomActive("home");  
-              hideWorkspacePage();  
-            }  
-            setActiveMenu(Number(btn.getAttribute("data-menu")));  
-            if(!isPinned) { showAllBars(); scheduleHide(); }  
-          });  
-        });  
-  
-        /* Submenu */  
-        submenuButtons.forEach(btn => {  
-          btn.addEventListener('click', (e) => {  
-            e.stopPropagation();  
-            if(activeBottom!=="home"){  
-              setBottomActive("home");  
-              hideWorkspacePage();  
-            }  
-            const menuIndex = Number(btn.getAttribute("data-menu"));  
-            const subIndex = Number(btn.getAttribute("data-sub-index"));  
-            setActiveSub(menuIndex, subIndex);  
-            if(!isPinned) { showAllBars(); scheduleHide(); }  
-          });  
-        });  
-  
-        /* Bottom bar behaviour */  
-        bottomItems.forEach(item=>{  
-          item.addEventListener("click",(e)=>{  
-            e.stopPropagation();  
-            const role = item.getAttribute("data-bottom-role");  
-  
-            if(role==="home"){  
-              setBottomActive("home");  
-              hideWorkspacePage();  
-              setActiveMenu(0);  
-              setActiveSub(0,0);  
-              if(!isPinned) { showAllBars(); scheduleHide(); }  
-            }  
-            else if(role==="workspace"){  
-              setBottomActive("workspace");  
-              hideWorkspacePage(); // just to reset, then show again
-              hideAllBars();  
-              injectIframe("");  
-              showWorkspacePage();  
-            }  
-            else if(role==="search"){  
-              // Search is an action button (center), tidak mengubah mode "home/workspace"
-              if(activeBottom!=="home"){  
-                setBottomActive("home");  
-                hideWorkspacePage();  
-                setActiveMenu(0);  
-                setActiveSub(0,0);  
-              }  
-              openSearch();  
-              showAllBars();  
-            }  
-          });  
-        });  
-  
-        /* Workspace buttons */  
-        if(workspaceAddBtn){  
-          workspaceAddBtn.addEventListener("click",(e)=>{  
-            e.stopPropagation();  
-            addCurrentViewToWorkspace();  
-          });  
-        }  
-        if(workspaceClearBtn){  
-          workspaceClearBtn.addEventListener("click",(e)=>{  
-            e.stopPropagation();  
-            clearWorkspace();  
-          });  
-        }  
-  
-        /* Pin/Unpin Double Click on Topbar */  
-        topbar.addEventListener("dblclick", (e) => {  
-          isPinned = !isPinned;  
-          document.body.classList.toggle("kt-pinned", isPinned);  
-            
-          if(isPinned){  
-            clearTimeout(hideTimer);  
-            statusMsg.textContent = "Autohide disabled";  
-            showAllBars();  
-          } else {  
-            statusMsg.textContent = currentViewUrl ? "EMBED: "+currentViewUrl : "READY";  
-            if(activeBottom==="home") scheduleHide();  
-          }  
-        });  
+
+      /* === PINNED/AUTOHIDE STATE HANDLER === */
+      function showTopBars(){  
+        if(activeBottom!=="home") return;  
+        mainmenuStrip.classList.remove("kt-hide-top");  
+        contentHeader.classList.remove("kt-hide-top");  
+        clearTimeout(graceTimer);  
+        graceTimer=setTimeout(()=>{},CLICK_GRACE);  
+        updateIframeInteractivity();  
       }  
+  
+      function hideTopBars(){  
+        if(isPinned) return;  
+        mainmenuStrip.classList.add("kt-hide-top");  
+        contentHeader.classList.add("kt-hide-top");  
+        updateIframeInteractivity();  
+      }  
+  
+      function showBottomBars(){  
+        if(activeBottom!=="home") return;  
+        submenuStrip.classList.remove("kt-hide-bottom");  
+        if(statusbar) statusbar.classList.remove("kt-hide-bottom");  
+        clearTimeout(graceTimer);  
+        graceTimer=setTimeout(()=>{},CLICK_GRACE);  
+        updateIframeInteractivity();  
+      }  
+  
+      function hideBottomBars(){  
+        if(isPinned) return;  
+        submenuStrip.classList.add("kt-hide-bottom");  
+        if(statusbar) statusbar.classList.add("kt-hide-bottom");  
+        updateIframeInteractivity();  
+      }  
+  
+      function showAllBars(){  
+        if(activeBottom!=="home") return;  
+        mainmenuStrip.classList.remove("kt-hide-top");  
+        contentHeader.classList.remove("kt-hide-top");  
+        submenuStrip.classList.remove("kt-hide-bottom");  
+        if(statusbar) statusbar.classList.remove("kt-hide-bottom");  
+        clearTimeout(graceTimer);  
+        graceTimer=setTimeout(()=>{},CLICK_GRACE);  
+        updateIframeInteractivity();  
+      }  
+  
+      function hideAllBars(){  
+        if(isPinned) return;  
+        mainmenuStrip.classList.add("kt-hide-top");  
+        contentHeader.classList.add("kt-hide-top");  
+        submenuStrip.classList.add("kt-hide-bottom");  
+        if(statusbar) statusbar.classList.add("kt-hide-bottom");  
+        updateIframeInteractivity();  
+      }  
+  
+      function scheduleHide(){  
+        if(activeBottom!=="home" || isPinned) return;  
+        clearTimeout(hideTimer);  
+        hideTimer=setTimeout(()=>{ hideAllBars(); }, HIDE_DELAY);  
+      }  
+
+      function applyPinnedState(){
+        document.body.classList.toggle("kt-pinned", isPinned);
+        if(isPinned){
+          clearTimeout(hideTimer);
+          if(statusMsg) statusMsg.textContent = "Autohide disabled";
+          showAllBars();
+        } else {
+          if(statusMsg) statusMsg.textContent = currentViewUrl ? "EMBED: "+currentViewUrl : "READY";
+          if(activeBottom==="home") scheduleHide();
+        }
+      }
+  
+      function handleMouseMove(e){  
+        if(activeBottom!=="home" || isPinned) return;  
+        const y = e.clientY;  
+        const h = window.innerHeight;  
+        const nearTop = y <= TOP_TRIGGER_ZONE;  
+        const nearBottom = y >= (h - BOTTOM_TRIGGER_ZONE);  
+  
+        if (nearTop) {  
+          showTopBars();  
+          scheduleHide();  
+        } else if (nearBottom) {  
+          showBottomBars();  
+          scheduleHide();  
+        }  
+      }  
+  
+      window.addEventListener("mousemove", handleMouseMove, {passive:true});  
+  
+      window.addEventListener("touchstart",(e)=>{  
+        if(activeBottom!=="home" || isPinned) return;  
+        const y=e.touches[0]?.clientY??0, h=window.innerHeight;  
+        const nearTop = y <= TOP_TRIGGER_ZONE;  
+        const nearBottom = y >= (h - BOTTOM_TRIGGER_ZONE);  
+  
+        if(nearTop) showTopBars();  
+        if(nearBottom) showBottomBars();  
+        scheduleHide();  
+      },{passive:true});  
+
+      function showLayoutCheatsheet(){
+        const cheats=document.getElementById("kt-cheatsheet");  
+        cheats.style.display="block"; 
+        setTimeout(()=>{cheats.style.display="none";},2000);  
+        if(activeBottom==="home" && !isPinned){ showAllBars(); scheduleHide(); }  
+      }
   
       /* SEARCH INDEX + FIND */  
       function buildSearchIndex(){  
@@ -1105,7 +1166,7 @@
         }  
         setActiveMenu(match.menu);  
         if(match.sub!==null && match.sub!==undefined) setActiveSub(match.menu,match.sub);  
-        if(!isPinned) statusMsg.textContent=`SEARCH goto: ${match.label} (${match.type})`;  
+        if(!isPinned && statusMsg) statusMsg.textContent=`SEARCH goto: ${match.label} (${match.type})`;  
       }
   
       function updateSearchSuggestions(qRaw){  
@@ -1193,7 +1254,7 @@
         searchIndex=buildSearchIndex();  
         openOverlay(searchOvl);  
         setTimeout(()=>searchInput.focus(),10);  
-        if(!isPinned) statusMsg.textContent="SEARCH: active";  
+        if(!isPinned && statusMsg) statusMsg.textContent="SEARCH: active";  
         if(activeBottom==="home"){  
           showAllBars();  
         }  
@@ -1204,7 +1265,7 @@
         closeOverlay(searchOvl);   
         clearSearchSuggestions();  
         clearSearchChips();
-        if(!isPinned) statusMsg.textContent="SEARCH: closed";   
+        if(!isPinned && statusMsg) statusMsg.textContent="SEARCH: closed";   
         if(activeBottom==="home" && !isPinned) scheduleHide();   
       }  
   
@@ -1222,7 +1283,7 @@
           e.preventDefault();  
           const q=(searchInput.value||"").trim();  
           if(!q){   
-            if(!isPinned) statusMsg.textContent="SEARCH: empty";   
+            if(!isPinned && statusMsg) statusMsg.textContent="SEARCH: empty";   
             closeSearch();   
             return;   
           }  
@@ -1231,134 +1292,27 @@
             jumpToTarget(match);
           }  
           else{  
-            if(!isPinned) statusMsg.textContent=`SEARCH: "${q}" not found`;  
+            if(!isPinned && statusMsg) statusMsg.textContent=`SEARCH: "${q}" not found`;  
           }  
           closeSearch();  
         }  
       });  
   
-      /* AUTOHIDE BARS – hanya aktif di HOME */  
-      function showTopBars(){  
-        if(activeBottom!=="home") return;  
-        mainmenuStrip.classList.remove("kt-hide-top");  
-        contentHeader.classList.remove("kt-hide-top");  
-        clearTimeout(graceTimer);  
-        graceTimer=setTimeout(()=>{},CLICK_GRACE);  
-        updateIframeInteractivity();  
-      }  
-  
-      function hideTopBars(){  
-        if(isPinned) return;  
-        mainmenuStrip.classList.add("kt-hide-top");  
-        contentHeader.classList.add("kt-hide-top");  
-        updateIframeInteractivity();  
-      }  
-  
-      function showBottomBars(){  
-        if(activeBottom!=="home") return;  
-        submenuStrip.classList.remove("kt-hide-bottom");  
-        statusbar.classList.remove("kt-hide-bottom");  
-        clearTimeout(graceTimer);  
-        graceTimer=setTimeout(()=>{},CLICK_GRACE);  
-        updateIframeInteractivity();  
-      }  
-  
-      function hideBottomBars(){  
-        if(isPinned) return;  
-        submenuStrip.classList.add("kt-hide-bottom");  
-        statusbar.classList.add("kt-hide-bottom");  
-        updateIframeInteractivity();  
-      }  
-  
-      function showAllBars(){  
-        if(activeBottom!=="home") return;  
-        mainmenuStrip.classList.remove("kt-hide-top");  
-        contentHeader.classList.remove("kt-hide-top");  
-        submenuStrip.classList.remove("kt-hide-bottom");  
-        statusbar.classList.remove("kt-hide-bottom");  
-        clearTimeout(graceTimer);  
-        graceTimer=setTimeout(()=>{},CLICK_GRACE);  
-        updateIframeInteractivity();  
-      }  
-  
-      function hideAllBars(){  
-        if(isPinned) return;  
-        mainmenuStrip.classList.add("kt-hide-top");  
-        contentHeader.classList.add("kt-hide-top");  
-        submenuStrip.classList.add("kt-hide-bottom");  
-        statusbar.classList.add("kt-hide-bottom");  
-        updateIframeInteractivity();  
-      }  
-  
-      function scheduleHide(){  
-        if(activeBottom!=="home" || isPinned) return;  
-        clearTimeout(hideTimer);  
-        hideTimer=setTimeout(()=>{ hideAllBars(); }, HIDE_DELAY);  
-      }  
-  
-      function handleMouseMove(e){  
-        if(activeBottom!=="home" || isPinned) return;  
-        const y = e.clientY;  
-        const h = window.innerHeight;  
-        const nearTop = y <= TOP_TRIGGER_ZONE;  
-        const nearBottom = y >= (h - BOTTOM_TRIGGER_ZONE);  
-  
-        if (nearTop) {  
-          showTopBars();  
-          scheduleHide();  
-        } else if (nearBottom) {  
-          showBottomBars();  
-          scheduleHide();  
-        }  
-      }  
-  
-      window.addEventListener("mousemove", handleMouseMove, {passive:true});  
-  
-      window.addEventListener("touchstart",(e)=>{  
-        if(activeBottom!=="home" || isPinned) return;  
-        const y=e.touches[0]?.clientY??0, h=window.innerHeight;  
-        const nearTop = y <= TOP_TRIGGER_ZONE;  
-        const nearBottom = y >= (h - BOTTOM_TRIGGER_ZONE);  
-  
-        if(nearTop) showTopBars();  
-        if(nearBottom) showBottomBars();  
-        scheduleHide();  
-      },{passive:true});  
-  
-      [mainmenuStrip, contentHeader, submenuStrip, statusbar, bottomNav].forEach(el=>{  
-        el.addEventListener("mouseenter", ()=>{  
-          if(activeBottom!=="home" && el!==bottomNav) return;  
-          clearTimeout(hideTimer);  
-          if (el === mainmenuStrip || el === contentHeader) {  
-            showTopBars();  
-          } else if (el !== bottomNav) {  
-            showBottomBars();  
-          }  
-        });  
-        el.addEventListener("mouseleave", ()=>{  
-          if(el===bottomNav) return;  
-          scheduleHide();  
-        });  
-        el.addEventListener("pointerdown", ()=>{ clearTimeout(hideTimer); });  
-        el.addEventListener("click", (e)=>{ e.stopPropagation(); });  
-      });  
-  
-      document.querySelectorAll('.kt-mainmenu-btn, .kt-submenu-btn').forEach(btn=>{  
-        btn.addEventListener('pointerdown', (e)=>{  
-          e.stopPropagation();  
-          showAllBars();  
-          updateIframeInteractivity();  
-        });  
-        btn.addEventListener('click', (e)=>{ e.stopPropagation(); });  
-      });  
-  
+      function showAllBarsIfHome(){
+        if(activeBottom==="home") showAllBars();
+      }
+
+      function hideAllBarsIfNeeded(){
+        if(activeBottom==="home" && !isPinned) scheduleHide();
+      }
+
       /* FLOATING MENU LOGIC */  
       function toggleAiMenu(force){  
         const isOpen = aiMenu.style.display==="flex";  
         const next = typeof force==="boolean" ? force : !isOpen;  
         aiMenu.style.display = next ? "flex" : "none";  
       }  
-  
+
       function openAiPane(mode){  
         if(mode==="ai"){  
           aiTitle.textContent = "Kuantara AI Assistant";  
@@ -1369,7 +1323,7 @@
             'style="width:100%;height:100%;border:0;display:block;"></iframe>';  
           aiFooter.innerHTML = '';  
           aiPanel.style.display="flex";  
-          if(activeBottom==="home") showAllBars();  
+          showAllBarsIfHome();
         }else if(mode==="mini"){  
           aiTitle.textContent = "Mini Chart";  
           aiSubtitle.textContent = "Chart kecil untuk quick view XAUUSD.";  
@@ -1379,7 +1333,7 @@
             'style="width:100%;height:100%;border:0;display:block;"></iframe>';  
           aiFooter.innerHTML = '';  
           aiPanel.style.display="flex";  
-          if(activeBottom==="home") showAllBars();  
+          showAllBarsIfHome();
         }else if(mode==="notes"){  
           aiTitle.textContent = "Notes";  
           aiSubtitle.textContent = "Catatan cepat untuk ide trade dan macro view.";  
@@ -1397,7 +1351,7 @@
             notesArea.addEventListener("input", ()=>localStorage.setItem("kuantara_notes", notesArea.value));  
           }  
           aiPanel.style.display="flex";  
-          if(activeBottom==="home") showAllBars();  
+          showAllBarsIfHome();
         }else if(mode==="signals"){  
           aiTitle.textContent = "Alerts";  
           aiSubtitle.textContent = "Ringkasan alert trading & notifikasi utama.";  
@@ -1408,24 +1362,180 @@
             '</div>';  
           aiFooter.innerHTML = '';  
           aiPanel.style.display="flex";  
-          if(activeBottom==="home") showAllBars();  
+          showAllBarsIfHome();
         }else if(mode==="settings"){  
           aiTitle.textContent = "Settings";  
-          aiSubtitle.textContent = "Pengaturan Kuantara Terminal.";  
-          aiBody.innerHTML =  
-            '<iframe src="'+SETTINGS_URL+'" ' +  
-            'title="Settings" loading="lazy" ' +  
-            'style="width:100%;height:100%;border:0;display:block;"></iframe>';  
+          aiSubtitle.textContent = "Pengaturan tampilan Kuantara Terminal.";  
+          aiBody.innerHTML = `
+            <div style="width:100%;height:100%;padding:10px 12px;box-sizing:border-box;overflow:auto;color:var(--text-main);font-size:11px;line-height:1.6;">
+              <div style="margin-bottom:8px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;font-size:10px;">
+                Display Controls
+              </div>
+              <div style="margin-bottom:6px;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                  <input type="checkbox" id="kt-set-topbar" style="accent-color:var(--amber);" />
+                  <span>Tampilkan Top Bar</span>
+                </label>
+              </div>
+              <div style="margin-bottom:6px;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                  <input type="checkbox" id="kt-set-bottomnav" style="accent-color:var(--amber);" />
+                  <span>Tampilkan Bottom Menu</span>
+                </label>
+              </div>
+              <div style="margin-bottom:10px;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                  <input type="checkbox" id="kt-set-autohide" style="accent-color:var(--amber);" />
+                  <span>Aktifkan Auto-hide Strip Menu (top &amp; bottom)</span>
+                </label>
+                <div style="font-size:10px;color:var(--text-muted);margin-left:18px;margin-top:2px;">
+                  Jika off: strip menu selalu terlihat (mode pinned). Jika on: strip akan sembunyi otomatis.
+                </div>
+              </div>
+              <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
+                <button id="kt-settings-reset" 
+                        style="padding:5px 10px;border-radius:4px;border:1px solid var(--border-soft);background:linear-gradient(180deg,#222,#111);color:var(--text-muted);cursor:pointer;box-shadow:var(--shadow-tactile);font-size:11px;">
+                  Reset ke Default
+                </button>
+              </div>
+            </div>
+          `;
           aiFooter.innerHTML = '';  
           aiPanel.style.display="flex";  
-          if(activeBottom==="home") showAllBars();  
+          showAllBarsIfHome();
+
+          const topbarChk = document.getElementById("kt-set-topbar");
+          const bottomChk = document.getElementById("kt-set-bottomnav");
+          const autohideChk = document.getElementById("kt-set-autohide");
+          const resetBtn = document.getElementById("kt-settings-reset");
+
+          if(topbarChk){
+            topbarChk.checked = !document.body.classList.contains("kt-hide-topbar");
+            topbarChk.addEventListener("change", ()=>{
+              if(topbarChk.checked){
+                document.body.classList.remove("kt-hide-topbar");
+              }else{
+                document.body.classList.add("kt-hide-topbar");
+              }
+            });
+          }
+          if(bottomChk){
+            bottomChk.checked = !document.body.classList.contains("kt-hide-bottomnav");
+            bottomChk.addEventListener("change", ()=>{
+              if(bottomChk.checked){
+                document.body.classList.remove("kt-hide-bottomnav");
+              }else{
+                document.body.classList.add("kt-hide-bottomnav");
+              }
+            });
+          }
+          if(autohideChk){
+            autohideChk.checked = !isPinned; // checked = autohide ON
+            autohideChk.addEventListener("change", ()=>{
+              isPinned = !autohideChk.checked;
+              applyPinnedState();
+            });
+          }
+          if(resetBtn){
+            resetBtn.addEventListener("click", ()=>{
+              document.body.classList.remove("kt-hide-topbar","kt-hide-bottomnav");
+              isPinned = true;
+              applyPinnedState();
+              if(topbarChk) topbarChk.checked = true;
+              if(bottomChk) bottomChk.checked = true;
+              if(autohideChk) autohideChk.checked = false;
+            });
+          }
         }  
+      }  
+  
+      function setupEventListeners() {  
+        /* Main menu */  
+        mainButtons.forEach(btn => {  
+          btn.addEventListener('click', (e) => {  
+            e.stopPropagation();  
+            if(activeBottom!=="home"){  
+              setBottomActive("home");  
+              hideWorkspacePage();  
+            }  
+            setActiveMenu(Number(btn.getAttribute("data-menu")));  
+            if(!isPinned) { showAllBars(); scheduleHide(); }  
+          });  
+        });  
+  
+        /* Submenu */  
+        submenuButtons.forEach(btn => {  
+          btn.addEventListener('click', (e) => {  
+            e.stopPropagation();  
+            if(activeBottom!=="home"){  
+              setBottomActive("home");  
+              hideWorkspacePage();  
+            }  
+            const menuIndex = Number(btn.getAttribute("data-menu"));  
+            const subIndex = Number(btn.getAttribute("data-sub-index"));  
+            setActiveSub(menuIndex, subIndex);  
+            if(!isPinned) { showAllBars(); scheduleHide(); }  
+          });  
+        });  
+  
+        /* Bottom bar behaviour */  
+        bottomItems.forEach(item=>{  
+          item.addEventListener("click",(e)=>{  
+            e.stopPropagation();  
+            const role = item.getAttribute("data-bottom-role");  
+  
+            if(role==="home"){  
+              setBottomActive("home");  
+              hideWorkspacePage();  
+              setActiveMenu(0);  
+              setActiveSub(0,0);  
+              if(!isPinned) { showAllBars(); scheduleHide(); }  
+            }  
+            else if(role==="workspace"){  
+              setBottomActive("workspace");  
+              hideWorkspacePage(); // reset dulu
+              hideAllBars();  
+              injectIframe("");  
+              showWorkspacePage();  
+            }  
+            else if(role==="search"){  
+              if(activeBottom!=="home"){  
+                setBottomActive("home");  
+                hideWorkspacePage();  
+                setActiveMenu(0);  
+                setActiveSub(0,0);  
+              }  
+              openSearch();  
+              showAllBars();  
+            }  
+          });  
+        });  
+  
+        /* Workspace buttons */  
+        if(workspaceAddBtn){  
+          workspaceAddBtn.addEventListener("click",(e)=>{  
+            e.stopPropagation();  
+            addCurrentViewToWorkspace();  
+          });  
+        }  
+        if(workspaceClearBtn){  
+          workspaceClearBtn.addEventListener("click",(e)=>{  
+            e.stopPropagation();  
+            clearWorkspace();  
+          });  
+        }  
+  
+        /* Pin/Unpin Double Click on Topbar */  
+        topbar.addEventListener("dblclick", (e) => {  
+          isPinned = !isPinned;  
+          applyPinnedState();
+        });  
       }  
   
       aiFab.addEventListener("click", (e)=>{  
         e.stopPropagation();  
         toggleAiMenu();  
-        if(activeBottom==="home") showAllBars();  
+        showAllBarsIfHome();  
       });  
   
       aiMenuButtons.forEach(btn=>{  
@@ -1505,18 +1615,18 @@
   
       function addCurrentViewToWorkspace(){  
         if(!currentViewUrl){  
-          if(!isPinned) statusMsg.textContent = "WORKSPACE: no active view to add";  
+          if(!isPinned && statusMsg) statusMsg.textContent = "WORKSPACE: no active view to add";  
           return;  
         }  
         createWorkspaceWindow(currentViewUrl, currentViewTitleMain, currentViewTitleSub);  
-        if(!isPinned) statusMsg.textContent = "WORKSPACE: view added";  
+        if(!isPinned && statusMsg) statusMsg.textContent = "WORKSPACE: view added";  
       }  
   
       function clearWorkspace(){  
         if(!workspaceBoard) return;  
         workspaceBoard.innerHTML = "";  
         ensureWorkspacePlaceholder();  
-        if(!isPinned) statusMsg.textContent = "WORKSPACE: cleared";  
+        if(!isPinned && statusMsg) statusMsg.textContent = "WORKSPACE: cleared";  
       }  
   
       function attachDragHandlers(win){  
@@ -1658,9 +1768,7 @@
           return;  
         }  
         if(e.key==="Shift" && !e.repeat && !e.ctrlKey && !e.altKey){  
-          const cheats=document.getElementById("kt-cheatsheet");  
-          cheats.style.display="block"; setTimeout(()=>{cheats.style.display="none";},2000);  
-          if(activeBottom==="home" && !isPinned){ showAllBars(); scheduleHide(); }  
+          showLayoutCheatsheet();
           return;  
         }  
       });  
@@ -1711,14 +1819,42 @@
       updateSessions();  
       setInterval(updateSessions,1000);  
   
+      /* Event listeners for auto-hide hover zones */  
+      [mainmenuStrip, contentHeader, submenuStrip, statusbar, bottomNav].forEach(el=>{  
+        if(!el) return;
+        el.addEventListener("mouseenter", ()=>{  
+          if(activeBottom!=="home" && el!==bottomNav) return;  
+          clearTimeout(hideTimer);  
+          if (el === mainmenuStrip || el === contentHeader) {  
+            showTopBars();  
+          } else if (el !== bottomNav) {  
+            showBottomBars();  
+          }  
+        });  
+        el.addEventListener("mouseleave", ()=>{  
+          if(el===bottomNav) return;  
+          scheduleHide();  
+        });  
+        el.addEventListener("pointerdown", ()=>{ clearTimeout(hideTimer); });  
+        el.addEventListener("click", (e)=>{ e.stopPropagation(); });  
+      });  
+  
+      document.querySelectorAll('.kt-mainmenu-btn, .kt-submenu-btn').forEach(btn=>{  
+        btn.addEventListener('pointerdown', (e)=>{  
+          e.stopPropagation();  
+          showAllBars();  
+          updateIframeInteractivity();  
+        });  
+        btn.addEventListener('click', (e)=>{ e.stopPropagation(); });  
+      });  
+  
       /* Init */  
       setupEventListeners();  
       setActiveMenu(0);  
       setBottomActive("home");  
       hideWorkspacePage();  
       ensureWorkspacePlaceholder();  
-      showAllBars();  
-      setTimeout(()=>{ hideAllBars(); }, 1000);  
+      applyPinnedState(); // default pinned = autohide off
       updateIframeInteractivity();  
     })();  
   </script>  
