@@ -44,18 +44,16 @@
     }
 
     body {
-      display:flex;
-      align-items:stretch;
-      justify-content:center;
-      padding:8px;
+      padding:0;
+      display:block;
     }
 
     .shell {
-      flex:1;
-      max-width:1200px;
+      width:100%;
+      height:100vh;
       background:var(--bg-main);
       border:1px solid var(--border-soft);
-      border-radius:10px;
+      border-radius:0;
       padding:10px;
       display:flex;
       flex-direction:column;
@@ -66,15 +64,9 @@
     .header {
       display:flex;
       flex-wrap:wrap;
-      justify-content:space-between;
+      justify-content:flex-end;
       align-items:center;
       gap:8px;
-    }
-
-    .title {
-      font-size:14px;
-      font-weight:600;
-      letter-spacing:0.03em;
     }
 
     .controls {
@@ -107,7 +99,7 @@
       color:var(--text-main);
       font-size:10.5px;
       border-radius:6px;
-      padding:2px 7px; /* lebih pendek */
+      padding:2px 7px;
       outline:none;
       cursor:pointer;
     }
@@ -116,51 +108,101 @@
       border-color:var(--accent);
     }
 
+    .main-row{
+      flex:1;
+      display:flex;
+      gap:8px;
+      min-height:0;
+    }
+
     #rrg-chart {
       flex:1;
       min-height:320px;
-      height:65vh;
+      height:100%;
       border-radius:8px;
       overflow:hidden;
     }
 
-    .legend-panel {
+    .quad-panel{
+      width:240px;
+      max-width:260px;
+      background:#050505;
+      border:1px solid var(--border-soft);
+      border-radius:8px;
+      padding:8px 9px;
       font-size:10.5px;
       color:var(--text-muted);
       display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:4px;
-      align-items:flex-start;
+      flex-direction:column;
+      gap:6px;
+      overflow-y:auto;
+      max-height:100%;
     }
 
-    .legend-item {
+    .quad-panel-title{
+      font-size:11px;
+      font-weight:600;
+      color:var(--text-main);
+      margin-bottom:2px;
+    }
+
+    .quad-section{
+      margin-top:4px;
+    }
+
+    .quad-section-title{
       display:flex;
       align-items:center;
-      gap:4px;
+      gap:5px;
+      font-size:10.5px;
+      margin-bottom:2px;
     }
 
-    .color-dot {
-      width:10px;
-      height:10px;
+    .quad-dot{
+      width:8px;
+      height:8px;
       border-radius:999px;
-      background:var(--accent);
+    }
+    .quad-leading-dot{ background:var(--green); }
+    .quad-weakening-dot{ background:var(--yellow); }
+    .quad-lagging-dot{ background:var(--red); }
+    .quad-improving-dot{ background:var(--blue); }
+
+    .quad-list{
+      list-style:none;
+      margin:0;
+      padding-left:12px;
+      margin-bottom:2px;
     }
 
-    .dot-leading { background:var(--green); }
-    .dot-weakening { background:var(--yellow); }
-    .dot-lagging { background:var(--red); }
-    .dot-improving { background:var(--blue); }
+    .quad-list li{
+      margin:1px 0;
+      color:var(--text-main);
+      opacity:0.94;
+    }
+
+    .quad-empty{
+      font-style:italic;
+      color:var(--text-muted);
+      font-size:10px;
+      margin-left:12px;
+    }
 
     @media (max-width:768px) {
-      body {
-        padding:4px;
-      }
       .shell {
         padding:8px;
+        border-radius:0;
+      }
+      .main-row{
+        flex-direction:column;
       }
       #rrg-chart {
         height:60vh;
+      }
+      .quad-panel{
+        width:100%;
+        max-width:none;
+        max-height:32vh;
       }
     }
   </style>
@@ -168,9 +210,6 @@
 <body>
 <div class="shell">
   <div class="header">
-    <div>
-      <div class="title">Relative Rotation Graph (RRG-Style) – Kuantara</div>
-    </div>
     <div class="controls">
       <div class="chip">
         <span class="chip-label">Benchmark:</span>
@@ -180,20 +219,11 @@
     </div>
   </div>
 
-  <div id="rrg-chart"></div>
-
-  <div class="legend-panel">
-    <div class="legend-item">
-      <span class="color-dot dot-leading"></span> Leading (+RS, +Momentum)
-    </div>
-    <div class="legend-item">
-      <span class="color-dot dot-weakening"></span> Weakening (+RS, -Momentum)
-    </div>
-    <div class="legend-item">
-      <span class="color-dot dot-lagging"></span> Lagging (-RS, -Momentum)
-    </div>
-    <div class="legend-item">
-      <span class="color-dot dot-improving"></span> Improving (-RS, +Momentum)
+  <div class="main-row">
+    <div id="rrg-chart"></div>
+    <div id="quad-panel" class="quad-panel">
+      <div class="quad-panel-title">Quadrant Overview</div>
+      <div class="quad-empty">Loading…</div>
     </div>
   </div>
 </div>
@@ -391,7 +421,7 @@
   const chartEl  = document.getElementById("rrg-chart");
   const rrgChart = echarts.init(chartEl, null, { renderer: "canvas" });
 
-  function buildOption(seriesData, xRange, yRange, xTail, yTail) {
+  function buildOption(seriesData, xRange, yRange) {
     return {
       backgroundColor: "#111111",
       animation: true,
@@ -438,12 +468,10 @@
         min: yRange[0],
         max: yRange[1]
       },
-      // biar label ticker gak terlalu tabrakan
       labelLayout: {
         moveOverlap: "shiftY"
       },
       series: seriesData,
-      // quadrant titles ala RRG
       graphic: [
         {
           type: "text",
@@ -508,6 +536,7 @@
           textStyle: { color: "#9b9b9b", fontSize: 12 }
         }
       });
+      renderQuadrantPanel({leading:[],weakening:[],lagging:[],improving:[]});
       return;
     }
 
@@ -581,6 +610,7 @@
           textStyle: { color: "#9b9b9b", fontSize: 12 }
         }
       });
+      renderQuadrantPanel({leading:[],weakening:[],lagging:[],improving:[]});
       return;
     }
 
@@ -602,7 +632,7 @@
     const xRange = [cx - half - pad, cx + half + pad];
     const yRange = [cy - half - pad, cy + half + pad];
 
-    const option = buildOption(series, xRange, yRange, xTailAll, yTailAll);
+    const option = buildOption(series, xRange, yRange);
 
     // Quadrant background
     option.series.push({
@@ -644,7 +674,47 @@
   }
 
   // ==============================
-  // 6) MAIN FLOW
+  // 6) QUADRANT SIDE PANEL
+  // ==============================
+  function renderQuadrantPanel(buckets){
+    const panel = document.getElementById("quad-panel");
+    if (!panel) return;
+
+    const sections = [
+      { key:"leading",   label:"Leading",   dotClass:"quad-leading-dot" },
+      { key:"improving", label:"Improving", dotClass:"quad-improving-dot" },
+      { key:"weakening", label:"Weakening", dotClass:"quad-weakening-dot" },
+      { key:"lagging",   label:"Lagging",   dotClass:"quad-lagging-dot" }
+    ];
+
+    let html = `<div class="quad-panel-title">Quadrant Overview</div>`;
+
+    sections.forEach(sec=>{
+      const arr = buckets[sec.key] || [];
+      html += `
+        <div class="quad-section">
+          <div class="quad-section-title">
+            <span class="quad-dot ${sec.dotClass}"></span>
+            <span>${sec.label}</span>
+          </div>
+      `;
+      if (!arr.length){
+        html += `<div class="quad-empty">—</div>`;
+      }else{
+        html += `<ul class="quad-list">`;
+        arr.forEach(item=>{
+          html += `<li>${item.ticker} · ${item.label}</li>`;
+        });
+        html += `</ul>`;
+      }
+      html += `</div>`;
+    });
+
+    panel.innerHTML = html;
+  }
+
+  // ==============================
+  // 7) MAIN FLOW
   // ==============================
   const refreshBtn = document.getElementById("refresh-btn");
 
@@ -654,6 +724,14 @@
 
   async function loadAndRender() {
     try {
+      const panel = document.getElementById("quad-panel");
+      if (panel){
+        panel.innerHTML = `
+          <div class="quad-panel-title">Quadrant Overview</div>
+          <div class="quad-empty">Loading…</div>
+        `;
+      }
+
       rrgChart.showLoading("default", {
         text: "Loading RRG data...",
         textColor: "#ffbf00",
@@ -664,6 +742,12 @@
       const benchBars = await fetchBars(BENCHMARK_SYMBOL);
 
       const payload = [];
+      const quadBuckets = {
+        leading:[],
+        weakening:[],
+        lagging:[],
+        improving:[]
+      };
 
       for (const sym of SYMBOLS) {
         try {
@@ -672,19 +756,27 @@
           if (!points.length) continue;
           const last = points[points.length - 1];
           const quadrant = classifyQuadrant(last.x, last.y);
-          payload.push({
+          const entry = {
             label: sym.label,
             ticker: sym.ticker,
             quadrant,
             color: SYMBOL_COLOR_MAP[sym.ticker],
             points
-          });
+          };
+          payload.push(entry);
+          if (quadBuckets[quadrant]){
+            quadBuckets[quadrant].push({
+              ticker:sym.ticker,
+              label:sym.label
+            });
+          }
         } catch (e) {
           console.warn("Failed:", sym.ticker, e);
         }
       }
 
       renderRRG(payload, trailLen);
+      renderQuadrantPanel(quadBuckets);
     } catch (err) {
       console.error(err);
       rrgChart.clear();
@@ -696,6 +788,7 @@
           textStyle: { color: "#ef4444", fontSize: 12 }
         }
       });
+      renderQuadrantPanel({leading:[],weakening:[],lagging:[],improving:[]});
     } finally {
       rrgChart.hideLoading();
     }
