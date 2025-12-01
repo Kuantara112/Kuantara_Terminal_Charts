@@ -202,7 +202,7 @@
       <div class="chart-holder">
         <div class="loading" id="gauge-loading">
           <div class="spinner"></div>
-          <span>Fetching OHLC & menghitung basket…</span>
+          <span>Menunggu stream Safe & Risk Assets…</span>
         </div>
         <div id="gauge-chart" class="chart"></div>
       </div>
@@ -219,7 +219,7 @@
       <div class="chart-holder">
         <div class="loading" id="bars-loading">
           <div class="spinner"></div>
-          <span>Memuat return per ETF…</span>
+          <span>Menunggu update basket ETF…</span>
         </div>
         <div id="bars-chart" class="chart"></div>
       </div>
@@ -239,7 +239,7 @@
       <div class="chart-holder">
         <div class="loading" id="phase-loading">
           <div class="spinner"></div>
-          <span>Menghitung 14D smoothed % change…</span>
+          <span>Menunggu stream Market Phase…</span>
         </div>
         <div id="phase-chart" class="chart"></div>
       </div>
@@ -250,13 +250,13 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">US SECTOR CAPITAL-FLOW SNAPSHOT</div>
+          <div class="panel-title">US SECTORS</div>
         </div>
       </div>
       <div class="chart-holder">
         <div class="loading" id="sector-loading">
           <div class="spinner"></div>
-          <span>Memuat sektor & macro ETFs…</span>
+          <span>Menunggu stream sektor & macro ETFs…</span>
         </div>
         <div id="sector-chart" class="chart"></div>
       </div>
@@ -264,13 +264,13 @@
     </section>
   </section>
 
-  <!-- THIRD ROW: Relative Lines & DM/EM -->
+  <!-- THIRD ROW: Relative change & DM/EM -->
   <section class="grid">
-    <!-- Panel 5: Relative Lines (Sectors / Bench / Macro) -->
+    <!-- Panel 5: Relative Change — Sectors / Bench / Macro -->
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">RELATIVE LINES — US SECTORS / BENCH / MACRO</div>
+          <div class="panel-title">SECTORS / BENCH / MACRO</div>
         </div>
         <div class="controls">
           <span class="control-label">Group:</span>
@@ -284,7 +284,7 @@
       <div class="chart-holder">
         <div class="loading" id="rel-loading">
           <div class="spinner"></div>
-          <span>Memuat & merebase sektor/bench/macro…</span>
+          <span>Menunggu data kelompok terpilih…</span>
         </div>
         <div id="rel-chart" class="chart"></div>
       </div>
@@ -295,7 +295,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">DM vs EM DAILY % CHANGE</div>
+          <div class="panel-title">DM vs EM</div>
         </div>
         <div class="controls">
           <span class="control-label">Group:</span>
@@ -314,7 +314,7 @@
       <div class="chart-holder">
         <div class="loading" id="dm-loading">
           <div class="spinner"></div>
-          <span>Menghitung 1D change DM & EM ETF…</span>
+          <span>Menunggu stream Developed & Emerging Markets…</span>
         </div>
         <div id="dm-chart" class="chart"></div>
       </div>
@@ -328,13 +328,13 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">FOREX STRENGTH METER</div>
+          <div class="panel-title">FOREX STRENGTH METER (1D)</div>
         </div>
       </div>
       <div class="chart-holder">
         <div class="loading" id="fx-loading">
           <div class="spinner"></div>
-          <span>Menghitung FX 1D return dari TVC index…</span>
+          <span>Menunggu stream FX indices…</span>
         </div>
         <div id="fx-chart" class="chart"></div>
       </div>
@@ -345,13 +345,13 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">COMMODITIES STRENGTH METER</div>
+          <div class="panel-title">COMMODITIES STRENGTH METER (1D)</div>
         </div>
       </div>
       <div class="chart-holder">
         <div class="loading" id="comdt-loading">
           <div class="spinner"></div>
-          <span>Menghitung 1D return komoditas…</span>
+          <span>Menunggu stream futures komoditas…</span>
         </div>
         <div id="comdt-chart" class="chart"></div>
       </div>
@@ -361,11 +361,21 @@
 </div>
 
 <script>
-// ================== CONFIG ==================
-const BASE_URL   = "https://kuancloud.loclx.io";
-const TV_PATH    = "/api/tvohlc/ohlcv";
-const INTERVAL_D = "1D";      // daily OHLC
-const BARS_D     = 800;       // approx 3 years history
+// ================== WEBSOCKET ENDPOINTS ==================
+const WS_ENDPOINTS = {
+  safe_haven:        "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/safe_haven",
+  risk_assets:       "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/risk_assets",
+  market_phase:      "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/market_phase",
+  us_sectors:        "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/us_sectors",
+  benchmarks:        "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/benchmarks",
+  macro:             "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/macro",
+  developed_markets: "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/developed_markets",
+  emerging_markets:  "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/emerging_markets",
+  fx_indices:        "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/fx_indices",
+  commodities:       "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/commodities_futures"
+};
+
+// ================== CONFIG MAPS (SAMA DENGAN YANG KAMU PAKAI) ==================
 
 // Risk gauge / netflow basket
 const SAFE_HAVEN  = ["GLD","FXY","FXF","UUP"];
@@ -424,14 +434,7 @@ const DMEM_META = {
   "EWM":  {name:"Malaysia (EWM)",         cls:"EM"}
 };
 
-const CLIP_PCT = 0.05;  // untuk risk gauge
-
-// DM/EM color palettes
-const DM_COLORS = ["#60a5fa","#3b82f6","#2563eb","#1d4ed8","#1e40af"];
-const EM_COLORS = ["#fb7185","#f97316","#22c55e","#eab308","#ec4899"];
-
-// ===== Forex Strength via TVC Index =====
-const FX_CURRENCIES = ["USD","EUR","JPY","GBP","AUD","NZD","CAD","CHF"];
+// Forex indices
 const FX_INDEX_TV = {
   "USD":"TVC:DXY",
   "EUR":"TVC:EXY",
@@ -443,7 +446,7 @@ const FX_INDEX_TV = {
   "CHF":"TVC:SXY"
 };
 
-// ===== Commodities Strength (TV futures; adjust jika perlu) =====
+// Commodities futures
 const COMDT_TV = {
   "Gold":"COMEX:GC1!",
   "Silver":"COMEX:SI1!",
@@ -463,28 +466,36 @@ const COMDT_TV = {
   "Cotton":"ICEUS:CT1!"
 };
 
-// Skala paksa untuk Forex Strength [-2%, 2%]
 const FX_AXIS_MIN = -2;
 const FX_AXIS_MAX =  2;
+const CLIP_PCT = 0.05;
 
-// global storage
-const dailyBars = {};
-let relChartInstance = null;
-let dmChartInstance  = null;
-let DMEM_BASE        = [];
+// DM/EM color palettes
+const DM_COLORS = ["#60a5fa","#3b82f6","#2563eb","#1d4ed8","#1e40af"];
+const EM_COLORS = ["#fb7185","#f97316","#22c55e","#eab308","#ec4899"];
 
-// NEW: global chart instances
-let gaugeChartInstance  = null;
-let barsChartInstance   = null;
-let phaseChartInstance  = null;
-let sectorChartInstance = null;
-let fxChartInstance     = null;
-let comdtChartInstance  = null;
+// ================== GLOBAL STATE ==================
+const state = {
+  safe: {},   // GLD, FXY, FXF, UUP
+  risk: {},   // IBIT, QQQ, SPY, EEM
+  phase: {},  // UUP,BND,QQQ,DBC
+  sectors: {},
+  bench: {},
+  macro: {},
+  dmem: {},   // ticker -> {chg, cls, name}
+  fxByCcy: {}, // ccy -> change
+  comdt: {}   // symbol -> change
+};
 
-// flags untuk event listener & refresh lock
-let relListenersAttached = false;
-let dmListenersAttached  = false;
-let isRefreshing         = false;
+// Chart instances
+let gaugeChartInstance   = null;
+let barsChartInstance    = null;
+let phaseChartInstance   = null;
+let sectorChartInstance  = null;
+let relChartInstance     = null;
+let dmChartInstance      = null;
+let fxChartInstance      = null;
+let comdtChartInstance   = null;
 
 // ================== HELPERS ==================
 function formatWIB() {
@@ -509,84 +520,63 @@ function avg(arr) {
   return arr.reduce((a,b)=>a+b,0)/arr.length;
 }
 
-function toDateStrFromISO(iso) {
-  if (!iso) return "";
-  return iso.slice(0,10); // YYYY-MM-DD
+// normalisasi simbol dari WS
+function normalizeSymbol(symbol) {
+  if (!symbol) return null;
+  // TVC & futures: keep full
+  if (/^(TVC|COMEX|NYMEX|CBOT|ICEUS|ICEEUR):/.test(symbol)) {
+    return symbol;
+  }
+  if (symbol.includes(":")) {
+    return symbol.split(":")[1];
+  }
+  return symbol;
 }
 
-// ================== FETCH OHLC ==================
-async function fetchOHLC(ticker, interval = INTERVAL_D, barsCount = BARS_D) {
-  const url = `${BASE_URL}${TV_PATH}?symbol=${encodeURIComponent(ticker)}&interval=${encodeURIComponent(interval)}&bars_count=${barsCount}`;
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status} untuk ${ticker}`);
+// parse payload dari WS (JSON atau string log)
+function parseWsPayload(raw) {
+  if (raw == null) return null;
+
+  if (typeof raw === "string") {
+    const text = raw.trim();
+    // coba JSON dulu
+    if (text.startsWith("{") || text.startsWith("[")) {
+      try {
+        const obj = JSON.parse(text);
+        if (obj && obj.symbol && typeof obj.change !== "undefined") {
+          return {symbol: obj.symbol, change: Number(obj.change)};
+        }
+      } catch {}
+    }
+    // fallback parsing log string
+    // contoh: [ts] fx TVC:CXY change=+0.160
+    const re = /([A-Z]{2,6}:[A-Z0-9!]+|[A-Z0-9!]+)\s+change=([+\-]?\d+(\.\d+)?)/;
+    const m = text.match(re);
+    if (m) {
+      return {symbol: m[1], change: parseFloat(m[2])};
+    }
+    return null;
   }
-  const json = await res.json();
-  if (!json || !json.ok) {
-    throw new Error(`Response ok=false untuk ${ticker}`);
-  }
-  if (!Array.isArray(json.results) || json.results.length === 0) {
-    throw new Error(`results kosong untuk ${ticker}`);
-  }
-  const result = json.results[0];
-  if (!result.ok) {
-    throw new Error(`Result ok=false untuk ${ticker}`);
-  }
-  if (!Array.isArray(result.bars) || result.bars.length < 2) {
-    throw new Error(`bars tidak cukup untuk ${ticker}`);
-  }
-  return result.bars.sort((a,b)=>a.timestamp - b.timestamp);
+
+  // kalau server kirim object langsung
+  try {
+    if (raw.symbol && typeof raw.change !== "undefined") {
+      return {symbol: raw.symbol, change: Number(raw.change)};
+    }
+  } catch {}
+  return null;
 }
 
-// multi-day return (start→end) in %
-function computeWindowReturnPct(bars) {
-  const first = bars[0].close;
-  const last  = bars[bars.length - 1].close;
-  return (last / first - 1) * 100;
-}
+// risk score (0–100) dari map {ticker -> change%}
+function computeRiskScoreFromMaps() {
+  const riskVals = RISK_ASSETS
+    .map(t => state.risk[t])
+    .filter(v => typeof v === "number" && !Number.isNaN(v));
+  const safeVals = SAFE_HAVEN
+    .map(t => state.safe[t])
+    .filter(v => typeof v === "number" && !Number.isNaN(v));
 
-// last vs prior close (approx intraday move) in %
-function computeLastVsPrevReturnPct(bars) {
-  if (bars.length < 2) throw new Error("bars < 2");
-  const prev = bars[bars.length - 2].close;
-  const last = bars[bars.length - 1].close;
-  return (last / prev - 1) * 100;
-}
-
-// daily % change series from OHLC bars
-function computeDailyChangeSeries(bars) {
-  const out = [];
-  for (let i=1; i<bars.length; i++) {
-    const prev = bars[i-1].close;
-    const cur  = bars[i].close;
-    const pct  = (cur / prev - 1) * 100;
-    const dStr = toDateStrFromISO(bars[i].time_iso);
-    out.push({date:dStr, value:pct});
-  }
-  return out;
-}
-
-// 3-day rolling mean
-function smooth3(series) {
-  const out = [];
-  for (let i=0;i<series.length;i++) {
-    const a = Math.max(0, i-2);
-    const slice = series.slice(a, i+1).map(p=>p.value);
-    out.push({date:series[i].date, value: avg(slice)});
-  }
-  return out;
-}
-
-// keep last N points
-function keepLastN(series, n) {
-  if (series.length <= n) return series;
-  return series.slice(series.length - n);
-}
-
-// risk score (0–100) dari return map (multi-day window)
-function computeRiskScore(returnMap) {
-  const riskVals = RISK_ASSETS.map(t => returnMap[t]).filter(v => Number.isFinite(v));
-  const safeVals = SAFE_HAVEN.map(t => returnMap[t]).filter(v => Number.isFinite(v));
+  if (!riskVals.length || !safeVals.length) return null;
 
   const riskMean = avg(riskVals);
   const safeMean = avg(safeVals);
@@ -609,65 +599,88 @@ function statusFromScore(score) {
   }
 }
 
-// ================== ECHARTS RENDERERS (DARK MODE) ==================
-function renderGauge(metrics) {
+function hideLoading(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = "none";
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.display = "block";
+    el.textContent = msg;
+  }
+}
+
+// ================== ECHARTS RENDERERS ==================
+function renderGaugeAndBars() {
+  const metrics = computeRiskScoreFromMaps();
+  const gaugeLoadingId = "gauge-loading";
+  const barsLoadingId  = "bars-loading";
+
+  if (!metrics) {
+    // belum cukup data
+    return;
+  }
+  hideLoading(gaugeLoadingId);
+  hideLoading(barsLoadingId);
+
+  const {riskScore, riskMean, safeMean} = metrics;
+  const {text:statusText, color:statusColor} = statusFromScore(riskScore);
+
+  // Gauge
   const gaugeDom = document.getElementById("gauge-chart");
   if (!gaugeChartInstance) {
     gaugeChartInstance = echarts.init(gaugeDom);
     window.addEventListener("resize", ()=>gaugeChartInstance && gaugeChartInstance.resize());
   }
 
-  const {riskScore, riskMean, safeMean} = metrics;
-  const {text:statusText, color:statusColor} = statusFromScore(riskScore);
-
-  const option = {
+  const gaugeOption = {
     backgroundColor:"#111111",
     title:{
-      text:"Risk-On / Risk-Off Gauge",
-      subtext:`Risk mean: ${riskMean.toFixed(2)}% | Safe mean: ${safeMean.toFixed(2)}%`,
+      text:"Sentiment Gauge",
+      subtext:`Risk basket: ${riskMean.toFixed(2)}% | Safe basket: ${safeMean.toFixed(2)}%`,
       left:"center",
       top:6,
       textStyle:{color:"#f5f5f5", fontSize:14},
       subtextStyle:{color:"#9b9b9b", fontSize:11}
     },
     tooltip:{formatter:(p)=>`Score: ${p.value.toFixed(1)}`},
-    series:[
-      {
-        type:"gauge",
-        startAngle:180,
-        endAngle:0,
-        min:0,
-        max:100,
-        radius:"90%",
-        center:["50%","60%"],
-        axisLine:{
-          lineStyle:{
-            width:14,
-            color:[
-              [0.3,"#4b1f1f"],
-              [0.7,"#3b3b3b"],
-              [1.0,"#1f3b1f"]
-            ]
-          }
-        },
-        splitLine:{show:false},
-        axisTick:{show:false},
-        axisLabel:{color:"#e5e5e5"},
-        pointer:{
-          length:"60%",
-          width:4,
-          itemStyle:{color:statusColor}
-        },
-        detail:{
-          formatter:(v)=>`Score: ${v.toFixed(1)}/100`,
-          color:"#f5f5f5",
-          fontSize:12,
-          offsetCenter:[0,"65%"]
-        },
-        itemStyle:{color:statusColor},
-        data:[{value:riskScore, name:statusText}]
-      }
-    ],
+    series:[{
+      type:"gauge",
+      startAngle:180,
+      endAngle:0,
+      min:0,
+      max:100,
+      radius:"90%",
+      center:["50%","60%"],
+      axisLine:{
+        lineStyle:{
+          width:14,
+          color:[
+            [0.3,"#4b1f1f"],
+            [0.7,"#3b3b3b"],
+            [1.0,"#1f3b1f"]
+          ]
+        }
+      },
+      splitLine:{show:false},
+      axisTick:{show:false},
+      axisLabel:{color:"#e5e5e5"},
+      pointer:{
+        length:"60%",
+        width:4,
+        itemStyle:{color:statusColor}
+      },
+      detail:{
+        formatter:(v)=>`Score: ${v.toFixed(1)}/100`,
+        color:"#f5f5f5",
+        fontSize:12,
+        offsetCenter:[0,"65%"]
+      },
+      itemStyle:{color:statusColor},
+      data:[{value:riskScore, name:statusText}]
+    }],
     graphic:[
       {
         type:"text",
@@ -692,11 +705,9 @@ function renderGauge(metrics) {
       }
     ]
   };
+  gaugeChartInstance.setOption(gaugeOption, true);
 
-  gaugeChartInstance.setOption(option, true);
-}
-
-function renderBars(returnMap) {
+  // Bars (Risk/Safe)
   const dom = document.getElementById("bars-chart");
   if (!barsChartInstance) {
     barsChartInstance = echarts.init(dom);
@@ -704,14 +715,13 @@ function renderBars(returnMap) {
   }
 
   const categories = [...SAFE_HAVEN, ...RISK_ASSETS];
-  const safeData = categories.map(t => SAFE_HAVEN.includes(t) ? (Number.isFinite(returnMap[t]) ? returnMap[t] : null) : null);
-  const riskData = categories.map(t => RISK_ASSETS.includes(t) ? (Number.isFinite(returnMap[t]) ? returnMap[t] : null) : null);
+  const safeData = categories.map(t => SAFE_HAVEN.includes(t) ? (typeof state.safe[t]==="number"?state.safe[t]:null) : null);
+  const riskData = categories.map(t => RISK_ASSETS.includes(t) ? (typeof state.risk[t]==="number"?state.risk[t]:null) : null);
+  const riskVals = RISK_ASSETS.map(t=>state.risk[t]).filter(v=>typeof v==="number" && !Number.isNaN(v));
+  const safeVals = SAFE_HAVEN.map(t=>state.safe[t]).filter(v=>typeof v==="number" && !Number.isNaN(v));
+  const delta = riskVals.length && safeVals.length ? (avg(riskVals)-avg(safeVals)) : NaN;
 
-  const riskVals = RISK_ASSETS.map(t => returnMap[t]).filter(v=>Number.isFinite(v));
-  const safeVals = SAFE_HAVEN.map(t => returnMap[t]).filter(v=>Number.isFinite(v));
-  const delta = avg(riskVals) - avg(safeVals);
-
-  const option = {
+  const barsOption = {
     backgroundColor:"#111111",
     tooltip:{trigger:"axis"},
     legend:{
@@ -722,7 +732,7 @@ function renderBars(returnMap) {
     grid:{left:70,right:16,top:40,bottom:40},
     xAxis:{
       type:"value",
-      name:"Return (%)",
+      name:"1D Return (%)",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{color:"#e5e5e5"},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
@@ -747,78 +757,87 @@ function renderBars(returnMap) {
         itemStyle:{color:"#fb7185"}
       }
     ],
-    graphic:[
-      {
-        type:"text",
-        left:"right",
-        top:6,
-        style:{
-          text:`ΔRisk − Safe: ${Number.isFinite(delta) ? delta.toFixed(2) : "NaN"} pts · ${formatWIB()}`,
-          fill:"#9b9b9b",
-          fontSize:10
-        }
+    graphic:[{
+      type:"text",
+      left:"right",
+      top:6,
+      style:{
+        text:`ΔRisk − Safe: ${Number.isFinite(delta) ? delta.toFixed(2) : "NaN"} pts · ${formatWIB()}`,
+        fill:"#9b9b9b",
+        fontSize:10
       }
-    ]
+    }]
   };
 
-  barsChartInstance.setOption(option, true);
+  barsChartInstance.setOption(barsOption, true);
 }
 
-function renderPhaseChart(seriesByAsset) {
+function renderPhaseSnapshot() {
+  const elLoading = "phase-loading";
+  const elError   = "phase-error";
+
+  const entries = Object.entries(PHASE_ASSETS).map(([label, tkr]) => {
+    const val = state.phase[tkr];
+    return {label, value: typeof val === "number" ? val : null};
+  }).filter(r => r.value !== null);
+
+  if (!entries.length) return;
+
+  hideLoading(elLoading);
+
   const dom = document.getElementById("phase-chart");
   if (!phaseChartInstance) {
     phaseChartInstance = echarts.init(dom);
     window.addEventListener("resize", ()=>phaseChartInstance && phaseChartInstance.resize());
   }
 
-  const dateSet = new Set();
-  Object.values(seriesByAsset).forEach(arr => {
-    arr.forEach(p => dateSet.add(p.date));
-  });
-  const dates = Array.from(dateSet).sort();
-
-  const series = Object.entries(seriesByAsset).map(([assetName, arr]) => {
-    const map = {};
-    arr.forEach(p => { map[p.date] = p.value; });
-    const data = dates.map(d => (d in map ? map[d] : null));
-    return {
-      name: assetName,
-      type:"line",
-      data,
-      smooth:true,
-      showSymbol:false,
-      areaStyle:{opacity:0.28}
-    };
-  });
+  const labels = entries.map(e=>e.label);
+  const values = entries.map(e=>e.value);
 
   const option = {
     backgroundColor:"#111111",
-    tooltip:{trigger:"axis"},
-    legend:{
-      top:6,
-      textStyle:{color:"#f5f5f5", fontSize:11}
+    tooltip:{
+      trigger:"axis",
+      axisPointer:{type:"shadow"},
+      formatter:(p)=>{
+        const item = p[0];
+        return `${item.name}<br/>1D Δ: ${item.value.toFixed(2)}%`;
+      }
     },
-    grid:{left:55,right:16,top:40,bottom:40},
+    grid:{left:90,right:16,top:30,bottom:40},
     xAxis:{
-      type:"category",
-      data:dates,
-      axisLine:{lineStyle:{color:"#a3a3a3"}},
-      axisLabel:{color:"#e5e5e5"}
-    },
-    yAxis:{
       type:"value",
-      name:"Change (%)",
+      name:"1D Change (%)",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{color:"#e5e5e5"},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
     },
-    series,
+    yAxis:{
+      type:"category",
+      data:labels,
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"}
+    },
+    series:[{
+      type:"bar",
+      data:values,
+      itemStyle:{
+        color:(p)=> p.value >= 0 ? "#22c55e" : "#ef4444"
+      },
+      label:{
+        show:true,
+        position:"right",
+        formatter:p=>`${p.value.toFixed(2)}%`,
+        color:"#f5f5f5",
+        fontSize:10
+      }
+    }],
     graphic:[{
       type:"text",
       left:"right",
       top:6,
       style:{
-        text:`Updated: ${formatWIB()} · approx 14D window`,
+        text:`Updated: ${formatWIB()}`,
         fill:"#9b9b9b",
         fontSize:10
       }
@@ -828,22 +847,35 @@ function renderPhaseChart(seriesByAsset) {
   phaseChartInstance.setOption(option, true);
 }
 
-function renderSectorSnapshot(retMap) {
+function renderSectorSnapshot() {
+  const elLoading = "sector-loading";
+  const all = Object.assign({}, SECTORS, BENCH, MACRO);
+  const retMap = {};
+
+  Object.keys(SECTORS).forEach(t => {
+    if (typeof state.sectors[t] === "number") retMap[t] = state.sectors[t];
+  });
+  Object.keys(BENCH).forEach(t => {
+    if (typeof state.bench[t] === "number") retMap[t] = state.bench[t];
+  });
+  Object.keys(MACRO).forEach(t => {
+    if (typeof state.macro[t] === "number") retMap[t] = state.macro[t];
+  });
+
+  const pairs = Object.keys(retMap).map(t=>[t, retMap[t]]);
+  if (!pairs.length) return;
+
+  hideLoading(elLoading);
+
+  pairs.sort((a,b)=>b[1]-a[1]);
+  const tickers = pairs.map(p=>p[0]);
+  const values  = pairs.map(p=>p[1]);
+
   const dom = document.getElementById("sector-chart");
   if (!sectorChartInstance) {
     sectorChartInstance = echarts.init(dom);
     window.addEventListener("resize", ()=>sectorChartInstance && sectorChartInstance.resize());
   }
-
-  const all = Object.assign({}, SECTORS, BENCH, MACRO);
-  const pairs = Object.keys(all)
-    .map(t => [t, retMap[t]])
-    .filter(([_, v]) => Number.isFinite(v));
-
-  pairs.sort((a,b)=>b[1]-a[1]);
-
-  const tickers = pairs.map(p=>p[0]);
-  const values  = pairs.map(p=>p[1]);
 
   const option = {
     backgroundColor:"#111111",
@@ -854,39 +886,37 @@ function renderSectorSnapshot(retMap) {
         const p = params[0];
         const t = p.name;
         const label = all[t] || t;
-        return `${t} – ${label}<br/>Return: ${p.value.toFixed(2)}%`;
+        return `${t} – ${label}<br/>1D Δ: ${p.value.toFixed(2)}%`;
       }
     },
     grid:{left:70,right:16,top:40,bottom:40},
     xAxis:{
       type:"category",
       data:tickers,
-      axisLabel:{color:"#e5e5e5"},
+      axisLabel:{color:"#e5e5e5", rotate:45},
       axisLine:{lineStyle:{color:"#a3a3a3"}}
     },
     yAxis:{
       type:"value",
-      name:"Return vs Prior Close (%)",
+      name:"1D Change (%)",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{color:"#e5e5e5"},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
     },
-    series:[
-      {
-        name:"% vs Prior Close (approx)",
-        type:"bar",
-        data:values,
-        itemStyle:{
-          color:(p)=> p.value >= 0 ? "#22c55e" : "#ef4444"
-        }
+    series:[{
+      name:"1D Change",
+      type:"bar",
+      data:values,
+      itemStyle:{
+        color:(p)=> p.value >= 0 ? "#22c55e" : "#ef4444"
       }
-    ],
+    }],
     graphic:[{
       type:"text",
       left:"right",
       top:6,
       style:{
-        text:`Updated: ${formatWIB()} · last vs prior daily close`,
+        text:`Updated: ${formatWIB()} · 1D change`,
         fill:"#9b9b9b",
         fontSize:10
       }
@@ -896,12 +926,42 @@ function renderSectorSnapshot(retMap) {
   sectorChartInstance.setOption(option, true);
 }
 
-// Relative Lines
-function renderRelLines(groupKey) {
-  const mapping =
-    groupKey === "Benchmarks" ? BENCH :
-    groupKey === "Macro"      ? MACRO :
-                                SECTORS;
+function renderRelGroup() {
+  const groupKey = document.getElementById("rel-select").value;
+  const elLoading = "rel-loading";
+  const elError   = "rel-error";
+
+  let mapping;
+  let valuesMap;
+  if (groupKey === "Benchmarks") {
+    mapping  = BENCH;
+    valuesMap = state.bench;
+  } else if (groupKey === "Macro") {
+    mapping  = MACRO;
+    valuesMap = state.macro;
+  } else {
+    mapping  = SECTORS;
+    valuesMap = state.sectors;
+  }
+
+  const rows = [];
+  Object.entries(mapping).forEach(([ticker, label])=>{
+    const v = valuesMap[ticker];
+    if (typeof v === "number") {
+      rows.push({ticker, label, val:v});
+    }
+  });
+
+  if (!rows.length) {
+    return;
+  }
+
+  hideLoading(elLoading);
+
+  rows.sort((a,b)=>a.val - b.val); // bottom to top
+
+  const names = rows.map(r=>`${r.ticker} – ${r.label}`);
+  const vals  = rows.map(r=>r.val);
 
   const dom = document.getElementById("rel-chart");
   if (!relChartInstance) {
@@ -909,76 +969,43 @@ function renderRelLines(groupKey) {
     window.addEventListener("resize", ()=>relChartInstance && relChartInstance.resize());
   }
 
-  const series = [];
-  Object.entries(mapping).forEach(([ticker, label])=>{
-    const bars = dailyBars[ticker];
-    if (!bars || !bars.length) return;
-
-    // Filter: hanya data mulai tahun 2023
-    const sorted = [...bars].sort((a,b)=>a.timestamp - b.timestamp);
-    const filtered = sorted.filter(b => {
-      if (!b.time_iso) return false;
-      const d = new Date(b.time_iso);
-      return d.getUTCFullYear() >= 2023;
-    });
-    if (!filtered.length) return;
-
-    const firstClose = filtered[0].close;
-    if (!firstClose) return;
-
-    // Rebase semua aset ke 0% di titik awal (since 2023)
-    const data = filtered.map(b=>{
-      const pct = (b.close / firstClose - 1) * 100;
-      const iso = b.time_iso || "";
-      return [iso, pct];
-    });
-
-    series.push({
-      name: `${ticker} – ${label}`,
-      type:"line",
-      showSymbol:false,
-      smooth:true,
-      data,
-      lineStyle:{width:1.6},
-      areaStyle:{opacity:0.18}
-    });
-  });
-
-  if (!series.length) {
-    throw new Error(`Tidak ada data untuk grup ${groupKey}`);
-  }
-
   const option = {
     backgroundColor:"#111111",
     tooltip:{
       trigger:"axis",
-      axisPointer:{type:"cross"},
-      valueFormatter:(v)=> v != null ? v.toFixed(2)+"%" : ""
+      axisPointer:{type:"shadow"},
+      formatter:(params)=>{
+        const p = params[0];
+        return `${p.name}<br/>1D Δ: ${p.value.toFixed(2)}%`;
+      }
     },
-    legend:{
-      top:6,
-      textStyle:{color:"#f5f5f5", fontSize:11}
-    },
-    grid:{left:55,right:16,top:40,bottom:40},
+    grid:{left:140,right:16,top:30,bottom:35},
     xAxis:{
-      type:"time",
-      axisLine:{lineStyle:{color:"#a3a3a3"}},
-      axisLabel:{color:"#e5e5e5"}
-    },
-    yAxis:{
       type:"value",
-      name:"Return Since 2023 (%)",
+      name:"1D Change (%)",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{color:"#e5e5e5"},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
     },
-    series,
+    yAxis:{
+      type:"category",
+      data:names,
+      axisLine:{lineStyle:{color:"#a3a3a3"}},
+      axisLabel:{color:"#e5e5e5"}
+    },
+    series:[{
+      type:"bar",
+      data:vals,
+      itemStyle:{
+        color:(p)=> p.value >= 0 ? "#22c55e" : "#ef4444"
+      }
+    }],
     graphic:[{
       type:"text",
       left:"right",
       top:6,
       style:{
-        text:`Updated: ${formatWIB()} · All lines start at 0% (since 2023, group: ${groupKey})`,
+        text:`Updated: ${formatWIB()} · Group: ${groupKey}`,
         fill:"#9b9b9b",
         fontSize:10
       }
@@ -988,18 +1015,29 @@ function renderRelLines(groupKey) {
   relChartInstance.setOption(option, true);
 }
 
-// DM/EM helper
-function buildDMEMData(group, order) {
-  let rows = DMEM_BASE;
-  if (group === "DM") {
-    rows = rows.filter(r => r.cls === "DM");
-  } else if (group === "EM") {
-    rows = rows.filter(r => r.cls === "EM");
-  } else {
-    rows = rows.slice();
+function renderDMEM() {
+  const elLoading = "dm-loading";
+  const groupSel = document.getElementById("dm-group").value;
+  const orderSel = document.getElementById("dm-order").value;
+
+  let rows = Object.entries(state.dmem).map(([ticker, info])=>({
+    ticker,
+    name:info.name,
+    cls:info.cls,
+    chg:info.chg
+  }));
+
+  if (groupSel === "DM") {
+    rows = rows.filter(r=>r.cls === "DM");
+  } else if (groupSel === "EM") {
+    rows = rows.filter(r=>r.cls === "EM");
   }
 
-  rows = rows.slice().sort((a,b)=> order === "ASC" ? a.chg - b.chg : b.chg - a.chg);
+  if (!rows.length) return;
+
+  hideLoading(elLoading);
+
+  rows.sort((a,b)=> orderSel === "ASC" ? a.chg - b.chg : b.chg - a.chg);
 
   let dmIdx=0, emIdx=0;
   rows.forEach(r=>{
@@ -1011,17 +1049,6 @@ function buildDMEMData(group, order) {
       emIdx++;
     }
   });
-  return rows;
-}
-
-function renderDMEMChart() {
-  const groupSel = document.getElementById("dm-group").value;
-  const orderSel = document.getElementById("dm-order").value;
-
-  const rows = buildDMEMData(groupSel, orderSel);
-  if (!rows.length) {
-    throw new Error(`Tidak ada data untuk grup ${groupSel}`);
-  }
 
   const names = rows.map(r=>r.name);
   const dataItems = rows.map(r=>({
@@ -1051,7 +1078,7 @@ function renderDMEMChart() {
     grid:{left:180,right:16,top:40,bottom:40},
     xAxis:{
       type:"value",
-      name:"% Perubahan Harian (1D)",
+      name:"1D Change (%)",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{color:"#e5e5e5"},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
@@ -1062,19 +1089,17 @@ function renderDMEMChart() {
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{color:"#e5e5e5"}
     },
-    series:[
-      {
-        type:"bar",
-        data:dataItems,
-        label:{
-          show:true,
-          position:"right",
-          formatter:(p)=> `${p.value.toFixed(2)}%`,
-          color:"#f5f5f5",
-          fontSize:10
-        }
+    series:[{
+      type:"bar",
+      data:dataItems,
+      label:{
+        show:true,
+        position:"right",
+        formatter:(p)=> `${p.value.toFixed(2)}%`,
+        color:"#f5f5f5",
+        fontSize:10
       }
-    ],
+    }],
     graphic:[{
       type:"text",
       left:"right",
@@ -1090,24 +1115,18 @@ function renderDMEMChart() {
   dmChartInstance.setOption(option, true);
 }
 
-// ======== Forex Strength via TVC Indices (REAL 1D RETURN) ========
-function computeForexStrength() {
-  const rows = [];
-  FX_CURRENCIES.forEach(ccy=>{
-    const symbol = FX_INDEX_TV[ccy];
-    const bars = dailyBars[symbol];
-    if (!bars || bars.length < 2) return;
-    const ret = computeLastVsPrevReturnPct(bars); // real daily return
-    if (!Number.isFinite(ret)) return;
-    rows.push({ccy, ret});
-  });
-  if (!rows.length) {
-    throw new Error("Tidak ada data FX index yang cukup.");
-  }
-  return {rows, asof:formatWIB()};
-}
+function renderForex() {
+  const elLoading = "fx-loading";
+  const rows = Object.entries(FX_INDEX_TV).map(([ccy, symbol])=>{
+    const val = state.fxByCcy[ccy];
+    if (typeof val !== "number") return null;
+    return {ccy, ret:val};
+  }).filter(Boolean);
 
-function renderForexStrength(rows, asof) {
+  if (!rows.length) return;
+
+  hideLoading(elLoading);
+
   const dom = document.getElementById("fx-chart");
   if (!fxChartInstance) {
     fxChartInstance = echarts.init(dom);
@@ -1117,11 +1136,12 @@ function renderForexStrength(rows, asof) {
   const sorted = rows.slice().sort((a,b)=>a.ret - b.ret);
   const vals = sorted.map(r=>r.ret);
   const labs = sorted.map(r=>r.ccy);
+  const asof = formatWIB();
 
   const option = {
     backgroundColor:"#111111",
     title:{
-      text:"Forex Strength Meter (TVC Index)",
+      text:"Forex Strength Meter",
       subtext:`1D % change vs prior close · as of ${asof}`,
       left:"center",
       top:4,
@@ -1161,41 +1181,36 @@ function renderForexStrength(rows, asof) {
         color:["#b91c1c","#f97316","#fde68a","#4ade80","#16a34a"]
       }
     },
-    series:[
-      {
-        type:"bar",
-        data:vals,
-        label:{
-          show:true,
-          position:"right",
-          formatter:(p)=>`${p.value.toFixed(2)}%`,
-          color:"#f5f5f5",
-          fontSize:10
-        }
+    series:[{
+      type:"bar",
+      data:vals,
+      label:{
+        show:true,
+        position:"right",
+        formatter:(p)=>`${p.value.toFixed(2)}%`,
+        color:"#f5f5f5",
+        fontSize:10
       }
-    ]
+    }]
   };
 
   fxChartInstance.setOption(option, true);
 }
 
-// ======== Commodities Strength (REAL 1D RETURN) ========
-function computeComdtStrength() {
+function renderCommodities() {
+  const elLoading = "comdt-loading";
   const rows = [];
   Object.entries(COMDT_TV).forEach(([name, symbol])=>{
-    const bars = dailyBars[symbol];
-    if (!bars || bars.length < 2) return;
-    const ret = computeLastVsPrevReturnPct(bars); // real daily return
-    if (!Number.isFinite(ret)) return;
-    rows.push({name, ret});
+    const v = state.comdt[symbol];
+    if (typeof v === "number") {
+      rows.push({name, ret:v});
+    }
   });
-  if (!rows.length) {
-    throw new Error("Tidak ada data komoditas.");
-  }
-  return {rows, asof:formatWIB()};
-}
 
-function renderComdtStrength(rows, asof) {
+  if (!rows.length) return;
+
+  hideLoading(elLoading);
+
   const dom = document.getElementById("comdt-chart");
   if (!comdtChartInstance) {
     comdtChartInstance = echarts.init(dom);
@@ -1206,6 +1221,7 @@ function renderComdtStrength(rows, asof) {
   const vals = sorted.map(r=>r.ret);
   const labs = sorted.map(r=>r.name);
   const maxAbs = Math.max(5, Math.ceil(Math.max(...vals.map(v=>Math.abs(v)) || [5])));
+  const asof = formatWIB();
 
   const option = {
     backgroundColor:"#111111",
@@ -1250,275 +1266,186 @@ function renderComdtStrength(rows, asof) {
         color:["#b91c1c","#f97316","#fde68a","#4ade80","#16a34a"]
       }
     },
-    series:[
-      {
-        type:"bar",
-        data:vals,
-        label:{
-          show:true,
-          position:"right",
-          formatter:(p)=>`${p.value.toFixed(2)}%`,
-          color:"#f5f5f5",
-          fontSize:10
-        }
+    series:[{
+      type:"bar",
+      data:vals,
+      label:{
+        show:true,
+        position:"right",
+        formatter:(p)=>`${p.value.toFixed(2)}%`,
+        color:"#f5f5f5",
+        fontSize:10
       }
-    ]
+    }]
   };
 
   comdtChartInstance.setOption(option, true);
 }
 
-// ================== MAIN FLOW ==================
-async function initDashboard() {
-  if (isRefreshing) {
-    return;
+// ================== WEBSOCKET SETUP ==================
+function createWS(key, onPayload, errorId) {
+  const url = WS_ENDPOINTS[key];
+  if (!url) return;
+
+  let ws = null;
+
+  function connect() {
+    try {
+      ws = new WebSocket(url);
+    } catch (e) {
+      console.error("WS create error", key, e);
+      if (errorId) showError(errorId, `WS error (${key}): ${e.message || e}`);
+      return;
+    }
+
+    ws.onopen = () => {
+      console.log("WS opened:", key);
+    };
+
+    ws.onmessage = (event) => {
+      const payload = parseWsPayload(event.data);
+      if (!payload) return;
+      onPayload(payload);
+    };
+
+    ws.onerror = (err) => {
+      console.error("WS error", key, err);
+      if (errorId) showError(errorId, `WS error (${key}) – lihat console log.`);
+    };
+
+    ws.onclose = () => {
+      console.warn("WS closed, reconnecting:", key);
+      setTimeout(connect, 5000);
+    };
   }
-  isRefreshing = true;
 
-  const gaugeLoading  = document.getElementById("gauge-loading");
-  const barsLoading   = document.getElementById("bars-loading");
-  const phaseLoading  = document.getElementById("phase-loading");
-  const sectorLoading = document.getElementById("sector-loading");
-  const relLoading    = document.getElementById("rel-loading");
-  const dmLoading     = document.getElementById("dm-loading");
-  const fxLoading     = document.getElementById("fx-loading");
-  const comdtLoading  = document.getElementById("comdt-loading");
-
-  const gaugeError  = document.getElementById("gauge-error");
-  const barsError   = document.getElementById("bars-error");
-  const phaseError  = document.getElementById("phase-error");
-  const sectorError = document.getElementById("sector-error");
-  const relError    = document.getElementById("rel-error");
-  const dmError     = document.getElementById("dm-error");
-  const fxError     = document.getElementById("fx-error");
-  const comdtError  = document.getElementById("comdt-error");
-
-  gaugeError.style.display  = "none";
-  barsError.style.display   = "none";
-  phaseError.style.display  = "none";
-  sectorError.style.display = "none";
-  relError.style.display    = "none";
-  dmError.style.display     = "none";
-  fxError.style.display     = "none";
-  comdtError.style.display  = "none";
-
-  const allTickersSet = new Set([
-    ...SAFE_HAVEN,
-    ...RISK_ASSETS,
-    ...Object.values(PHASE_ASSETS),
-    ...Object.keys(SECTORS),
-    ...Object.keys(BENCH),
-    ...Object.keys(MACRO),
-    ...Object.keys(DMEM_META),
-    ...Object.values(FX_INDEX_TV),
-    ...Object.values(COMDT_TV)
-  ]);
-  const ALL_TICKERS = Array.from(allTickersSet);
-
-  try {
-    const results = await Promise.allSettled(
-      ALL_TICKERS.map(t => fetchOHLC(t).then(bars => ({ticker:t, bars})))
-    );
-
-    results.forEach(res => {
-      if (res.status === "fulfilled") {
-        dailyBars[res.value.ticker] = res.value.bars;
-      } else {
-        console.warn("Fetch gagal:", res.reason);
-      }
-    });
-
-    // ========= 1) Risk gauge & netflow (multi-day window) =========
-    try {
-      const retMap = {};
-      [...SAFE_HAVEN, ...RISK_ASSETS].forEach(t => {
-        const bars = dailyBars[t];
-        if (bars && bars.length >= 2) {
-          retMap[t] = computeWindowReturnPct(bars);
-        }
-      });
-
-      const haveAny = Object.values(retMap).some(v => Number.isFinite(v));
-      if (!haveAny) throw new Error("Tidak ada return untuk basket risk/safe.");
-
-      const metrics = computeRiskScore(retMap);
-      renderGauge(metrics);
-      renderBars(retMap);
-    } catch (e) {
-      console.error("Gauge/Bars error:", e);
-      gaugeError.style.display = "block";
-      gaugeError.textContent   = `Gauge error: ${e.message || e}`;
-      barsError.style.display  = "block";
-      barsError.textContent    = `Bars error: ${e.message || e}`;
-    } finally {
-      gaugeLoading.style.display = "none";
-      barsLoading.style.display  = "none";
-    }
-
-    // ========= 2) Market Phase Dynamics =========
-    try {
-      const seriesByAsset = {};
-      for (const [name, ticker] of Object.entries(PHASE_ASSETS)) {
-        const bars = dailyBars[ticker];
-        if (!bars || bars.length < 3) continue;
-        const dailySeries = computeDailyChangeSeries(bars);
-        const smoothed = smooth3(dailySeries);
-        const last14 = keepLastN(smoothed, 14);
-        if (last14.length) {
-          seriesByAsset[name] = last14;
-        }
-      }
-
-      if (Object.keys(seriesByAsset).length === 0) {
-        throw new Error("Tidak ada data cukup untuk phase assets.");
-      }
-
-      renderPhaseChart(seriesByAsset);
-    } catch (e) {
-      console.error("Phase error:", e);
-      phaseError.style.display = "block";
-      phaseError.textContent   = `Phase error: ${e.message || e}`;
-    } finally {
-      phaseLoading.style.display = "none";
-    }
-
-    // ========= 3) Sector snapshot (1D approx) =========
-    try {
-      const retMap = {};
-      const all = Object.assign({}, SECTORS, BENCH, MACRO);
-      Object.keys(all).forEach(t => {
-        const bars = dailyBars[t];
-        if (bars && bars.length >= 2) {
-          retMap[t] = computeLastVsPrevReturnPct(bars);
-        }
-      });
-
-      const haveAnyS = Object.values(retMap).some(v => Number.isFinite(v));
-      if (!haveAnyS) throw new Error("Tidak ada data cukup untuk sektor/bench/macro.");
-
-      renderSectorSnapshot(retMap);
-    } catch (e) {
-      console.error("Sector error:", e);
-      sectorError.style.display = "block";
-      sectorError.textContent   = `Sector error: ${e.message || e}`;
-    } finally {
-      sectorLoading.style.display = "none";
-    }
-
-    // ========= 4) Relative Lines (Sectors / Bench / Macro) =========
-    try {
-      const initialGroup = document.getElementById("rel-select").value;
-      renderRelLines(initialGroup);
-      if (!relListenersAttached) {
-        document.getElementById("rel-select").addEventListener("change", e=>{
-          try {
-            renderRelLines(e.target.value);
-          } catch (err) {
-            console.error("RelLines change error:", err);
-            relError.style.display = "block";
-            relError.textContent   = `RelLines error: ${err.message || err}`;
-          }
-        });
-        relListenersAttached = true;
-      }
-    } catch (e) {
-      console.error("RelLines error:", e);
-      relError.style.display = "block";
-      relError.textContent   = `RelLines error: ${e.message || e}`;
-    } finally {
-      relLoading.style.display = "none";
-    }
-
-    // ========= 5) DM vs EM Daily % Change (1D) =========
-    try {
-      DMEM_BASE = [];
-      for (const [ticker, meta] of Object.entries(DMEM_META)) {
-        const bars = dailyBars[ticker];
-        if (!bars || bars.length < 2) continue;
-        let chg;
-        try {
-          chg = computeLastVsPrevReturnPct(bars);
-        } catch {
-          continue;
-        }
-        if (!Number.isFinite(chg)) continue;
-        DMEM_BASE.push({ticker, name:meta.name, cls:meta.cls, chg});
-      }
-
-      if (!DMEM_BASE.length) {
-        throw new Error("Tidak ada data DM/EM yang cukup.");
-      }
-
-      renderDMEMChart();
-      if (!dmListenersAttached) {
-        document.getElementById("dm-group").addEventListener("change", ()=>{
-          try { renderDMEMChart(); } catch(e){ console.error(e); }
-        });
-        document.getElementById("dm-order").addEventListener("change", ()=>{
-          try { renderDMEMChart(); } catch(e){ console.error(e); }
-        });
-        dmListenersAttached = true;
-      }
-    } catch (e) {
-      console.error("DM/EM error:", e);
-      dmError.style.display = "block";
-      dmError.textContent   = `DM/EM error: ${e.message || e}`;
-    } finally {
-      dmLoading.style.display = "none";
-    }
-
-    // ========= 6) Forex 1D Return (Index) =========
-    try {
-      const {rows, asof} = computeForexStrength();
-      renderForexStrength(rows, asof);
-    } catch (e) {
-      console.error("FX error:", e);
-      fxError.style.display = "block";
-      fxError.textContent   = `FX error: ${e.message || e}`;
-    } finally {
-      fxLoading.style.display = "none";
-    }
-
-    // ========= 7) Commodities 1D Return =========
-    try {
-      const {rows, asof} = computeComdtStrength();
-      renderComdtStrength(rows, asof);
-    } catch (e) {
-      console.error("Comdt error:", e);
-      comdtError.style.display = "block";
-      comdtError.textContent   = `Commodities error: ${e.message || e}`;
-    } finally {
-      comdtLoading.style.display = "none";
-    }
-
-  } catch (fatal) {
-    console.error("Fatal error:", fatal);
-    gaugeLoading.style.display  = "none";
-    barsLoading.style.display   = "none";
-    phaseLoading.style.display  = "none";
-    sectorLoading.style.display = "none";
-    relLoading.style.display    = "none";
-    dmLoading.style.display     = "none";
-    fxLoading.style.display     = "none";
-    comdtLoading.style.display  = "none";
-
-    const msg = `Fatal: ${fatal.message || fatal}`;
-    gaugeError.style.display  = "block"; gaugeError.textContent  = msg;
-    barsError.style.display   = "block"; barsError.textContent   = msg;
-    phaseError.style.display  = "block"; phaseError.textContent  = msg;
-    sectorError.style.display = "block"; sectorError.textContent = msg;
-    relError.style.display    = "block"; relError.textContent    = msg;
-    dmError.style.display     = "block"; dmError.textContent     = msg;
-    fxError.style.display     = "block"; fxError.textContent     = msg;
-    comdtError.style.display  = "block"; comdtError.textContent  = msg;
-  } finally {
-    isRefreshing = false;
-  }
+  connect();
 }
 
-// first load + auto refresh 60 detik
-initDashboard();
-setInterval(initDashboard, 60000);
+// ================== STREAM HANDLERS ==================
+function setupSafeRiskWS() {
+  // safe
+  createWS("safe_haven", (pl)=>{
+    const norm = normalizeSymbol(pl.symbol);
+    if (!norm) return;
+    if (!SAFE_HAVEN.includes(norm)) return;
+    state.safe[norm] = pl.change;
+    renderGaugeAndBars();
+  }, "gauge-error");
+
+  // risk
+  createWS("risk_assets", (pl)=>{
+    const norm = normalizeSymbol(pl.symbol);
+    if (!norm) return;
+    if (!RISK_ASSETS.includes(norm)) return;
+    state.risk[norm] = pl.change;
+    renderGaugeAndBars();
+  }, "gauge-error");
+}
+
+function setupMarketPhaseWS() {
+  createWS("market_phase", (pl)=>{
+    const norm = normalizeSymbol(pl.symbol);
+    if (!norm) return;
+    // cari apakah simbol ini dipakai di PHASE_ASSETS
+    const used = Object.values(PHASE_ASSETS);
+    if (!used.includes(norm)) return;
+    state.phase[norm] = pl.change;
+    renderPhaseSnapshot();
+  }, "phase-error");
+}
+
+function setupSectorBenchMacroWS() {
+  createWS("us_sectors", (pl)=>{
+    const norm = normalizeSymbol(pl.symbol);
+    if (!norm || !(norm in SECTORS)) return;
+    state.sectors[norm] = pl.change;
+    renderSectorSnapshot();
+    renderRelGroup();
+  }, "sector-error");
+
+  createWS("benchmarks", (pl)=>{
+    const norm = normalizeSymbol(pl.symbol);
+    if (!norm || !(norm in BENCH)) return;
+    state.bench[norm] = pl.change;
+    renderSectorSnapshot();
+    renderRelGroup();
+  }, "sector-error");
+
+  createWS("macro", (pl)=>{
+    const norm = normalizeSymbol(pl.symbol);
+    if (!norm || !(norm in MACRO)) return;
+    state.macro[norm] = pl.change;
+    renderSectorSnapshot();
+    renderRelGroup();
+  }, "sector-error");
+}
+
+function setupDMEMWS() {
+  createWS("developed_markets", (pl)=>{
+    const norm = normalizeSymbol(pl.symbol);
+    const meta = DMEM_META[norm];
+    if (!meta || meta.cls !== "DM") return;
+    state.dmem[norm] = {chg:pl.change, cls:meta.cls, name:meta.name};
+    renderDMEM();
+  }, "dm-error");
+
+  createWS("emerging_markets", (pl)=>{
+    const norm = normalizeSymbol(pl.symbol);
+    const meta = DMEM_META[norm];
+    if (!meta || meta.cls !== "EM") return;
+    state.dmem[norm] = {chg:pl.change, cls:meta.cls, name:meta.name};
+    renderDMEM();
+  }, "dm-error");
+}
+
+function setupFXWS() {
+  createWS("fx_indices", (pl)=>{
+    const symbol = normalizeSymbol(pl.symbol); // untuk TVC kita keep full
+    // mapping balik: symbol -> currency
+    let foundCcy = null;
+    Object.entries(FX_INDEX_TV).forEach(([ccy, s])=>{
+      if (s === symbol) foundCcy = ccy;
+    });
+    if (!foundCcy) return;
+    state.fxByCcy[foundCcy] = pl.change;
+    renderForex();
+  }, "fx-error");
+}
+
+function setupComdtWS() {
+  createWS("commodities", (pl)=>{
+    const symbol = normalizeSymbol(pl.symbol); // futures pakai full COMEX:GC1! dsb
+    // hanya simpan kalau ada di mapping
+    const exists = Object.values(COMDT_TV).includes(symbol);
+    if (!exists) return;
+    state.comdt[symbol] = pl.change;
+    renderCommodities();
+  }, "comdt-error");
+}
+
+// ================== INIT ==================
+function initDashboardWS() {
+  // attach listeners untuk panel rel & DM/EM
+  document.getElementById("rel-select").addEventListener("change", ()=> {
+    renderRelGroup();
+  });
+  document.getElementById("dm-group").addEventListener("change", ()=> {
+    renderDMEM();
+  });
+  document.getElementById("dm-order").addEventListener("change", ()=> {
+    renderDMEM();
+  });
+
+  setupSafeRiskWS();
+  setupMarketPhaseWS();
+  setupSectorBenchMacroWS();
+  setupDMEMWS();
+  setupFXWS();
+  setupComdtWS();
+}
+
+initDashboardWS();
 </script>
 </body>
 </html>
