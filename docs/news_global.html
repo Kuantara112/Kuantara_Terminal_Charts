@@ -5,7 +5,7 @@
   <title>Kuantara – Global News (Optimized & Tagged)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap">
 
   <style>
     :root {
@@ -24,98 +24,435 @@
       --fs-small:9.5px;
     }
 
-    * { box-sizing:border-box; margin:0; padding:0; font-family:"Fira Code",monospace !important; }
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+    }
 
     /* Scrollbar */
-    * { scrollbar-width:thin; scrollbar-color:#2b2b2b #000000; }
+    * {
+      scrollbar-width:thin;
+      scrollbar-color:#2b2b2b #000000;
+    }
     *::-webkit-scrollbar { width:6px; height:6px; }
     *::-webkit-scrollbar-track { background:#000000; }
     *::-webkit-scrollbar-thumb { background:#2b2b2b; border-radius:999px; }
 
-    html, body { width:100%; height:100%; background-color:var(--bg-root); color:var(--text-main); }
-    body { display:flex; flex-direction:column; justify-content:flex-start; align-items:stretch; }
+    html, body {
+      width:100%;
+      height:100%;
+      background-color:var(--bg-root);
+      color:var(--text-main);
+    }
 
-    .page { width:100%; max-width:1200px; margin:0 auto; padding:16px; display:flex; flex-direction:column; gap:12px; min-height:100%; }
+    body {
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      align-items:stretch;
+      min-height:100vh;
+      overflow-y:auto;               /* body yang scroll */
+      -webkit-overflow-scrolling:touch;
+    }
 
-    .card { background-color:var(--bg-main); border:1px solid var(--border-soft); border-radius:4px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; min-height:0; }
-    .card-header-row { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+    .page {
+      width:100%;
+      max-width:100%;                /* no fixed 1200px, biar lebar */
+      margin:0;
+      padding:14px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:100vh;
+    }
 
-    .badge { display:inline-flex; align-items:center; padding:2px 6px; border-radius:999px; border:1px solid var(--border-soft); font-size:var(--fs-small); color:var(--accent); background:rgba(255,191,0,0.06); }
-    .dot-live { width:6px; height:6px; border-radius:999px; background:var(--accent); margin-right:6px; box-shadow:0 0 8px rgba(255,191,0,0.8); }
+    .card {
+      background-color:var(--bg-main);
+      border:1px solid var(--border-soft);
+      border-radius:4px;
+      padding:12px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .card-header-row {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+    }
+
+    .badge {
+      display:inline-flex;
+      align-items:center;
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      font-size:var(--fs-small);
+      color:var(--accent);
+      background:rgba(255,191,0,0.06);
+    }
+
+    .dot-live {
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:var(--accent);
+      margin-right:6px;
+      box-shadow:0 0 8px rgba(255,191,0,0.8);
+    }
 
     .core-title { font-size:var(--fs-subtitle); font-weight:500; }
     .core-headline { font-size:var(--fs-title); font-weight:600; line-height:1.3; }
 
-    .core-card { position:relative; overflow:hidden; cursor:default; transition:border-color 0.12s ease, background-color 0.12s ease; }
+    .core-card {
+      position:relative;
+      overflow:hidden;
+      cursor:default;
+      transition:border-color 0.12s ease, background-color 0.12s ease;
+    }
     .core-card.clickable { cursor:pointer; }
     .core-card.clickable:hover { border-color:var(--accent); background:#141414; }
 
-    .core-body { display:flex; flex-direction:column; gap:10px; align-items:stretch; margin-top:6px; }
+    .core-body {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:stretch;
+      margin-top:6px;
+    }
     
-    .core-thumb { width:100%; height:160px; border-radius:4px; overflow:hidden; background:#0a0a0a; border:1px solid var(--border-soft); flex:0 0 auto; display:flex; align-items:center; justify-content:center; }
-    .core-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .core-thumb {
+      width:100%;
+      height:180px;
+      border-radius:4px;
+      overflow:hidden;
+      background:#0a0a0a;
+      border:1px solid var(--border-soft);
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .core-thumb img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
 
-    .core-body-content { display:flex; flex-direction:column; gap:6px; min-width:0; flex:1; }
+    .core-body-content {
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width:0;
+      flex:1;
+    }
 
     /* Shimmer */
-    .shimmer { position:relative; overflow:hidden; background:#0d0d0d; border-radius:2px; }
-    .shimmer::after { content:""; position:absolute; top:0; left:-150%; width:50%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); animation:shimmer 1.2s infinite; }
-    @keyframes shimmer { 0% { left:-150%; } 50% { left:150%; } 100% { left:150%; } }
+    .shimmer {
+      position:relative;
+      overflow:hidden;
+      background:#0d0d0d;
+      border-radius:2px;
+    }
+    .shimmer::after {
+      content:"";
+      position:absolute;
+      top:0;
+      left:-150%;
+      width:50%;
+      height:100%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      animation:shimmer 1.2s infinite;
+    }
+    @keyframes shimmer {
+      0% { left:-150%; }
+      50% { left:150%; }
+      100% { left:150%; }
+    }
 
-    .core-meta { font-size:var(--fs-small); color:var(--text-muted); display:flex; flex-wrap:wrap; gap:8px; }
-    .core-summary { font-size:var(--fs-body); color:var(--text-main); line-height:1.45; }
+    .core-meta {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
 
-    .pill-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
-    .pill { font-size:var(--fs-small); color:var(--text-muted); padding:2px 6px; border-radius:999px; border:1px dashed var(--border-soft); opacity:0.85; }
+    .core-summary {
+      font-size:var(--fs-body);
+      color:var(--text-main);
+      line-height:1.45;
+    }
+
+    .pill-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:2px;
+    }
+
+    .pill {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px dashed var(--border-soft);
+      opacity:0.85;
+    }
     .pill-bull { border-color:#22c55e; color:#22c55e; }
     .pill-bear { border-color:#ef4444; color:#ef4444; }
     .pill-neutral { border-color:var(--text-muted); color:var(--text-muted); }
 
-    .panel-title { font-size:var(--fs-subtitle); font-weight:500; }
-    .filter-panel { flex-direction:column; gap:8px; }
-    .filter-header { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
-    .active-filter-label { font-size:var(--fs-small); color:var(--text-muted); text-align:right; }
+    .panel-title {
+      font-size:var(--fs-subtitle);
+      font-weight:500;
+    }
+
+    .filter-panel {
+      display:flex;                  /* penting: biar news-list bisa flex:1 */
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .filter-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+    }
+
+    .active-filter-label {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      text-align:right;
+    }
     .active-filter-label span { color:var(--accent); }
 
-    .filter-grid { display:flex; flex-wrap:nowrap; gap:6px; overflow-x:auto; padding-top:2px; padding-bottom:4px; }
-    .filter-btn { font-size:var(--fs-small); padding:5px 9px; border-radius:999px; border:1px solid var(--border-soft); background:#111111; color:var(--text-muted); cursor:pointer; white-space:nowrap; flex:0 0 auto; transition:all 0.12s ease; }
-    .filter-btn:hover { border-color:var(--accent); color:var(--text-main); transform:translateY(-0.5px); }
-    .filter-btn.is-active { background:rgba(255,191,0,0.14); border-color:var(--accent); color:var(--text-main); }
+    .filter-grid {
+      display:flex;
+      flex-wrap:nowrap;
+      gap:6px;
+      overflow-x:auto;
+      padding-top:2px;
+      padding-bottom:4px;
+      -webkit-overflow-scrolling:touch;
+    }
 
-    .news-list { display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; padding-right:4px; margin-top:4px; }
-    .news-item { padding:8px 8px; border-radius:4px; border:1px solid rgba(43,43,43,0.9); background:#101010; display:flex; flex-direction:column; gap:6px; cursor:default; transition:all 0.12s ease; }
+    .filter-btn {
+      font-size:var(--fs-small);
+      padding:5px 9px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#111111;
+      color:var(--text-muted);
+      cursor:pointer;
+      white-space:nowrap;
+      flex:0 0 auto;
+      transition:all 0.12s ease;
+    }
+    .filter-btn:hover {
+      border-color:var(--accent);
+      color:var(--text-main);
+      transform:translateY(-0.5px);
+    }
+    .filter-btn.is-active {
+      background:rgba(255,191,0,0.14);
+      border-color:var(--accent);
+      color:var(--text-main);
+    }
+
+    /* MOBILE: news-list ikut tinggi konten, scroll via body */
+    .news-list {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height:none;
+      overflow-y:visible;
+      padding-right:2px;
+      margin-top:4px;
+    }
+
+    .news-item {
+      padding:8px 8px;
+      border-radius:4px;
+      border:1px solid rgba(43,43,43,0.9);
+      background:#101010;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      cursor:default;
+      transition:all 0.12s ease;
+    }
     .news-item.clickable { cursor:pointer; }
-    .news-item.clickable:hover { border-color:var(--accent); background:#141414; }
+    .news-item.clickable:hover {
+      border-color:var(--accent);
+      background:#141414;
+    }
 
-    .news-item-header { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .news-item-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
+
     .news-ticker { font-size:var(--fs-small); color:var(--accent); }
     .news-time { font-size:var(--fs-small); color:var(--text-muted); }
     .news-headline { font-size:var(--fs-body); font-weight:500; }
 
-    .news-body { display:flex; gap:8px; align-items:flex-start; }
-    .news-thumb { width:72px; height:56px; border-radius:4px; overflow:hidden; background:#0a0a0a; border:1px solid var(--border-soft); flex:0 0 auto; display:flex; align-items:center; justify-content:center; }
-    .news-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .news-body {
+      display:flex;
+      gap:8px;
+      align-items:flex-start;
+    }
 
-    .news-body-content { display:flex; flex-direction:column; gap:4px; min-width:0; flex:1; }
-    .news-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:2px; }
+    .news-thumb {
+      width:72px;
+      height:56px;
+      border-radius:4px;
+      overflow:hidden;
+      background:#0a0a0a;
+      border:1px solid var(--border-soft);
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .news-thumb img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .news-body-content {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+      flex:1;
+    }
+
+    .news-tags {
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+      margin-top:2px;
+    }
     
-    .news-tag { font-size:var(--fs-small); padding:2px 5px; border-radius:999px; border:1px solid var(--border-soft); color:var(--text-muted); }
+    .news-tag {
+      font-size:var(--fs-small);
+      padding:2px 5px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      color:var(--text-muted);
+    }
     .news-tag-bull { border-color:#22c55e; color:#22c55e; }
     .news-tag-bear { border-color:#ef4444; color:#ef4444; }
     .news-tag-neutral { border-color:var(--text-muted); color:var(--text-muted); }
 
-    .news-footer { font-size:var(--fs-small); color:var(--text-muted); display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:2px; }
+    .news-footer {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-top:2px;
+    }
     
-    .sentiment-chip { font-size:var(--fs-small); padding:2px 6px; border-radius:999px; border:1px solid var(--border-soft); color:var(--text-main); }
+    .sentiment-chip {
+      font-size:var(--fs-small);
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      color:var(--text-main);
+    }
     .sentiment-bull { border-color:#22c55e; color:#22c55e; }
     .sentiment-bear { border-color:#ef4444; color:#ef4444; }
     .sentiment-neutral { border-color:var(--text-muted); color:var(--text-muted); }
     
-    .hint { font-size:var(--fs-small); color:var(--text-muted); text-align:center; }
+    .hint {
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      text-align:center;
+    }
 
-    .layout-top { display:flex; flex-direction:column; gap:12px; }
-    @media (min-width:768px) { .page { padding:16px; gap:14px; } .news-list { max-height:280px; } }
-    @media (min-width:1024px) { .layout-top { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,2.2fr); gap:16px; align-items:stretch; } .layout-top > .card { height:100%; } .news-list { max-height:320px; } }
+    .layout-top {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    /* Tablet ke atas: grid 2 kolom, penuh 1 layar, list kanan isi sisa tinggi */
+    @media (min-width:768px) {
+      .page {
+        padding:16px 18px;
+        gap:14px;
+      }
+
+      .layout-top {
+        display:grid;
+        grid-template-columns:minmax(0,2fr) minmax(0,2.2fr);
+        gap:16px;
+        align-items:stretch;
+        min-height:calc(100vh - 32px);   /* tarik sampai bawah viewport */
+      }
+
+      .layout-top > .card {
+        height:100%;
+      }
+
+      .filter-panel {
+        /* supaya header + filter fixed di atas, list isi sisanya */
+        min-height:0;
+      }
+
+      .news-list {
+        flex:1;                         /* isi tinggi kosong di dalam card */
+        max-height:none;
+        overflow-y:auto;
+        padding-right:4px;
+      }
+    }
+
+    @media (min-width:1024px) {
+      .page {
+        padding:18px 24px;
+      }
+      .news-list {
+        /* tetap fleksibel, biar ngikut tinggi viewport */
+        max-height:none;
+      }
+    }
+
+    /* Very small devices */
+    @media (max-width:480px) {
+      :root {
+        --fs-title:13px;
+        --fs-subtitle:11.5px;
+        --fs-body:10px;
+        --fs-small:9px;
+      }
+
+      .page {
+        padding:12px 10px;
+      }
+
+      .card {
+        padding:10px 10px;
+      }
+
+      .core-thumb {
+        height:170px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -123,7 +460,9 @@
     <div class="layout-top">
       <section class="card core-card" id="coreNewsHeader">
         <div class="card-header-row">
-          <div><div class="badge"><span class="dot-live"></span>CORE NEWS</div></div>
+          <div>
+            <div class="badge"><span class="dot-live"></span>CORE NEWS</div>
+          </div>
           <div class="core-meta">
             <span id="coreUpdated">Updated: --:--</span>
             <span id="coreSource">Source: –</span>
@@ -170,18 +509,15 @@
 
   <script>
     (function() {
-      // Always clear cached news on each full page load,
-      // so setiap user refresh page -> data baru di-fetch
       try {
+        const keys = [];
         for (let i = 0; i < sessionStorage.length; i++) {
           const key = sessionStorage.key(i);
-          if (key && key.startsWith("kn_")) {
-            sessionStorage.removeItem(key);
-          }
+          if (key && key.startsWith("kn_")) keys.push(key);
         }
+        keys.forEach(k => sessionStorage.removeItem(k));
       } catch (e) {}
 
-      // CONFIG
       const CONFIG = {
         ASSET_CLASS_MACRO: "163",
         CACHE_DURATION: 3 * 60 * 1000,
@@ -207,7 +543,7 @@
         { id: "158", label: "People" },
         { id: "157", label: "Events" },
         { id: "151", label: "Property" },
-        { id: "153", label: "Financial Topics" },
+        { id: "153", label: "Finance Topics" },
         { id: "169", label: "Products" },
         { id: "65", label: "Sovereign Bonds" }
       ];
@@ -262,14 +598,14 @@
               return null;
             }
             return item.data;
-          } catch (e) {
+          } catch {
             return null;
           }
         },
         set: (key, data) => {
           try {
-            sessionStorage.setItem(`kn_${key}`, JSON.stringify({ timestamp: Date.now(), data: data }));
-          } catch (e) {}
+            sessionStorage.setItem(`kn_${key}`, JSON.stringify({ timestamp: Date.now(), data }));
+          } catch {}
         }
       };
       
@@ -299,40 +635,32 @@
         }
       };
 
-      // Helper untuk warna chip/tag berdasarkan berbagai skala skor
       const getTagClass = (score) => {
         if (score == null) return "news-tag-neutral";
 
-        // Jika numeric
         if (typeof score === "number") {
           const abs = Math.abs(score);
-          // Skala -1 s/d 1 (umum untuk sentiment)
           if (abs <= 1) {
             if (score > 0.15) return "news-tag-bull";
             if (score < -0.15) return "news-tag-bear";
             return "news-tag-neutral";
           }
-          // Skala 0–100
           if (score >= 60) return "news-tag-bull";
           if (score <= 40) return "news-tag-bear";
           return "news-tag-neutral";
         }
 
-        // String sentiment
         const val = String(score).toLowerCase();
         if (val.includes("pos") || val.includes("bull")) return "news-tag-bull";
         if (val.includes("neg") || val.includes("bear")) return "news-tag-bear";
         return "news-tag-neutral";
       };
 
-      // Ambil skor sentiment utama untuk chip kanan atas (Positive / Negative / Neutral)
       const extractSentimentScore = (story) => {
-        // Berbagai kemungkinan field dari CityFalcon / API lainnya
         if (typeof story.sentiment_score === "number") return story.sentiment_score;
         if (typeof story.sentiment === "number") return story.sentiment;
         if (story.sentiment && typeof story.sentiment.value === "number") return story.sentiment.value;
 
-        // Rata-rata sentiment dari analytics jika ada
         if (Array.isArray(story.analytics) && story.analytics.length) {
           const vals = story.analytics
             .map(a => (typeof a.sentiment_score === "number"
@@ -344,7 +672,6 @@
           }
         }
 
-        // String-based sentiment
         if (typeof story.sentiment === "string") {
           const v = story.sentiment.toLowerCase();
           if (v.includes("pos")) return 0.7;
@@ -358,14 +685,12 @@
       const normalizeStory = (story) => {
         const pickImage = (s) => (s.imageUrls?.[0] || s.image_url || s.lead_image_url || "");
         
-        // Sentiment chip (pojok kanan bawah)
         let sentimentClass = "sentiment-neutral";
         let sentimentLabel = "Neutral";
         const sScore = extractSentimentScore(story);
 
         if (sScore != null && typeof sScore === "number") {
           const abs = Math.abs(sScore);
-          // Jika -1..1
           if (abs <= 1) {
             if (sScore > 0.15) {
               sentimentClass = "sentiment-bull";
@@ -375,7 +700,6 @@
               sentimentLabel = "Negative";
             }
           } else {
-            // Skala 0–100 atau -100..100
             if (sScore >= 60 || sScore >= 20) {
               sentimentClass = "sentiment-bull";
               sentimentLabel = "Positive";
@@ -386,13 +710,11 @@
           }
         }
 
-        // 1. Asset Classes (biasanya Neutral)
         const assetTags = (story.asset_class_names || []).map(t => ({
           label: t,
           cls: "news-tag-neutral"
         }));
 
-        // 2. Analytics/Entities (dengan warna sentiment masing-masing)
         const analyticsTags = (story.analytics || []).map(a => ({
           label: a.entity_name || a.name || "Entity",
           cls: getTagClass(a.sentiment_score ?? a.sentiment)
@@ -452,7 +774,7 @@
             const stories = Array.isArray(data.stories) ? data.stories : [];
             if (stories.length > 0) cacheService.set(cacheKey, stories);
             return { stories, error: null };
-          } catch (err) {
+          } catch {
             continue;
           }
         }
@@ -552,8 +874,8 @@
         }
         UI.activeLabel.textContent = label;
 
-        const cacheKey = assetId || 'all';
-        const isCached = cacheService.get(cacheKey);
+        const assetIdForCache = assetId || 'all';
+        const isCached = cacheService.get(assetIdForCache);
         if (!isCached) renderShimmer('list');
         
         const { stories } = await fetchStories(assetId);
@@ -584,13 +906,12 @@
       renderShimmer('core');
       loadContent("all-assets");
       
-      // Auto-refresh dengan invalidasi cache per filter yang sedang aktif
       refreshTimer = setInterval(() => {
         const assetId = FILTER_TO_ASSET_CLASS[currentFilter];
         const cacheKey = assetId || 'all';
         try {
           sessionStorage.removeItem(`kn_${cacheKey}`);
-        } catch (e) {}
+        } catch {}
         loadContent(currentFilter);
       }, CONFIG.AUTO_REFRESH_INTERVAL);
     })();
