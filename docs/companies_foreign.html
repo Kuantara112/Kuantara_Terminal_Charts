@@ -522,7 +522,7 @@
       </div>
 
       <div style="margin-top:8px;">
-        <div class="panel-sub">Fundamentals (Finviz snapshot)</div>
+        <div class="panel-sub">Fundamentals</div>
         <div class="fund-body">
           <table>
             <tbody id="fundBody"></tbody>
@@ -919,7 +919,7 @@
   }
 
   async function loadTicker(ticker) {
-    setStatus(`Loading ${ticker} from Finviz proxy...`,'loading');
+    setStatus(`Loading ${ticker} from Source proxy...`,'loading');
     try {
       const data = await fetchQuote(ticker);
       if (!data || data.ok === false) {
