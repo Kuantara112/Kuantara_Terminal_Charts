@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -266,16 +266,16 @@
 
   <!-- THIRD ROW: Relative change & DM/EM -->
   <section class="grid">
-    <!-- Panel 5: Relative Change — Sectors / Bench / Macro -->
+    <!-- Panel 5: Relative Change — Bench / Macro only -->
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">SECTORS / BENCH / MACRO</div>
+          <div class="panel-title">BENCHMARK / MACRO</div>
         </div>
         <div class="controls">
           <span class="control-label">Group:</span>
+          <!-- Sectors dihapus dari dropdown -->
           <select id="rel-select" class="control-select">
-            <option value="Sectors">Sectors</option>
             <option value="Benchmarks">Benchmarks</option>
             <option value="Macro">Macro</option>
           </select>
@@ -291,7 +291,7 @@
       <div id="rel-error" class="error-msg" style="display:none;"></div>
     </section>
 
-    <!-- Panel 6: DM vs EM Daily % Change -->
+    <!-- Panel 6: DM vs EM Hourly % Change -->
     <section class="panel">
       <div class="panel-header">
         <div>
@@ -328,7 +328,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">FOREX STRENGTH METER (1D)</div>
+          <div class="panel-title">FOREX STRENGTH METER</div>
         </div>
       </div>
       <div class="chart-holder">
@@ -345,7 +345,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">COMMODITIES STRENGTH METER (1D)</div>
+          <div class="panel-title">COMMODITIES STRENGTH METER</div>
         </div>
       </div>
       <div class="chart-holder">
@@ -403,7 +403,7 @@ const MACRO = {
   "GLD":"Gold","USO":"WTI Oil","XOP":"Oil & Gas E&P","ARKK":"High Beta Innovation"
 };
 
-// DM vs EM meta
+// DM vs EM meta (hourly % change)
 const DMEM_META = {
   // DM
   "SPY": {name:"S&P 500 (SPY)",       cls:"DM"},
@@ -732,7 +732,7 @@ function renderGaugeAndBars() {
     grid:{left:70,right:16,top:40,bottom:40},
     xAxis:{
       type:"value",
-      name:"1D Return (%)",
+      name:"1H Return (%)",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{color:"#e5e5e5"},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
@@ -776,9 +776,10 @@ function renderPhaseSnapshot() {
   const elLoading = "phase-loading";
   const elError   = "phase-error";
 
+  // Ambil data dari state.phase sesuai PHASE_ASSETS
   const entries = Object.entries(PHASE_ASSETS).map(([label, tkr]) => {
     const val = state.phase[tkr];
-    return {label, value: typeof val === "number" ? val : null};
+    return { label, value: typeof val === "number" ? val : null };
   }).filter(r => r.value !== null);
 
   if (!entries.length) return;
@@ -791,57 +792,111 @@ function renderPhaseSnapshot() {
     window.addEventListener("resize", ()=>phaseChartInstance && phaseChartInstance.resize());
   }
 
-  const labels = entries.map(e=>e.label);
-  const values = entries.map(e=>e.value);
+  const labels = entries.map(e => e.label);
+  const values = entries.map(e => e.value);
+
+  // Cari range untuk radar (symmetrical min/max biar visual balance)
+  const maxAbs = Math.max(
+    1,
+    Math.ceil(Math.max(...values.map(v => Math.abs(v))) || 1)
+  );
 
   const option = {
-    backgroundColor:"#111111",
-    tooltip:{
-      trigger:"axis",
-      axisPointer:{type:"shadow"},
-      formatter:(p)=>{
-        const item = p[0];
-        return `${item.name}<br/>1D Δ: ${item.value.toFixed(2)}%`;
+    backgroundColor: "#111111",
+    title: {
+      text: "Market Phase Radar",
+      subtext: "Cash vs Bonds vs Stocks vs Commodities – 1H Δ %",
+      left: "center",
+      top: 4,
+      textStyle: { color: "#f5f5f5", fontSize: 13 },
+      subtextStyle: { color: "#9b9b9b", fontSize: 11 }
+    },
+    tooltip: {
+      trigger: "item",
+      formatter: () => {
+        const lines = entries.map((e, i) =>
+          `${e.label}: ${values[i].toFixed(2)}%`
+        );
+        return `Market Phase 1H Change<br/>` + lines.join("<br/>");
       }
     },
-    grid:{left:90,right:16,top:30,bottom:40},
-    xAxis:{
-      type:"value",
-      name:"1D Change (%)",
-      axisLine:{lineStyle:{color:"#a3a3a3"}},
-      axisLabel:{color:"#e5e5e5"},
-      splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
-    },
-    yAxis:{
-      type:"category",
-      data:labels,
-      axisLine:{lineStyle:{color:"#a3a3a3"}},
-      axisLabel:{color:"#e5e5e5"}
-    },
-    series:[{
-      type:"bar",
-      data:values,
-      itemStyle:{
-        color:(p)=> p.value >= 0 ? "#22c55e" : "#ef4444"
+    radar: {
+      shape: "circle",
+      radius: "70%",
+      splitNumber: 4,
+      center: ["50%", "55%"],
+      axisNameGap: 8,
+      indicator: labels.map(l => ({
+        name: l,
+        max: maxAbs,
+        min: -maxAbs
+      })),
+      axisName: {
+        color: "#e5e5e5",
+        fontSize: 11
       },
-      label:{
-        show:true,
-        position:"right",
-        formatter:p=>`${p.value.toFixed(2)}%`,
-        color:"#f5f5f5",
-        fontSize:10
+      splitArea: {
+        areaStyle: {
+          color: [
+            "rgba(148,163,184,0.02)",
+            "rgba(148,163,184,0.04)",
+            "rgba(148,163,184,0.06)",
+            "rgba(148,163,184,0.08)"
+          ]
+        }
+      },
+      splitLine: {
+        lineStyle: {
+          color: "rgba(148,163,184,0.25)"
+        }
+      },
+      axisLine: {
+        lineStyle: {
+          color: "rgba(148,163,184,0.3)"
+        }
       }
-    }],
-    graphic:[{
-      type:"text",
-      left:"right",
-      top:6,
-      style:{
-        text:`Updated: ${formatWIB()}`,
-        fill:"#9b9b9b",
-        fontSize:10
+    },
+    series: [
+      {
+        name: "Market Phase 1H",
+        type: "radar",
+        data: [
+          {
+            value: values,
+            areaStyle: {
+              color: "rgba(255,191,0,0.20)"
+            },
+            lineStyle: {
+              color: "#ffbf00",
+              width: 2
+            },
+            itemStyle: {
+              color: "#ffbf00",
+              borderColor: "#000000",
+              borderWidth: 1.5
+            },
+            label: {
+              show: true,
+              formatter: (p) => `${p.value.toFixed(2)}%`,
+              color: "#f5f5f5",
+              fontSize: 9
+            }
+          }
+        ]
       }
-    }]
+    ],
+    graphic: [
+      {
+        type: "text",
+        left: "right",
+        top: 6,
+        style: {
+          text: `Updated: ${formatWIB()}`,
+          fill: "#9b9b9b",
+          fontSize: 10
+        }
+      }
+    ]
   };
 
   phaseChartInstance.setOption(option, true);
@@ -849,78 +904,140 @@ function renderPhaseSnapshot() {
 
 function renderSectorSnapshot() {
   const elLoading = "sector-loading";
-  const all = Object.assign({}, SECTORS, BENCH, MACRO);
-  const retMap = {};
 
-  Object.keys(SECTORS).forEach(t => {
-    if (typeof state.sectors[t] === "number") retMap[t] = state.sectors[t];
-  });
-  Object.keys(BENCH).forEach(t => {
-    if (typeof state.bench[t] === "number") retMap[t] = state.bench[t];
-  });
-  Object.keys(MACRO).forEach(t => {
-    if (typeof state.macro[t] === "number") retMap[t] = state.macro[t];
+  // Ambil hanya SECTORS (tanpa bench & macro)
+  const rows = [];
+  Object.keys(SECTORS).forEach(ticker => {
+    const v = state.sectors[ticker];
+    if (typeof v === "number" && !Number.isNaN(v)) {
+      rows.push({
+        ticker,
+        name: SECTORS[ticker],
+        val: v
+      });
+    }
   });
 
-  const pairs = Object.keys(retMap).map(t=>[t, retMap[t]]);
-  if (!pairs.length) return;
+  if (!rows.length) return;
 
   hideLoading(elLoading);
 
-  pairs.sort((a,b)=>b[1]-a[1]);
-  const tickers = pairs.map(p=>p[0]);
-  const values  = pairs.map(p=>p[1]);
+  // Sort dari paling kuat ke paling lemah (optional, biar enak dibaca)
+  rows.sort((a, b) => b.val - a.val);
 
   const dom = document.getElementById("sector-chart");
   if (!sectorChartInstance) {
     sectorChartInstance = echarts.init(dom);
-    window.addEventListener("resize", ()=>sectorChartInstance && sectorChartInstance.resize());
+    window.addEventListener("resize", () => sectorChartInstance && sectorChartInstance.resize());
   }
 
+  const tickers = rows.map(r => r.ticker);
+  const labels  = rows.map(r => `${r.ticker} – ${r.name}`);
+  const values  = rows.map(r => r.val);
+
+  // Ambil benchmark SPY kalau ada
+  const benchRet = (typeof state.bench["SPY"] === "number" && !Number.isNaN(state.bench["SPY"]))
+    ? state.bench["SPY"]
+    : null;
+
+  const maxAbs = Math.max(
+    1,
+    Math.ceil(Math.max(...values.map(v => Math.abs(v))) || 1)
+  );
+
+  const subtitle = benchRet != null
+    ? `Sector 1H change vs SPY (${benchRet.toFixed(2)}%)`
+    : "Sector 1H change (SPY benchmark not available)";
+
   const option = {
-    backgroundColor:"#111111",
-    tooltip:{
-      trigger:"axis",
-      axisPointer:{type:"shadow"},
-      formatter:(params)=>{
-        const p = params[0];
-        const t = p.name;
-        const label = all[t] || t;
-        return `${t} – ${label}<br/>1D Δ: ${p.value.toFixed(2)}%`;
+    backgroundColor: "#111111",
+    title: {
+      text: "US Sectors – Bullet View",
+      subtext: subtitle,
+      left: "center",
+      top: 4,
+      textStyle: { color: "#f5f5f5", fontSize: 13 },
+      subtextStyle: { color: "#9b9b9b", fontSize: 11 }
+    },
+    tooltip: {
+      trigger: "axis",
+      axisPointer: { type: "shadow" },
+      formatter: (params) => {
+        const bar = params.find(p => p.seriesName === "Sector") || params[0];
+        const idx = bar.dataIndex;
+        const row = rows[idx];
+        let text = `<b>${row.ticker} – ${row.name}</b><br/>Δ 1H: ${row.val.toFixed(2)}%`;
+        if (benchRet != null) {
+          const spread = row.val - benchRet;
+          text += `<br/>SPY: ${benchRet.toFixed(2)}%<br/>Spread vs SPY: ${spread.toFixed(2)} pts`;
+        }
+        return text;
       }
     },
-    grid:{left:70,right:16,top:40,bottom:40},
-    xAxis:{
-      type:"category",
-      data:tickers,
-      axisLabel:{color:"#e5e5e5", rotate:45},
-      axisLine:{lineStyle:{color:"#a3a3a3"}}
+    grid: { left: 110, right: 24, top: 50, bottom: 40 },
+    xAxis: {
+      type: "value",
+      name: "1H Change (%)",
+      min: -maxAbs,
+      max: maxAbs,
+      axisLine: { lineStyle: { color: "#a3a3a3" } },
+      axisLabel: { color: "#e5e5e5" },
+      splitLine: { lineStyle: { color: "rgba(255,255,255,0.08)" } }
     },
-    yAxis:{
-      type:"value",
-      name:"1D Change (%)",
-      axisLine:{lineStyle:{color:"#a3a3a3"}},
-      axisLabel:{color:"#e5e5e5"},
-      splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
+    yAxis: {
+      type: "category",
+      data: labels,
+      axisLine: { lineStyle: { color: "#a3a3a3" } },
+      axisLabel: { color: "#e5e5e5" }
     },
-    series:[{
-      name:"1D Change",
-      type:"bar",
-      data:values,
-      itemStyle:{
-        color:(p)=> p.value >= 0 ? "#22c55e" : "#ef4444"
+    series: [
+      // MAIN BULLET BAR
+      {
+        name: "Sector",
+        type: "bar",
+        data: values,
+        barWidth: 8,
+        itemStyle: {
+          color: (p) => p.value >= 0 ? "#22c55e" : "#ef4444"
+        },
+        label: {
+          show: true,
+          position: "right",
+          formatter: (p) => `${p.value.toFixed(2)}%`,
+          color: "#f5f5f5",
+          fontSize: 10
+        },
+        z: 1
+      },
+      // BENCHMARK MARKER (SPY) – VERTICAL BULLET
+      benchRet != null ? {
+        name: "SPY Benchmark",
+        type: "scatter",
+        data: rows.map((r) => ({
+          value: [benchRet, `${r.ticker} – ${r.name}`]
+        })),
+        symbol: "rect",
+        symbolSize: [4, 16],
+        itemStyle: {
+          color: "#ffbf00",
+          borderColor: "#000000",
+          borderWidth: 1
+        },
+        z: 2
+      } : {}
+    ].filter(Boolean),
+    graphic: [
+      {
+        type: "text",
+        left: "right",
+        top: 6,
+        style: {
+          text: `Updated: ${formatWIB()} · Bullet vs SPY`,
+          fill: "#9b9b9b",
+          fontSize: 10
+        }
       }
-    }],
-    graphic:[{
-      type:"text",
-      left:"right",
-      top:6,
-      style:{
-        text:`Updated: ${formatWIB()} · 1D change`,
-        fill:"#9b9b9b",
-        fontSize:10
-      }
-    }]
+    ]
   };
 
   sectorChartInstance.setOption(option, true);
@@ -933,6 +1050,7 @@ function renderRelGroup() {
 
   let mapping;
   let valuesMap;
+
   if (groupKey === "Benchmarks") {
     mapping  = BENCH;
     valuesMap = state.bench;
@@ -940,8 +1058,9 @@ function renderRelGroup() {
     mapping  = MACRO;
     valuesMap = state.macro;
   } else {
-    mapping  = SECTORS;
-    valuesMap = state.sectors;
+    // fallback default: Benchmarks (Sectors dihapus supaya tidak double)
+    mapping  = BENCH;
+    valuesMap = state.bench;
   }
 
   const rows = [];
@@ -976,13 +1095,13 @@ function renderRelGroup() {
       axisPointer:{type:"shadow"},
       formatter:(params)=>{
         const p = params[0];
-        return `${p.name}<br/>1D Δ: ${p.value.toFixed(2)}%`;
+        return `${p.name}<br/>1H Δ: ${p.value.toFixed(2)}%`;
       }
     },
     grid:{left:140,right:16,top:30,bottom:35},
     xAxis:{
       type:"value",
-      name:"1D Change (%)",
+      name:"1H Change (%)",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{color:"#e5e5e5"},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
@@ -1072,13 +1191,13 @@ function renderDMEM() {
         const p = params[0];
         const idx = p.dataIndex;
         const row = rows[idx];
-        return `<b>${row.name}</b><br/>Δ 1D: ${row.chg.toFixed(2)}%<br/>Ticker: ${row.ticker}<br/>Class: ${row.cls}`;
+        return `<b>${row.name}</b><br/>Δ 1H: ${row.chg.toFixed(2)}%<br/>Ticker: ${row.ticker}<br/>Class: ${row.cls}`;
       }
     },
     grid:{left:180,right:16,top:40,bottom:40},
     xAxis:{
       type:"value",
-      name:"1D Change (%)",
+      name:"1H Change (%)",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{color:"#e5e5e5"},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
@@ -1105,7 +1224,7 @@ function renderDMEM() {
       left:"right",
       top:6,
       style:{
-        text:`Updated: ${formatWIB()} · 1D change`,
+        text:`Updated: ${formatWIB()} · 1H change`,
         fill:"#9b9b9b",
         fontSize:10
       }
@@ -1142,7 +1261,7 @@ function renderForex() {
     backgroundColor:"#111111",
     title:{
       text:"Forex Strength Meter",
-      subtext:`1D % change vs prior close · as of ${asof}`,
+      subtext:`1H % change vs prior close · as of ${asof}`,
       left:"center",
       top:4,
       textStyle:{color:"#f5f5f5", fontSize:13},
@@ -1153,13 +1272,13 @@ function renderForex() {
       axisPointer:{type:"shadow"},
       formatter:(params)=>{
         const p = params[0];
-        return `${p.name}<br/>Return 1D: ${p.value.toFixed(2)}%`;
+        return `${p.name}<br/>Return 1H: ${p.value.toFixed(2)}%`;
       }
     },
     grid:{left:60,right:20,top:52,bottom:30},
     xAxis:{
       type:"value",
-      name:"Return 1D (%)",
+      name:"Return 1H (%)",
       min:FX_AXIS_MIN,
       max:FX_AXIS_MAX,
       axisLine:{lineStyle:{color:"#a3a3a3"}},
@@ -1227,7 +1346,7 @@ function renderCommodities() {
     backgroundColor:"#111111",
     title:{
       text:"Commodities Strength Meter",
-      subtext:`1D % change vs prior close · as of ${asof}`,
+      subtext:`1H % change vs prior close · as of ${asof}`,
       left:"center",
       top:4,
       textStyle:{color:"#f5f5f5", fontSize:13},
@@ -1238,13 +1357,13 @@ function renderCommodities() {
       axisPointer:{type:"shadow"},
       formatter:(params)=>{
         const p = params[0];
-        return `${p.name}<br/>Return 1D: ${p.value.toFixed(2)}%`;
+        return `${p.name}<br/>Return 1H: ${p.value.toFixed(2)}%`;
       }
     },
     grid:{left:90,right:20,top:52,bottom:30},
     xAxis:{
       type:"value",
-      name:"Return 1D (%)",
+      name:"Return 1H (%)",
       min:-maxAbs,
       max:maxAbs,
       axisLine:{lineStyle:{color:"#a3a3a3"}},
