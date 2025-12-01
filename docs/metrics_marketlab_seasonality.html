@@ -1,143 +1,641 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuantara — Monthly Return Seasonality Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap">
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
 
   <style>
-    :root {
-      --bg:#050505;
-      --card:#151515;
-      --accent:#ffbf00;
-      --text-main:#f5f5f5;
-      --text-muted:#9b9b9b;
+    :root{
+      --bg:#000;
+      --panel:#111;
+      --text:#f5f5f5;
+      --muted:#9b9b9b;
+      --border:#2b2b2b;
     }
 
     *{
-      box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      box-sizing:border-box;
+      font-family:"Fira Code",monospace;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.6) transparent;
+    }
+
+    /* WebKit scrollbar: hitam transparan */
+    *::-webkit-scrollbar{
+      width:8px;
+      height:8px;
+    }
+    *::-webkit-scrollbar-track{
+      background:transparent;
+    }
+    *::-webkit-scrollbar-thumb{
+      background:rgba(0,0,0,0.6);
+      border-radius:4px;
+    }
+
+    html,body{
+      height:100%;
     }
 
     body{
-      min-height:100vh;
+      background:var(--bg);
+      color:var(--text);
+      padding:14px;
+      overflow-y:auto;
+    }
+
+    .container{
+      max-width:1600px;
+      margin:auto;
       display:flex;
-      align-items:center;
-      justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
-      color:var(--text-main);
+      flex-direction:column;
+      gap:14px;
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
-      text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--border);
+      padding:12px;
+      border-radius:10px;
     }
 
-    .badge{
-      display:inline-flex;
+    .chart{
+      width:100%;
+      height:340px;
+      min-height:260px;
+    }
+
+    .title{
+      font-size:17px;
+      font-weight:600;
+    }
+
+    .subtitle{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    select{
+      background:var(--panel);
+      border:1px solid var(--border);
+      padding:6px 8px;
+      border-radius:6px;
+      color:var(--text);
+      font-size:12px;
+      outline:none;
+    }
+
+    .top-row{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .top-row-main{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .header-left{
+      min-width:0;
+      flex:1;
+    }
+
+    .header-controls{
+      display:flex;
+      flex-wrap:wrap;
       align-items:center;
       gap:8px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
-      color:var(--accent);
-      margin-bottom:18px;
     }
 
-    .dot{
-      width:8px;
-      height:8px;
+    /* Status chip */
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:3px 9px;
+      border-radius:999px;
+      font-size:10px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,0.4);
+      color:var(--muted);
+      white-space:nowrap;
+    }
+
+    .chip-dot{
+      width:7px;
+      height:7px;
       border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
+      background:#22c55e;
     }
 
-    h1{
-      font-size:22px;
-      margin-bottom:8px;
+    .chip-loading{
+      border-color:#facc15;
+      background:rgba(250,204,21,0.08);
+      color:#facc15;
+    }
+    .chip-loading .chip-dot{
+      background:#facc15;
+      animation:pulse 1s infinite;
     }
 
-    p{
-      font-size:14px;
-      line-height:1.6;
-      color:var(--text-muted);
-      margin-bottom:18px;
+    .chip-ready{
+      border-color:#22c55e;
+      background:rgba(34,197,94,0.08);
+      color:#bbf7d0;
+    }
+    .chip-ready .chip-dot{
+      background:#22c55e;
     }
 
-    .time-estimate{
-      font-size:13px;
-      color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
+    .chip-error{
+      border-color:#ef4444;
+      background:rgba(239,68,68,0.08);
+      color:#fecaca;
+    }
+    .chip-error .chip-dot{
+      background:#ef4444;
     }
 
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
+    @keyframes pulse{
+      0%{ transform:scale(1); opacity:1; }
+      50%{ transform:scale(1.4); opacity:0.5; }
+      100%{ transform:scale(1); opacity:1; }
     }
 
-    .btn:hover{
-      background:var(--accent);
-      color:#000;
-      transform:translateY(-1px);
+    @media (max-width:1024px){
+      body{
+        padding:10px;
+      }
+      .chart{
+        height:300px;
+      }
     }
 
-    .footer-text{
-      margin-top:16px;
-      font-size:11px;
-      color:#666;
+    @media (max-width:768px){
+      .container{
+        gap:10px;
+      }
+      .panel{
+        padding:10px;
+      }
+      .title{
+        font-size:15px;
+      }
+      .subtitle{
+        font-size:10px;
+      }
+      .chart{
+        height:260px;
+      }
+      .header-controls{
+        width:100%;
+        justify-content:flex-start;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
+<div class="container">
+
+  <div class="panel">
+    <div class="top-row">
+      <div class="top-row-main">
+        <div class="header-left">
+          <div class="title">Monthly Return % Seasonality</div>
+          <div class="subtitle">
+            Multi-asset futures stats
+          </div>
+        </div>
+        <div class="header-controls">
+          <div id="status-chip" class="chip chip-loading">
+            <span class="chip-dot"></span>
+            <span id="status-text">Loading data &amp; calculating…</span>
+          </div>
+          <select id="symbol-select"></select>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
+  <div id="chart-avg" class="panel chart"></div>
+  <div id="chart-win" class="panel chart"></div>
+  <div id="chart-ts" class="panel chart"></div>
+  <div id="chart-heatmap" class="panel chart"></div>
 
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
-    </div>
+</div>
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
+<script>
+/* ===========================
+      CONFIG
+=========================== */
+const API_BASE = "https://kuancloud.loclx.io/api/tvohlc/ohlcv";
+const INTERVAL = "1M";        // langsung ambil OHLC bulanan
+const BARS     = 600;         // ~50 tahun kalau datanya ada
 
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
-    </div>
-  </main>
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-  <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+/**
+ * Semua basis futures (continuous 1!)
+ * COM = Commodities, FX = FX futures, IDX = Index futures
+ */
+const ASSETS = {
+  // ===== COMMODITY FUTURES =====
+  "COM – Gold (GC1!)":          "GC1!",
+  "COM – Silver (SI1!)":        "SI1!",
+  "COM – Crude Oil WTI (CL1!)": "CL1!",
+  "COM – Brent Oil (BR1!)":     "BR1!",
+  "COM – Natural Gas (NG1!)":   "NG1!",
+  "COM – Copper (HG1!)":        "HG1!",
+  "COM – Corn (ZC1!)":          "ZC1!",
+  "COM – Wheat (ZW1!)":         "ZW1!",
+  "COM – Soybeans (ZS1!)":      "ZS1!",
+  "COM – Gasoline RBOB (RB1!)": "RB1!",
+  "COM – Heating Oil (HO1!)":   "HO1!",
+
+  // ===== FX FUTURES =====
+  "FX – EUR (6E1!)":            "6E1!",
+  "FX – GBP (6B1!)":            "6B1!",
+  "FX – JPY (6J1!)":            "6J1!",
+  "FX – AUD (6A1!)":            "6A1!",
+  "FX – NZD (6N1!)":            "6N1!",
+  "FX – CAD (6C1!)":            "6C1!",
+  "FX – CHF (6S1!)":            "6S1!",
+  "FX – USD Index (DX1!)":      "DX1!",
+
+  // ===== INDEX FUTURES =====
+  "IDX – S&P 500 (ES1!)":       "ES1!",
+  "IDX – Nasdaq 100 (NQ1!)":    "NQ1!",
+  "IDX – Dow Jones (YM1!)":     "YM1!",
+  "IDX – Russell 2000 (RTY1!)": "RTY1!",
+  "IDX – DAX (FDAX1!)":         "FDAX1!",
+  "IDX – Euro Stoxx 50 (FESX1!)":"FESX1!",
+  "IDX – Nikkei 225 (NKD1!)":   "NKD1!"
+};
+
+let cache = {};   // cache bars per symbol (monthly)
+
+/* ===========================
+      STATUS CHIP
+=========================== */
+const statusChipEl = document.getElementById("status-chip");
+const statusTextEl = document.getElementById("status-text");
+
+function setStatus(mode, text){
+  if (!statusChipEl || !statusTextEl) return;
+  statusChipEl.classList.remove("chip-loading","chip-ready","chip-error");
+  if (mode === "loading") {
+    statusChipEl.classList.add("chip-loading");
+  } else if (mode === "ready") {
+    statusChipEl.classList.add("chip-ready");
+  } else if (mode === "error") {
+    statusChipEl.classList.add("chip-error");
+  }
+  statusTextEl.textContent = text;
+}
+
+/* ===========================
+      FETCH MONTHLY BARS
+=========================== */
+async function fetchMonthlyBars(symbol){
+  if (cache[symbol]) return cache[symbol];
+
+  const url = `${API_BASE}?symbol=${encodeURIComponent(symbol)}&interval=${INTERVAL}&bars_count=${BARS}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error("Network error while fetching data");
+  }
+  const json = await res.json();
+  if (!json.ok || !json.results || !json.results[0]?.bars) {
+    cache[symbol] = [];
+    return [];
+  }
+  const bars = json.results[0].bars.slice().sort((a,b)=>a.timestamp - b.timestamp);
+  cache[symbol] = bars;
+  return bars;
+}
+
+/* ===========================
+      MONTHLY RETURN LOGIC
+=========================== */
+/**
+ * Dari OHLC bulanan → deret monthly return.
+ * r_t = (Close_t / Close_{t-1} - 1)*100
+ * output: { dates: [DateObj], labels: ["YYYY-MM"], returns: [%] }
+ */
+function computeMonthlyReturns(monthBars){
+  if (monthBars.length < 2) return { dates:[], labels:[], returns:[] };
+
+  const dates  = [];
+  const labels = [];
+  const rets   = [];
+
+  for (let i=1; i<monthBars.length; i++){
+    const prev = monthBars[i-1];
+    const cur  = monthBars[i];
+    if (!prev.close || !cur.close) continue;
+
+    const dt = new Date(cur.time_iso);
+    const r  = (cur.close / prev.close - 1) * 100.0;
+
+    dates.push(dt);
+    labels.push(`${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,"0")}`);
+    rets.push(r);
+  }
+  return { dates, labels, returns: rets };
+}
+
+/**
+ * Group by Year & Month index
+ * returns: map[year] -> map[monthIdx] = [rets...]
+ */
+function groupByYearMonth(dates, returns){
+  const map = {};
+  dates.forEach((dt,i)=>{
+    const y = dt.getUTCFullYear();
+    const m = dt.getUTCMonth();  // 0-11
+    if (!map[y]) map[y] = {};
+    if (!map[y][m]) map[y][m] = [];
+    map[y][m].push(returns[i]);
+  });
+  return map;
+}
+
+const mean = arr => arr.reduce((a,b)=>a+b,0)/arr.length;
+const winRate = arr => (arr.filter(v=>v>0).length / arr.length) * 100.0;
+
+/**
+ * Build calendar seasonality (avg & win rate per month-of-year)
+ */
+function buildSeasonalityStats(grouped){
+  const avg = [];
+  const win = [];
+
+  for (let m=0;m<12;m++){
+    const all = [];
+    Object.keys(grouped).forEach(y=>{
+      if (grouped[y][m]) all.push(...grouped[y][m]);
+    });
+    if (all.length){
+      avg.push(mean(all));
+      win.push(winRate(all));
+    } else {
+      avg.push(0);
+      win.push(0);
+    }
+  }
+  return { avg, win };
+}
+
+/**
+ * Heatmap: x = monthIdx, y = yearIdx, val = mean monthly ret
+ */
+function buildHeatmapMatrix(grouped){
+  const years = Object.keys(grouped)
+    .map(y=>parseInt(y,10))
+    .sort((a,b)=>a-b);
+
+  const data = [];
+  years.forEach((y,yi)=>{
+    for (let m=0;m<12;m++){
+      const bucket = grouped[y][m];
+      if (bucket && bucket.length){
+        data.push([m, yi, mean(bucket)]);
+      } else {
+        data.push([m, yi, null]);
+      }
+    }
+  });
+  return { years, data };
+}
+
+/* ===========================
+      ECHARTS HELPERS
+=========================== */
+function getOrInitChart(domId){
+  const dom = document.getElementById(domId);
+  if (!dom) return null;
+  let chart = echarts.getInstanceByDom(dom);
+  if (!chart) {
+    chart = echarts.init(dom);
+  }
+  return chart;
+}
+
+function renderBar(id,title,cats,data,getColor){
+  const chart = getOrInitChart(id);
+  if (!chart) return;
+  chart.setOption({
+    backgroundColor:"#111",
+    title:{ text:title, left:"center",
+      textStyle:{ color:"#fff", fontSize:12 } },
+    tooltip:{ trigger:"axis", axisPointer:{ type:"shadow" } },
+    xAxis:{ type:"category", data:cats, axisLabel:{ color:"#aaa" } },
+    yAxis:{ type:"value", axisLabel:{ color:"#aaa" } },
+    series:[{
+      type:"bar",
+      data: data,
+      itemStyle:{
+        color: (getColor
+          ? params => getColor(params.value)
+          : "#22c55e")
+      }
+    }],
+    grid:{ left:"6%", right:"4%", bottom:"12%", top:"20%" }
+  });
+  chart.resize();
+}
+
+function renderLine(id,title,cats,data,color){
+  const chart = getOrInitChart(id);
+  if (!chart) return;
+  chart.setOption({
+    backgroundColor:"#111",
+    title:{ text:title, left:"center",
+      textStyle:{ color:"#fff", fontSize:12 } },
+    tooltip:{ trigger:"axis" },
+    xAxis:{ type:"category", data:cats, axisLabel:{ color:"#aaa" } },
+    yAxis:{ type:"value", axisLabel:{ color:"#aaa" } },
+    series:[{
+      type:"line",
+      smooth:true,
+      data:data,
+      lineStyle:{ color, width:2 },
+      itemStyle:{ color }
+    }],
+    grid:{ left:"6%", right:"4%", bottom:"12%", top:"20%" }
+  });
+  chart.resize();
+}
+
+function renderHeatmap(id,title,years,data){
+  const chart = getOrInitChart(id);
+  if (!chart) return;
+  const vals = data.map(d=>d[2]).filter(v=>v!==null);
+  if (!vals.length){
+    chart.setOption({
+      backgroundColor:"#111",
+      title:{ text:title, left:"center",
+        textStyle:{ color:"#fff", fontSize:12 } },
+      xAxis:{ type:"category", data:MONTHS, axisLabel:{ color:"#ddd" } },
+      yAxis:{ type:"category", data:years, axisLabel:{ color:"#ddd" } },
+      series:[]
+    });
+    chart.resize();
+    return;
+  }
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+
+  chart.setOption({
+    backgroundColor:"#111",
+    title:{ text:title, left:"center",
+      textStyle:{ color:"#fff", fontSize:12 } },
+    tooltip:{
+      formatter: p => {
+        const monthLabel = MONTHS[p.value[0]];
+        const yearLabel  = years[p.value[1]];
+        const v = p.value[2];
+        return `${yearLabel} — ${monthLabel}: <b>${v.toFixed(2)}%</b>`;
+      }
+    },
+    xAxis:{ type:"category", data:MONTHS, axisLabel:{ color:"#ddd" } },
+    yAxis:{ type:"category", data:years, axisLabel:{ color:"#ddd" } },
+    visualMap:{
+      min,max,calculable:true,
+      orient:"vertical", right:10, top:"center",
+      textStyle:{ color:"#fff" }
+    },
+    series:[{
+      type:"heatmap",
+      data:data,
+      emphasis:{ itemStyle:{ borderColor:"#fff", borderWidth:1 } }
+    }],
+    grid:{ left:"6%", right:"12%", bottom:"8%", top:"18%" }
+  });
+  chart.resize();
+}
+
+/* Responsive: resize semua chart saat window resize */
+function resizeAllCharts(){
+  ["chart-avg","chart-win","chart-ts","chart-heatmap"].forEach(id=>{
+    const dom = document.getElementById(id);
+    if (!dom) return;
+    const instance = echarts.getInstanceByDom(dom);
+    if (instance) instance.resize();
+  });
+}
+window.addEventListener("resize", ()=>{
+  // gunakan requestAnimationFrame agar lebih halus
+  window.requestAnimationFrame(resizeAllCharts);
+});
+
+/* ===========================
+      MAIN FLOW
+=========================== */
+let lastSymbol = null;
+
+async function run(symbol){
+  lastSymbol = symbol;
+  setStatus("loading","Loading data & calculating…");
+
+  try{
+    const bars = await fetchMonthlyBars(symbol);
+    if (lastSymbol !== symbol) return; // jika user sudah ganti simbol, abaikan
+
+    if (!bars.length) {
+      setStatus("error","No data available");
+      return;
+    }
+
+    const { dates, labels, returns } = computeMonthlyReturns(bars);
+    if (!returns.length) {
+      setStatus("error","Not enough data");
+      return;
+    }
+
+    const grouped = groupByYearMonth(dates, returns);
+    const { avg, win } = buildSeasonalityStats(grouped);
+    const { years, data:heat } = buildHeatmapMatrix(grouped);
+
+    // 1) Avg Monthly Return (berdasar kalender, all years)
+    renderBar(
+      "chart-avg",
+      `${symbol} — Average Monthly Return by Month-of-Year (%)`,
+      MONTHS,
+      avg,
+      v => v >= 0 ? "#22c55e" : "#ef4444"
+    );
+
+    // 2) Win Rate per Month-of-Year
+    renderBar(
+      "chart-win",
+      `${symbol} — Monthly Win Rate by Month-of-Year (%)`,
+      MONTHS,
+      win,
+      v => "#facc15"
+    );
+
+    // 3) Monthly Return Time Series
+    renderLine(
+      "chart-ts",
+      `${symbol} — Monthly Return Over Time (%)`,
+      labels,
+      returns,
+      "#38bdf8"
+    );
+
+    // 4) Heatmap Tahun × Bulan
+    renderHeatmap(
+      "chart-heatmap",
+      `${symbol} — Monthly Return Heatmap`,
+      years,
+      heat
+    );
+
+    const now = new Date();
+    const hh   = String(now.getHours()).padStart(2,"0");
+    const mm   = String(now.getMinutes()).padStart(2,"0");
+    const ss   = String(now.getSeconds()).padStart(2,"0");
+
+    setStatus("ready", `Updated • ${symbol} • ${hh}:${mm}:${ss}`);
+  } catch(err){
+    console.error(err);
+    setStatus("error","Error loading data");
+  }
+}
+
+/* ===========================
+      INIT UI
+=========================== */
+const selectEl = document.getElementById("symbol-select");
+Object.keys(ASSETS).forEach(name=>{
+  const opt = document.createElement("option");
+  opt.value = ASSETS[name];
+  opt.textContent = name;
+  selectEl.appendChild(opt);
+});
+
+selectEl.addEventListener("change", ()=>run(selectEl.value));
+
+// initial load: pakai aset pertama di list
+const firstSymbol = Object.values(ASSETS)[0];
+if (firstSymbol) {
+  run(firstSymbol);
+}
+</script>
 </body>
 </html>
