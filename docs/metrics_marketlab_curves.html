@@ -1,143 +1,642 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>US Yield Curve Regimes – Kuantara Terminal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
   <style>
     :root {
-      --bg:#050505;
-      --card:#151515;
-      --accent:#ffbf00;
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --bg-card:#151515;
+      --border-soft:#2b2b2b;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+      --danger:#ef4444;
+      --green:#22c55e;
     }
 
-    *{
+    * {
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:"Fira Code",monospace;
     }
 
-    body{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
+    html, body { height:100%; }
+
+    body {
+      background:var(--bg-root);
       color:var(--text-main);
+      min-height:100vh;
+      padding:16px;
+      overflow-y:auto;
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
-      text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    /* Scrollbar hitam transparan */
+    body::-webkit-scrollbar { width:6px; }
+    body::-webkit-scrollbar-track { background:transparent; }
+    body::-webkit-scrollbar-thumb {
+      background:rgba(0,0,0,0.6);
+      border-radius:3px;
     }
 
-    .badge{
-      display:inline-flex;
+    .shell {
+      width:100%;
+      max-width:1200px;
+      margin:0 auto;
+      background:var(--bg-main);
+      border-radius:10px;
+      border:1px solid var(--border-soft);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:12px;
+    }
+
+    .top-bar {
+      display:flex;
+      justify-content:space-between;
       align-items:center;
       gap:8px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
-      color:var(--accent);
-      margin-bottom:18px;
+      flex-wrap:wrap;
     }
 
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
-    }
-
-    h1{
-      font-size:22px;
-      margin-bottom:8px;
-    }
-
-    p{
-      font-size:14px;
-      line-height:1.6;
-      color:var(--text-muted);
-      margin-bottom:18px;
-    }
-
-    .time-estimate{
-      font-size:13px;
-      color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
-    }
-
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
-    }
-
-    .btn:hover{
-      background:var(--accent);
-      color:#000;
-      transform:translateY(-1px);
-    }
-
-    .footer-text{
-      margin-top:16px;
+    .status-text {
       font-size:11px;
-      color:#666;
+      color:var(--text-muted);
+    }
+
+    .status-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      font-size:11px;
+    }
+
+    .badge {
+      padding:2px 6px;
+      border-radius:999px;
+      font-size:10px;
+      border:1px solid var(--border-soft);
+      color:var(--text-muted);
+    }
+
+    .badge.ok {
+      border-color:var(--green);
+      color:var(--green);
+    }
+
+    .badge.error {
+      border-color:var(--danger);
+      color:var(--danger);
+    }
+
+    .chip {
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:10px;
+      border:1px solid var(--border-soft);
+      background:#101010;
+      color:var(--text-muted);
+      white-space:nowrap;
+    }
+
+    .panel-grid {
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:10px;
+      margin-top:6px;
+    }
+
+    .card {
+      background:var(--bg-card);
+      border-radius:8px;
+      border:1px solid var(--border-soft);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .card-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .card-title {
+      font-size:13px;
+      font-weight:500;
+    }
+
+    .card-subtitle {
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .chart-box {
+      width:100%;
+      height:520px;
+    }
+
+    @media (max-width:900px) {
+      .panel-grid {
+        grid-template-columns:1fr;
+      }
+      .chart-box {
+        height:480px;
+      }
+    }
+
+    @media (max-width:600px) {
+      body {
+        padding:10px 6px;
+      }
+      .shell {
+        padding:10px;
+      }
+      .top-bar {
+        align-items:flex-start;
+      }
+      .chart-box {
+        height:460px;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
+<div class="shell">
+  <!-- Top status bar -->
+  <div class="top-bar">
+    <div class="status-text" id="statusText">Initializing…</div>
+    <div class="status-right">
+      <div id="statusBadge" class="badge">IDLE</div>
+      <div class="chip">Source: FRED</div>
+      <div class="chip">Curve: 10s2s (DGS10 - DGS2) · from 2025-06-01</div>
+    </div>
+  </div>
+
+  <!-- Two side-by-side panels -->
+  <div class="panel-grid">
+    <!-- Left: Regime Bars + Spread Line -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Yield Curve Regimes – 10s2s Spread</div>
+          <div class="card-subtitle">
+            One bar per day (colored by regime) + spread line (DGS10 - DGS2)
+          </div>
+        </div>
+      </div>
+      <div id="curveChart" class="chart-box"></div>
     </div>
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
-
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
+    <!-- Right: T10Y2Y raw FRED series -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">T10Y2Y – 10Y Minus 2Y Treasury Constant Maturity</div>
+          <div class="card-subtitle">
+            FRED series T10Y2Y (percent points), from 2025-06-01
+          </div>
+        </div>
+      </div>
+      <div id="t10y2yChart" class="chart-box"></div>
     </div>
+  </div>
+</div>
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
+<script>
+  // =========================
+  // CONFIG
+  // =========================
+  const PROXIES = [
+    "",  // coba direct dulu
+    "https://cors-anywhere-proxy-six.vercel.app/",
+    "https://cors.eu.org/"
+  ];
 
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
-    </div>
-  </main>
+  const API_KEY  = "9353b7c58744f0c2c80a310279ef6af5";
+  const FRED_OBS = "https://api.stlouisfed.org/fred/series/observations";
 
-  <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+  const CURVE      = "10s2s";         // bisa diganti "30s2s"
+  const PLOT_START = "2025-06-01";
+  const RAW_START  = "2023-12-01";
+
+  let LONG_SER, SHORT_SER, longLabel, shortLabel;
+  if (CURVE === "10s2s") {
+    LONG_SER   = "DGS10";
+    SHORT_SER  = "DGS2";
+    longLabel  = "US 10Y";
+    shortLabel = "US 2Y";
+  } else if (CURVE === "30s2s") {
+    LONG_SER   = "DGS30";
+    SHORT_SER  = "DGS2";
+    longLabel  = "US 30Y";
+    shortLabel = "US 2Y";
+  } else {
+    LONG_SER   = "DGS10";
+    SHORT_SER  = "DGS2";
+    longLabel  = "US 10Y";
+    shortLabel = "US 2Y";
+  }
+
+  const SPREAD_SER = "T10Y2Y";        // panel kanan
+
+  const COLORS = {
+    "Bull Steepener":  "#4caf50",
+    "Bear Steepener":  "#ff9800",
+    "Steepener Twist": "#fdd835",
+    "Bull Flattener":  "#1e88e5",
+    "Bear Flattener":  "#e53935",
+    "Flattener Twist": "#ab47bc",
+    "Flat":            "#9e9e9e",
+    "NA":              "rgba(0,0,0,0)"
+  };
+
+  const statusText  = document.getElementById("statusText");
+  const statusBadge = document.getElementById("statusBadge");
+
+  let curveChart   = null;
+  let t10y2yChart  = null;
+
+  function setStatus(text, mode = "idle") {
+    statusText.textContent = text;
+    statusBadge.textContent = mode.toUpperCase();
+    statusBadge.classList.remove("ok","error");
+    if (mode === "ok") statusBadge.classList.add("ok");
+    if (mode === "error") statusBadge.classList.add("error");
+  }
+
+  // =========================
+  // CORS GUARD HELPERS
+  // =========================
+  function buildProxyUrl(proxy, url) {
+    if (!proxy) return url;
+    const isCorsAnywhere = proxy.includes("cors-anywhere") || proxy.includes("vercel.app");
+    if (isCorsAnywhere) {
+      return proxy.endsWith("/") ? `${proxy}${url}` : `${proxy}/${url}`;
+    }
+    const clean = url.replace(/^https?:\/\//, "");
+    return proxy.endsWith("/") ? `${proxy}${clean}` : `${proxy}/${clean}`;
+  }
+
+  async function fetchWithProxies(url, options = {}, proxies = PROXIES) {
+    let lastError = null;
+    for (const proxy of proxies) {
+      const target = buildProxyUrl(proxy, url);
+
+      const mergedOptions = {
+        ...options,
+        cache: "no-store",
+        headers: {
+          ...(options.headers || {}),
+          "Cache-Control": "no-cache"
+        }
+      };
+
+      try {
+        const res = await fetch(target, mergedOptions);
+        if (res.ok) return res;
+        lastError = new Error(`HTTP ${res.status} via ${proxy || "direct"}`);
+      } catch (e) {
+        lastError = e;
+      }
+    }
+    throw lastError || new Error("Request failed");
+  }
+
+  function buildFredObsUrl(seriesId, start, end) {
+    const params = new URLSearchParams({
+      series_id: seriesId,
+      api_key: API_KEY,
+      file_type: "json",
+      observation_start: start,
+      observation_end: end
+    });
+    return `${FRED_OBS}?${params.toString()}`;
+  }
+
+  async function fetchFredSeries(seriesId, start, end) {
+    const url = buildFredObsUrl(seriesId, start, end);
+    const res = await fetchWithProxies(url);
+    const js  = await res.json();
+    const obs = js.observations || [];
+    const dates = [];
+    const values = [];
+    for (const o of obs) {
+      const v = o.value;
+      if (v === "" || v === "." || v == null) continue;
+      const num = parseFloat(v);
+      if (Number.isNaN(num)) continue;
+      dates.push(o.date);
+      values.push(num);
+    }
+    return { dates, values };
+  }
+
+  // =========================
+  // DATA PROCESSING
+  // =========================
+  function mergeLongShort(longS, shortS) {
+    const mapLong  = new Map();
+    const mapShort = new Map();
+
+    for (let i = 0; i < longS.dates.length; i++) {
+      mapLong.set(longS.dates[i], longS.values[i]);
+    }
+    for (let i = 0; i < shortS.dates.length; i++) {
+      mapShort.set(shortS.dates[i], shortS.values[i]);
+    }
+
+    const allDates = Array.from(new Set(
+      [...mapLong.keys()].filter(d => mapShort.has(d))
+    ));
+    allDates.sort();
+
+    const dates     = [];
+    const longVals  = [];
+    const shortVals = [];
+
+    for (const d of allDates) {
+      const lv = mapLong.get(d);
+      const sv = mapShort.get(d);
+      if (lv == null || sv == null) continue;
+      dates.push(d);
+      longVals.push(lv);
+      shortVals.push(sv);
+    }
+    return { dates, longVals, shortVals };
+  }
+
+  function calcDiff(arr) {
+    const out = [NaN];
+    for (let i = 1; i < arr.length; i++) {
+      const prev = arr[i-1];
+      const cur  = arr[i];
+      if (prev == null || cur == null || Number.isNaN(prev) || Number.isNaN(cur)) {
+        out.push(NaN);
+      } else {
+        out.push(cur - prev);
+      }
+    }
+    return out;
+  }
+
+  function classifyRow(dSlope, dLong, dShort) {
+    if (Number.isNaN(dSlope) || dSlope == null) return "NA";
+
+    if (dSlope > 0) {               // steepener
+      if (dShort >= 0 && dLong >= 0) return "Bear Steepener";
+      if (dShort <= 0 && dLong <= 0) return "Bull Steepener";
+      return "Steepener Twist";
+    }
+    if (dSlope < 0) {               // flattener
+      if (dShort >= 0 && dLong <= 0) return "Bear Flattener";
+      if (dShort <= 0 && dLong >= 0) return "Bull Flattener";
+      return "Flattener Twist";
+    }
+    return "Flat";
+  }
+
+  function buildRegimeDataset(merged) {
+    const { dates, longVals, shortVals } = merged;
+
+    const spread = longVals.map((lv, i) => lv - shortVals[i]);
+    const dLong  = calcDiff(longVals);
+    const dShort = calcDiff(shortVals);
+    const dSlope = calcDiff(spread);
+
+    const regimes = [];
+    for (let i = 0; i < dates.length; i++) {
+      regimes.push(classifyRow(dSlope[i], dLong[i], dShort[i]));
+    }
+
+    const plotDates   = [];
+    const plotSpread  = [];
+    const plotRegimes = [];
+
+    for (let i = 0; i < dates.length; i++) {
+      if (dates[i] >= PLOT_START) {
+        plotDates.push(dates[i]);
+        plotSpread.push(spread[i]);
+        plotRegimes.push(regimes[i]);
+      }
+    }
+
+    return { dates: plotDates, spread: plotSpread, regimes: plotRegimes };
+  }
+
+  function buildT10Y2YDataset(series) {
+    const plotDates  = [];
+    const plotValues = [];
+    for (let i = 0; i < series.dates.length; i++) {
+      if (series.dates[i] >= PLOT_START) {
+        plotDates.push(series.dates[i]);
+        plotValues.push(series.values[i]);
+      }
+    }
+    return { dates: plotDates, values: plotValues };
+  }
+
+  // =========================
+  // CHART OPTIONS
+  // =========================
+  function buildCurveOption(dataset) {
+    const { dates, spread, regimes } = dataset;
+    if (!dates.length) {
+      throw new Error("No data to plot after PLOT_START");
+    }
+
+    return {
+      backgroundColor: "#111111",
+      grid: { left: 70, right: 30, top: 40, bottom: 90 },
+
+      tooltip: {
+        trigger: "axis",
+        axisPointer: { type: "cross" },
+        formatter: params => {
+          if (!params || !params.length) return "";
+          const date = echarts.format.formatTime("yyyy-MM-dd", params[0].value[0]);
+          let lines = `${date}<br/>`;
+          params.forEach(p => {
+            if (p.seriesType === "bar") {
+              const idx    = p.dataIndex;
+              const regime = regimes[idx];
+              const v      = spread[idx];
+              if (v == null || Number.isNaN(v)) return;
+              lines += `${p.marker}<b>${regime}</b><br/>Spread: ${v.toFixed(3)}%-pts<br/>`;
+            } else if (p.seriesType === "line") {
+              const v = p.value[1];
+              if (v == null || Number.isNaN(v)) return;
+              lines += `${p.marker}${p.seriesName}: ${v.toFixed(3)}%-pts<br/>`;
+            }
+          });
+          return lines;
+        }
+      },
+
+      legend: {
+        type: "scroll",
+        bottom: 10,
+        left: "center",
+        textStyle: { color: "#f5f5f5", fontSize: 10 },
+        data: [
+          "Bull Steepener","Bear Steepener","Steepener Twist",
+          "Bull Flattener","Bear Flattener","Flattener Twist","Flat",
+          `Spread ${longLabel} - ${shortLabel}`
+        ]
+      },
+
+      xAxis: {
+        type: "time",
+        axisLine: { lineStyle: { color: "#444" } },
+        axisLabel: { color: "#aaaaaa", fontSize: 9 },
+        splitLine: { show: false }
+      },
+
+      yAxis: {
+        type: "value",
+        name: `Spread (${longLabel} - ${shortLabel}) [% points]`,
+        nameTextStyle: { color: "#f5f5f5", fontSize: 11 },
+        axisLine: { lineStyle: { color: "#444" } },
+        axisLabel: { color: "#aaaaaa", fontSize: 9 },
+        splitLine: { lineStyle: { color: "#222" } }
+      },
+
+      series: [
+        {
+          name: "Regime",
+          type: "bar",
+          z: 2,
+          barWidth: "96%",
+          itemStyle: {
+            color: p => COLORS[regimes[p.dataIndex]] || "#9e9e9e"
+          },
+          data: spread.map((v,i)=>[dates[i], v])
+        },
+        {
+          name: `Spread ${longLabel} - ${shortLabel}`,
+          type: "line",
+          symbol: "none",
+          lineStyle: { width: 2, color: "#ffffff" },
+          z: 5,
+          data: spread.map((v,i)=>[dates[i], v])
+        }
+      ]
+    };
+  }
+
+  function buildT10Y2YOption(dataset) {
+    const { dates, values } = dataset;
+    if (!dates.length) {
+      throw new Error("No T10Y2Y data to plot after PLOT_START");
+    }
+
+    return {
+      backgroundColor:"#111111",
+      grid:{ left:70, right:30, top:40, bottom:50 },
+
+      tooltip:{
+        trigger:"axis",
+        axisPointer:{ type:"cross" },
+        formatter: params => {
+          if (!params || !params.length) return "";
+          const date = echarts.format.formatTime("yyyy-MM-dd", params[0].value[0]);
+          const v = params[0].value[1];
+          return `${date}<br/>T10Y2Y: ${v.toFixed(3)}%-pts`;
+        }
+      },
+
+      legend:{
+        top:8,
+        left:"center",
+        textStyle:{ color:"#f5f5f5", fontSize:10 }
+      },
+
+      xAxis:{
+        type:"time",
+        axisLine:{ lineStyle:{ color:"#444" } },
+        axisLabel:{ color:"#aaaaaa", fontSize:9 },
+        splitLine:{ show:false }
+      },
+
+      yAxis:{
+        type:"value",
+        name:"T10Y2Y [% points]",
+        nameTextStyle:{ color:"#f5f5f5", fontSize:11 },
+        axisLine:{ lineStyle:{ color:"#444" } },
+        axisLabel:{ color:"#aaaaaa", fontSize:9 },
+        splitLine:{ lineStyle:{ color:"#222" } }
+      },
+
+      series:[
+        {
+          name:"T10Y2Y",
+          type:"line",
+          symbol:"none",
+          lineStyle:{ width:2, color:"#38bdf8" },
+          data: dates.map((d,i)=>[d, values[i]])
+        }
+      ]
+    };
+  }
+
+  // =========================
+  // INIT APP
+  // =========================
+  async function initApp() {
+    try {
+      setStatus("Loading FRED yield curve series…", "idle");
+      const END = new Date().toISOString().slice(0,10);
+
+      const [longSeries, shortSeries, spreadSeries] = await Promise.all([
+        fetchFredSeries(LONG_SER,    RAW_START, END),
+        fetchFredSeries(SHORT_SER,   RAW_START, END),
+        fetchFredSeries(SPREAD_SER,  RAW_START, END)
+      ]);
+
+      setStatus("Processing yield curve & T10Y2Y…", "idle");
+
+      const merged        = mergeLongShort(longSeries, shortSeries);
+      const regimeDataset = buildRegimeDataset(merged);
+      const t10y2yData    = buildT10Y2YDataset(spreadSeries);
+
+      curveChart  = echarts.init(document.getElementById("curveChart"));
+      t10y2yChart = echarts.init(document.getElementById("t10y2yChart"));
+
+      curveChart.setOption(buildCurveOption(regimeDataset), true);
+      t10y2yChart.setOption(buildT10Y2YOption(t10y2yData), true);
+
+      window.addEventListener("resize", () => {
+        curveChart  && curveChart.resize();
+        t10y2yChart && t10y2yChart.resize();
+      });
+
+      setStatus("Yield curve dashboards ready", "ok");
+    } catch (err) {
+      console.error(err);
+      setStatus("Init error: " + err.message, "error");
+    }
+  }
+
+  window.addEventListener("load", () => {
+    initApp();
+  });
+</script>
 </body>
 </html>
