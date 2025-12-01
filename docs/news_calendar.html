@@ -68,10 +68,6 @@
       overflow:hidden;
     }
 
-    .left-panel {
-      /* bisa ditambah border highlight kalau mau */
-    }
-
     .right-panel {
       border-left:1px solid var(--border-soft);
     }
@@ -106,47 +102,6 @@
       white-space:nowrap;
       text-overflow:ellipsis;
       overflow:hidden;
-    }
-
-    .panel-subtitle {
-      font-size:10px;
-      color:var(--text-muted);
-      margin-top:2px;
-    }
-
-    .panel-chip-row {
-      display:flex;
-      align-items:center;
-      gap:6px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-
-    .chip {
-      font-size:10px;
-      padding:3px 8px;
-      border-radius:999px;
-      border:1px solid var(--border-soft);
-      background:rgba(0,0,0,0.8);
-      color:var(--text-muted);
-      display:flex;
-      align-items:center;
-      gap:5px;
-      white-space:nowrap;
-    }
-
-    .chip-dot-live {
-      width:6px;
-      height:6px;
-      border-radius:999px;
-      background:var(--green);
-      box-shadow:0 0 0 4px rgba(34,197,94,0.18);
-    }
-
-    .chip-accent {
-      border-color:var(--accent-soft);
-      background:rgba(0,0,0,0.85);
-      color:var(--accent);
     }
 
     .panel-body {
@@ -184,7 +139,7 @@
       display:none !important;
     }
 
-    /* Earnings layout */
+    /* Earnings layout – LIST STYLE */
     .earnings-header-extra {
       font-size:10px;
       color:var(--text-muted);
@@ -227,28 +182,6 @@
       background:#0d0d0d;
     }
 
-    #toggleScopeBtn {
-      padding:7px 10px;
-      font-size:10px;
-      background:var(--bg-soft);
-      border:1px solid var(--border-soft);
-      color:var(--text-main);
-      border-radius:999px;
-      cursor:pointer;
-      white-space:nowrap;
-      line-height:1;
-      transition:border-color 0.15s ease, background 0.15s ease, transform 0.05s ease;
-    }
-
-    #toggleScopeBtn:hover {
-      border-color:var(--accent);
-      background:#151515;
-    }
-
-    #toggleScopeBtn:active {
-      transform:scale(0.97);
-    }
-
     .earnings-table-wrapper {
       flex:1 1 auto;
       min-height:0;
@@ -287,44 +220,128 @@
       background:rgba(0,0,0,0.85);
     }
 
-    table.earnings {
-      width:100%;
-      border-collapse:collapse;
-      color:white;
-      font-size:11px;
+    /* LIST */
+    .earnings-list {
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      padding:6px;
     }
 
-    table.earnings thead {
-      background:linear-gradient(180deg, #161616 0%, #101010 100%);
+    .earnings-item {
+      border-radius:8px;
+      border:1px solid rgba(43,43,43,0.9);
+      background:rgba(0,0,0,0.9);
+      padding:7px 8px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      transition:background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
     }
 
-    table.earnings th {
-      position:sticky;
-      top:0;
-      z-index:2;
-      cursor:pointer;
-      padding:6px 8px;
-      border-bottom:1px solid var(--border-soft);
-      text-align:left;
-      white-space:nowrap;
-      font-weight:500;
-      font-size:11px;
-    }
-
-    table.earnings td {
-      padding:5px 8px;
-      border-bottom:1px solid rgba(43,43,43,0.8);
-      white-space:nowrap;
-      font-size:11px;
-      background:rgba(0,0,0,0.85);
-    }
-
-    table.earnings tr:nth-child(even) td {
-      background:rgba(7,7,7,0.95);
-    }
-
-    table.earnings tr:hover td {
+    .earnings-item:hover {
       background:var(--row-hover);
+      border-color:var(--accent-soft);
+      transform:translateY(-0.5px);
+    }
+
+    .earnings-item-main {
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .earnings-main-left {
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+    }
+
+    .earnings-main-line1 {
+      display:flex;
+      align-items:center;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+
+    .earnings-ticker {
+      font-size:11.5px;
+      font-weight:600;
+      color:var(--accent);
+    }
+
+    .earnings-company {
+      font-size:11px;
+      color:var(--text-main);
+      opacity:0.9;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+      overflow:hidden;
+      max-width:220px;
+    }
+
+    .earnings-main-line2 {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .earnings-date-pill {
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-subtle);
+      background:rgba(0,0,0,0.85);
+      font-size:10px;
+    }
+
+    .earnings-time-pill {
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px dashed var(--border-subtle);
+      font-size:10px;
+    }
+
+    .earnings-side-badge {
+      font-size:10px;
+      color:var(--text-muted);
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.3);
+      background:rgba(15,23,42,0.6);
+      white-space:nowrap;
+    }
+
+    .earnings-extra {
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+      margin-top:2px;
+    }
+
+    .earnings-tag {
+      font-size:9.5px;
+      border-radius:999px;
+      background:rgba(15,15,15,0.9);
+      border:1px solid rgba(51,65,85,0.7);
+      padding:2px 6px;
+      display:inline-flex;
+      align-items:center;
+      gap:3px;
+      color:var(--text-muted);
+    }
+
+    .earnings-tag-label {
+      opacity:0.75;
+    }
+
+    .earnings-tag-value {
+      color:var(--text-main);
+      opacity:0.9;
     }
 
     .positive {
@@ -337,26 +354,15 @@
       font-weight:bold;
     }
 
-    .sort-indicator {
-      margin-left:4px;
-      font-size:9px;
-      opacity:0.7;
-    }
-
     .earnings-footer {
       font-size:10px;
       color:var(--text-muted);
       margin-top:5px;
       display:flex;
       align-items:center;
-      justify-content:space-between;
+      justify-content:flex-end;
       gap:6px;
       flex-wrap:wrap;
-    }
-
-    .today-badge {
-      font-size:10px;
-      color:var(--text-muted);
     }
 
     .today-pill {
@@ -383,9 +389,6 @@
         align-items:flex-start;
         flex-direction:column;
       }
-      .panel-chip-row {
-        justify-content:flex-start;
-      }
       .earnings-controls-row {
         align-items:flex-start;
         flex-direction:column;
@@ -393,27 +396,21 @@
       #searchInput {
         width:100%;
       }
+      .earnings-company {
+        max-width:160px;
+      }
     }
   </style>
 </head>
 <body>
 
 <div class="page">
-  <!-- LEFT: ECONOMIC CALENDAR (TRADINGVIEW) -->
+  <!-- LEFT: ECONOMIC CALENDAR (TRADINGVIEW, DARK) -->
   <div class="panel left-panel">
     <div class="panel-header">
       <div class="panel-header-main">
         <div class="panel-eyebrow">MACRO · EVENTS</div>
         <div class="panel-title">Economic Calendar</div>
-      </div>
-      <div class="panel-chip-row">
-        <div class="chip chip-accent">
-          <span class="chip-dot-live"></span>
-          LIVE FEED
-        </div>
-        <div class="chip">
-          TZ: LOCAL
-        </div>
       </div>
     </div>
 
@@ -421,7 +418,10 @@
       <div id="economicCalendarWidget">
         <div class="tradingview-widget-container">
           <div class="tradingview-widget-container__widget"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+          <script
+            type="text/javascript"
+            src="https://s3.tradingview.com/external-embedding/embed-widget-events.js"
+            async>
           {
             "colorTheme": "dark",
             "isTransparent": true,
@@ -437,45 +437,30 @@
     </div>
   </div>
 
-  <!-- RIGHT: EARNINGS CALENDAR (CSV) -->
+  <!-- RIGHT: EARNINGS CALENDAR (CSV → LIST, ALWAYS SHOW ALL) -->
   <div class="panel right-panel">
     <div class="panel-header">
       <div class="panel-header-main">
         <div class="panel-eyebrow">EQUITIES · MICRO CATALYSTS</div>
         <div class="panel-title">Earnings Calendar</div>
       </div>
-      <div class="panel-chip-row">
-        <div class="chip">
-          SOURCE: GOOGLE SHEETS
-        </div>
-        <div class="chip chip-accent">
-          <span class="chip-dot-live"></span>
-          AUTO-REFRESH (ON LOAD)
-        </div>
-      </div>
     </div>
 
     <div class="panel-body">
-      <div class="earnings-header-extra">
-        Focus: laporan keuangan yang jadi pemicu volatilitas harga saham. Filter cepat pakai search & sort header.
-      </div>
-
-      <div class="earnings-controls-row" style="margin-top:6px;">
+      <div class="earnings-controls-row">
         <div class="earnings-controls">
           <input id="searchInput" placeholder="Search ticker or company..." />
-          <button id="toggleScopeBtn">Show All</button>
         </div>
         <div class="today-pill" id="todayInfo"></div>
       </div>
 
       <div id="earningsTable" class="earnings-table-wrapper">
         <div style="font-size:11px;color:var(--text-muted);padding:8px 2px;">
-          Loading earnings data from CSV…
+          Loading earnings data from Kuantara Database…
         </div>
       </div>
 
       <div class="earnings-footer">
-        <span>Tips: klik header kolom untuk sort ↑↓ · gunakan search untuk filter ticker / nama perusahaan.</span>
         <span style="opacity:0.8;font-size:9.5px;">Kuantara Terminal · Earnings Radar</span>
       </div>
     </div>
@@ -486,12 +471,10 @@
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDc2WUdEFucZDJdEuYXtF9GVGv1cxKxNQqJv9lXPx10KHE98mUyVDoW14K6TglVINbKeF9hx1BwqWz/pub?gid=0&single=true&output=csv";
 
   let fullRows = [];      // semua baris data
-  let todayRows = [];     // hanya baris hari ini
-  let tableData = [];     // baris yang sedang ditampilkan (setelah search)
+  let tableData = [];     // baris yang sedang ditampilkan (setelah search + sort)
   let tableHeaders = [];
-  let sortState = {};     // { headerKey: "asc" | "desc" }
   let dateColIndex = -1;
-  let showAllMode = false; // false = today only (default)
+  let timeColIndex = -1;
 
   function setTodayBadge() {
     const el = document.getElementById("todayInfo");
@@ -500,7 +483,7 @@
     const y = now.getFullYear();
     const m = String(now.getMonth() + 1).padStart(2, "0");
     const d = String(now.getDate()).padStart(2, "0");
-    el.textContent = `Today: ${y}-${m}-${d} · Scope: Earnings`;
+    el.textContent = `Today: ${y}-${m}-${d}`;
   }
 
   setTodayBadge();
@@ -520,48 +503,15 @@
 
       tableHeaders = parsed[0];
       dateColIndex = detectDateColumn(tableHeaders);
+      timeColIndex = detectTimeColumn(tableHeaders);
 
       fullRows = parsed.slice(1);
 
-      // filter hari ini
-      if (dateColIndex !== -1) {
-        const today = new Date();
-        const ty = today.getFullYear();
-        const tm = today.getMonth();
-        const td = today.getDate();
-
-        todayRows = fullRows.filter(r => {
-          const dateStr = (r[dateColIndex] ?? "").toString();
-          const d = parseDateFlexible(dateStr);
-          if (!d) return false;
-          return (
-            d.getFullYear() === ty &&
-            d.getMonth() === tm &&
-            d.getDate() === td
-          );
-        });
-      } else {
-        console.warn("Kolom tanggal tidak ditemukan, tidak dilakukan filter hari ini.");
-        todayRows = [...fullRows];
-      }
-
-      // default mode: today only
-      showAllMode = false;
-      updateToggleButtonLabel();
-      recomputeTableData();
+      recomputeTableData(); // always Show All
 
       const searchInput = document.getElementById("searchInput");
       if (searchInput) {
         searchInput.addEventListener("input", () => {
-          recomputeTableData();
-        });
-      }
-
-      const toggleBtn = document.getElementById("toggleScopeBtn");
-      if (toggleBtn) {
-        toggleBtn.addEventListener("click", () => {
-          showAllMode = !showAllMode;
-          updateToggleButtonLabel();
           recomputeTableData();
         });
       }
@@ -580,25 +530,16 @@
     }
   }
 
-  function updateToggleButtonLabel() {
-    const btn = document.getElementById("toggleScopeBtn");
-    if (!btn) return;
-    btn.textContent = showAllMode ? "Today Only" : "Show All";
-  }
-
-  // Rebuild tableData based on mode (today/all) + search query
+  // Rebuild tableData based on global data + search query + sort by nearest release date
   function recomputeTableData() {
-    const baseRows = showAllMode ? fullRows : todayRows;
     const tableContainer = document.getElementById("earningsTable");
 
-    if (!baseRows || baseRows.length === 0) {
+    if (!fullRows || fullRows.length === 0) {
       if (tableContainer) {
         tableContainer.innerHTML = `
           <div class="earnings-scroll">
             <div style="padding:10px;font-size:11px;color:var(--text-muted);">
-              ${showAllMode
-                ? "No earnings data available."
-                : "No earnings found for today (based on your local time)."}
+              No earnings data available.
             </div>
           </div>
         `;
@@ -609,18 +550,47 @@
     const searchInput = document.getElementById("searchInput");
     const q = searchInput ? searchInput.value.trim().toLowerCase() : "";
 
-    let rows = baseRows;
+    let rows = fullRows;
+
     if (q) {
-      rows = baseRows.filter(row =>
+      rows = fullRows.filter(row =>
         row.some(cell =>
           (cell ?? "").toString().toLowerCase().includes(q)
         )
       );
     }
 
-    tableData = [...rows];
-    sortState = {};
-    renderTable(tableHeaders, tableData);
+    // Clone before sort
+    rows = [...rows];
+
+    // Sort by release date (nearest first), then time if available
+    if (dateColIndex !== -1) {
+      rows.sort((a, b) => {
+        const dateA = parseDateFlexible((a[dateColIndex] ?? "").toString());
+        const dateB = parseDateFlexible((b[dateColIndex] ?? "").toString());
+
+        if (!dateA && !dateB) return 0;
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+
+        const diff = dateA.getTime() - dateB.getTime();
+        if (diff !== 0) return diff;
+
+        // same date → sort by time if available
+        if (timeColIndex !== -1) {
+          const timeA = parseTimeFlexible((a[timeColIndex] ?? "").toString());
+          const timeB = parseTimeFlexible((b[timeColIndex] ?? "").toString());
+          if (timeA !== null && timeB !== null) {
+            return timeA - timeB;
+          }
+        }
+
+        return 0;
+      });
+    }
+
+    tableData = rows;
+    renderList(tableHeaders, tableData);
   }
 
   // Robust CSV parser, aman untuk commas & quotes
@@ -689,6 +659,42 @@
     return idx !== -1 ? idx : -1;
   }
 
+  function detectTimeColumn(headers) {
+    if (!headers) return -1;
+    const candidates = [
+      "time",
+      "time (local)",
+      "time_et",
+      "time est",
+      "time utc"
+    ];
+    const lower = headers.map(h => (h ?? "").toString().trim().toLowerCase());
+
+    let idx = lower.findIndex(h => candidates.includes(h));
+    if (idx !== -1) return idx;
+
+    idx = lower.findIndex(h => h.includes("time"));
+    return idx !== -1 ? idx : -1;
+  }
+
+  function detectTickerColumn(headers) {
+    if (!headers) return -1;
+    const candidates = ["ticker", "symbol", "code"];
+    const lower = headers.map(h => (h ?? "").toString().trim().toLowerCase());
+    let idx = lower.findIndex(h => candidates.includes(h));
+    if (idx !== -1) return idx;
+    return 0; // fallback kolom pertama
+  }
+
+  function detectCompanyColumn(headers) {
+    if (!headers) return -1;
+    const candidates = ["company", "name", "company name", "issuer"];
+    const lower = headers.map(h => (h ?? "").toString().trim().toLowerCase());
+    let idx = lower.findIndex(h => candidates.includes(h));
+    if (idx !== -1) return idx;
+    return headers.length > 1 ? 1 : -1;
+  }
+
   function parseDateFlexible(str) {
     if (!str) return null;
     const s = str.trim();
@@ -712,7 +718,46 @@
     return null;
   }
 
-  function renderTable(headers, rows) {
+  function parseTimeFlexible(str) {
+    if (!str) return null;
+    const s = str.trim().toUpperCase();
+    if (!s) return null;
+
+    // HH:MM or HH:MM:SS (24h)
+    let m = s.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+    if (m) {
+      const h = parseInt(m[1], 10);
+      const min = parseInt(m[2], 10);
+      const sec = m[3] ? parseInt(m[3], 10) : 0;
+      if (!isNaN(h) && !isNaN(min) && !isNaN(sec)) {
+        return h * 3600 + min * 60 + sec;
+      }
+    }
+
+    // HH:MM AM/PM
+    m = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/);
+    if (m) {
+      let h = parseInt(m[1], 10);
+      const min = parseInt(m[2], 10);
+      const period = m[3];
+      if (period === "PM" && h < 12) h += 12;
+      if (period === "AM" && h === 12) h = 0;
+      return h * 3600 + min * 60;
+    }
+
+    return null;
+  }
+
+  function escapeHTML(str) {
+    return (str ?? "").toString()
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function renderList(headers, rows) {
     const tableContainer = document.getElementById("earningsTable");
     if (!tableContainer) return;
 
@@ -727,109 +772,83 @@
       return;
     }
 
-    const theadHTML = `
-      <tr>
-        ${headers.map((h, idx) => {
-          const safeHeader = h.replace(/"/g, "&quot;");
-          return `<th data-col="${idx}" data-header="${safeHeader}">
-                    ${h}<span class="sort-indicator"></span>
-                  </th>`;
-        }).join("")}
-      </tr>
-    `;
+    const tickerIdx = detectTickerColumn(headers);
+    const companyIdx = detectCompanyColumn(headers);
+    const usedIdx = new Set();
+    if (tickerIdx >= 0) usedIdx.add(tickerIdx);
+    if (companyIdx >= 0) usedIdx.add(companyIdx);
+    if (dateColIndex >= 0) usedIdx.add(dateColIndex);
+    if (timeColIndex >= 0) usedIdx.add(timeColIndex);
 
-    const tbodyHTML = rows.map(r => `
-      <tr>
-        ${r.map((c, idx) => formatCell(c, headers[idx])).join("")}
-      </tr>
-    `).join("");
+    const itemsHTML = rows.map(r => {
+      const ticker = tickerIdx >= 0 ? (r[tickerIdx] ?? "") : (r[0] ?? "");
+      const company = companyIdx >= 0 ? (r[companyIdx] ?? "") : (headers[1] ? (r[1] ?? "") : "");
+
+      const dateStr = dateColIndex >= 0 ? (r[dateColIndex] ?? "") : "";
+      const timeStr = timeColIndex >= 0 ? (r[timeColIndex] ?? "") : "";
+
+      // build extra tags from remaining columns
+      const tags = [];
+      headers.forEach((h, i) => {
+        if (usedIdx.has(i)) return;
+        const v = (r[i] ?? "").toString();
+        if (!v) return;
+        const hLower = (h ?? "").toString().trim().toLowerCase();
+
+        let valueHTML = escapeHTML(v);
+        // highlight numeric EPS/estimate as positive/negative color
+        if ((hLower.includes("estimate") || hLower.includes("eps")) && v !== "") {
+          const num = parseFloat(v.replace(/,/g, ""));
+          if (!isNaN(num)) {
+            const cls = num >= 0 ? "positive" : "negative";
+            valueHTML = `<span class="${cls}">${escapeHTML(v)}</span>`;
+          }
+        }
+
+        tags.push(`
+          <span class="earnings-tag">
+            <span class="earnings-tag-label">${escapeHTML(h)}:</span>
+            <span class="earnings-tag-value">${valueHTML}</span>
+          </span>
+        `);
+      });
+
+      const datePill = dateStr
+        ? `<span class="earnings-date-pill">${escapeHTML(dateStr)}</span>`
+        : "";
+      const timePill = timeStr
+        ? `<span class="earnings-time-pill">${escapeHTML(timeStr)}</span>`
+        : "";
+
+      return `
+        <div class="earnings-item">
+          <div class="earnings-item-main">
+            <div class="earnings-main-left">
+              <div class="earnings-main-line1">
+                <span class="earnings-ticker">${escapeHTML(ticker)}</span>
+                ${company ? `<span class="earnings-company">${escapeHTML(company)}</span>` : ""}
+              </div>
+              <div class="earnings-main-line2">
+                ${datePill}
+                ${timePill}
+              </div>
+            </div>
+            <div class="earnings-side-badge">
+              Earnings event
+            </div>
+          </div>
+          ${tags.length ? `<div class="earnings-extra">${tags.join("")}</div>` : ""}
+        </div>
+      `;
+    }).join("");
 
     tableContainer.innerHTML = `
       <div class="earnings-scroll">
-        <table class="earnings">
-          <thead>${theadHTML}</thead>
-          <tbody>${tbodyHTML}</tbody>
-        </table>
+        <div class="earnings-list">
+          ${itemsHTML}
+        </div>
       </div>
     `;
-
-    // Bind click handler untuk sorting
-    const ths = tableContainer.querySelectorAll("th");
-    ths.forEach(th => {
-      th.addEventListener("click", () => {
-        const colIndex = parseInt(th.getAttribute("data-col"), 10);
-        const headerName = th.getAttribute("data-header");
-        sortTable(colIndex, headerName);
-      });
-    });
-
-    updateSortIndicators();
-  }
-
-  function formatCell(value, header) {
-    const valStr = (value ?? "").toString();
-    const headerLower = (header ?? "").toLowerCase();
-
-    // highlight numeric estimate/eps
-    if ((headerLower.includes("estimate") || headerLower.includes("eps")) && valStr !== "") {
-      const num = parseFloat(valStr.replace(/,/g, ""));
-      if (!isNaN(num)) {
-        const cls = num >= 0 ? "positive" : "negative";
-        return `<td class="${cls}">${valStr}</td>`;
-      }
-    }
-
-    return `<td>${valStr}</td>`;
-  }
-
-  function sortTable(colIndex, headerName) {
-    if (!tableHeaders || tableHeaders.length === 0) return;
-
-    const key = headerName || tableHeaders[colIndex] || String(colIndex);
-    const currentDir = sortState[key] || "desc";
-    const newDir = currentDir === "asc" ? "desc" : "asc";
-
-    // hanya satu kolom aktif
-    sortState = { [key]: newDir };
-
-    tableData.sort((a, b) => {
-      const aRaw = (a[colIndex] ?? "").toString();
-      const bRaw = (b[colIndex] ?? "").toString();
-
-      const aNum = parseFloat(aRaw.replace(/,/g, ""));
-      const bNum = parseFloat(bRaw.replace(/,/g, ""));
-
-      if (!isNaN(aNum) && !isNaN(bNum)) {
-        return newDir === "asc" ? aNum - bNum : bNum - aNum;
-      }
-      return newDir === "asc"
-        ? aRaw.localeCompare(bRaw)
-        : bRaw.localeCompare(aRaw);
-    });
-
-    renderTable(tableHeaders, tableData);
-  }
-
-  function updateSortIndicators() {
-    const tableContainer = document.getElementById("earningsTable");
-    if (!tableContainer) return;
-
-    const ths = tableContainer.querySelectorAll("th");
-    ths.forEach(th => {
-      const span = th.querySelector(".sort-indicator");
-      if (!span) return;
-
-      const headerName = th.getAttribute("data-header");
-      const dir = sortState[headerName];
-
-      if (dir === "asc") {
-        span.textContent = "▲";
-      } else if (dir === "desc") {
-        span.textContent = "▼";
-      } else {
-        span.textContent = "";
-      }
-    });
   }
 
   loadCSV();
