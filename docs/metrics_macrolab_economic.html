@@ -15,7 +15,6 @@
   <style>
     :root {
       --bg-root:#000000;
-      --bg-main:#111111;
       --bg-card:#151515;
       --border-soft:#2b2b2b;
       --accent:#ffbf00;
@@ -35,20 +34,20 @@
       font-family:"Fira Code", monospace;
     }
 
-    html, body {
+    html {
       height:100%;
+      overflow-x:hidden;
     }
 
     body {
       background:var(--bg-root);
       color:var(--text-main);
       min-height:100vh;
-      padding:16px;
+      padding:10px 0;
       overflow-y:auto;
-      overflow-x:hidden; /* cegah scroll horizontal di mobile */
+      overflow-x:hidden;
     }
 
-    /* Scrollbar hitam transparan */
     body::-webkit-scrollbar,
     .scrollable::-webkit-scrollbar {
       width:6px;
@@ -63,25 +62,18 @@
       border-radius:3px;
     }
 
-    .shell {
-      width:100%;
-      max-width:1200px;
-      margin:0 auto;
-      background:var(--bg-main);
-      border-radius:10px;
-      border:1px solid var(--border-soft);
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      padding:12px;
-    }
-
     .top-bar {
+      width:100%;
+      background:#111111;
+      border:1px solid var(--border-soft);
+      border-radius:0;
+      padding:10px 12px;
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:8px;
       flex-wrap:wrap;
+      margin-bottom:10px;
     }
 
     .status-text {
@@ -147,27 +139,20 @@
       cursor:not-allowed;
     }
 
-    .main-grid {
-      display:grid;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-      gap:10px;
-    }
-
-    .left-col {
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
     .card {
+      width:100%;
       background:var(--bg-card);
-      border-radius:8px;
+      border-radius:0;
       border:1px solid var(--border-soft);
-      padding:10px;
+      padding:10px 12px;
       display:flex;
       flex-direction:column;
       gap:8px;
-      width:100%;
+      margin-bottom:10px;
+    }
+
+    .card.chart-card {
+      overflow:hidden;
     }
 
     .card-header {
@@ -210,12 +195,23 @@
       border-color:var(--accent);
     }
 
-    /* Chart container: responsive width, fixed height baseline */
     #macroCompositeChart,
     #macroCreditChart {
       width:100%;
       max-width:100%;
       height:260px;
+      box-sizing:border-box;
+    }
+
+    #macroCompositeChart canvas,
+    #macroCreditChart canvas {
+      max-width:100% !important;
+    }
+
+    #macroCompositeChart > div,
+    #macroCreditChart > div {
+      width:100% !important;
+      max-width:100% !important;
     }
 
     .health-header {
@@ -286,7 +282,7 @@
     .health-table {
       font-size:11px;
       color:var(--text-muted);
-      overflow-x:auto; /* table ikut scroll horizontal kalau sempit */
+      overflow-x:auto;
     }
 
     .health-table table {
@@ -317,41 +313,20 @@
       color:var(--text-muted);
     }
 
-    /* ======= Mobile tuning ======= */
-    @media (max-width: 900px) {
-      .main-grid {
-        grid-template-columns: 1fr; /* full width, stacked */
+    @media (max-width:600px){
+      body{
+        padding:8px 0;
       }
-      .shell {
-        max-width:100%;
-        margin:0;
-      }
-    }
-
-    @media (max-width: 600px) {
-      body {
-        padding:10px 6px;
-      }
-      .shell {
-        padding:10px;
-        border-radius:8px;
-      }
-      .top-bar {
-        align-items:flex-start;
-      }
-
-      /* Chart tinggi pakai viewport height biar proporsional di mobile */
       #macroCompositeChart,
-      #macroCreditChart {
+      #macroCreditChart{
         height:45vh;
-        min-height:220px; /* tetap enak dilihat, tapi tidak terlalu besar */
+        min-height:220px;
       }
     }
   </style>
 </head>
 <body>
-<div class="shell">
-  <!-- Top status bar -->
+  <!-- TOP STATUS BAR -->
   <div class="top-bar">
     <div class="status-text" id="statusText">Initializing…</div>
     <div class="status-right">
@@ -362,73 +337,63 @@
     </div>
   </div>
 
-  <div class="main-grid">
-    <!-- LEFT: 2 panels -->
-    <div class="left-col">
-      <!-- Macro Regime — Key Pillars -->
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Macro Regime — Key Pillars (YoY%, since 2000)</div>
-            <div class="card-subtitle">
-              Core PCE YoY, Unemployment Rate (level), Industrial Production YoY
-            </div>
-          </div>
+  <!-- PANEL 1: MACRO REGIME — KEY PILLARS -->
+  <div class="card chart-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Macro Regime — Key Pillars (YoY%, since 2000)</div>
+        <div class="card-subtitle">
+          Core PCE YoY, Unemployment Rate (level), Industrial Production YoY
         </div>
-        <div id="macroCompositeChart"></div>
-      </div>
-
-      <!-- Macro + Credit Regime Dashboard -->
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Macro + Credit Regime — NBER-anchored (Macro &amp; Credit Cycle)</div>
-            <div class="card-subtitle">
-              GDP YoY, CPI YoY, IP YoY, HY Spread, Chicago FCI, NBER USREC
-            </div>
-          </div>
-          <div class="card-toggle">
-            <button class="toggle-btn active" id="btnHeatmap">Heatmap Snapshot</button>
-            <button class="toggle-btn" id="btnYearly">Yearly Scores + 3Y Rolling</button>
-          </div>
-        </div>
-        <div id="macroCreditChart"></div>
       </div>
     </div>
+    <div id="macroCompositeChart"></div>
+  </div>
 
-    <!-- RIGHT: Macro Health Score -->
-    <div class="card">
-      <div class="health-main">
-        <div class="health-summary">
-          <div class="health-header">US Macro Health Score – Kuantara Model</div>
-          <div id="macroHealthSummary" style="margin-top:6px;">
-            <span class="note">Waiting for data…</span>
-          </div>
+  <!-- PANEL 2: MACRO + CREDIT REGIME DASHBOARD -->
+  <div class="card chart-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Macro + Credit Regime — NBER-anchored (Macro &amp; Credit Cycle)</div>
+        <div class="card-subtitle">
+          GDP YoY, CPI YoY, IP YoY, HY Spread, Chicago FCI, NBER USREC
         </div>
-        <div class="health-table scrollable" id="macroHeatmap">
-          <div class="note">Heatmap will appear after data load.</div>
+      </div>
+      <div class="card-toggle">
+        <button class="toggle-btn active" id="btnHeatmap">Heatmap Snapshot</button>
+        <button class="toggle-btn" id="btnYearly">Yearly Scores + 3Y Rolling</button>
+      </div>
+    </div>
+    <div id="macroCreditChart"></div>
+  </div>
+
+  <!-- PANEL 3: US MACRO HEALTH SCORE -->
+  <div class="card">
+    <div class="health-main">
+      <div class="health-summary">
+        <div class="health-header">US Macro Health Score – Kuantara Model</div>
+        <div id="macroHealthSummary" style="margin-top:6px;">
+          <span class="note">Waiting for data…</span>
         </div>
-        <div class="note">
-          Scoring uses direction-aware z-normalization per indicator and pillar aggregation
-          (Growth, Inflation, Labor, Consumption, Production, Housing).
-        </div>
+      </div>
+      <div class="health-table scrollable" id="macroHeatmap">
+        <div class="note">Heatmap will appear after data load.</div>
+      </div>
+      <div class="note">
+        Scoring uses direction-aware z-normalization per indicator and pillar aggregation
+        (Growth, Inflation, Labor, Consumption, Production, Housing).
       </div>
     </div>
   </div>
-</div>
 
 <script>
-  // =========================
-  // CONFIG & CONSTANTS
-  // =========================
-
   const PROXIES = [
     "https://cors-anywhere-proxy-six.vercel.app/",
     "https://cors.eu.org/",
     ""
   ];
 
-  const FRED_API_KEY = "8a60bcfed2f8d08cae9615b367eb85e5"; // ganti dengan API key FRED kamu
+  const FRED_API_KEY = "8a60bcfed2f8d08cae9615b367eb85e5";
   const OBS_URL    = "https://api.stlouisfed.org/fred/series/observations";
   const SERIES_URL = "https://api.stlouisfed.org/fred/series";
 
@@ -485,10 +450,6 @@
     return `${base}?${p.toString()}`;
   }
 
-  // =========================
-  // US MACRO SERIES (YoY / level)
-  // =========================
-
   const US_MACRO = {
     growth: {
       "GDP":   "Nominal GDP (Quarterly)",
@@ -526,36 +487,30 @@
   };
 
   const SCORE_RULES = {
-    // Growth
     "GDP":   { pillar:"growth", direction:"high_good" },
     "GDPC1": { pillar:"growth", direction:"high_good" },
     "A191RL1Q225SBEA": { pillar:"growth", direction:"high_good" },
 
-    // Inflation (Goldilocks di sekitar 2%)
     "PCEPI":     { pillar:"inflation", direction:"mid_good", target:2 },
     "PCEPILFE":  { pillar:"inflation", direction:"mid_good", target:2 },
     "CPIAUCSL":  { pillar:"inflation", direction:"mid_good", target:2 },
     "CPILFESL":  { pillar:"inflation", direction:"mid_good", target:2 },
     "PPIACO":    { pillar:"inflation", direction:"mid_good", target:2 },
 
-    // Labor
     "UNRATE":  { pillar:"labor", direction:"low_good" },
     "ICSA":    { pillar:"labor", direction:"low_good" },
     "PAYEMS":  { pillar:"labor", direction:"high_good" },
     "CIVPART": { pillar:"labor", direction:"high_good" },
     "JTSJOL":  { pillar:"labor", direction:"high_good" },
 
-    // Consumption / Income
     "PCEC96": { pillar:"consumption", direction:"high_good" },
     "DSPIC96":{ pillar:"consumption", direction:"high_good" },
     "RSAFS":  { pillar:"consumption", direction:"high_good" },
     "PSAVERT":{ pillar:"consumption", direction:"mid_good", target:5 },
 
-    // Production
     "INDPRO": { pillar:"production", direction:"high_good" },
     "TCU":    { pillar:"production", direction:"high_good" },
 
-    // Housing
     "HOUST":  { pillar:"housing", direction:"high_good" },
     "PERMIT": { pillar:"housing", direction:"high_good" },
   };
@@ -567,7 +522,7 @@
     }
   }
 
-  const seriesCache = new Map(); // cache for macro YoY/level
+  const seriesCache = new Map();
 
   function inferPeriods(frequency) {
     const f = (frequency || "").toLowerCase();
@@ -576,11 +531,8 @@
     return 12;
   }
 
-  // Series yang SUDAH YoY dari FRED
   function seriesIsAlreadyYoY(meta, seriesId) {
     const id = (seriesId || "").toUpperCase();
-
-    // Override: Real GDP YoY resmi FRED
     if (id === "A191RL1Q225SBEA") return true;
 
     const parts = [
@@ -591,7 +543,6 @@
     ].map(x => (x ?? "").toString().toLowerCase());
 
     const fields = parts.join(" ");
-
     const hasYear = fields.includes("year") || fields.includes("yr") || fields.includes("y/y") || fields.includes("yoy");
     const hasPct  =
       fields.includes("percent") ||
@@ -606,7 +557,6 @@
     return false;
   }
 
-  // Series yang harus pakai LEVEL (bukan YoY) – terutama UNRATE
   function seriesUseLevel(seriesId) {
     const id = (seriesId || "").toUpperCase();
     if (id === "UNRATE") return true;
@@ -653,7 +603,6 @@
 
     if (!dates.length) return { dates: outDates, values: outVals };
 
-    // 1) Seri yang pakai LEVEL (contoh: UNRATE) → gunakan raw level
     if (seriesUseLevel(seriesId)) {
       for (let i = 0; i < dates.length; i++) {
         const v = values[i];
@@ -664,7 +613,6 @@
       return { dates: outDates, values: outVals };
     }
 
-    // 2) Seri yang SUDAH YoY (contoh: A191RL1Q225SBEA) → gunakan raw YoY
     if (seriesIsAlreadyYoY(meta, seriesId)) {
       for (let i = 0; i < dates.length; i++) {
         const v = values[i];
@@ -675,7 +623,6 @@
       return { dates: outDates, values: outVals };
     }
 
-    // 3) Default: hitung YoY dari level
     const periods = inferPeriods(meta?.frequency || "Monthly");
     for (let i = 0; i < dates.length; i++) {
       if (i < periods) continue;
@@ -708,10 +655,6 @@
     seriesCache.set(seriesId, payload);
     return payload;
   }
-
-  // =========================
-  // MACRO HEALTH SCORING
-  // =========================
 
   function getLastValidYoY(info) {
     const { yoyDates, yoyValues } = info;
@@ -848,7 +791,6 @@
 
     macroHealthSummary.innerHTML = html;
 
-    // Heatmap list
     seriesScores.sort((a,b) => {
       if (a.pillar === b.pillar) return b.score - a.score;
       return a.pillar.localeCompare(b.pillar);
@@ -872,10 +814,6 @@
 
     macroHeatmap.innerHTML = h;
   }
-
-  // =========================
-  // MACRO REGIME — KEY PILLARS CHART (tanpa GDP YoY)
-  // =========================
 
   function initMacroCompositeChart() {
     if (!macroCompositeChart) {
@@ -923,7 +861,7 @@
     if (!seriesOpts.length) {
       macroCompositeChart.clear();
       macroCompositeChart.setOption({
-        backgroundColor:"#111111",
+        backgroundColor:"#151515",
         graphic: {
           type:"text",
           left:"center",
@@ -939,7 +877,7 @@
     }
 
     const option = {
-      backgroundColor:"#111111",
+      backgroundColor:"#151515",
       tooltip: {
         trigger:"axis",
         axisPointer: { type:"cross" }
@@ -966,12 +904,8 @@
     macroCompositeChart.setOption(option, true);
   }
 
-  // =========================
-  // MACRO + CREDIT REGIME (JS VERSION)
-  // =========================
-
   function toMonthly(data, startDate) {
-    const monthlyMap = new Map(); // key YYYY-MM -> {sum, count}
+    const monthlyMap = new Map();
 
     for (const o of data) {
       const d = new Date(o.date);
@@ -1106,11 +1040,11 @@
     ] = await Promise.all([
       fetchRawMonthlySeries("CPIAUCSL", START),
       fetchRawMonthlySeries("INDPRO",   START),
-      fetchRawMonthlySeries("A191RL1Q225SBEA", START), // already YoY
-      fetchRawMonthlySeries("UNRATE",   START),        // level
-      fetchRawMonthlySeries("BAMLH0A0HYM2", START),    // HY spread
-      fetchRawMonthlySeries("NFCI",     START),        // Chicago FCI
-      fetchRawMonthlySeries("USREC",    START)         // NBER recession dummy
+      fetchRawMonthlySeries("A191RL1Q225SBEA", START),
+      fetchRawMonthlySeries("UNRATE",   START),
+      fetchRawMonthlySeries("BAMLH0A0HYM2", START),
+      fetchRawMonthlySeries("NFCI",     START),
+      fetchRawMonthlySeries("USREC",    START)
     ]);
 
     const cpiY = calcYoY(cpiRaw.dates, cpiRaw.values);
@@ -1126,12 +1060,12 @@
       return m;
     }
 
-    const mGDP   = toMap(gdpSeries.dates,   gdpSeries.values);   // YoY ready
-    const mUN    = toMap(unempSeries.dates, unempSeries.values); // level
-    const mCPI   = toMap(cpiY.dates,        cpiY.values);        // YoY
-    const mIP    = toMap(ipY.dates,         ipY.values);         // YoY
-    const mHY    = toMap(hySeries.dates,    hySeries.values);    // level
-    const mNFCI  = toMap(nfciSeries.dates,  nfciSeries.values);  // level
+    const mGDP   = toMap(gdpSeries.dates,   gdpSeries.values);
+    const mUN    = toMap(unempSeries.dates, unempSeries.values);
+    const mCPI   = toMap(cpiY.dates,        cpiY.values);
+    const mIP    = toMap(ipY.dates,         ipY.values);
+    const mHY    = toMap(hySeries.dates,    hySeries.values);
+    const mNFCI  = toMap(nfciSeries.dates,  nfciSeries.values);
     const mUSREC = toMap(usrecSeries.dates, usrecSeries.values.map(x => x >= 0.5 ? 1 : 0));
 
     const baseDates = Array.from(mGDP.keys()).sort();
@@ -1160,8 +1094,7 @@
       return;
     }
 
-    // YEARLY aggregation
-    const yearMap = new Map(); // year -> {scores, phases, usrecFlags}
+    const yearMap = new Map();
     for (const r of rows) {
       const year = new Date(r.date).getFullYear();
       const slot = yearMap.get(year) || { scores:[], phases:[], usrec:[] };
@@ -1240,12 +1173,10 @@
       scoring(latestRow.nfci, "Chicago FCI")
     ];
 
-    const heatmapData = indicators.map((_, i) => {
-      return [i, 0, latestScores[i]];
-    });
+    const heatmapData = indicators.map((_, i) => [i, 0, latestScores[i]]);
 
     const heatmapOption = {
-      backgroundColor:"#111111",
+      backgroundColor:"#151515",
       tooltip: {
         trigger:"item",
         formatter: params => {
@@ -1256,11 +1187,16 @@
           return `<b>${ind}</b><br/>Value: ${val.toFixed(2)}<br/>Score: ${sc}`;
         }
       },
-      grid: { left:60, right:160, top:40, bottom:40 },
+      grid: {
+        left: 55,
+        right: 20,
+        top: 50,
+        bottom: 80   // ruang ekstra untuk visualMap horizontal
+      },
       xAxis: {
         type:"category",
         data:indicators,
-        axisLabel:{ color:"#f5f5f5", fontSize:10, rotate:30 },
+        axisLabel:{ color:"#f5f5f5", fontSize:10, rotate:25 },
         axisLine:{ lineStyle:{ color:"#444" } }
       },
       yAxis: {
@@ -1273,9 +1209,9 @@
         min:-2,
         max:1,
         calculable:false,
-        orient:"vertical",
-        right:10,
-        top:"middle",
+        orient:"horizontal",
+        left:"center",
+        bottom:20,
         textStyle:{ color:"#f5f5f5", fontSize:10 },
         inRange: {
           color:["#7f1d1d","#f97316","#facc15","#22c55e"]
@@ -1285,13 +1221,7 @@
         type:"heatmap",
         data:heatmapData,
         label:{
-          show:true,
-          formatter:(p)=>{
-            const idx = p.data[0];
-            return latestValues[idx].toFixed(2);
-          },
-          color:"#f5f5f5",
-          fontSize:10
+          show:false   // supaya teks tidak menumpuk antar kotak
         },
         emphasis:{
           itemStyle:{ borderColor:"#fff", borderWidth:1 }
@@ -1300,17 +1230,17 @@
       title:{
         text:"Macro & Credit Regime – Heatmap Snapshot",
         left:"center",
-        top:6,
+        top:8,
         textStyle:{ color:"#f5f5f5", fontSize:13, fontWeight:500 }
       },
       graphic:{
         type:"text",
-        right:10,
-        top:10,
+        left:"3%",
+        top:28,
         style:{
-          text:`Phase: ${data.latestPhase}\nScore: ${data.latestScore}`,
+          text:`Phase: ${data.latestPhase} | Score: ${data.latestScore}`,
           fill:"#f5f5f5",
-          fontSize:12
+          fontSize:11
         }
       }
     };
@@ -1326,7 +1256,7 @@
     const lineData = data.rolling3Y;
 
     const yearlyOption = {
-      backgroundColor:"#111111",
+      backgroundColor:"#151515",
       tooltip:{
         trigger:"axis",
         formatter: params => {
@@ -1421,10 +1351,6 @@
       macroCreditChart.setOption(macroCreditOptions.yearly, true);
     }
   }
-
-  // =========================
-  // INIT / REFRESH
-  // =========================
 
   async function preloadMacroSeries() {
     setStatus("Preloading macro YoY / level series…", "idle");
