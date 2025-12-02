@@ -422,9 +422,10 @@
   // CONFIG & CONSTANTS
   // =========================
 
-  // Pakai 1 proxy CORS saja supaya tidak bolak-balik coba banyak endpoint
   const PROXIES = [
-    "https://cors.eu.org/"
+    "https://cors-anywhere-proxy-six.vercel.app/",
+    "https://cors.eu.org/",
+    ""
   ];
 
   const FRED_API_KEY = "8a60bcfed2f8d08cae9615b367eb85e5"; // ganti dengan API key FRED kamu
@@ -565,22 +566,6 @@
       SERIES_LIST.push({ category: cat, id: sid, label });
     }
   }
-
-  // HANYA preload subset seri inti supaya jauh lebih cepat
-  const PRELOAD_IDS = new Set([
-    "PCEPILFE", // Core PCE YoY
-    "UNRATE",   // Unemployment
-    "INDPRO",   // Industrial Production
-    "CPIAUCSL", // CPI headline
-    "CPILFESL", // CPI core
-    "PAYEMS",   // Payrolls
-    "ICSA",     // Claims
-    "PCEC96",   // Real PCE
-    "RSAFS",    // Retail sales
-    "TCU",      // Capacity Utilization
-    "HOUST",    // Housing starts
-    "PERMIT"    // Permits
-  ]);
 
   const seriesCache = new Map(); // cache for macro YoY/level
 
@@ -1443,16 +1428,12 @@
 
   async function preloadMacroSeries() {
     setStatus("Preloading macro YoY / level series…", "idle");
-
-    const tasks = SERIES_LIST
-      .filter(def => PRELOAD_IDS.has(def.id))
-      .map(def =>
-        loadSeries(def.id).catch(err => {
-          console.error("Failed to load", def.id, err);
-          return null;
-        })
-      );
-
+    const tasks = SERIES_LIST.map(def =>
+      loadSeries(def.id).catch(err => {
+        console.error("Failed to load", def.id, err);
+        return null;
+      })
+    );
     await Promise.all(tasks);
   }
 
