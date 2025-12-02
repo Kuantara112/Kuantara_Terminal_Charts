@@ -44,22 +44,22 @@
       color:var(--text-main);
       padding:16px;
       overflow-y:auto;
+
+      /* Scrollbar Firefox: hitam transparan */
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.7) rgba(0,0,0,0.15);
     }
 
-    /* Scrollbar hitam transparan */
+    /* Scrollbar WebKit: hitam transparan */
     body::-webkit-scrollbar{
       width:8px;
     }
     body::-webkit-scrollbar-track{
-      background:transparent;
+      background:rgba(0,0,0,0.15);
     }
     body::-webkit-scrollbar-thumb{
-      background:rgba(0,0,0,0.6);
+      background:rgba(0,0,0,0.7);
       border-radius:999px;
-    }
-    body{
-      scrollbar-width:thin;
-      scrollbar-color:rgba(0,0,0,0.6) transparent;
     }
 
     .page{
