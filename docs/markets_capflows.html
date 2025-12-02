@@ -274,7 +274,6 @@
         </div>
         <div class="controls">
           <span class="control-label">Group:</span>
-          <!-- Sectors dihapus dari dropdown -->
           <select id="rel-select" class="control-select">
             <option value="Benchmarks">Benchmarks</option>
             <option value="Macro">Macro</option>
@@ -291,7 +290,7 @@
       <div id="rel-error" class="error-msg" style="display:none;"></div>
     </section>
 
-    <!-- Panel 6: DM vs EM Hourly % Change -->
+    <!-- Panel 6: DM vs EM -->
     <section class="panel">
       <div class="panel-header">
         <div>
@@ -364,13 +363,11 @@
 // ================== SINGLE WEBSOCKET ENDPOINT ==================
 const WS_URL = "https://kuancloud.loclx.io/api/tv_stream/stream/trades";
 
-// ================== CONFIG MAPS (SAMA DENGAN YANG KAMU PAKAI) ==================
+// ================== CONFIG MAPS ==================
 
-// Risk gauge / netflow basket
 const SAFE_HAVEN  = ["GLD","FXY","FXF","UUP"];
 const RISK_ASSETS = ["IBIT","QQQ","SPY","EEM"];
 
-// Market Phase assets
 const PHASE_ASSETS = {
   "Cash (UUP)":"UUP",
   "Bonds (BND)":"BND",
@@ -378,7 +375,6 @@ const PHASE_ASSETS = {
   "Commodities (DBC)":"DBC"
 };
 
-// Sector / Bench / Macro
 const SECTORS = {
   "XLB":"Materials","XLE":"Energy","XLF":"Financials","XLI":"Industrials","XLK":"Technology",
   "XLP":"Consumer Staples","XLU":"Utilities","XLV":"Health Care","XLY":"Consumer Discretionary",
@@ -392,7 +388,6 @@ const MACRO = {
   "GLD":"Gold","USO":"WTI Oil","XOP":"Oil & Gas E&P","ARKK":"High Beta Innovation"
 };
 
-// DM vs EM meta (hourly % change)
 const DMEM_META = {
   // DM
   "SPY": {name:"S&P 500 (SPY)",       cls:"DM"},
@@ -423,7 +418,6 @@ const DMEM_META = {
   "EWM":  {name:"Malaysia (EWM)",         cls:"EM"}
 };
 
-// Forex indices
 const FX_INDEX_TV = {
   "USD":"TVC:DXY",
   "EUR":"TVC:EXY",
@@ -435,7 +429,6 @@ const FX_INDEX_TV = {
   "CHF":"TVC:SXY"
 };
 
-// Commodities futures
 const COMDT_TV = {
   "Gold":"COMEX:GC1!",
   "Silver":"COMEX:SI1!",
@@ -455,28 +448,33 @@ const COMDT_TV = {
   "Cotton":"ICEUS:CT1!"
 };
 
+// NORMALISASI KHUSUS LOGAM MULIA: Gold, Platinum, Palladium saja → dibagi 10
+const METALS_NORMALIZE = new Set([
+  "COMEX:GC1!", // Gold
+  "NYMEX:PL1!", // Platinum
+  "NYMEX:PA1!"  // Palladium
+]);
+
 const FX_AXIS_MIN = -2;
 const FX_AXIS_MAX =  2;
 const CLIP_PCT = 0.05;
 
-// DM/EM color palettes
 const DM_COLORS = ["#60a5fa","#3b82f6","#2563eb","#1d4ed8","#1e40af"];
 const EM_COLORS = ["#fb7185","#f97316","#22c55e","#eab308","#ec4899"];
 
 // ================== GLOBAL STATE ==================
 const state = {
-  safe: {},   // GLD, FXY, FXF, UUP
-  risk: {},   // IBIT, QQQ, SPY, EEM
-  phase: {},  // UUP,BND,QQQ,DBC
+  safe: {},
+  risk: {},
+  phase: {},
   sectors: {},
   bench: {},
   macro: {},
-  dmem: {},   // ticker -> {chg, cls, name}
-  fxByCcy: {}, // ccy -> change
-  comdt: {}   // symbol -> change
+  dmem: {},
+  fxByCcy: {},
+  comdt: {}
 };
 
-// Chart instances
 let gaugeChartInstance   = null;
 let barsChartInstance    = null;
 let phaseChartInstance   = null;
@@ -498,7 +496,7 @@ function formatWIB() {
     minute: "2-digit",
     hour12: false
   };
-  const s = now.toLocaleString("en-GB", opts); // 28/11/2025, 17:09
+  const s = now.toLocaleString("en-GB", opts);
   const [d, m, yTime] = s.split("/");
   const [y, timePart] = yTime.split(", ");
   return `${y}-${m}-${d} ${timePart} WIB`;
@@ -509,10 +507,8 @@ function avg(arr) {
   return arr.reduce((a,b)=>a+b,0)/arr.length;
 }
 
-// normalisasi simbol dari WS
 function normalizeSymbol(symbol) {
   if (!symbol) return null;
-  // TVC & futures: keep full
   if (/^(TVC|COMEX|NYMEX|CBOT|ICEUS|ICEEUR):/.test(symbol)) {
     return symbol;
   }
@@ -522,13 +518,11 @@ function normalizeSymbol(symbol) {
   return symbol;
 }
 
-// parse payload dari WS (JSON atau string log)
 function parseWsPayload(raw) {
   if (raw == null) return null;
 
   if (typeof raw === "string") {
     const text = raw.trim();
-    // coba JSON dulu
     if (text.startsWith("{") || text.startsWith("[")) {
       try {
         const obj = JSON.parse(text);
@@ -537,8 +531,6 @@ function parseWsPayload(raw) {
         }
       } catch {}
     }
-    // fallback parsing log string
-    // contoh: [ts] fx TVC:CXY change=+0.160
     const re = /([A-Z]{2,6}:[A-Z0-9!]+|[A-Z0-9!]+)\s+change=([+\-]?\d+(\.\d+)?)/;
     const m = text.match(re);
     if (m) {
@@ -547,7 +539,6 @@ function parseWsPayload(raw) {
     return null;
   }
 
-  // kalau server kirim object langsung
   try {
     if (raw.symbol && typeof raw.change !== "undefined") {
       return {symbol: raw.symbol, change: Number(raw.change)};
@@ -556,7 +547,6 @@ function parseWsPayload(raw) {
   return null;
 }
 
-// risk score (0–100) dari map {ticker -> change%}
 function computeRiskScoreFromMaps() {
   const riskVals = RISK_ASSETS
     .map(t => state.risk[t])
@@ -607,14 +597,12 @@ function renderGaugeAndBars() {
   const gaugeLoadingId = "gauge-loading";
   const barsLoadingId  = "bars-loading";
 
-  if (!metrics) {
-    // belum cukup data
-    return;
-  }
+  if (!metrics) return;
+
   hideLoading(gaugeLoadingId);
   hideLoading(barsLoadingId);
 
-  const {riskScore, riskMean, safeMean} = metrics;
+  const {riskScore} = metrics;
   const {text:statusText, color:statusColor} = statusFromScore(riskScore);
 
   // Gauge
@@ -628,13 +616,13 @@ function renderGaugeAndBars() {
     backgroundColor:"#111111",
     title:{
       text:"Sentiment Gauge",
-      subtext:`Risk basket: ${riskMean.toFixed(2)}% | Safe basket: ${safeMean.toFixed(2)}%`,
+      subtext:"Basket snapshot",
       left:"center",
       top:6,
       textStyle:{color:"#f5f5f5", fontSize:14},
       subtextStyle:{color:"#9b9b9b", fontSize:11}
     },
-    tooltip:{formatter:(p)=>`Score: ${p.value.toFixed(1)}`},
+    tooltip:{show:false},
     series:[{
       type:"gauge",
       startAngle:180,
@@ -655,17 +643,14 @@ function renderGaugeAndBars() {
       },
       splitLine:{show:false},
       axisTick:{show:false},
-      axisLabel:{color:"#e5e5e5"},
+      axisLabel:{show:false},
       pointer:{
         length:"60%",
         width:4,
         itemStyle:{color:statusColor}
       },
       detail:{
-        formatter:(v)=>`Score: ${v.toFixed(1)}/100`,
-        color:"#f5f5f5",
-        fontSize:12,
-        offsetCenter:[0,"65%"]
+        show:false
       },
       itemStyle:{color:statusColor},
       data:[{value:riskScore, name:statusText}]
@@ -674,11 +659,11 @@ function renderGaugeAndBars() {
       {
         type:"text",
         left:"center",
-        top:"68%",
+        top:"66%",
         style:{
           text:statusText,
           fill:statusColor,
-          fontSize:28,
+          fontSize:26,
           fontWeight:700
         }
       },
@@ -706,13 +691,16 @@ function renderGaugeAndBars() {
   const categories = [...SAFE_HAVEN, ...RISK_ASSETS];
   const safeData = categories.map(t => SAFE_HAVEN.includes(t) ? (typeof state.safe[t]==="number"?state.safe[t]:null) : null);
   const riskData = categories.map(t => RISK_ASSETS.includes(t) ? (typeof state.risk[t]==="number"?state.risk[t]:null) : null);
-  const riskVals = RISK_ASSETS.map(t=>state.risk[t]).filter(v=>typeof v==="number" && !Number.isNaN(v));
-  const safeVals = SAFE_HAVEN.map(t=>state.safe[t]).filter(v=>typeof v==="number" && !Number.isNaN(v));
-  const delta = riskVals.length && safeVals.length ? (avg(riskVals)-avg(safeVals)) : NaN;
 
   const barsOption = {
     backgroundColor:"#111111",
-    tooltip:{trigger:"axis"},
+    tooltip:{
+      trigger:"item",
+      triggerOn:"click",
+      formatter:function(params){
+        return params.name;
+      }
+    },
     legend:{
       data:["Safe Haven","Risk Asset"],
       top:6,
@@ -721,9 +709,9 @@ function renderGaugeAndBars() {
     grid:{left:70,right:16,top:40,bottom:40},
     xAxis:{
       type:"value",
-      name:"1H Return (%)",
+      name:"",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
-      axisLabel:{color:"#e5e5e5"},
+      axisLabel:{show:false},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
     },
     yAxis:{
@@ -737,13 +725,15 @@ function renderGaugeAndBars() {
         name:"Safe Haven",
         type:"bar",
         data:safeData,
-        itemStyle:{color:"#60a5fa"}
+        itemStyle:{color:"#60a5fa"},
+        label:{show:false}
       },
       {
         name:"Risk Asset",
         type:"bar",
         data:riskData,
-        itemStyle:{color:"#fb7185"}
+        itemStyle:{color:"#fb7185"},
+        label:{show:false}
       }
     ],
     graphic:[{
@@ -751,7 +741,7 @@ function renderGaugeAndBars() {
       left:"right",
       top:6,
       style:{
-        text:`ΔRisk − Safe: ${Number.isFinite(delta) ? delta.toFixed(2) : "NaN"} pts · ${formatWIB()}`,
+        text:`Updated: ${formatWIB()}`,
         fill:"#9b9b9b",
         fontSize:10
       }
@@ -764,7 +754,6 @@ function renderGaugeAndBars() {
 function renderPhaseSnapshot() {
   const elLoading = "phase-loading";
 
-  // Ambil data dari state.phase sesuai PHASE_ASSETS
   const entries = Object.entries(PHASE_ASSETS).map(([label, tkr]) => {
     const val = state.phase[tkr];
     return { label, value: typeof val === "number" ? val : null };
@@ -783,7 +772,6 @@ function renderPhaseSnapshot() {
   const labels = entries.map(e => e.label);
   const values = entries.map(e => e.value);
 
-  // Cari range untuk radar (symmetrical min/max biar visual balance)
   const maxAbs = Math.max(
     1,
     Math.ceil(Math.max(...values.map(v => Math.abs(v))) || 1)
@@ -793,21 +781,13 @@ function renderPhaseSnapshot() {
     backgroundColor: "#111111",
     title: {
       text: "Market Phase Radar",
-      subtext: "Cash vs Bonds vs Stocks vs Commodities – 1H Δ %",
+      subtext: "Intraday phase snapshot",
       left: "center",
       top: 4,
       textStyle: { color: "#f5f5f5", fontSize: 13 },
       subtextStyle: { color: "#9b9b9b", fontSize: 11 }
     },
-    tooltip: {
-      trigger: "item",
-      formatter: () => {
-        const lines = entries.map((e, i) =>
-          `${e.label}: ${values[i].toFixed(2)}%`
-        );
-        return `Market Phase 1H Change<br/>` + lines.join("<br/>");
-      }
-    },
+    tooltip: { show:false },
     radar: {
       shape: "circle",
       radius: "70%",
@@ -846,7 +826,7 @@ function renderPhaseSnapshot() {
     },
     series: [
       {
-        name: "Market Phase 1H",
+        name: "Market Phase",
         type: "radar",
         data: [
           {
@@ -864,10 +844,7 @@ function renderPhaseSnapshot() {
               borderWidth: 1.5
             },
             label: {
-              show: true,
-              formatter: (p) => `${p.value.toFixed(2)}%`,
-              color: "#f5f5f5",
-              fontSize: 9
+              show: false
             }
           }
         ]
@@ -893,7 +870,6 @@ function renderPhaseSnapshot() {
 function renderSectorSnapshot() {
   const elLoading = "sector-loading";
 
-  // Ambil hanya SECTORS (tanpa bench & macro)
   const rows = [];
   Object.keys(SECTORS).forEach(ticker => {
     const v = state.sectors[ticker];
@@ -910,7 +886,6 @@ function renderSectorSnapshot() {
 
   hideLoading(elLoading);
 
-  // Sort dari paling kuat ke paling lemah
   rows.sort((a, b) => b.val - a.val);
 
   const dom = document.getElementById("sector-chart");
@@ -919,11 +894,9 @@ function renderSectorSnapshot() {
     window.addEventListener("resize", () => sectorChartInstance && sectorChartInstance.resize());
   }
 
-  const tickers = rows.map(r => r.ticker);
   const labels  = rows.map(r => `${r.ticker} – ${r.name}`);
   const values  = rows.map(r => r.val);
 
-  // Ambil benchmark SPY kalau ada
   const benchRet = (typeof state.bench["SPY"] === "number" && !Number.isNaN(state.bench["SPY"]))
     ? state.bench["SPY"]
     : null;
@@ -933,43 +906,31 @@ function renderSectorSnapshot() {
     Math.ceil(Math.max(...values.map(v => Math.abs(v))) || 1)
   );
 
-  const subtitle = benchRet != null
-    ? `Sector 1H change vs SPY (${benchRet.toFixed(2)}%)`
-    : "Sector 1H change (SPY benchmark not available)";
-
   const option = {
     backgroundColor: "#111111",
     title: {
       text: "US Sectors – Bullet View",
-      subtext: subtitle,
+      subtext: "Relative intraday strength",
       left: "center",
       top: 4,
       textStyle: { color: "#f5f5f5", fontSize: 13 },
       subtextStyle: { color: "#9b9b9b", fontSize: 11 }
     },
-    tooltip: {
-      trigger: "axis",
-      axisPointer: { type: "shadow" },
-      formatter: (params) => {
-        const bar = params.find(p => p.seriesName === "Sector") || params[0];
-        const idx = bar.dataIndex;
-        const row = rows[idx];
-        let text = `<b>${row.ticker} – ${row.name}</b><br/>Δ 1H: ${row.val.toFixed(2)}%`;
-        if (benchRet != null) {
-          const spread = row.val - benchRet;
-          text += `<br/>SPY: ${benchRet.toFixed(2)}%<br/>Spread vs SPY: ${spread.toFixed(2)} pts`;
-        }
-        return text;
+    tooltip:{
+      trigger:"item",
+      triggerOn:"click",
+      formatter:function(params){
+        return params.name;
       }
     },
     grid: { left: 110, right: 24, top: 50, bottom: 40 },
     xAxis: {
       type: "value",
-      name: "1H Change (%)",
+      name: "",
       min: -maxAbs,
       max: maxAbs,
       axisLine: { lineStyle: { color: "#a3a3a3" } },
-      axisLabel: { color: "#e5e5e5" },
+      axisLabel: { show:false },
       splitLine: { lineStyle: { color: "rgba(255,255,255,0.08)" } }
     },
     yAxis: {
@@ -979,7 +940,6 @@ function renderSectorSnapshot() {
       axisLabel: { color: "#e5e5e5" }
     },
     series: [
-      // MAIN BULLET BAR
       {
         name: "Sector",
         type: "bar",
@@ -988,16 +948,9 @@ function renderSectorSnapshot() {
         itemStyle: {
           color: (p) => p.value >= 0 ? "#22c55e" : "#ef4444"
         },
-        label: {
-          show: true,
-          position: "right",
-          formatter: (p) => `${p.value.toFixed(2)}%`,
-          color: "#f5f5f5",
-          fontSize: 10
-        },
+        label: { show:false },
         z: 1
       },
-      // BENCHMARK MARKER (SPY) – VERTICAL BULLET
       benchRet != null ? {
         name: "SPY Benchmark",
         type: "scatter",
@@ -1020,7 +973,7 @@ function renderSectorSnapshot() {
         left: "right",
         top: 6,
         style: {
-          text: `Updated: ${formatWIB()} · Bullet vs SPY`,
+          text: `Updated: ${formatWIB()}`,
           fill: "#9b9b9b",
           fontSize: 10
         }
@@ -1057,13 +1010,11 @@ function renderRelGroup() {
     }
   });
 
-  if (!rows.length) {
-    return;
-  }
+  if (!rows.length) return;
 
   hideLoading(elLoading);
 
-  rows.sort((a,b)=>a.val - b.val); // bottom to top
+  rows.sort((a,b)=>a.val - b.val);
 
   const names = rows.map(r=>`${r.ticker} – ${r.label}`);
   const vals  = rows.map(r=>r.val);
@@ -1077,19 +1028,18 @@ function renderRelGroup() {
   const option = {
     backgroundColor:"#111111",
     tooltip:{
-      trigger:"axis",
-      axisPointer:{type:"shadow"},
-      formatter:(params)=>{
-        const p = params[0];
-        return `${p.name}<br/>1H Δ: ${p.value.toFixed(2)}%`;
+      trigger:"item",
+      triggerOn:"click",
+      formatter:function(params){
+        return params.name;
       }
     },
     grid:{left:140,right:16,top:30,bottom:35},
     xAxis:{
       type:"value",
-      name:"1H Change (%)",
+      name:"",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
-      axisLabel:{color:"#e5e5e5"},
+      axisLabel:{show:false},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
     },
     yAxis:{
@@ -1103,7 +1053,8 @@ function renderRelGroup() {
       data:vals,
       itemStyle:{
         color:(p)=> p.value >= 0 ? "#22c55e" : "#ef4444"
-      }
+      },
+      label:{show:false}
     }],
     graphic:[{
       type:"text",
@@ -1171,21 +1122,18 @@ function renderDMEM() {
   const option = {
     backgroundColor:"#111111",
     tooltip:{
-      trigger:"axis",
-      axisPointer:{type:"shadow"},
-      formatter:(params)=>{
-        const p = params[0];
-        const idx = p.dataIndex;
-        const row = rows[idx];
-        return `<b>${row.name}</b><br/>Δ 1H: ${row.chg.toFixed(2)}%<br/>Ticker: ${row.ticker}<br/>Class: ${row.cls}`;
+      trigger:"item",
+      triggerOn:"click",
+      formatter:function(params){
+        return params.name;
       }
     },
     grid:{left:180,right:16,top:40,bottom:40},
     xAxis:{
       type:"value",
-      name:"1H Change (%)",
+      name:"",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
-      axisLabel:{color:"#e5e5e5"},
+      axisLabel:{show:false},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
     },
     yAxis:{
@@ -1197,20 +1145,14 @@ function renderDMEM() {
     series:[{
       type:"bar",
       data:dataItems,
-      label:{
-        show:true,
-        position:"right",
-        formatter:(p)=> `${p.value.toFixed(2)}%`,
-        color:"#f5f5f5",
-        fontSize:10
-      }
+      label:{show:false}
     }],
     graphic:[{
       type:"text",
       left:"right",
       top:6,
       style:{
-        text:`Updated: ${formatWIB()} · 1H change`,
+        text:`Updated: ${formatWIB()}`,
         fill:"#9b9b9b",
         fontSize:10
       }
@@ -1247,28 +1189,27 @@ function renderForex() {
     backgroundColor:"#111111",
     title:{
       text:"Forex Strength Meter",
-      subtext:`1H % change vs prior close · as of ${asof}`,
+      subtext:`FX indices snapshot · ${asof}`,
       left:"center",
       top:4,
       textStyle:{color:"#f5f5f5", fontSize:13},
       subtextStyle:{color:"#9b9b9b", fontSize:11}
     },
     tooltip:{
-      trigger:"axis",
-      axisPointer:{type:"shadow"},
-      formatter:(params)=>{
-        const p = params[0];
-        return `${p.name}<br/>Return 1H: ${p.value.toFixed(2)}%`;
+      trigger:"item",
+      triggerOn:"click",
+      formatter:function(params){
+        return params.name;
       }
     },
     grid:{left:60,right:20,top:52,bottom:30},
     xAxis:{
       type:"value",
-      name:"Return 1H (%)",
+      name:"",
       min:FX_AXIS_MIN,
       max:FX_AXIS_MAX,
       axisLine:{lineStyle:{color:"#a3a3a3"}},
-      axisLabel:{color:"#e5e5e5"},
+      axisLabel:{show:false},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
     },
     yAxis:{
@@ -1289,13 +1230,7 @@ function renderForex() {
     series:[{
       type:"bar",
       data:vals,
-      label:{
-        show:true,
-        position:"right",
-        formatter:(p)=>`${p.value.toFixed(2)}%`,
-        color:"#f5f5f5",
-        fontSize:10
-      }
+      label:{show:false}
     }]
   };
 
@@ -1332,28 +1267,27 @@ function renderCommodities() {
     backgroundColor:"#111111",
     title:{
       text:"Commodities Strength Meter",
-      subtext:`1H % change vs prior close · as of ${asof}`,
+      subtext:`Intraday snapshot · ${asof}`,
       left:"center",
       top:4,
       textStyle:{color:"#f5f5f5", fontSize:13},
       subtextStyle:{color:"#9b9b9b", fontSize:11}
     },
     tooltip:{
-      trigger:"axis",
-      axisPointer:{type:"shadow"},
-      formatter:(params)=>{
-        const p = params[0];
-        return `${p.name}<br/>Return 1H: ${p.value.toFixed(2)}%`;
+      trigger:"item",
+      triggerOn:"click",
+      formatter:function(params){
+        return params.name;
       }
     },
     grid:{left:90,right:20,top:52,bottom:30},
     xAxis:{
       type:"value",
-      name:"Return 1H (%)",
+      name:"",
       min:-maxAbs,
       max:maxAbs,
       axisLine:{lineStyle:{color:"#a3a3a3"}},
-      axisLabel:{color:"#e5e5e5"},
+      axisLabel:{show:false},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
     },
     yAxis:{
@@ -1374,24 +1308,25 @@ function renderCommodities() {
     series:[{
       type:"bar",
       data:vals,
-      label:{
-        show:true,
-        position:"right",
-        formatter:(p)=>`${p.value.toFixed(2)}%`,
-        color:"#f5f5f5",
-        fontSize:10
-      }
+      label:{show:false}
     }]
   };
 
   comdtChartInstance.setOption(option, true);
 }
 
-// ================== ROUTING PAYLOAD DARI SINGLE WS ==================
+// ================== ROUTING PAYLOAD ==================
 function routePayload(payload) {
   const norm = normalizeSymbol(payload.symbol);
   if (!norm) return;
-  const chg = payload.change;
+
+  // default: pakai angka apa adanya
+  let chg = payload.change;
+
+  // khusus logam mulia futures → dibagi 10 (Gold, Platinum, Palladium; Silver TIDAK)
+  if (METALS_NORMALIZE.has(norm)) {
+    chg = chg / 10;
+  }
 
   // SAFE / RISK GAUGE
   if (SAFE_HAVEN.includes(norm)) {
@@ -1438,7 +1373,7 @@ function routePayload(payload) {
     renderDMEM();
   }
 
-  // FX INDICES (pakai full symbol TVC:XXX)
+  // FX INDICES
   let fxCcy = null;
   Object.entries(FX_INDEX_TV).forEach(([ccy, s])=>{
     if (s === norm) fxCcy = ccy;
@@ -1456,7 +1391,7 @@ function routePayload(payload) {
   }
 }
 
-// ================== SINGLE WEBSOCKET SETUP ==================
+// ================== WS SETUP ==================
 function setupMainWS() {
   let ws = null;
 
@@ -1503,7 +1438,6 @@ function setupMainWS() {
 
 // ================== INIT ==================
 function initDashboardWS() {
-  // attach listeners untuk panel rel & DM/EM
   document.getElementById("rel-select").addEventListener("change", ()=> {
     renderRelGroup();
   });
