@@ -34,6 +34,11 @@
       --header-h: 30px;
       --submenu-h: 32px;
       --bottomnav-h: 46px;
+
+      /* News ticker */
+      --fs-small: 11.5px;
+      --ticker-h: 26px;   /* tinggi isi ticker di dalam strip */
+      --newstape-h: var(--topbar-h); /* tinggi strip news = tinggi topbar */
     }  
   
     /* GLOBAL RESET */  
@@ -194,6 +199,133 @@
       background: linear-gradient(180deg, rgba(30,25,10,0.8), rgba(15,12,0,1));
       box-shadow: 0 0 5px var(--amber-glow), inset 0 1px 0 rgba(255,255,255,0.05);
     }  
+
+    /* ===== BREAKING NEWS STRIP (NEWS TAPE) ===== */
+    .kt-news-strip{
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: var(--topbar-h);
+      height: var(--newstape-h);
+      padding: 0 12px;
+      display: none;              /* default off, diaktifkan via body.kt-show-newstape */
+      align-items: center;
+      justify-content: center;
+      z-index: 2950;
+      pointer-events: auto;
+      background: transparent;
+    }
+
+    body.kt-show-newstape .kt-news-strip{
+      display: flex;
+    }
+
+    .ticker-shell{
+      position:relative;
+      overflow:hidden;
+      background:#b91c1c;
+      border-radius:4px;
+      border:1px solid #7f1d1d;
+      width:100%;
+      max-width:100%;
+      height:var(--ticker-h);        /* tinggi FIX & kecil */
+      display:flex;
+      align-items:stretch;           /* anak full height shell */
+    }
+
+    .ticker-label{
+      flex:0 0 auto;
+      padding:0 10px;
+      height:100%;                   /* sama tinggi dengan shell */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#7f1d1d;
+      color:#ffffff;
+      font-size:12px;                /* sedikit lebih kecil biar muat */
+      font-weight:700;
+      letter-spacing:0.16em;
+      text-transform:uppercase;
+      white-space:nowrap;
+      border-right:1px solid #450a0a;
+      text-align:center;
+    }
+
+    .ticker-label::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#facc15;
+      box-shadow:0 0 4px rgba(250,204,21,0.45);
+      margin-right:6px;
+      opacity:0.85;
+      animation:breaking-dot-pulse 1.6s ease-in-out infinite;
+      transform-origin:center center;
+    }
+
+    @keyframes breaking-dot-pulse{
+      0%{
+        transform:scale(1);
+        opacity:0.85;
+        box-shadow:0 0 4px rgba(250,204,21,0.45);
+      }
+      50%{
+        transform:scale(1.25);
+        opacity:0.45;
+        box-shadow:0 0 8px rgba(250,204,21,0.30);
+      }
+      100%{
+        transform:scale(1);
+        opacity:0.85;
+        box-shadow:0 0 4px rgba(250,204,21,0.45);
+      }
+    }
+
+    .ticker-marquee{
+      flex:1 1 auto;
+      overflow:hidden;
+      position:relative;
+      display:flex;
+      align-items:center;
+    }
+
+    .ticker-track{
+      display:inline-flex;
+      align-items:center;
+      gap:56px;
+      white-space:nowrap;
+      will-change:transform;
+      animation:ticker-scroll 90s linear infinite;
+      padding-left:12px;
+      padding-right:24px;
+    }
+
+    @keyframes ticker-scroll{
+      0%   { transform:translateX(0); }
+      100% { transform:translateX(-50%); }
+    }
+
+    .ticker-item{
+      font-size:var(--fs-small);
+      color:#ffffff;
+      opacity:0.97;
+      text-align:center;
+      line-height:1.2;
+    }
+
+    .ticker-item::before{
+      content:"➤";
+      font-size:9px;
+      margin-right:6px;
+      color:#ffe4e6;
+      opacity:0.9;
+    }
+
+    .ticker-item.empty{
+      color:#ffe4e6;
+      opacity:0.85;
+    }
   
     /* ===== UI CHROME (GLASS + TRANSITIONS) ===== */  
     .kt-mainmenu-strip, .kt-content-header, .kt-statusbar, .kt-submenu-strip{  
@@ -579,9 +711,47 @@
       .kt-bottom-icon{ width: 18px; height: 18px; }
     }  
 
+    /* ===== OFFSET ADJUSTMENTS UNTUK NEWS TAPE ===== */
+
+    /* Jika news tape ON & topbar terlihat */
+    body.kt-show-newstape .kt-mainmenu-strip{
+      top: calc(var(--topbar-h) + var(--newstape-h));
+    }
+    body.kt-show-newstape .kt-content-header{
+      top: calc(var(--topbar-h) + var(--newstape-h) + var(--mainmenu-h));
+    }
+    body.kt-show-newstape .kt-iframe-layer{
+      top: calc(var(--topbar-h) + var(--newstape-h));
+    }
+    body.kt-show-newstape .kt-workspace-page{
+      top: calc(var(--topbar-h) + var(--newstape-h));
+    }
+    body.kt-show-newstape.kt-pinned .kt-iframe-layer{
+      top: calc(var(--topbar-h) + var(--newstape-h) + var(--mainmenu-h) + var(--header-h));
+    }
+
+    /* Kombinasi: topbar disembunyikan tapi news tape masih ON */
+    body.kt-hide-topbar .kt-news-strip{
+      top: 0;
+    }
+    body.kt-show-newstape.kt-hide-topbar .kt-mainmenu-strip{
+      top: var(--newstape-h);
+    }
+    body.kt-show-newstape.kt-hide-topbar .kt-content-header{
+      top: calc(var(--newstape-h) + var(--mainmenu-h));
+    }
+    body.kt-show-newstape.kt-hide-topbar .kt-iframe-layer{
+      top: var(--newstape-h);
+    }
+    body.kt-show-newstape.kt-hide-topbar .kt-workspace-page{
+      top: var(--newstape-h);
+    }
+    body.kt-show-newstape.kt-hide-topbar.kt-pinned .kt-iframe-layer{
+      top: calc(var(--newstape-h) + var(--mainmenu-h) + var(--header-h));
+    }
   </style>  
 </head>  
-<body>  
+<body class="kt-show-newstape">  
   <div class="kt-root">  
     <div class="kt-iframe-layer" id="kt-iframe-layer"></div>  
 
@@ -608,6 +778,18 @@
         </div>  
       </div>  
     </header>  
+
+    <!-- STRIP BAR NEWS TAPE DI BAWAH TOP BAR -->
+    <div class="kt-news-strip" id="kt-news-strip">
+      <div class="ticker-shell">
+        <div class="ticker-label">BREAKING!</div>
+        <div class="ticker-marquee">
+          <div class="ticker-track" id="fastbull-ticker">
+            <span class="ticker-item empty">Loading high impact headlines…</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <nav class="kt-mainmenu-strip kt-hide-top" id="kt-mainmenu-strip">  
       <button class="kt-mainmenu-btn active" data-menu="0"><span>0</span><span>Markets</span></button>  
@@ -682,7 +864,7 @@
     <div class="kt-submenu-group" data-menu-sub="5">  
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="0">S&amp;P500</button>  
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="1">NASDAQ100</button>  
-      <button class="kt-submenu-btn" data-menu="5" data-sub-index="2">DJI30</button>  
+      <button class="kt-submenu-btn" data-menu-sub="5" data-menu="5" data-sub-index="2">DJI30</button>  
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="3">JKSE</button>  
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="4">FOREIGN</button>  
       <button class="kt-submenu-btn" data-menu="5" data-sub-index="5">Blockchain Projects</button>  
@@ -842,7 +1024,6 @@
       const FEED_247_URL    = "https://kuantara112.github.io/Kuantara_Terminal_Charts/news_feeds_247.html";  
       const MINI_CHART_URL  = "https://kuantara112.github.io/Kuantara_Terminal_Charts/xauusd_tradingview.html";  
       const KUANTARA_AI_URL = "https://kuantara112.github.io/Kuantara_Terminal_Charts/kuantara_ai.html";  
-      const SETTINGS_URL    = "https://kuantara112.github.io/Kuantara_Terminal_Charts/settings.html"; // tidak dipakai lagi untuk panel settings
   
       const IFRAME_MAP = {  
         // Markets  
@@ -890,7 +1071,7 @@
         "6:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_economy.html",  
         "6:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_realtime.html",  
   
-        // Screener (baru)
+        // Screener
         "7:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_stocks.html",  
         "7:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_forex.html",  
         "7:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_crypto.html",  
@@ -1379,6 +1560,15 @@
               </div>
               <div style="margin-bottom:6px;">
                 <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                  <input type="checkbox" id="kt-set-newstape" style="accent-color:var(--amber);" />
+                  <span>Tampilkan News Tape (Breaking)</span>
+                </label>
+                <div style="font-size:10px;color:var(--text-muted);margin-left:18px;margin-top:2px;">
+                  Strip berita berjalan tepat di bawah Top Bar.
+                </div>
+              </div>
+              <div style="margin-bottom:6px;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
                   <input type="checkbox" id="kt-set-bottomnav" style="accent-color:var(--amber);" />
                   <span>Tampilkan Bottom Menu</span>
                 </label>
@@ -1406,6 +1596,7 @@
 
           const topbarChk = document.getElementById("kt-set-topbar");
           const bottomChk = document.getElementById("kt-set-bottomnav");
+          const newstapeChk = document.getElementById("kt-set-newstape");
           const autohideChk = document.getElementById("kt-set-autohide");
           const resetBtn = document.getElementById("kt-settings-reset");
 
@@ -1416,6 +1607,17 @@
                 document.body.classList.remove("kt-hide-topbar");
               }else{
                 document.body.classList.add("kt-hide-topbar");
+              }
+            });
+          }
+          if(newstapeChk){
+            const hasTape = document.body.classList.contains("kt-show-newstape");
+            newstapeChk.checked = hasTape;
+            newstapeChk.addEventListener("change", ()=>{
+              if(newstapeChk.checked){
+                document.body.classList.add("kt-show-newstape");
+              }else{
+                document.body.classList.remove("kt-show-newstape");
               }
             });
           }
@@ -1439,10 +1641,12 @@
           if(resetBtn){
             resetBtn.addEventListener("click", ()=>{
               document.body.classList.remove("kt-hide-topbar","kt-hide-bottomnav");
+              document.body.classList.add("kt-show-newstape");
               isPinned = true;
               applyPinnedState();
               if(topbarChk) topbarChk.checked = true;
               if(bottomChk) bottomChk.checked = true;
+              if(newstapeChk) newstapeChk.checked = true;
               if(autohideChk) autohideChk.checked = false;
             });
           }
@@ -1858,5 +2062,224 @@
       updateIframeInteractivity();  
     })();  
   </script>  
+
+  <!-- FASTBULL BREAKING NEWS TICKER SCRIPT -->
+  <script>
+    // ========== CONFIG ==========
+    const FASTBULL_NEWS_ENDPOINT = "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
+    const FASTBULL_HEADERS = { Accept: "application/json", "client-type": "4", clientversion: "latest", langid: "13" };
+    const FASTBULL_CORS_PROXY = "https://api.allorigins.win/raw?url=";
+
+    const AUTO_REFRESH_INTERVAL = 60000;
+
+    // =======================================================================
+    // DATA TAG FASTBULL
+    // =======================================================================
+    const FASTBULL_TAG_DATA = [
+      {
+        categoryName: "Highlights",
+        tagList: [
+          { id: 143, tagName: "Breaking/Top News" },
+          { id: 174, tagName: "Corporate Announcements" }
+        ]
+      },
+      {
+        categoryName: "Macro & Central Banks",
+        tagList: [
+          { id: 100, tagName: "All Central Banks" },
+          { id: 115, tagName: "Fed (USA)" },
+          { id: 118, tagName: "ECB (Europe)" },
+          { id: 120, tagName: "BOE (UK)" },
+          { id: 123, tagName: "BOJ (Japan)" },
+          { id: 124, tagName: "RBA (Australia)" },
+          { id: 116, tagName: "BOC (Canada)" },
+          { id: 114, tagName: "PBOC (China)" },
+          { id: 132, tagName: "Central Banks Updates" },
+          { id: 110, tagName: "Inflation" },
+          { id: 111, tagName: "Interest Rates" },
+          { id: 112, tagName: "Employment" },
+          { id: 125, tagName: "Monetary Policy" },
+          { id: 127, tagName: "Fiscal Policy" }
+        ]
+      },
+      {
+        categoryName: "Markets",
+        tagList: [
+          { id: 94, tagName: "Forex (FX)" },
+          { id: 95, tagName: "Stocks (Equities)" },
+          { id: 152, tagName: "Major Indices" },
+          { id: 169, tagName: "Stock Ratings" },
+          { id: 163, tagName: "Dividends" },
+          { id: 97, tagName: "Commodities" },
+          { id: 117, tagName: "Trade" }
+        ]
+      },
+      {
+        categoryName: "Crypto",
+        tagList: [
+          { id: 98, tagName: "Cryptocurrency" },
+          { id: 155, tagName: "Bitcoin" },
+          { id: 157, tagName: "Ethereum" },
+          { id: 134, tagName: "Regulation (Crypto)" }
+        ]
+      },
+      {
+        categoryName: "Geopolitics & Events",
+        tagList: [
+          { id: 136, tagName: "National Security" },
+          { id: 105, tagName: "Disasters/Accidents" },
+          { id: 108, tagName: "Russia-Ukraine" },
+          { id: 177, tagName: "Middle East" },
+          { id: 176, tagName: "Trump Trade" },
+          { id: 135, tagName: "Politics" }
+        ]
+      }
+    ];
+
+    const FASTBULL_ID_TO_LABEL = {};
+    FASTBULL_TAG_DATA.forEach(cat => {
+      cat.tagList.forEach(tag => {
+        FASTBULL_ID_TO_LABEL[tag.id] = tag.tagName;
+        FASTBULL_ID_TO_LABEL[String(tag.id)] = tag.tagName;
+      });
+    });
+
+    const getAllFastbullIds = () => {
+      const ids = [];
+      FASTBULL_TAG_DATA.forEach(cat => {
+        cat.tagList.forEach(tag => ids.push(tag.id));
+      });
+      ids.push(109, 144, 119, 122, 129, 133, 137, 154, 156, 158, 162, 164);
+      return [...new Set(ids)].join(",");
+    };
+
+    // ========== DOM ==========
+    const fastbullTickerEl = document.getElementById("fastbull-ticker");
+
+    // ========== STATE ==========
+    const fastbullCache = new Map();
+    let fastbullProxyEnabled = false;
+    let highImpactOnly = true; // selalu high impact
+
+    // ========== HELPERS ==========
+    const formatTimestamp = (value) => {
+      if (!value) return "";
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return "";
+      return d.toLocaleTimeString("id-ID",{
+        hour:"2-digit",
+        minute:"2-digit",
+        timeZone:"Asia/Jakarta"
+      }) + " WIB";
+    };
+
+    const normalizeFastbullItem = (item) => {
+      const rawTagsStr = typeof item.tags === "string" ? item.tags : "";
+      const rawTagsArray = rawTagsStr.split(",").map(t => t.trim()).filter(Boolean);
+      const ts = new Date(item.releasedDate).getTime();
+      return {
+        id: item.newsId,
+        source: item.simWebsiteName || "FastBull",
+        rawTags: rawTagsArray,
+        title: item.newsTitle || "Untitled Headline",
+        time: formatTimestamp(item.releasedDate),
+        isImportant: Number(item.important) === 1,
+        timestamp: isNaN(ts) ? 0 : ts
+      };
+    };
+
+    const getFastbullItemsForTopic = (topicKey) => {
+      return fastbullCache.get(topicKey) || [];
+    };
+
+    const getFastbullItemsForDisplay = () => {
+      let items = getFastbullItemsForTopic("all");
+      if (highImpactOnly){
+        items = items.filter(item => item.isImportant);
+      }
+      return [...items].sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+    };
+
+    const renderTicker = (trackEl, items) => {
+      if (!trackEl) return;
+
+      trackEl.innerHTML = "";
+
+      const hasItems = items && items.length;
+      const sourceItems = hasItems ? items : [{
+        time:"",
+        title:"Waiting for latest high impact headlines..."
+      }];
+
+      const appendSequence = () => {
+        sourceItems.forEach(item => {
+          const span = document.createElement("span");
+          span.className = "ticker-item" + (hasItems ? "" : " empty");
+          span.textContent = item.time
+            ? `[${item.time}] ${item.title}`
+            : item.title;
+          trackEl.appendChild(span);
+        });
+      };
+
+      appendSequence();
+      appendSequence();
+
+      trackEl.style.animation = "none";
+      void trackEl.offsetWidth;
+      trackEl.style.animation = "ticker-scroll 90s linear infinite";
+    };
+
+    const renderFastbullTicker = () => {
+      const items = getFastbullItemsForDisplay();
+      renderTicker(fastbullTickerEl, items);
+    };
+
+    // ========== FETCHING ==========
+    const fetchFastbullNews = async (topicId = "all", forceRefresh = false) => {
+      const cacheKey = topicId;
+      const tagIdsToSend = topicId === "all" ? getAllFastbullIds() : topicId;
+
+      if (!forceRefresh && fastbullCache.has(cacheKey)){
+        renderFastbullTicker();
+        return;
+      }
+
+      try{
+        const baseUrl = `${FASTBULL_NEWS_ENDPOINT}?checkImportant=0&pageSize=100&tagIds=${tagIdsToSend}`;
+        let payload;
+
+        try{
+          const r = await fetch(baseUrl,{ headers:FASTBULL_HEADERS });
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          payload = await r.json();
+        }catch(err){
+          if (fastbullProxyEnabled) throw err;
+          fastbullProxyEnabled = true;
+          const r = await fetch(FASTBULL_CORS_PROXY + encodeURIComponent(baseUrl));
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          payload = await r.json();
+        }
+
+        const list = JSON.parse(payload.bodyMessage || "{}").pageDatas || [];
+        const items = list.map(item => normalizeFastbullItem(item));
+
+        fastbullCache.set(cacheKey, items);
+        renderFastbullTicker();
+      }catch(e){
+        if (!fastbullCache.has("all") && fastbullTickerEl){
+          fastbullTickerEl.innerHTML = '<span class="ticker-item empty">Error loading headlines…</span>';
+        }
+      }
+    };
+
+    // ========== INIT ==========
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchFastbullNews("all");
+      setInterval(() => {
+        fetchFastbullNews("all", true);
+      }, AUTO_REFRESH_INTERVAL);
+    });
+  </script>
 </body>  
 </html>
