@@ -11,9 +11,9 @@
 
   <style>
     :root {
-      --bg-root:#000000;
-      --bg-panel:#111111;
-      --bg-panel-soft:#141414;
+      --bg-root:#050505;
+      --bg-panel:#101010;
+      --bg-panel-soft:#111111;
       --border-soft:#2b2b2b;
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
@@ -79,13 +79,14 @@
       height:100%;
       border:none;
 
-      /* darker premium grey */
-      filter: invert(1)
-              hue-rotate(180deg)
-              contrast(0.78)
-              brightness(0.72);
-
-      background:#101010;
+      /* Dark-mode pseudo, sedikit lebih terang */
+      background:#050505;
+      filter:
+        invert(1)
+        hue-rotate(180deg)
+        brightness(1.02)
+        contrast(1.0)
+        saturate(0.95);
     }
 
     .footer-stack {
@@ -94,7 +95,7 @@
       left:0;
       width:100%;
       height:var(--footer-h);
-      background:#000;
+      background:#050505;
       border-top:1px solid var(--border-soft);
       display:flex;
       align-items:center;
