@@ -44,13 +44,10 @@
       color:var(--text-main);
       padding:16px;
       overflow-y:auto;
-
-      /* Scrollbar Firefox: hitam transparan */
       scrollbar-width:thin;
       scrollbar-color:rgba(0,0,0,0.7) rgba(0,0,0,0.15);
     }
 
-    /* Scrollbar WebKit: hitam transparan */
     body::-webkit-scrollbar{
       width:8px;
     }
@@ -173,6 +170,19 @@
       font-size:var(--fs-small);
       padding:2px 6px;
       outline:none;
+    }
+
+    /* Info summary (dipakai FX & Commodities) */
+    .fx-info{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 16px;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+    .fx-info strong{
+      color:var(--text-main);
     }
 
     @media(max-width:1100px){
@@ -323,21 +333,22 @@
 
   <!-- FOURTH ROW: FOREX / COMMODITIES (2 panels) -->
   <section class="grid">
-    <!-- Panel 7: Forex Strength Meter -->
+    <!-- Panel 7: Forex Strength Histogram (dedicated WS) -->
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">FOREX STRENGTH METER</div>
+          <div class="panel-title">FOREX STRENGTH – CHANGE HISTOGRAM</div>
         </div>
       </div>
       <div class="chart-holder">
-        <div class="loading" id="fx-loading">
-          <div class="spinner"></div>
-          <span>Menunggu stream FX indices…</span>
-        </div>
-        <div id="fx-chart" class="chart"></div>
+        <div id="fxChart" class="chart"></div>
       </div>
-      <div id="fx-error" class="error-msg" style="display:none;"></div>
+      <div class="fx-info">
+        <div>Strongest: <strong id="fxStrongest">—</strong></div>
+        <div>Weakest: <strong id="fxWeakest">—</strong></div>
+        <div>Bias: <strong id="fxBias">waiting…</strong></div>
+        <div>Count: <strong id="fxCount">0</strong></div>
+      </div>
     </section>
 
     <!-- Panel 8: Commodities Strength Meter -->
@@ -354,14 +365,28 @@
         </div>
         <div id="comdt-chart" class="chart"></div>
       </div>
+      <div class="fx-info">
+        <div>Strongest: <strong id="comStrongest">—</strong></div>
+        <div>Weakest: <strong id="comWeakest">—</strong></div>
+        <div>Bias: <strong id="comBias">waiting…</strong></div>
+        <div>Count: <strong id="comCount">0</strong></div>
+      </div>
       <div id="comdt-error" class="error-msg" style="display:none;"></div>
     </section>
   </section>
 </div>
 
 <script>
-// ================== SINGLE WEBSOCKET ENDPOINT ==================
-const WS_URL = "https://kuancloud.loclx.io/api/tv_stream/stream/trades";
+// ================== MULTI-WEBSOCKET ENDPOINTS ==================
+const WS_SAFE   = "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/safe_haven";
+const WS_RISK   = "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/risk_assets";
+const WS_PHASE  = "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/market_phase";
+const WS_SECTOR = "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/us_sectors";
+const WS_BENCH  = "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/benchmarks";
+const WS_MACRO  = "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/macro";
+const WS_DM     = "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/developed_markets";
+const WS_EM     = "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/emerging_markets";
+const WS_COMDT  = "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/commodities_futures";
 
 // ================== CONFIG MAPS ==================
 
@@ -418,17 +443,6 @@ const DMEM_META = {
   "EWM":  {name:"Malaysia (EWM)",         cls:"EM"}
 };
 
-const FX_INDEX_TV = {
-  "USD":"TVC:DXY",
-  "EUR":"TVC:EXY",
-  "JPY":"TVC:JXY",
-  "GBP":"TVC:BXY",
-  "AUD":"TVC:AXY",
-  "NZD":"TVC:ZXY",
-  "CAD":"TVC:CXY",
-  "CHF":"TVC:SXY"
-};
-
 const COMDT_TV = {
   "Gold":"COMEX:GC1!",
   "Silver":"COMEX:SI1!",
@@ -448,15 +462,6 @@ const COMDT_TV = {
   "Cotton":"ICEUS:CT1!"
 };
 
-// NORMALISASI KHUSUS LOGAM MULIA: Gold, Platinum, Palladium saja → dibagi 10
-const METALS_NORMALIZE = new Set([
-  "COMEX:GC1!", // Gold
-  "NYMEX:PL1!", // Platinum
-  "NYMEX:PA1!"  // Palladium
-]);
-
-const FX_AXIS_MIN = -2;
-const FX_AXIS_MAX =  2;
 const CLIP_PCT = 0.05;
 
 const DM_COLORS = ["#60a5fa","#3b82f6","#2563eb","#1d4ed8","#1e40af"];
@@ -471,7 +476,6 @@ const state = {
   bench: {},
   macro: {},
   dmem: {},
-  fxByCcy: {},
   comdt: {}
 };
 
@@ -481,8 +485,10 @@ let phaseChartInstance   = null;
 let sectorChartInstance  = null;
 let relChartInstance     = null;
 let dmChartInstance      = null;
-let fxChartInstance      = null;
 let comdtChartInstance   = null;
+
+// Commodities info DOM
+let comStrongestEl, comWeakestEl, comBiasEl, comCountEl;
 
 // ================== HELPERS ==================
 function formatWIB() {
@@ -509,7 +515,7 @@ function avg(arr) {
 
 function normalizeSymbol(symbol) {
   if (!symbol) return null;
-  if (/^(TVC|COMEX|NYMEX|CBOT|ICEUS|ICEEUR):/.test(symbol)) {
+  if (/^(TVC|COMEX|NYMEX|CBOT|ICEUS|ICEEUR|CME):/.test(symbol)) {
     return symbol;
   }
   if (symbol.includes(":")) {
@@ -518,6 +524,7 @@ function normalizeSymbol(symbol) {
   return symbol;
 }
 
+// === PARSER: samakan logika dgn FX (change_pct / chp / change) ===
 function parseWsPayload(raw) {
   if (raw == null) return null;
 
@@ -526,8 +533,15 @@ function parseWsPayload(raw) {
     if (text.startsWith("{") || text.startsWith("[")) {
       try {
         const obj = JSON.parse(text);
-        if (obj && obj.symbol && typeof obj.change !== "undefined") {
-          return {symbol: obj.symbol, change: Number(obj.change)};
+        if (obj && obj.symbol) {
+          let change = null;
+          if (obj.change_pct !== undefined) change = Number(obj.change_pct);
+          else if (obj.chp !== undefined) change = Number(obj.chp);
+          else if (obj.change !== undefined) change = Number(obj.change);
+
+          if (change != null && Number.isFinite(change)) {
+            return {symbol: obj.symbol, change};
+          }
         }
       } catch {}
     }
@@ -540,8 +554,15 @@ function parseWsPayload(raw) {
   }
 
   try {
-    if (raw.symbol && typeof raw.change !== "undefined") {
-      return {symbol: raw.symbol, change: Number(raw.change)};
+    if (raw.symbol) {
+      let change = null;
+      if (raw.change_pct !== undefined) change = Number(raw.change_pct);
+      else if (raw.chp !== undefined) change = Number(raw.chp);
+      else if (raw.change !== undefined) change = Number(raw.change);
+
+      if (change != null && Number.isFinite(change)) {
+        return {symbol: raw.symbol, change};
+      }
     }
   } catch {}
   return null;
@@ -589,6 +610,15 @@ function showError(id, msg) {
     el.style.display = "block";
     el.textContent = msg;
   }
+}
+
+// broadcast error ke semua panel
+function broadcastError(msg) {
+  const ids = [
+    "gauge-error","bars-error","phase-error","sector-error",
+    "rel-error","dm-error","comdt-error"
+  ];
+  ids.forEach(id => showError(id, msg));
 }
 
 // ================== ECHARTS RENDERERS ==================
@@ -649,9 +679,7 @@ function renderGaugeAndBars() {
         width:4,
         itemStyle:{color:statusColor}
       },
-      detail:{
-        show:false
-      },
+      detail:{ show:false },
       itemStyle:{color:statusColor},
       data:[{value:riskScore, name:statusText}]
     }],
@@ -709,7 +737,6 @@ function renderGaugeAndBars() {
     grid:{left:70,right:16,top:40,bottom:40},
     xAxis:{
       type:"value",
-      name:"",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{show:false},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
@@ -843,9 +870,7 @@ function renderPhaseSnapshot() {
               borderColor: "#000000",
               borderWidth: 1.5
             },
-            label: {
-              show: false
-            }
+            label: { show: false }
           }
         ]
       }
@@ -926,7 +951,6 @@ function renderSectorSnapshot() {
     grid: { left: 110, right: 24, top: 50, bottom: 40 },
     xAxis: {
       type: "value",
-      name: "",
       min: -maxAbs,
       max: maxAbs,
       axisLine: { lineStyle: { color: "#a3a3a3" } },
@@ -1037,7 +1061,6 @@ function renderRelGroup() {
     grid:{left:140,right:16,top:30,bottom:35},
     xAxis:{
       type:"value",
-      name:"",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{show:false},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
@@ -1131,7 +1154,6 @@ function renderDMEM() {
     grid:{left:180,right:16,top:40,bottom:40},
     xAxis:{
       type:"value",
-      name:"",
       axisLine:{lineStyle:{color:"#a3a3a3"}},
       axisLabel:{show:false},
       splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
@@ -1162,88 +1184,13 @@ function renderDMEM() {
   dmChartInstance.setOption(option, true);
 }
 
-function renderForex() {
-  const elLoading = "fx-loading";
-  const rows = Object.entries(FX_INDEX_TV).map(([ccy, symbol])=>{
-    const val = state.fxByCcy[ccy];
-    if (typeof val !== "number") return null;
-    return {ccy, ret:val};
-  }).filter(Boolean);
-
-  if (!rows.length) return;
-
-  hideLoading(elLoading);
-
-  const dom = document.getElementById("fx-chart");
-  if (!fxChartInstance) {
-    fxChartInstance = echarts.init(dom);
-    window.addEventListener("resize", ()=>fxChartInstance && fxChartInstance.resize());
-  }
-
-  const sorted = rows.slice().sort((a,b)=>a.ret - b.ret);
-  const vals = sorted.map(r=>r.ret);
-  const labs = sorted.map(r=>r.ccy);
-  const asof = formatWIB();
-
-  const option = {
-    backgroundColor:"#111111",
-    title:{
-      text:"Forex Strength Meter",
-      subtext:`FX indices snapshot · ${asof}`,
-      left:"center",
-      top:4,
-      textStyle:{color:"#f5f5f5", fontSize:13},
-      subtextStyle:{color:"#9b9b9b", fontSize:11}
-    },
-    tooltip:{
-      trigger:"item",
-      triggerOn:"click",
-      formatter:function(params){
-        return params.name;
-      }
-    },
-    grid:{left:60,right:20,top:52,bottom:30},
-    xAxis:{
-      type:"value",
-      name:"",
-      min:FX_AXIS_MIN,
-      max:FX_AXIS_MAX,
-      axisLine:{lineStyle:{color:"#a3a3a3"}},
-      axisLabel:{show:false},
-      splitLine:{lineStyle:{color:"rgba(255,255,255,0.08)"}}
-    },
-    yAxis:{
-      type:"category",
-      data:labs,
-      axisLine:{lineStyle:{color:"#a3a3a3"}},
-      axisLabel:{color:"#e5e5e5"}
-    },
-    visualMap:{
-      show:false,
-      min:FX_AXIS_MIN,
-      max:FX_AXIS_MAX,
-      dimension:0,
-      inRange:{
-        color:["#b91c1c","#f97316","#fde68a","#4ade80","#16a34a"]
-      }
-    },
-    series:[{
-      type:"bar",
-      data:vals,
-      label:{show:false}
-    }]
-  };
-
-  fxChartInstance.setOption(option, true);
-}
-
 function renderCommodities() {
   const elLoading = "comdt-loading";
   const rows = [];
   Object.entries(COMDT_TV).forEach(([name, symbol])=>{
     const v = state.comdt[symbol];
     if (typeof v === "number") {
-      rows.push({name, ret:v});
+      rows.push({name, symbol, ret:v});
     }
   });
 
@@ -1283,7 +1230,6 @@ function renderCommodities() {
     grid:{left:90,right:20,top:52,bottom:30},
     xAxis:{
       type:"value",
-      name:"",
       min:-maxAbs,
       max:maxAbs,
       axisLine:{lineStyle:{color:"#a3a3a3"}},
@@ -1313,6 +1259,27 @@ function renderCommodities() {
   };
 
   comdtChartInstance.setOption(option, true);
+
+  // === Kesimpulan otomatis untuk Commodities (Strongest/Weakest/Bias/Count) ===
+  if (sorted.length && comStrongestEl && comWeakestEl && comBiasEl && comCountEl) {
+    const weakest  = sorted[0];
+    const strongest= sorted[sorted.length - 1];
+
+    const fmt = (v) => {
+      const fixed = Math.abs(v) >= 1 ? v.toFixed(2) : v.toPrecision(3);
+      return `${v >= 0 ? "+" : "-"}${fixed.replace("-","")}`;
+    };
+
+    comStrongestEl.textContent = `${strongest.name} (${fmt(strongest.ret)})`;
+    comWeakestEl.textContent  = `${weakest.name} (${fmt(weakest.ret)})`;
+
+    const spread = strongest.ret - weakest.ret;
+    comBiasEl.textContent = spread > 0.25
+      ? `${strongest.name} bid / ${weakest.name} offered`
+      : "Board mixed – belum ada dominasi jelas";
+
+    comCountEl.textContent = String(sorted.length);
+  }
 }
 
 // ================== ROUTING PAYLOAD ==================
@@ -1320,13 +1287,7 @@ function routePayload(payload) {
   const norm = normalizeSymbol(payload.symbol);
   if (!norm) return;
 
-  // default: pakai angka apa adanya
-  let chg = payload.change;
-
-  // khusus logam mulia futures → dibagi 10 (Gold, Platinum, Palladium; Silver TIDAK)
-  if (METALS_NORMALIZE.has(norm)) {
-    chg = chg / 10;
-  }
+  const chg = payload.change;
 
   // SAFE / RISK GAUGE
   if (SAFE_HAVEN.includes(norm)) {
@@ -1373,16 +1334,6 @@ function routePayload(payload) {
     renderDMEM();
   }
 
-  // FX INDICES
-  let fxCcy = null;
-  Object.entries(FX_INDEX_TV).forEach(([ccy, s])=>{
-    if (s === norm) fxCcy = ccy;
-  });
-  if (fxCcy) {
-    state.fxByCcy[fxCcy] = chg;
-    renderForex();
-  }
-
   // COMMODITIES FUTURES
   const isComdt = Object.values(COMDT_TV).includes(norm);
   if (isComdt) {
@@ -1391,29 +1342,21 @@ function routePayload(payload) {
   }
 }
 
-// ================== WS SETUP ==================
-function setupMainWS() {
+// ================== WS SETUP (MAIN DASHBOARD – PER BUCKET) ==================
+function createStreamWS(url, label){
   let ws = null;
 
-  function broadcastError(msg) {
-    const ids = [
-      "gauge-error","bars-error","phase-error","sector-error",
-      "rel-error","dm-error","fx-error","comdt-error"
-    ];
-    ids.forEach(id => showError(id, msg));
-  }
-
-  function connect() {
+  function connect(){
     try {
-      ws = new WebSocket(WS_URL);
-    } catch (e) {
-      console.error("WS create error", e);
-      broadcastError(`WS error: ${e.message || e}`);
+      ws = new WebSocket(url);
+    } catch(e) {
+      console.error(`${label} WS create error`, e);
+      broadcastError(`WS error (${label}): ${e.message || e}`);
       return;
     }
 
     ws.onopen = () => {
-      console.log("WS opened (all assets)");
+      console.log(`${label} WS opened`);
     };
 
     ws.onmessage = (event) => {
@@ -1423,17 +1366,211 @@ function setupMainWS() {
     };
 
     ws.onerror = (err) => {
-      console.error("WS error", err);
-      broadcastError("WS error – lihat console log.");
+      console.error(`${label} WS error`, err);
+      broadcastError(`WS error (${label}) – lihat console log.`);
     };
 
     ws.onclose = () => {
-      console.warn("WS closed, reconnecting...");
+      console.warn(`${label} WS closed, reconnecting...`);
       setTimeout(connect, 5000);
     };
   }
 
   connect();
+}
+
+function setupMainWS() {
+  createStreamWS(WS_SAFE,   "safe_haven");
+  createStreamWS(WS_RISK,   "risk_assets");
+  createStreamWS(WS_PHASE,  "market_phase");
+  createStreamWS(WS_SECTOR, "us_sectors");
+  createStreamWS(WS_BENCH,  "benchmarks");
+  createStreamWS(WS_MACRO,  "macro");
+  createStreamWS(WS_DM,     "developed_markets");
+  createStreamWS(WS_EM,     "emerging_markets");
+  createStreamWS(WS_COMDT,  "commodities_futures");
+}
+
+// ================== FX HISTOGRAM (DEDICATED WS) ==================
+const FX_WS_URL = "ws://kuancloud.loclx.io/api/tv_stream/stream/trades/fx_indices";
+
+// Futures mapping:
+// "EUR":"CME:6E1!", "JPY":"CME:6J1!", "GBP":"CME:6B1!",
+// "AUD":"CME:6A1!", "NZD":"CME:6N1!", "CAD":"CME:6C1!", "CHF":"CME:6S1!", "USD":"ICEUS:DX1!"
+const FX_LABELS = {
+  "ICEUS:DX1!":"USD",
+  "CME:6E1!":"EUR",
+  "CME:6J1!":"JPY",
+  "CME:6B1!":"GBP",
+  "CME:6A1!":"AUD",
+  "CME:6N1!":"NZD",
+  "CME:6C1!":"CAD",
+  "CME:6S1!":"CHF"
+};
+
+let fxWs = null;
+let fxChart = null;
+const fxChanges = new Map();
+let fxRedrawTimer = null;
+
+// FX DOM
+let fxStrongestEl, fxWeakestEl, fxBiasEl, fxCountEl;
+
+function fxToNumber(v){
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function fxChangeFromPayload(p){
+  if(p.change_pct !== undefined) return fxToNumber(p.change_pct);
+  if(p.chp !== undefined) return fxToNumber(p.chp);
+  if(p.change !== undefined) return fxToNumber(p.change);
+  return null;
+}
+
+function fxChangeText(val){
+  if(val === null) return "—";
+  const fixed = Math.abs(val) >= 1 ? val.toFixed(2) : val.toPrecision(3);
+  return `${val >= 0 ? "+" : "-"}${fixed.replace("-","")}`;
+}
+
+function scheduleFxRedraw(){
+  if(fxRedrawTimer) clearTimeout(fxRedrawTimer);
+  fxRedrawTimer = setTimeout(updateFxChart,160);
+}
+
+function updateFxChart(){
+  const entries = Array.from(fxChanges.entries())
+    .filter(([,v]) => Number.isFinite(v))
+    .sort((a,b) => a[1] - b[1]);
+
+  const names  = entries.map(d => d[0]);
+  const values = entries.map(d => d[1]);
+
+  fxChart.setOption({
+    backgroundColor:"transparent",
+    animationDurationUpdate:350,
+    animationEasingUpdate:"cubicOut",
+    grid:{
+      left:70,
+      right:24,
+      top:10,
+      bottom:26,
+    },
+    tooltip:{
+      trigger:"axis",
+      axisPointer:{ type:"shadow" },
+      formatter:(params)=>{
+        const p = Array.isArray(params) ? params[0] : params;
+        return `${p.name}: ${fxChangeText(p.value)}`;
+      }
+    },
+    xAxis:{
+      type:"value",
+      axisLabel:{ color:"#d4d4d4" },
+      splitLine:{ show:false },
+    },
+    yAxis:{
+      type:"category",
+      data:names,
+      axisLabel:{ color:"#d4d4d4" },
+    },
+    series:[
+      {
+        type:"bar",
+        data:values,
+        barWidth:18,
+        itemStyle:{
+          color:(p)=> p.value >= 0 ? "#22c55e" : "#ef4444",
+          borderRadius:4
+        },
+        markLine:{
+          data:[{ xAxis:0 }],
+          symbol:"none",
+          lineStyle:{
+            type:"dashed",
+            color:"rgba(148,163,184,0.8)"
+          }
+        }
+      }
+    ]
+  });
+
+  fxCountEl.textContent = String(entries.length);
+
+  if(entries.length){
+    const weakest  = entries[0];
+    const strongest= entries[entries.length-1];
+    fxStrongestEl.textContent = `${strongest[0]} (${fxChangeText(strongest[1])})`;
+    fxWeakestEl.textContent  = `${weakest[0]} (${fxChangeText(weakest[1])})`;
+
+    const spread = strongest[1] - weakest[1];
+    fxBiasEl.textContent = spread > 0.25
+      ? `${strongest[0]} bid / ${weakest[0]} offered`
+      : "Board mixed – belum ada dominasi jelas";
+  }
+
+  fxChart.resize();
+}
+
+function connectFx(){
+  if(fxWs && fxWs.readyState === WebSocket.OPEN) return;
+  try{
+    fxWs = new WebSocket(FX_WS_URL);
+  }catch(err){
+    console.error("FX WebSocket ctor error:", err);
+    return;
+  }
+
+  console.log("FX stream connecting…");
+
+  fxWs.onopen = () => {
+    console.log("FX stream live");
+  };
+
+  fxWs.onerror = (e) => {
+    console.error("FX WebSocket error:", e);
+  };
+
+  fxWs.onclose = () => {
+    console.warn("FX WebSocket closed, reconnecting…");
+    setTimeout(connectFx, 5000);
+  };
+
+  fxWs.onmessage = (evt) => {
+    let payload;
+    try{
+      payload = JSON.parse(evt.data);
+    }catch(e){
+      console.warn("FX unparsed message:", evt.data);
+      return;
+    }
+    if(!payload || !payload.symbol) return;
+
+    const rawSym = String(payload.symbol).toUpperCase();
+    const label = FX_LABELS[rawSym] || rawSym;
+    const change = fxChangeFromPayload(payload);
+    if(change === null) return;
+
+    fxChanges.set(label,change);
+    scheduleFxRedraw();
+  };
+}
+
+function initFxBoard(){
+  fxStrongestEl  = document.getElementById("fxStrongest");
+  fxWeakestEl    = document.getElementById("fxWeakest");
+  fxBiasEl       = document.getElementById("fxBias");
+  fxCountEl      = document.getElementById("fxCount");
+
+  fxChart = echarts.init(document.getElementById("fxChart"));
+
+  window.addEventListener("resize",() => {
+    fxChart && fxChart.resize();
+  });
+
+  // Auto-connect on load
+  connectFx();
 }
 
 // ================== INIT ==================
@@ -1448,7 +1585,14 @@ function initDashboardWS() {
     renderDMEM();
   });
 
+  // Commodities summary DOM
+  comStrongestEl = document.getElementById("comStrongest");
+  comWeakestEl   = document.getElementById("comWeakest");
+  comBiasEl      = document.getElementById("comBias");
+  comCountEl     = document.getElementById("comCount");
+
   setupMainWS();
+  initFxBoard();
 }
 
 initDashboardWS();
