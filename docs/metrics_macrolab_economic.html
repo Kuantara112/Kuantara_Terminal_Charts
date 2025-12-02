@@ -45,6 +45,7 @@
       min-height:100vh;
       padding:16px;
       overflow-y:auto;
+      overflow-x:hidden; /* cegah scroll horizontal di mobile */
     }
 
     /* Scrollbar hitam transparan */
@@ -152,12 +153,6 @@
       gap:10px;
     }
 
-    @media (max-width: 900px) {
-      .main-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
     .left-col {
       display:flex;
       flex-direction:column;
@@ -172,6 +167,7 @@
       display:flex;
       flex-direction:column;
       gap:8px;
+      width:100%;
     }
 
     .card-header {
@@ -214,13 +210,11 @@
       border-color:var(--accent);
     }
 
-    #macroCompositeChart {
-      width:100%;
-      height:260px;
-    }
-
+    /* Chart container: responsive width, fixed height baseline */
+    #macroCompositeChart,
     #macroCreditChart {
       width:100%;
+      max-width:100%;
       height:260px;
     }
 
@@ -292,8 +286,7 @@
     .health-table {
       font-size:11px;
       color:var(--text-muted);
-      /* biar ikut scroll page, bukan nested scroll */
-      overflow-x:auto;
+      overflow-x:auto; /* table ikut scroll horizontal kalau sempit */
     }
 
     .health-table table {
@@ -324,20 +317,34 @@
       color:var(--text-muted);
     }
 
-    /* Mobile tuning */
+    /* ======= Mobile tuning ======= */
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr; /* full width, stacked */
+      }
+      .shell {
+        max-width:100%;
+        margin:0;
+      }
+    }
+
     @media (max-width: 600px) {
       body {
         padding:10px 6px;
       }
       .shell {
         padding:10px;
-      }
-      #macroCompositeChart,
-      #macroCreditChart {
-        height:220px;
+        border-radius:8px;
       }
       .top-bar {
         align-items:flex-start;
+      }
+
+      /* Chart tinggi pakai viewport height biar proporsional di mobile */
+      #macroCompositeChart,
+      #macroCreditChart {
+        height:45vh;
+        min-height:220px; /* tetap enak dilihat, tapi tidak terlalu besar */
       }
     }
   </style>
