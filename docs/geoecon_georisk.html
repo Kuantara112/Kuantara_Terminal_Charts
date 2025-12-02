@@ -49,7 +49,7 @@
       height:100%;
       background-color:var(--bg-root);
       color:var(--text-main);
-      overflow:hidden; /* batasi 1 page */
+      overflow:hidden; /* desktop: batasi 1 page */
     }
 
     body{
@@ -198,7 +198,7 @@
       flex:1 1 auto;
       min-height:0;
       overflow-x:auto;
-      overflow-y:auto; /* scroll internal */
+      overflow-y:auto; /* scroll internal (default) */
     }
 
     /* Tables – horizontal scroll friendly */
@@ -317,6 +317,36 @@
       }
       .card-events{
         grid-area:news;
+      }
+    }
+
+    /* MOBILE: boleh scroll vertikal, Key Events meleber ke bawah (auto height) */
+    @media(max-width:899px){
+      html,body{
+        height:auto;
+        min-height:100%;
+        overflow-y:auto;  /* aktifkan scroll ke bawah di mobile */
+      }
+
+      body{
+        padding:10px;
+      }
+
+      .page{
+        max-width:100%;
+        gap:10px;
+      }
+
+      .card{
+        flex:0 0 auto;
+        min-height:160px; /* jaga agar panel tidak terlalu pendek */
+      }
+
+      /* khusus Key Events: jangan scroll internal, biar tinggi ikut isi */
+      .card-events .card-body{
+        flex:0 0 auto;
+        max-height:none;
+        overflow-y:visible;
       }
     }
   </style>
@@ -665,10 +695,26 @@
         return;
       }
       const limitedRows = rows.slice(0, maxRows);
-      let thead = "<tr>" + headers.map(h => `<th>${escapeHtml(h)}</th>`).join("") + "</tr>";
+
+      // mapping label agar buy_percentage / sell_persentage tampil lebih rapi
+      let thead = "<tr>" + headers.map(h => {
+        const lower = String(h || "").toLowerCase();
+        let label = h;
+        if (lower === "buy_percentage" || lower === "buy_percent" || lower === "buy%") {
+          label = "Buy %";
+        } else if (lower === "sell_persentage" || lower === "sell_percentage" || lower === "sell_percent" || lower === "sell%") {
+          label = "Sell %";
+        }
+        return `<th>${escapeHtml(label)}</th>`;
+      }).join("") + "</tr>";
+
       let tbody = limitedRows.map(row => {
-        return "<tr>" + headers.map(h => `<td title="${escapeHtml(row[h] ?? "")}">${escapeHtml(row[h] ?? "")}</td>`).join("") + "</tr>";
+        return "<tr>" + headers.map(h => {
+          const val = row[h] ?? "";
+          return `<td title="${escapeHtml(val)}">${escapeHtml(val)}</td>`;
+        }).join("") + "</tr>";
       }).join("");
+
       el.innerHTML = `<table><thead>${thead}</thead><tbody>${tbody}</tbody></table>` +
                      (rows.length > maxRows
                       ? `<div class="hint-row">Showing ${maxRows} of ${rows.length} rows…</div>`
