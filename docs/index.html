@@ -433,6 +433,21 @@
       box-shadow: 0 0 8px var(--amber-glow), inset 0 1px 0 rgba(255,255,255,0.3);  
       font-weight: 600;
     }  
+
+    /* Workspace mode hides UI chrome to give full canvas */
+    body.kt-workspace-active .kt-mainmenu-strip,
+    body.kt-workspace-active .kt-content-header{
+      transform: translateY(-100%) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    body.kt-workspace-active .kt-submenu-strip,
+    body.kt-workspace-active .kt-statusbar{
+      transform: translateY(100%) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
   
     /* BOTTOM NAV */  
     .kt-bottom-nav{  
@@ -544,6 +559,158 @@
       background: linear-gradient(135deg, transparent 0, transparent 40%, var(--border-soft) 40%, var(--border-soft) 60%, transparent 60%, transparent 100%);  
       opacity: 0.7; touch-action: none;  
     }  
+
+    /* HOTKEY INFO PANEL */
+    body.kt-hotkey-visible{ overflow: hidden; }
+    .kt-hotkey-panel{
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.82);
+      z-index: 4500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      padding: 20px;
+    }
+    .kt-hotkey-panel.show{
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .kt-hotkey-panel-inner{
+      width: min(900px, 96vw);
+      max-height: 90vh;
+      overflow: hidden;
+      background: rgba(15, 15, 15, 0.95);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      box-shadow: var(--shadow-depth);
+      display: flex;
+      flex-direction: column;
+    }
+    .kt-hotkey-panel-header{
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 16px 18px 0;
+      gap: 16px;
+    }
+    .kt-hotkey-panel-title{
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--amber);
+      text-transform: uppercase;
+    }
+    .kt-hotkey-panel-label{
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      opacity: 0.8;
+    }
+    .kt-hotkey-panel-close{
+      border: 1px solid var(--border-soft);
+      background: transparent;
+      color: var(--text-main);
+      font-size: 14px;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      line-height: 1;
+    }
+    .kt-hotkey-panel-close:hover{
+      color: var(--amber);
+      border-color: var(--amber);
+      box-shadow: 0 0 8px var(--amber-glow);
+    }
+    .kt-hotkey-panel-body{
+      padding: 12px 18px 18px;
+      overflow-y: auto;
+      font-size: 11px;
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+    .kt-hotkey-section{
+      margin-bottom: 18px;
+    }
+    .kt-hotkey-section:last-child{
+      margin-bottom: 0;
+    }
+    .kt-hotkey-section-title{
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      color: var(--amber);
+    }
+    .kt-hotkey-grid{
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .kt-hotkey-grid li{
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-soft);
+      border-radius: 6px;
+    }
+    .kt-hotkey-key{
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-soft);
+      background: rgba(0,0,0,0.4);
+      white-space: nowrap;
+      color: var(--amber);
+    }
+    .kt-hotkey-menu{
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      background: rgba(255,255,255,0.02);
+    }
+    .kt-hotkey-menu:last-child{
+      margin-bottom: 0;
+    }
+    .kt-hotkey-menu-title{
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .kt-hotkey-sublist{
+      list-style: none;
+      margin: 0;
+      padding: 0 12px 12px;
+      display: grid;
+      gap: 6px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .kt-hotkey-sublist li{
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      padding: 6px 8px;
+      border: 1px solid var(--border-soft);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.01);
+    }
   
     /* FLOATING UI (FAB, MENU, PANEL) */  
     .kt-ai-fab{  
@@ -1158,6 +1325,19 @@
   <!-- Toast notification container -->
   <div class="kt-toast-container" id="kt-toast-container"></div>
 
+  <div class="kt-hotkey-panel" id="kt-hotkey-panel" aria-hidden="true">
+    <div class="kt-hotkey-panel-inner">
+      <div class="kt-hotkey-panel-header">
+        <div>
+          <div class="kt-hotkey-panel-label">Caps Lock toggles this overlay</div>
+          <div class="kt-hotkey-panel-title">Keyboard & Navigation Guide</div>
+        </div>
+        <button class="kt-hotkey-panel-close" id="kt-hotkey-panel-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="kt-hotkey-panel-body" id="kt-hotkey-panel-body"></div>
+    </div>
+  </div>
+
   <script>  
     (function(){  
       const mainButtons = document.querySelectorAll(".kt-mainmenu-btn");  
@@ -1198,6 +1378,9 @@
       const workspaceAddBtn = document.getElementById("kt-workspace-add-current");  
       const workspaceClearBtn = document.getElementById("kt-workspace-clear");  
       const toastContainer = document.getElementById("kt-toast-container");
+      const hotkeyPanel = document.getElementById("kt-hotkey-panel");
+      const hotkeyPanelBody = document.getElementById("kt-hotkey-panel-body");
+      const hotkeyPanelClose = document.getElementById("kt-hotkey-panel-close");
 
       const TOP_TRIGGER_ZONE = 60;  
       const BOTTOM_TRIGGER_ZONE = 120;  
@@ -1283,6 +1466,15 @@
         "9:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_edu.html",  
         "9:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_others.html"  
       };  
+  
+      const KEYBOARD_SHORTCUTS = [
+        { combo: "Tab", desc: "Buka panel pencarian" },
+        { combo: "Number (0-9)", desc: "Pilih menu utama" },
+        { combo: "Alt + Number (1-9)", desc: "Pilih submenu aktif" },
+        { combo: "Shift", desc: "Masuk ke Workspace" },
+        { combo: "Caps Lock", desc: "Tampilkan panel informasi ini" },
+        { combo: "Esc", desc: "Kembali ke Home dan reset tampilan" }
+      ];
 
       /* ===== ALERTS & NOTIFICATIONS STATE ===== */
       const ALERTS_STORAGE_KEY = "kuantara_alerts_v1";
@@ -1551,6 +1743,7 @@
         bottomItems.forEach(item=>{  
           item.classList.toggle("active", item.getAttribute("data-bottom-role")===role);  
         });  
+        document.body.classList.toggle("kt-workspace-active", role==="workspace");
       }  
   
       function showWorkspacePage(){  
@@ -1559,6 +1752,77 @@
       function hideWorkspacePage(){  
         workspacePage.style.display="none";  
       }  
+
+      function activateWorkspaceView(){  
+        setBottomActive("workspace");  
+        hideWorkspacePage(); // reset board state before showing  
+        hideAllBars();  
+        injectIframe("");  
+        showWorkspacePage();  
+      }  
+
+      function isHotkeyPanelVisible(){
+        return hotkeyPanel && hotkeyPanel.classList.contains("show");
+      }
+
+      function buildMenuSnapshot(){
+        const subs = Array.from(submenuButtons || []);
+        return Array.from(mainButtons || []).map(btn=>{
+          const idx = Number(btn.getAttribute("data-menu"));
+          const titleEl = btn.querySelector("span:nth-child(2)");
+          const title = (titleEl?.textContent || btn.textContent || "").trim();
+          const subItems = subs
+            .filter(subBtn => Number(subBtn.getAttribute("data-menu")) === idx)
+            .map((subBtn, subIndex)=>({
+              title: (subBtn.textContent || "").trim(),
+              combo: "Alt+" + (subIndex + 1)
+            }));
+          return { idx, title, subItems };
+        });
+      }
+
+      function renderHotkeyPanel(){
+        if(!hotkeyPanelBody) return;
+        const menus = buildMenuSnapshot();
+        const shortcutsHtml = KEYBOARD_SHORTCUTS.map(item=>(
+          `<li><span class="kt-hotkey-key">${item.combo}</span><span>${item.desc}</span></li>`
+        )).join("");
+        const menuHtml = menus.map(menu=>{
+          const subHtml = menu.subItems.length
+            ? `<ul class="kt-hotkey-sublist">${menu.subItems.map(sub=>`<li><span class="kt-hotkey-key">${sub.combo}</span><span>${sub.title}</span></li>`).join("")}</ul>`
+            : "";
+          return `
+            <div class="kt-hotkey-menu">
+              <div class="kt-hotkey-menu-title">
+                <span class="kt-hotkey-key">${menu.idx}</span>
+                <span>${menu.title || "Menu"}</span>
+              </div>
+              ${subHtml}
+            </div>
+          `;
+        }).join("");
+        hotkeyPanelBody.innerHTML = `
+          <div class="kt-hotkey-section">
+            <div class="kt-hotkey-section-title">Keyboard Functions</div>
+            <ul class="kt-hotkey-grid">${shortcutsHtml}</ul>
+          </div>
+          <div class="kt-hotkey-section">
+            <div class="kt-hotkey-section-title">Menu & Submenu</div>
+            ${menuHtml || '<div>No menu data detected.</div>'}
+          </div>
+        `;
+      }
+
+      function toggleHotkeyPanel(force){
+        if(!hotkeyPanel) return;
+        const target = (typeof force === "boolean") ? force : !isHotkeyPanelVisible();
+        hotkeyPanel.classList.toggle("show", target);
+        document.body.classList.toggle("kt-hotkey-visible", target);
+        hotkeyPanel.setAttribute("aria-hidden", target ? "false" : "true");
+        if(target){
+          renderHotkeyPanel();
+        }
+      }
 
       /* === PINNED/AUTOHIDE STATE HANDLER === */
       function showTopBars(){  
@@ -2092,11 +2356,7 @@
               if(!isPinned) { showAllBars(); scheduleHide(); }  
             }  
             else if(role==="workspace"){  
-              setBottomActive("workspace");  
-              hideWorkspacePage(); // reset dulu
-              hideAllBars();  
-              injectIframe("");  
-              showWorkspacePage();  
+              activateWorkspaceView();  
             }  
             else if(role==="search"){  
               if(activeBottom!=="home"){  
@@ -2124,6 +2384,20 @@
             clearWorkspace();  
           });  
         }  
+
+        if(hotkeyPanelClose){
+          hotkeyPanelClose.addEventListener("click",(e)=>{
+            e.preventDefault();
+            toggleHotkeyPanel(false);
+          });
+        }
+        if(hotkeyPanel){
+          hotkeyPanel.addEventListener("click",(e)=>{
+            if(e.target===hotkeyPanel){
+              toggleHotkeyPanel(false);
+            }
+          });
+        }
   
         /* Pin/Unpin Double Click on Topbar */  
         topbar.addEventListener("dblclick", (e) => {  
@@ -2332,10 +2606,36 @@
       }  
   
       /* Keyboard */  
+      function isTypingTarget(el){  
+        if(!el) return false;  
+        const tag = (el.tagName || "").toLowerCase();  
+        if(tag==="input" || tag==="textarea" || tag==="select") return true;  
+        if(el.isContentEditable) return true;  
+        if(typeof el.closest === "function" && el.closest('[contenteditable="true"]')) return true;  
+        return false;  
+      }  
+
       window.addEventListener("keydown",(e)=>{  
-        if(e.ctrlKey && (e.key==="f"||e.key==="F")){ e.preventDefault(); openSearch(); return; }  
-        if(e.altKey && !e.ctrlKey && !e.shiftKey){  
+        const hotkeyOpen = isHotkeyPanelVisible();
+        if(!e.ctrlKey && !e.metaKey && !e.altKey && e.key==="CapsLock" && !e.repeat){  
+          toggleHotkeyPanel(!hotkeyOpen);  
+          return;  
+        }  
+        if(hotkeyOpen){  
+          if(e.key==="Escape"){  
+            e.preventDefault();  
+            toggleHotkeyPanel(false);  
+          }  
+          return;  
+        }  
+        if(!e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && e.key==="Tab"){  
+          e.preventDefault();  
+          openSearch();  
+          return;  
+        }  
+        if(!e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey){  
           const k=e.key; if(k>="0"&&k<="9"){  
+            if(isTypingTarget(e.target)) return;  
             e.preventDefault();  
             if(activeBottom!=="home"){  
               setBottomActive("home");  
@@ -2346,7 +2646,7 @@
             return;  
           }  
         }  
-        if(e.ctrlKey && !e.altKey){  
+        if(e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey){  
           const k=e.key; if(k>="1"&&k<="9"){  
             e.preventDefault();  
             if(activeBottom!=="home"){  
@@ -2367,8 +2667,9 @@
           if(!isPinned) { showAllBars(); scheduleHide(); }  
           return;  
         }  
-        if(e.key==="Shift" && !e.repeat && !e.ctrlKey && !e.altKey){  
-          showLayoutCheatsheet();
+        if(e.key==="Shift" && !e.repeat && !e.ctrlKey && !e.altKey && !e.metaKey){  
+          e.preventDefault();  
+          activateWorkspaceView();  
           return;  
         }  
       });  
