@@ -1,0 +1,2728 @@
+<!DOCTYPE html>   
+<html lang="en">  
+<head>  
+  <meta charset="UTF-8" />  
+  <title>Kuantara Terminal</title>  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>  
+
+  <style>  
+    :root {  
+      --amber: #ffbf00; 
+      --amber-glow: rgba(255, 191, 0, 0.25);
+      --bg-root: #000000; 
+      --bg-glass: rgba(10, 10, 10, 0.75);
+      --bg-panel: rgba(18, 18, 18, 0.95);
+      
+      /* Border yang lebih halus untuk efek modern */
+      --border-soft: rgba(255, 255, 255, 0.08);
+      --border-highlight: rgba(255, 255, 255, 0.15);
+      
+      --text-main: #f5f5f5; 
+      --text-muted: #9b9b9b; 
+      --overlay: rgba(0, 0, 0, 0.75);
+      
+      /* Shadow presets */
+      --shadow-depth: 0 8px 30px rgba(0, 0, 0, 0.8);
+      --shadow-tactile: 0 1px 2px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
+      --shadow-active: inset 0 2px 4px rgba(0,0,0,0.6);
+
+      /* Height tokens supaya rapat & konsisten */
+      --topbar-h: 30px;
+      --mainmenu-h: 32px;
+      --header-h: 30px;
+      --submenu-h: 32px;
+      --bottomnav-h: 46px;
+
+      /* News ticker */
+      --fs-small: 11.5px;
+      --ticker-h: 26px;   /* tinggi isi ticker di dalam strip */
+      --newstape-h: var(--topbar-h); /* tinggi strip news = tinggi topbar */
+    }  
+  
+    /* GLOBAL RESET */  
+    *{  
+      box-sizing: border-box;  
+      margin: 0;  
+      padding: 0;  
+      font-family: "Fira Code", monospace !important;  
+      scrollbar-width: thin;  
+      scrollbar-color: #333 #000;  
+      -webkit-tap-highlight-color: transparent;  
+    }  
+  
+    /* RESET BUTTON & FOCUS */  
+    button, .kt-mainmenu-btn, .kt-submenu-btn, .kt-bottom-item,  
+    .kt-profile-menu-btn, .kt-workspace-btn, .kt-ai-menu-btn,  
+    .kt-ai-panel-close, .kt-ai-btn {  
+      outline: none;  
+      border: none;
+    }  
+      
+    button:focus-visible, .kt-mainmenu-btn:focus-visible {
+      box-shadow: 0 0 0 1px var(--amber);
+    }
+  
+    /* SCROLLBAR REFINEMENT */  
+    ::-webkit-scrollbar { width: 6px; height: 6px; }  
+    ::-webkit-scrollbar-track { background: #000; }  
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }  
+    ::-webkit-scrollbar-thumb:hover { background: #444; }  
+  
+    html,body{ height: 100%; }  
+  
+    body{  
+      background-color: var(--bg-root);  
+      color: var(--text-main);  
+      overflow: hidden;  
+    }  
+    @media (max-width: 768px){  
+      body{ overflow: auto; -webkit-overflow-scrolling: touch; }  
+    }  
+  
+    .kt-root{ display: flex; flex-direction: column; height: 100vh; position: relative; }  
+  
+    /* ===== IFRAME LAYER ===== */  
+    .kt-iframe-layer{  
+      position: fixed; left: 0; right: 0; 
+      top: var(--topbar-h); 
+      bottom: var(--bottomnav-h);  
+      z-index: 1;  
+      background: #050505;  
+      transition: 
+        top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), 
+        bottom 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);  
+      overflow: hidden;  
+    }  
+    .kt-iframe-layer iframe{  
+      width: 100%; height: 100%; border: 0; display: block; background: #050505;  
+    }  
+
+    /* LOADING WITH GLOW */  
+    .kt-iframe-loading{  
+      position: absolute; inset: 0; display: flex; flex-direction: column;  
+      align-items: center; justify-content: center;  
+      background: radial-gradient(circle at center, rgba(20,20,20,1) 0%, rgba(0,0,0,1) 100%);
+      font-size: 11px; color: var(--text-muted); z-index: 3; pointer-events: none;  
+      transition: opacity 0.3s ease;  
+    }  
+    .kt-iframe-loading-text{  
+      margin-top: 6px; letter-spacing: .08em; text-transform: uppercase; font-size: 10px; opacity: 0.7;  
+    }  
+    .kt-iframe-spinner{  
+      width: 26px; height: 26px; border-radius: 50%;  
+      border: 2px solid rgba(255, 191, 0, 0.1);  
+      border-top-color: var(--amber);  
+      animation: kt-spin 0.8s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite; 
+      box-shadow: 0 0 10px var(--amber-glow); 
+    }  
+    .kt-iframe-loading-done{ opacity: 0; }  
+    @keyframes kt-spin{ to{transform: rotate(360deg);} }  
+  
+    /* ===== PINNED MODE ===== */  
+    body.kt-pinned .kt-mainmenu-strip,  
+    body.kt-pinned .kt-content-header,  
+    body.kt-pinned .kt-statusbar,  
+    body.kt-pinned .kt-submenu-strip {  
+      transform: translateY(0) !important; opacity: 1 !important; pointer-events: auto !important;  
+    }  
+
+    body.kt-pinned .kt-iframe-layer { 
+      top: calc(var(--topbar-h) + var(--mainmenu-h) + var(--header-h)); 
+      bottom: calc(var(--bottomnav-h) + var(--submenu-h)); 
+    }  
+
+    body.kt-pinned .kt-submenu-strip { 
+      bottom: var(--bottomnav-h) !important; 
+    }  
+
+    /* Jika topbar disembunyikan via settings */
+    body.kt-hide-topbar .kt-topbar{ display:none; }
+    body.kt-hide-topbar .kt-mainmenu-strip{ top: 0; }
+    body.kt-hide-topbar .kt-content-header{ top: var(--mainmenu-h); }
+    body.kt-hide-topbar .kt-iframe-layer{ top: 0; }
+    body.kt-hide-topbar .kt-workspace-page{ top: 0; }
+
+    body.kt-hide-topbar.kt-pinned .kt-iframe-layer{
+      top: calc(var(--mainmenu-h) + var(--header-h));
+    }
+
+    /* Jika bottom nav disembunyikan via settings */
+    body.kt-hide-bottomnav .kt-bottom-nav{ display:none; }
+    body.kt-hide-bottomnav .kt-iframe-layer{ bottom: 0; }
+    body.kt-hide-bottomnav .kt-submenu-strip{ bottom: 0; }
+    body.kt-hide-bottomnav .kt-statusbar{ bottom: 0; }
+
+    body.kt-hide-bottomnav.kt-pinned .kt-iframe-layer{
+      bottom: var(--submenu-h);
+    }
+    body.kt-hide-bottomnav.kt-pinned .kt-submenu-strip{
+      bottom: 0 !important;
+    }
+  
+    /* ===== TOPMOST BAR ===== */  
+    .kt-topbar{  
+      position: fixed; top: 0; left: 0; right: 0; 
+      height: var(--topbar-h);
+      display: flex; align-items: center; justify-content: center;  
+      background: rgba(5, 5, 5, 0.9);  
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-soft);  
+      padding: 0 12px; 
+      font-size: 10px; z-index: 3000; user-select: none;  
+    }  
+    .kt-topbar-left{ display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; flex-wrap: wrap; }  
+      
+    .kt-logo{  
+      font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: 14px;  
+      color: var(--amber); white-space: nowrap; cursor: pointer;  
+      text-shadow: 0 0 10px var(--amber-glow);
+    }  
+  
+    .kt-session-clock{ display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 9px; color: var(--text-muted); cursor: pointer; }  
+      
+    /* Tactile Session Tag */
+    .kt-session-item{  
+      display: inline-flex; gap: 2px; align-items: baseline; white-space: nowrap;  
+      padding: 1px 4px; border-radius: 2px;  
+      background: linear-gradient(180deg, rgba(25,25,25,0.8), rgba(10,10,10,1));
+      border: 1px solid var(--border-soft);  
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+      transition: all 0.2s ease;  
+    }  
+    .kt-session-label{ color: var(--amber); font-size: 9px; opacity: 0.8; }  
+    .kt-session-time{ font-size: 9px; }  
+  
+    .kt-session-item.open{  
+      border-color: rgba(255, 191, 0, 0.4);  
+      background: linear-gradient(180deg, rgba(30,25,10,0.8), rgba(15,12,0,1));
+      box-shadow: 0 0 5px var(--amber-glow), inset 0 1px 0 rgba(255,255,255,0.05);
+    }  
+
+    /* ===== BREAKING NEWS STRIP (NEWS TAPE) ===== */
+    .kt-news-strip{
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: var(--topbar-h);
+      height: var(--newstape-h);
+      padding: 0 12px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2950;
+      pointer-events: auto;
+      background: transparent;
+    }
+
+    body.kt-show-newstape .kt-news-strip{
+      display: flex;
+    }
+
+    .ticker-shell{
+      position:relative;
+      overflow:hidden;
+      background:#b91c1c;
+      border-radius:4px;
+      border:1px solid #7f1d1d;
+      width:100%;
+      max-width:100%;
+      height:var(--ticker-h);
+      display:flex;
+      align-items:stretch;
+    }
+
+    .ticker-label{
+      flex:0 0 auto;
+      padding:0 10px;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#7f1d1d;
+      color:#ffffff;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:0.16em;
+      text-transform:uppercase;
+      white-space:nowrap;
+      border-right:1px solid #450a0a;
+      text-align:center;
+    }
+
+    .ticker-label::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#facc15;
+      box-shadow:0 0 4px rgba(250,204,21,0.45);
+      margin-right:6px;
+      opacity:0.85;
+      animation:breaking-dot-pulse 1.6s ease-in-out infinite;
+      transform-origin:center center;
+    }
+
+    @keyframes breaking-dot-pulse{
+      0%{
+        transform:scale(1);
+        opacity:0.85;
+        box-shadow:0 0 4px rgba(250,204,21,0.45);
+      }
+      50%{
+        transform:scale(1.25);
+        opacity:0.45;
+        box-shadow:0 0 8px rgba(250,204,21,0.30);
+      }
+      100%{
+        transform:scale(1);
+        opacity:0.85;
+        box-shadow:0 0 4px rgba(250,204,21,0.45);
+      }
+    }
+
+    .ticker-marquee{
+      flex:1 1 auto;
+      overflow:hidden;
+      position:relative;
+      display:flex;
+      align-items:center;
+    }
+
+    .ticker-track{
+      display:inline-flex;
+      align-items:center;
+      gap:56px;
+      white-space:nowrap;
+      will-change:transform;
+      animation:ticker-scroll 90s linear infinite;
+      padding-left:12px;
+      padding-right:24px;
+    }
+
+    @keyframes ticker-scroll{
+      0%   { transform:translateX(0); }
+      100% { transform:translateX(-50%); }
+    }
+
+    .ticker-item{
+      font-size:var(--fs-small);
+      color:#ffffff;
+      opacity:0.97;
+      text-align:center;
+      line-height:1.2;
+    }
+
+    .ticker-item::before{
+      content:"➤";
+      font-size:9px;
+      margin-right:6px;
+      color:#ffe4e6;
+      opacity:0.9;
+    }
+
+    .ticker-item.empty{
+      color:#ffe4e6;
+      opacity:0.85;
+    }
+  
+    /* ===== UI CHROME (GLASS + TRANSITIONS) ===== */  
+    .kt-mainmenu-strip, .kt-content-header, .kt-statusbar, .kt-submenu-strip{  
+      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.25s ease, bottom 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);  
+      will-change: transform, opacity; pointer-events: auto; z-index: 2800; position: fixed;  
+    }  
+  
+    /* MAIN MENU (TOP) */  
+    .kt-mainmenu-strip{  
+      top: var(--topbar-h); 
+      left: 0; right: 0; 
+      display: flex; gap: 4px; padding: 6px 8px;  
+      background: var(--bg-glass);  
+      border-bottom: 1px solid var(--border-soft);  
+      overflow-x: auto; scrollbar-width: thin;  
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      justify-content: center;  
+      min-height: var(--mainmenu-h);
+    }  
+    .kt-hide-top{ transform: translateY(-100%); opacity: 0; pointer-events: none; }  
+  
+    /* MODERN TACTILE BUTTONS */
+    .kt-mainmenu-btn{  
+      flex: 0 0 auto; padding: 4px 8px; border-radius: 4px;  
+      border: 1px solid var(--border-soft);  
+      background: linear-gradient(180deg, rgba(30,30,30,0.5) 0%, rgba(10,10,10,0.8) 100%);
+      color: var(--text-muted); font-size: 11px; display: inline-flex; align-items: center; gap: 4px;  
+      cursor: pointer; white-space: nowrap; touch-action: manipulation;  
+      box-shadow: var(--shadow-tactile);
+      transition: all 0.15s ease;  
+    }  
+    .kt-mainmenu-btn span:first-child{ color: var(--amber); font-weight: 500; text-shadow: 0 0 2px rgba(0,0,0,1); }  
+      
+    .kt-mainmenu-btn:hover{  
+      background: linear-gradient(180deg, rgba(40,40,40,0.6) 0%, rgba(20,20,20,0.9) 100%);
+      border-color: var(--border-highlight);  
+      color: var(--text-main);
+    }  
+    .kt-mainmenu-btn:active{  
+      transform: translateY(1px);  
+      box-shadow: var(--shadow-active);
+      border-color: transparent;
+    }  
+      
+    .kt-mainmenu-btn.active{  
+      background: var(--amber); color: #000; border-color: transparent;  
+      box-shadow: 0 0 12px var(--amber-glow), inset 0 1px 0 rgba(255,255,255,0.3);  
+      font-weight: 600;
+    }  
+    .kt-mainmenu-btn.active span:first-child{ color: #000; text-shadow: none; }  
+  
+    /* CONTENT HEADER – RAPAT DENGAN MAIN MENU */  
+    .kt-content-header{  
+      top: calc(var(--topbar-h) + var(--mainmenu-h)); 
+      left: 0; right: 0;  
+      border-bottom: 1px solid var(--border-soft); padding: 6px 10px; display: flex;  
+      justify-content: space-between; align-items: center; font-size: 11px; gap: 8px; flex-wrap: wrap;  
+      background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    }  
+    .kt-breadcrumb{ display: flex; gap: 6px; align-items: baseline; min-width: 0; }  
+    .kt-breadcrumb-main{ color: var(--amber); font-weight: 500; white-space: nowrap; text-shadow: 0 0 8px rgba(255,191,0,0.15); }  
+    .kt-breadcrumb-sub{ color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }  
+  
+    /* STATUS BAR – DIHILANGKAN (STRIP-NYA TAK TERLIHAT) */  
+    .kt-statusbar{  
+      left: 0; right: 0; bottom: var(--bottomnav-h); 
+      border-top: 1px solid var(--border-soft); padding: 4px 10px 6px; font-size: 10px; display: none; 
+      align-items: center;  
+      background: rgba(5, 5, 5, 0.85); color: var(--text-muted); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    }  
+    .kt-hide-bottom{ transform: translateY(100%); opacity: 0; pointer-events: none; }  
+    .kt-status-msg{ font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; opacity: 0.8; }  
+  
+    /* SUB MENU (BOTTOM STRIP) – RAPAT DENGAN BOTTOM NAV */  
+    .kt-submenu-strip{  
+      left: 0; right: 0; bottom: var(--bottomnav-h); 
+      border-top: 1px solid var(--border-soft);  
+      background: rgba(10, 10, 10, 0.9); padding: 4px 6px 4px 8px; min-height: var(--submenu-h);  
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    }  
+    .kt-submenu-group{ display: none; gap: 4px; overflow-x: auto; padding-bottom: 2px; }  
+    .kt-submenu-group.active{ display: flex; }  
+      
+    .kt-submenu-btn{  
+      flex: 0 0 auto; padding: 3px 8px; border-radius: 4px;  
+      border: 1px solid var(--border-soft);  
+      background: linear-gradient(180deg, rgba(30,30,30,0.5), rgba(10,10,10,0.8));
+      color: var(--text-muted);  
+      font-size: 10px; cursor: pointer; white-space: nowrap; touch-action: manipulation;  
+      box-shadow: var(--shadow-tactile);
+      transition: all 0.15s ease;  
+    }  
+    .kt-submenu-btn:hover{  
+      background: linear-gradient(180deg, rgba(40,40,40,0.6), rgba(20,20,20,0.9));
+      border-color: var(--border-highlight);
+      color: var(--text-main);
+    }  
+    .kt-submenu-btn:active{  
+      transform: translateY(1px);  
+      box-shadow: var(--shadow-active);  
+      border-color: transparent;
+    }  
+    .kt-submenu-btn.active{  
+      background: var(--amber); color: #000; border-color: transparent;  
+      box-shadow: 0 0 8px var(--amber-glow), inset 0 1px 0 rgba(255,255,255,0.3);  
+      font-weight: 600;
+    }  
+  
+    /* BOTTOM NAV */  
+    .kt-bottom-nav{  
+      position: fixed; left: 0; right: 0; bottom: 0; height: var(--bottomnav-h);  
+      background: rgba(5, 5, 5, 0.95);  
+      border-top: 1px solid var(--border-soft);  
+      display: flex; justify-content: space-around; align-items: stretch; font-size: 10px;  
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+      z-index: 2800;  
+    }  
+    .kt-bottom-item{  
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;  
+      color: var(--text-muted); cursor: pointer; touch-action: manipulation;  
+      transition: all 0.2s ease;  
+      position: relative;
+    }  
+    .kt-bottom-item::before {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 40px; height: 1px; background: var(--amber); opacity: 0; transition: opacity 0.2s;
+      box-shadow: 0 0 5px var(--amber);
+    }
+    .kt-bottom-item:hover{ background: rgba(255,255,255,0.03); color: var(--text-main); }  
+    .kt-bottom-item:active{ transform: translateY(1px); }  
+      
+    .kt-bottom-item.active{  
+      background: linear-gradient(180deg, rgba(255,191,0,0.05) 0%, transparent 100%);
+      color: var(--amber);  
+      text-shadow: 0 0 8px var(--amber-glow);
+    }  
+    .kt-bottom-item.active::before { opacity: 1; }
+
+    /* ICONS FOR BOTTOM NAV */
+    .kt-bottom-icon{
+      width: 22px;
+      height: 22px;
+      display: block;
+      object-fit: contain;
+      filter: none;
+      opacity: 0.9;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .kt-bottom-item:hover .kt-bottom-icon{
+      opacity: 1;
+    }
+
+    .kt-bottom-item.active .kt-bottom-icon{
+      filter: none;
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+  
+    /* WORKSPACE */  
+    .kt-workspace-page{  
+      position: fixed; left: 0; right: 0; 
+      top: var(--topbar-h); 
+      bottom: var(--bottomnav-h); 
+      z-index: 2;  
+      display: none; background: #050505; overflow: hidden; box-sizing: border-box;  
+    }  
+    .kt-workspace-toolbar{ position: absolute; top: 10px; left: 10px; display: flex; flex-wrap: wrap; gap: 6px; z-index: 3; }  
+        
+    .kt-workspace-btn{  
+      padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border-soft);  
+      background: linear-gradient(180deg, rgba(30,30,30,0.8), rgba(10,10,10,0.9));
+      color: var(--text-main); font-size: 10px; cursor: pointer;  
+      box-shadow: var(--shadow-tactile);
+      transition: all 0.15s ease;  
+    }  
+    .kt-workspace-btn.secondary{ background: linear-gradient(180deg, rgba(20,20,20,0.8), rgba(5,5,5,0.9)); color: var(--text-muted); }  
+    .kt-workspace-btn:hover{ border-color: var(--border-highlight); color: #fff; }  
+    .kt-workspace-btn:active{ transform: translateY(1px); box-shadow: var(--shadow-active); }  
+        
+    .kt-workspace-board{  
+      position: absolute; inset: 0; border-radius: 0; border: none; background: #000;  
+      overflow: auto; box-sizing: border-box; padding-top: 36px;  
+      background-image: radial-gradient(rgba(40, 40, 40, 0.3) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }  
+    .kt-workspace-placeholder{ font-size: 10px; color: var(--text-muted); line-height: 1.5; padding: 12px 14px; text-align: center; opacity: 0.6; }  
+  
+    .kt-workspace-window{  
+      position: absolute; min-width: 220px; min-height: 140px; width: 360px; height: 220px;  
+      background: #0d0d0d; border: 1px solid var(--border-soft); border-radius: 8px;  
+      box-shadow: var(--shadow-depth), 0 0 0 1px rgba(255,255,255,0.05) inset; 
+      overflow: hidden; max-width: 100%; touch-action: none;  
+      transition: box-shadow 0.15s ease, border-color 0.15s ease;  
+    }  
+    .kt-workspace-window:hover{ border-color: var(--border-highlight); }
+        
+    .kt-workspace-window-header{  
+      height: 28px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px;  
+      font-size: 10px; background: linear-gradient(to right, rgba(20,20,20,0.95), rgba(10,10,10,0.95)); 
+      border-bottom: 1px solid var(--border-soft);
+      color: var(--text-main); cursor: move; touch-action: none; user-select: none; -webkit-user-select: none;  
+    }  
+    .kt-workspace-window-title{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.9; }  
+    .kt-workspace-window-close{  
+      border: none; background: transparent; color: var(--text-muted); font-size: 11px; cursor: pointer; padding: 0 2px;  
+      transition: color 0.15s ease, transform 0.1s ease;  
+    }  
+    .kt-workspace-window-close:hover{ color: var(--amber); text-shadow: 0 0 5px var(--amber-glow); }  
+    .kt-workspace-window-close:active{ transform: scale(0.9); }  
+        
+    .kt-workspace-window-body{ position: absolute; top: 28px; left: 0; right: 0; bottom: 0; background: #000; }  
+    .kt-workspace-window-body iframe{ width: 100%; height: 100%; border: 0; display: block; }  
+    .kt-workspace-resizer{  
+      position: absolute; right: 0; bottom: 0; width: 18px; height: 18px; cursor: nwse-resize;  
+      background: linear-gradient(135deg, transparent 0, transparent 40%, var(--border-soft) 40%, var(--border-soft) 60%, transparent 60%, transparent 100%);  
+      opacity: 0.7; touch-action: none;  
+    }  
+  
+    /* FLOATING UI (FAB, MENU, PANEL) */  
+    .kt-ai-fab{  
+      position: fixed; right: 16px; bottom: 90px; width: 48px; height: 48px; border-radius: 50%;  
+      background: linear-gradient(135deg, #ffbf00, #d9a300);
+      color: #000; display: flex; align-items: center; justify-content: center;  
+      font-size: 15px; font-weight: 700; cursor: pointer; z-index: 3000;  
+      border: 1px solid rgba(255,255,255,0.4); user-select: none;  
+      box-shadow: 0 8px 16px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.4);
+      transition: transform 0.2s cubic-bezier(0.3,1.5,0.5,1), box-shadow 0.2s ease;  
+      overflow: hidden;
+    }  
+    .kt-ai-fab:hover{ box-shadow: 0 10px 24px rgba(255,191,0,0.4), inset 0 2px 4px rgba(255,255,255,0.5); transform: translateY(-2px); }  
+    .kt-ai-fab:active{ transform: translateY(1px) scale(0.95); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }  
+
+    .kt-fab-icon{
+      width: 22px;
+      height: 22px;
+      display: block;
+      object-fit: contain;
+    }
+  
+    .kt-ai-menu{ position: fixed; right: 16px; bottom: 150px; display: none; flex-direction: column; gap: 6px; z-index: 3000; }  
+        
+    .kt-ai-menu-btn{  
+      padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border-soft);  
+      background: rgba(18, 18, 18, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      color: #9b9b9b; font-size: 11px; display: flex; align-items: center; gap: 6px; cursor: pointer;  
+      box-shadow: var(--shadow-depth), 0 0 0 1px rgba(255,255,255,0.05) inset;
+      transition: all 0.2s ease;  
+    }  
+    .kt-ai-menu-btn span:first-child{ width: 22px; text-align: center; color: var(--amber); font-weight: 500; font-size: 11px; }  
+    .kt-ai-menu-btn:hover{ background: rgba(30, 30, 30, 0.95); color: var(--text-main); transform: translateX(-4px); border-color: var(--border-highlight); }  
+    .kt-ai-menu-btn:active{ transform: translateX(0); }  
+  
+    .kt-ai-panel{  
+      position: fixed; right: 16px; bottom: 140px; width: min(400px, 92vw); height: min(440px, 78vh); max-height: 78vh;  
+      background: rgba(18, 18, 18, 0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-radius: 12px; border: 1px solid var(--border-soft);  
+      box-shadow: var(--shadow-depth), inset 0 1px 0 rgba(255,255,255,0.08);  
+      display: none; flex-direction: column; overflow: hidden; z-index: 3000;  
+    }  
+  
+    .kt-ai-panel-header{ position: relative; padding: 0; border: none; height: 0; overflow: visible; flex: 0 0 auto; }  
+    .kt-ai-panel-title{ display: none; }  
+    .kt-ai-panel-close{  
+      position: absolute; top: 8px; right: 8px; cursor: pointer; font-size: 12px; color: var(--text-main);  
+      padding: 2px 7px; border-radius: 999px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-soft);  
+      transition: all 0.2s ease; z-index: 5;  
+    }  
+    .kt-ai-panel-close:hover{ background: rgba(255,191,0,0.2); border-color: var(--amber); color: var(--amber); }  
+    .kt-ai-panel-close:active{ transform: scale(0.9); }  
+  
+    .kt-ai-panel-body{ padding: 0; font-size: 11px; color: var(--text-muted); display: flex; flex-direction: column; gap: 0; flex: 1; min-height: 0; overflow: hidden; }  
+  
+    .kt-ai-footer{ padding: 6px 8px; border-top: 1px solid var(--border-soft); display: none; justify-content: flex-end; gap: 6px; flex: 0 0 auto; }  
+        
+    .kt-ai-btn{  
+      padding: 4px 10px; border-radius: 3px; font-size: 11px; border: 1px solid var(--border-soft);  
+      background: linear-gradient(180deg, #222, #111); color: var(--text-muted); cursor: pointer;  
+      box-shadow: var(--shadow-tactile); transition: all 0.15s ease;  
+    }  
+    .kt-ai-btn.primary{ background: var(--amber); color: #000; border-color: transparent; box-shadow: 0 2px 6px rgba(255,191,0,0.3); }  
+    .kt-ai-btn:hover{ border-color: var(--border-highlight); color: var(--text-main); }  
+    .kt-ai-btn:active{ transform: translateY(1px); box-shadow: var(--shadow-active); }  
+  
+    /* ===== SEARCH OVERLAY ===== */  
+    .kt-overlay{  
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 4000;  
+    }  
+    .kt-card{  
+      background: rgba(18, 18, 18, 0.95); border: 1px solid var(--border-soft); border-radius: 12px;  
+      padding: 12px; width: min(560px, 92vw);  
+      box-shadow: var(--shadow-depth), inset 0 1px 0 rgba(255,255,255,0.05);  
+    }  
+    .kt-card-title{ color: var(--amber); font-size: 12px; margin-bottom: 8px; text-shadow: 0 0 8px rgba(255,191,0,0.2); }  
+        
+    .kt-search-input{  
+      width: 100%; padding: 10px; border-radius: 6px;  
+      border: 1px solid var(--border-soft); background: rgba(0,0,0,0.6);  
+      color: var(--text-main); outline: none;  
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);  
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;  
+    }  
+    .kt-search-input:focus{ border-color: var(--amber); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 5px rgba(255,191,0,0.2); }  
+
+    /* SEARCH QUICK CHIPS */
+    .kt-search-chips{
+      margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .kt-search-chip{
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: linear-gradient(180deg, rgba(35,35,35,0.9), rgba(10,10,10,0.95));
+      font-size: 10px;
+      color: var(--text-muted);
+      cursor: pointer;
+      box-shadow: var(--shadow-tactile);
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .kt-search-chip:hover{
+      border-color: var(--border-highlight);
+      color: var(--text-main);
+      background: linear-gradient(180deg, rgba(45,45,45,0.95), rgba(15,15,15,1));
+    }
+    .kt-search-chip:active{
+      transform: translateY(1px);
+      box-shadow: var(--shadow-active);
+      border-color: transparent;
+    }
+        
+    .kt-close-btn{  
+      margin-top: 10px; padding: 6px 10px; font-size: 11px; border-radius: 4px;  
+      border: 1px solid var(--border-soft); background: linear-gradient(180deg, #222, #111);  
+      color: var(--text-muted); cursor: pointer;  
+      box-shadow: var(--shadow-tactile);  
+      transition: all 0.15s ease;  
+    }  
+    .kt-close-btn:hover{ color: var(--text-main); border-color: var(--border-highlight); }  
+    .kt-close-btn:active{ transform: translateY(1px); box-shadow: var(--shadow-active); }  
+  
+    /* SEARCH SUGGESTIONS */  
+    .kt-search-suggestions{  
+      margin-top: 8px; max-height: 220px; overflow: auto; border-radius: 6px;  
+      border: 1px solid var(--border-soft); background: rgba(5,5,5,0.5); padding: 4px 0; font-size: 11px;  
+    }  
+    .kt-search-suggestions.hidden{ display: none; }  
+        
+    .kt-search-suggestion-item{ padding: 4px 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 6px; transition: background 0.1s ease; }  
+    .kt-search-suggestion-item:hover{ background: rgba(255,255,255,0.06); }  
+    .kt-search-suggestion-main{ color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px; }  
+    .kt-search-suggestion-meta{ color: var(--text-muted); font-size: 9px; flex-shrink: 0; opacity: 0.7; }  
+  
+    .kt-cheatsheet{  
+      position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%);  
+      background: rgba(14,14,14,0.9); border: 1px solid var(--border-soft);  
+      border-radius: 8px; padding: 8px 10px; z-index: 3500; display: none;  
+      font-size: 10px; color: var(--text-muted); backdrop-filter: blur(8px);  
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);  
+    }  
+    .kt-cheatsheet b{ color: var(--amber); }  
+
+    /* ===== TOAST NOTIFICATION SYSTEM ===== */
+    .kt-toast-container{
+      position: fixed;
+      right: 16px;
+      bottom: calc(var(--bottomnav-h) + 70px);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 3500;
+      pointer-events: none;
+    }
+    .kt-toast{
+      min-width: 220px;
+      max-width: 280px;
+      background: rgba(18,18,18,0.96);
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-depth);
+      padding: 7px 10px;
+      font-size: 10px;
+      color: var(--text-main);
+      pointer-events: auto;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      opacity: 0;
+      transform: translateY(6px);
+      animation: kt-toast-in 0.22s ease-out forwards;
+    }
+    .kt-toast-title{
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      font-size: 9.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .kt-toast-badge{
+      padding: 1px 5px;
+      border-radius: 999px;
+      font-size: 9px;
+      background: rgba(255,191,0,0.12);
+      color: var(--amber);
+      border: 1px solid rgba(255,191,0,0.5);
+    }
+    .kt-toast-body{
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+    .kt-toast-meta{
+      font-size: 9px;
+      opacity: .6;
+      margin-top: 2px;
+    }
+    .kt-toast-news{
+      border-left: 2px solid var(--amber);
+    }
+    .kt-toast-session{
+      border-left: 2px solid #38bdf8;
+    }
+    .kt-toast.hide{
+      animation: kt-toast-out 0.18s ease-in forwards;
+    }
+    @keyframes kt-toast-in{
+      from{opacity:0;transform:translateY(6px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+    @keyframes kt-toast-out{
+      from{opacity:1;transform:translateY(0);}
+      to{opacity:0;transform:translateY(6px);}
+    }
+
+    @media (max-width: 600px){
+      .kt-toast-container{
+        left: 8px;
+        right: 8px;
+        bottom: calc(var(--bottomnav-h) + 60px);
+        align-items: center;
+      }
+      .kt-toast{
+        width: 100%;
+        max-width: 360px;
+      }
+    }
+
+    /* ===== ALERTS PANEL ===== */
+    .kt-alerts-wrapper{
+      width:100%;
+      height:100%;
+      padding:8px 10px;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      color:var(--text-main);
+      font-size:11px;
+    }
+    .kt-alerts-header{
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--text-muted);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid var(--border-soft);
+      padding-bottom:4px;
+      gap:6px;
+    }
+    .kt-alerts-header span:first-child{
+      color:var(--amber);
+    }
+    .kt-alerts-header-badge{
+      font-size:9px;
+      padding:1px 5px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      color:var(--text-muted);
+    }
+    .kt-alerts-empty{
+      font-size:10px;
+      color:var(--text-muted);
+      opacity:.7;
+      margin-top:4px;
+    }
+    .kt-alerts-list{
+      flex:1;
+      min-height:0;
+      overflow:auto;
+      padding-right:2px;
+      margin-top:2px;
+    }
+    .kt-alert-item{
+      border-radius:6px;
+      border:1px solid var(--border-soft);
+      padding:6px 8px;
+      margin-bottom:4px;
+      background:rgba(10,10,10,0.9);
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .kt-alert-item-news{
+      border-left:2px solid var(--amber);
+    }
+    .kt-alert-item-session{
+      border-left:2px solid #38bdf8;
+    }
+    .kt-alert-row-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:4px;
+    }
+    .kt-alert-title{
+      font-size:10px;
+      font-weight:600;
+    }
+    .kt-alert-type-chip{
+      font-size:9px;
+      padding:1px 5px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+    .kt-alert-type-chip-news{
+      border-color:rgba(255,191,0,0.5);
+      color:var(--amber);
+      background:rgba(255,191,0,0.08);
+    }
+    .kt-alert-type-chip-session{
+      border-color:rgba(56,189,248,0.6);
+      color:#38bdf8;
+      background:rgba(8,47,73,0.7);
+    }
+    .kt-alert-message{
+      font-size:10px;
+      color:var(--text-muted);
+    }
+    .kt-alert-time{
+      font-size:9px;
+      color:var(--text-muted);
+      opacity:.7;
+      margin-top:2px;
+    }
+
+    @media (min-width: 900px){  
+      .kt-submenu-strip{ display: flex; justify-content: center; padding-left: 0; padding-right: 0; }  
+      .kt-submenu-group{ max-width: 980px; }  
+      .kt-submenu-group.active{ justify-content: center; }  
+
+      :root{
+        --bottomnav-h: 36px;
+      }
+    }  
+  
+    @media (max-width: 600px){  
+      .kt-topbar{ padding: 0 8px; }  
+      .kt-logo{ font-size: 12px; }  
+      .kt-session-clock{ gap: 2px; font-size: 8px; }  
+      .kt-session-item{ padding: 0 3px; }  
+      .kt-session-label, .kt-session-time{ font-size: 8px; }  
+      .kt-mainmenu-strip{ justify-content: flex-start; }  
+      .kt-workspace-window{ width: 88vw; height: 45vh; }  
+      .kt-bottom-icon{ width: 18px; height: 18px; }
+    }  
+
+    /* ===== OFFSET ADJUSTMENTS UNTUK NEWS TAPE ===== */
+
+    /* Jika news tape ON & topbar terlihat */
+    body.kt-show-newstape .kt-mainmenu-strip{
+      top: calc(var(--topbar-h) + var(--newstape-h));
+    }
+    body.kt-show-newstape .kt-content-header{
+      top: calc(var(--topbar-h) + var(--newstape-h) + var(--mainmenu-h));
+    }
+    body.kt-show-newstape .kt-iframe-layer{
+      top: calc(var(--topbar-h) + var(--newstape-h));
+    }
+    body.kt-show-newstape .kt-workspace-page{
+      top: calc(var(--topbar-h) + var(--newstape-h));
+    }
+    body.kt-show-newstape.kt-pinned .kt-iframe-layer{
+      top: calc(var(--topbar-h) + var(--newstape-h) + var(--mainmenu-h) + var(--header-h));
+    }
+
+    /* Kombinasi: topbar disembunyikan tapi news tape masih ON */
+    body.kt-hide-topbar .kt-news-strip{
+      top: 0;
+    }
+    body.kt-show-newstape.kt-hide-topbar .kt-mainmenu-strip{
+      top: var(--newstape-h);
+    }
+    body.kt-show-newstape.kt-hide-topbar .kt-content-header{
+      top: calc(var(--newstape-h) + var(--mainmenu-h));
+    }
+    body.kt-show-newstape.kt-hide-topbar .kt-iframe-layer{
+      top: var(--newstape-h);
+    }
+    body.kt-show-newstape.kt-hide-topbar .kt-workspace-page{
+      top: var(--newstape-h);
+    }
+    body.kt-show-newstape.kt-hide-topbar.kt-pinned .kt-iframe-layer{
+      top: calc(var(--newstape-h) + var(--mainmenu-h) + var(--header-h));
+    }
+  </style>  
+</head>  
+<body class="kt-show-newstape">  
+  <div class="kt-root">  
+    <div class="kt-iframe-layer" id="kt-iframe-layer"></div>  
+
+    <header class="kt-topbar" id="kt-topbar" title="Double click to Pin/Unpin interface">  
+      <div class="kt-topbar-left">  
+        <div class="kt-logo">KUANTARA TERMINAL</div>  
+        <div class="kt-session-clock" id="kt-session-clock">  
+          <div class="kt-session-item" data-market="SYD">  
+            <span class="kt-session-label">SYD</span>  
+            <span class="kt-session-time" data-tzid="Australia/Sydney"></span>  
+          </div>  
+          <div class="kt-session-item" data-market="TYO">  
+            <span class="kt-session-label">TYO</span>  
+            <span class="kt-session-time" data-tzid="Asia/Tokyo"></span>  
+          </div>  
+          <div class="kt-session-item" data-market="LDN">  
+            <span class="kt-session-label">LDN</span>  
+            <span class="kt-session-time" data-tzid="Europe/London"></span>  
+          </div>  
+          <div class="kt-session-item" data-market="NYC">  
+            <span class="kt-session-label">NYC</span>  
+            <span class="kt-session-time" data-tzid="America/New_York"></span>  
+          </div>  
+        </div>  
+      </div>  
+    </header>  
+
+    <!-- STRIP BAR NEWS TAPE DI BAWAH TOP BAR -->
+    <div class="kt-news-strip" id="kt-news-strip">
+      <div class="ticker-shell">
+        <div class="ticker-label">BREAKING!</div>
+        <div class="ticker-marquee">
+          <div class="ticker-track" id="fastbull-ticker">
+            <span class="ticker-item empty">Loading high impact headlines…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="kt-mainmenu-strip kt-hide-top" id="kt-mainmenu-strip">  
+      <button class="kt-mainmenu-btn active" data-menu="0"><span>0</span><span>Markets</span></button>  
+      <button class="kt-mainmenu-btn" data-menu="1"><span>1</span><span>News</span></button>  
+      <button class="kt-mainmenu-btn" data-menu="2"><span>2</span><span>Macroeconomic</span></button>  
+      <button class="kt-mainmenu-btn" data-menu="3"><span>3</span><span>Geo-Economic</span></button>  
+      <button class="kt-mainmenu-btn" data-menu="4"><span>4</span><span>Metrics</span></button>  
+      <button class="kt-mainmenu-btn" data-menu="5"><span>5</span><span>Companies</span></button>  
+      <button class="kt-mainmenu-btn" data-menu="6"><span>6</span><span>Charts</span></button>  
+      <button class="kt-mainmenu-btn" data-menu="7"><span>7</span><span>Screener</span></button>  
+      <button class="kt-mainmenu-btn" data-menu="8"><span>8</span><span>Research</span></button>  
+      <button class="kt-mainmenu-btn" data-menu="9"><span>9</span><span>Tools</span></button>  
+    </nav>  
+
+    <section class="kt-content">  
+      <div class="kt-content-header kt-hide-top" id="kt-content-header">  
+        <div class="kt-breadcrumb">  
+          <span class="kt-breadcrumb-main" id="breadcrumb-main">0 · Markets</span>  
+          <span class="kt-breadcrumb-sub" id="breadcrumb-sub">Overview</span>  
+        </div>  
+      </div>  
+    </section>  
+
+    <!-- Strip status bar disembunyikan via CSS, tapi tetap ada untuk statusMsg internal -->
+    <div class="kt-statusbar kt-hide-bottom" id="kt-statusbar">  
+      <div class="kt-status-msg" id="kt-status-msg">READY</div>  
+    </div>  
+  </div>  
+
+  <nav class="kt-submenu-strip kt-hide-bottom" id="kt-submenu-strip">  
+    <!-- Markets: Overview + Cap Flow + assets -->
+    <div class="kt-submenu-group active" data-menu-sub="0">  
+      <button class="kt-submenu-btn active" data-menu="0" data-sub-index="0">Overview</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="1">Cap Flow</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="2">Forex</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="3">Fixed</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="4">Commodities</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="5">Equities</button>  
+      <button class="kt-submenu-btn" data-menu="0" data-sub-index="6">Cryptocurrency</button>  
+    </div>  
+
+    <div class="kt-submenu-group" data-menu-sub="1">  
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="0">24/7</button>  
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="1">Insights</button>  
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="2">Calendar</button>  
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="3">Global</button>  
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="4">Channel</button>  
+      <button class="kt-submenu-btn" data-menu="1" data-sub-index="5">Indonesia</button>  
+    </div>  
+
+    <!-- Macroeconomic -->
+    <div class="kt-submenu-group" data-menu-sub="2">  
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="0">Central Bank</button>  
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="1">Major</button>  
+      <button class="kt-submenu-btn" data-menu="2" data-sub-index="2">All Countries</button>  
+    </div>  
+
+    <div class="kt-submenu-group" data-menu-sub="3">  
+      <button class="kt-submenu-btn" data-menu="3" data-sub-index="0">Geo Risk</button>  
+      <button class="kt-submenu-btn" data-menu="3" data-sub-index="1">Trade &amp; Shipping</button>  
+      <button class="kt-submenu-btn" data-menu="3" data-sub-index="2">Resources</button>  
+    </div>  
+
+    <!-- Metrics Labs submenu -->
+    <div class="kt-submenu-group" data-menu-sub="4">  
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="0">Macro Lab</button>  
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="1">Market Lab</button>  
+      <button class="kt-submenu-btn" data-menu="4" data-sub-index="2">Sentiment Lab</button>  
+    </div>  
+
+    <!-- Companies menu updated -->
+    <div class="kt-submenu-group" data-menu-sub="5">  
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="0">S&amp;P500</button>  
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="1">NASDAQ100</button>  
+      <button class="kt-submenu-btn" data-menu-sub="5" data-menu="5" data-sub-index="2">DJI30</button>  
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="3">JKSE</button>  
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="4">FOREIGN</button>  
+      <button class="kt-submenu-btn" data-menu="5" data-sub-index="5">Blockchain Projects</button>  
+    </div>  
+
+    <!-- Charts -->
+    <div class="kt-submenu-group" data-menu-sub="6">  
+      <button class="kt-submenu-btn" data-menu="6" data-sub-index="0">Technical</button>  
+      <button class="kt-submenu-btn" data-menu="6" data-sub-index="1">Economy</button>  
+      <button class="kt-submenu-btn" data-menu="6" data-sub-index="2">Real-Time</button>  
+    </div>  
+
+    <!-- Screener: baru Stocks / FX / Crypto -->
+    <div class="kt-submenu-group" data-menu-sub="7">  
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="0">Stocks</button>  
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="1">FX</button>  
+      <button class="kt-submenu-btn" data-menu="7" data-sub-index="2">Crypto</button>  
+    </div>  
+
+    <!-- Research -->
+    <div class="kt-submenu-group" data-menu-sub="8">  
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="0">Institutions</button>  
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="1">Quantitative</button>  
+      <button class="kt-submenu-btn" data-menu="8" data-sub-index="2">Reports</button>  
+    </div>  
+
+    <!-- Tools -->
+    <div class="kt-submenu-group" data-menu-sub="9">  
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="0">Trading Journal</button>  
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="1">Calculator</button>  
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="2">Education</button>  
+      <button class="kt-submenu-btn" data-menu="9" data-sub-index="3">Others</button>  
+    </div>  
+  </nav>  
+
+  <div class="kt-workspace-page" id="kt-workspace-page">  
+    <div class="kt-workspace-toolbar">  
+      <button class="kt-workspace-btn" id="kt-workspace-add-current">Add current view</button>  
+      <button class="kt-workspace-btn secondary" id="kt-workspace-clear">Clear workspace</button>  
+    </div>  
+    <div class="kt-workspace-board" id="kt-workspace-board">  
+      <div class="kt-workspace-placeholder">  
+        Belum ada window di Workspace.<br>  
+        Pergi ke Home, pilih view yang kamu suka, lalu klik <b>Add current view</b>.  
+      </div>  
+    </div>  
+  </div>  
+
+  <nav class="kt-bottom-nav" id="kt-bottom-nav">  
+    <div class="kt-bottom-item active" data-bottom-role="home">  
+      <img src="home-svgrepo-com.svg" class="kt-bottom-icon" alt="Home">  
+    </div>  
+    <div class="kt-bottom-item" data-bottom-role="search">  
+      <img src="search-alt-svgrepo-com.svg" class="kt-bottom-icon" alt="Search">  
+    </div>  
+    <div class="kt-bottom-item" data-bottom-role="workspace">  
+      <img src="workspace-svgrepo-com.svg" class="kt-bottom-icon" alt="Workspace">  
+    </div>  
+  </nav>  
+
+  <div class="kt-ai-fab" id="kt-ai-fab">
+    <img src="menu-vertical-svgrepo-com.svg" class="kt-fab-icon" alt="Menu">
+  </div>  
+
+  <div class="kt-ai-menu" id="kt-ai-menu">  
+    <button class="kt-ai-menu-btn" data-pane="ai"><span>AI</span><span>Kuantara AI</span></button>  
+    <button class="kt-ai-menu-btn" data-pane="mini"><span>MC</span><span>Mini Chart</span></button>  
+    <button class="kt-ai-menu-btn" data-pane="notes"><span>NT</span><span>Notes</span></button>  
+    <button class="kt-ai-menu-btn" data-pane="signals"><span>AL</span><span>Alerts</span></button>  
+    <button class="kt-ai-menu-btn" data-pane="settings"><span>ST</span><span>Settings</span></button>  
+  </div>  
+
+  <div class="kt-ai-panel" id="kt-ai-panel">  
+    <div class="kt-ai-panel-header">  
+      <div class="kt-ai-panel-title">  
+        <span id="kt-ai-title">Kuantara Panel</span>  
+        <span id="kt-ai-subtitle">Floating utility for AI, chart & notes.</span>  
+      </div>  
+      <div class="kt-ai-panel-close" id="kt-ai-close">✕</div>  
+    </div>  
+    <div class="kt-ai-panel-body" id="kt-ai-body"></div>  
+    <div class="kt-ai-footer" id="kt-ai-footer"></div>  
+  </div>  
+
+  <div class="kt-overlay" id="kt-search-ovl" aria-hidden="true">  
+    <div class="kt-card">  
+      <div class="kt-card-title">Search</div>  
+      <input id="kt-search-input" class="kt-search-input" type="text" placeholder="Cari menu/sub… (Enter untuk lompat, Esc tutup)" />  
+      <div class="kt-search-chips" id="kt-search-chips"></div>
+      <div class="kt-search-suggestions hidden" id="kt-search-suggestions"></div>  
+      <button class="kt-close-btn" id="kt-search-close">Close</button>  
+    </div>  
+  </div>  
+
+  <div class="kt-cheatsheet" id="kt-cheatsheet">  
+    <div><b>Alt+0–9</b> Menu · <b>Ctrl+1–9</b> Sub · <b>Esc</b>=Alt+0 · <b>Ctrl+F</b> Search</div>  
+  </div>  
+
+  <!-- Toast notification container -->
+  <div class="kt-toast-container" id="kt-toast-container"></div>
+
+  <script>  
+    (function(){  
+      const mainButtons = document.querySelectorAll(".kt-mainmenu-btn");  
+      const bottomItems = document.querySelectorAll(".kt-bottom-item");  
+      const submenuGroups = document.querySelectorAll(".kt-submenu-group");  
+      const submenuButtons = document.querySelectorAll(".kt-submenu-btn");  
+  
+      const breadcrumbMain = document.getElementById("breadcrumb-main");  
+      const breadcrumbSub  = document.getElementById("breadcrumb-sub");  
+      const statusMsg      = document.getElementById("kt-status-msg");  
+      const sessionTimes   = document.querySelectorAll(".kt-session-time");  
+  
+      const aiFab    = document.getElementById("kt-ai-fab");  
+      const aiMenu   = document.getElementById("kt-ai-menu");  
+      const aiPanel  = document.getElementById("kt-ai-panel");  
+      const aiClose  = document.getElementById("kt-ai-close");  
+      const aiTitle  = document.getElementById("kt-ai-title");  
+      const aiSubtitle = document.getElementById("kt-ai-subtitle");  
+      const aiBody   = document.getElementById("kt-ai-body");  
+      const aiFooter = document.getElementById("kt-ai-footer");  
+      const aiMenuButtons = document.querySelectorAll(".kt-ai-menu-btn");  
+  
+      const searchOvl   = document.getElementById("kt-search-ovl");  
+      const searchInput = document.getElementById("kt-search-input");  
+      const searchClose = document.getElementById("kt-search-close");  
+      const searchSuggestions = document.getElementById("kt-search-suggestions");  
+      const searchChips = document.getElementById("kt-search-chips");  
+  
+      const iframeLayer   = document.getElementById("kt-iframe-layer");  
+      const topbar        = document.getElementById("kt-topbar");  
+      const mainmenuStrip = document.getElementById("kt-mainmenu-strip");  
+      const contentHeader = document.getElementById("kt-content-header");  
+      const statusbar     = document.getElementById("kt-statusbar");  
+      const submenuStrip  = document.getElementById("kt-submenu-strip");  
+      const bottomNav     = document.getElementById("kt-bottom-nav");  
+      const workspacePage = document.getElementById("kt-workspace-page");  
+      const workspaceBoard = document.getElementById("kt-workspace-board");  
+      const workspaceAddBtn = document.getElementById("kt-workspace-add-current");  
+      const workspaceClearBtn = document.getElementById("kt-workspace-clear");  
+      const toastContainer = document.getElementById("kt-toast-container");
+
+      const TOP_TRIGGER_ZONE = 60;  
+      const BOTTOM_TRIGGER_ZONE = 120;  
+      const HIDE_DELAY = 1800;  
+      const CLICK_GRACE = 450;  
+      let hideTimer=null, graceTimer=null;  
+        
+      /* Pin State (default: pinned / autohide disabled) */  
+      let isPinned = true;  
+  
+      let activeMenu=0;  
+      let activeBottom="home";  
+  
+      /* track view for workspace */  
+      let currentViewUrl = "";  
+      let currentViewTitleMain = "";  
+      let currentViewTitleSub  = "";  
+  
+      /* Map menu:sub -> iframe URL */  
+      const FEED_247_URL    = "https://kuantara112.github.io/Kuantara_Terminal_Charts/news_feeds_247.html";  
+      const MINI_CHART_URL  = "https://kuantara112.github.io/Kuantara_Terminal_Charts/xauusd_tradingview.html";  
+      const KUANTARA_AI_URL = "https://kuantara112.github.io/Kuantara_Terminal_Charts/kuantara_ai.html";  
+  
+      const IFRAME_MAP = {  
+        // Markets  
+        "0:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/overview_markets.html",  
+        "0:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_capflows.html",  
+        "0:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_forex.html",  
+        "0:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_fixed.html",  
+        "0:4":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_commodities.html",  
+        "0:5":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_equities.html",  
+        "0:6":"https://kuantara112.github.io/Kuantara_Terminal_Charts/markets_crypto.html",  
+  
+        // News  
+        "1:0":FEED_247_URL,  
+        "1:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_insights.html",  
+        "1:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_calendar.html",  
+        "1:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_global.html",  
+        "1:4":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_channel.html",  
+        "1:5":"https://kuantara112.github.io/Kuantara_Terminal_Charts/news_indonesia.html",  
+  
+        // Macroeconomic
+        "2:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_centralbank.html",  
+        "2:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_majorcountry.html",  
+        "2:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/macroeconomic_countries.html",  
+  
+        // Geo-Economic  
+        "3:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_georisk.html",  
+        "3:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_tradeshipping.html",  
+        "3:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/geoecon_resources.html",  
+  
+        // Metrics Labs
+        "4:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macrolab.html",  
+        "4:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_marketlab.html",  
+        "4:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentimentlab.html",  
+  
+        // Companies
+        "5:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us.html",  
+        "5:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us2.html",  
+        "5:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_us3.html",  
+        "5:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_indo.html",  
+        "5:4":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_foreign.html",  
+        "5:5":"https://kuantara112.github.io/Kuantara_Terminal_Charts/companies_blockchain.html",  
+  
+        // Charts
+        "6:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/technical_charts.html",  
+        "6:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_economy.html",  
+        "6:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/charts_realtime.html",  
+  
+        // Screener
+        "7:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_stocks.html",  
+        "7:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_forex.html",  
+        "7:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/screener_crypto.html",  
+  
+        // Research
+        "8:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_institutions.html",  
+        "8:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_quant.html",  
+        "8:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/research_reports.html",  
+  
+        // Tools
+        "9:0":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_journal.html",  
+        "9:1":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_calc.html",  
+        "9:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_edu.html",  
+        "9:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_others.html"  
+      };  
+
+      /* ===== ALERTS & NOTIFICATIONS STATE ===== */
+      const ALERTS_STORAGE_KEY = "kuantara_alerts_v1";
+      let alertStore = [];
+      let seenAlertIds = new Set();
+      let alertsPanelOpen = false;
+      let alertsListEl = null;
+
+      let toastQueue = [];
+      let toastActive = false;
+
+      function loadAlertsFromStorage(){
+        try{
+          if(!window.localStorage) return;
+          const raw = localStorage.getItem(ALERTS_STORAGE_KEY);
+          if(!raw) return;
+          const arr = JSON.parse(raw);
+          if(Array.isArray(arr)){
+            alertStore = arr.map(a => ({
+              id: a.id || null,
+              type: a.type || "info",
+              title: a.title || "",
+              message: a.message || "",
+              ts: a.ts || a.timestamp || Date.now()
+            }));
+            alertStore.forEach(a => {
+              if(a.id) seenAlertIds.add(a.id);
+            });
+          }
+        }catch(e){}
+      }
+
+      function saveAlertsToStorage(){
+        try{
+          if(!window.localStorage) return;
+          const payload = alertStore.slice(0,100);
+          localStorage.setItem(ALERTS_STORAGE_KEY, JSON.stringify(payload));
+        }catch(e){}
+      }
+
+      function formatAlertTime(ts){
+        try{
+          const d = new Date(ts || Date.now());
+          return d.toLocaleString("id-ID",{
+            day:"2-digit",
+            month:"short",
+            hour:"2-digit",
+            minute:"2-digit"
+          });
+        }catch(e){
+          return "";
+        }
+      }
+
+      function enqueueToast(alert){
+        if(!toastContainer) return;
+        toastQueue.push(alert);
+        if(!toastActive) processToastQueue();
+      }
+
+      function processToastQueue(){
+        if(!toastContainer){
+          toastQueue = [];
+          toastActive = false;
+          return;
+        }
+        const next = toastQueue.shift();
+        if(!next){
+          toastActive = false;
+          return;
+        }
+        toastActive = true;
+        const toast = document.createElement("div");
+        const type = next.type || "default";
+        toast.className = "kt-toast" + (type === "news" ? " kt-toast-news" : type === "session" ? " kt-toast-session" : "");
+        const badgeLabel = type === "news" ? "NEWS" : type === "session" ? "SESSION" : "ALERT";
+        const meta = next.meta || "";
+        toast.innerHTML = `
+          <div class="kt-toast-title">
+            <span class="kt-toast-badge">${badgeLabel}</span>
+            <span>${next.title || ""}</span>
+          </div>
+          <div class="kt-toast-body">${next.message || ""}</div>
+          ${meta ? `<div class="kt-toast-meta">${meta}</div>` : ""}
+        `;
+        toastContainer.appendChild(toast);
+
+        const visibleMs = 4500;
+        const totalMs = visibleMs + 250;
+
+        setTimeout(() => {
+          toast.classList.add("hide");
+          setTimeout(() => {
+            toast.remove();
+            processToastQueue();
+          }, 220);
+        }, visibleMs);
+      }
+
+      function renderAlertsList(){
+        if(!alertsPanelOpen || !alertsListEl) return;
+        alertsListEl.innerHTML = "";
+        if(!alertStore.length){
+          const empty = document.createElement("div");
+          empty.className = "kt-alerts-empty";
+          empty.textContent = "Belum ada notifikasi. Breaking news & sesi market akan muncul di sini.";
+          alertsListEl.appendChild(empty);
+          return;
+        }
+        alertStore
+          .slice()
+          .sort((a,b) => (b.ts || 0) - (a.ts || 0))
+          .forEach(a => {
+            const row = document.createElement("div");
+            row.className = "kt-alert-item " + (a.type === "news" ? "kt-alert-item-news" : a.type === "session" ? "kt-alert-item-session" : "");
+            const chipClass = a.type === "news" ? "kt-alert-type-chip kt-alert-type-chip-news" :
+                              a.type === "session" ? "kt-alert-type-chip kt-alert-type-chip-session" :
+                              "kt-alert-type-chip";
+            const chipLabel = a.type === "news" ? "NEWS" : a.type === "session" ? "SESSION" : "ALERT";
+            row.innerHTML = `
+              <div class="kt-alert-row-top">
+                <div class="kt-alert-title">${a.title || ""}</div>
+                <div class="${chipClass}">${chipLabel}</div>
+              </div>
+              <div class="kt-alert-message">${a.message || ""}</div>
+              <div class="kt-alert-time">${formatAlertTime(a.ts)}</div>
+            `;
+            alertsListEl.appendChild(row);
+          });
+      }
+
+      function addAlert(alert, showToast = true){
+        if(!alert || !alert.message) return;
+        const id = alert.id || null;
+        if(id && seenAlertIds.has(id)){
+          return; // notif hanya muncul sekali
+        }
+        if(id) seenAlertIds.add(id);
+        const normalized = {
+          id,
+          type: alert.type || "info",
+          title: alert.title || "Alert",
+          message: alert.message || "",
+          ts: alert.ts || Date.now()
+        };
+        alertStore.unshift(normalized);
+        if(alertStore.length > 100) alertStore.length = 100;
+        saveAlertsToStorage();
+        if(alertsPanelOpen) renderAlertsList();
+        if(showToast){
+          enqueueToast({
+            type: normalized.type,
+            title: normalized.title,
+            message: normalized.message,
+            meta: formatAlertTime(normalized.ts)
+          });
+        }
+      }
+
+      function clearAlerts(){
+        alertStore = [];
+        seenAlertIds = new Set();
+        saveAlertsToStorage();
+        if(alertsPanelOpen) renderAlertsList();
+      }
+
+      // expose untuk Fastbull & event lain
+      window.KTPushNotification = function(alert){
+        addAlert(alert, true);
+      };
+
+      loadAlertsFromStorage();
+  
+      function injectIframe(url){  
+        if(!url){  
+          iframeLayer.innerHTML="";  
+          return;  
+        }  
+
+        iframeLayer.innerHTML = `  
+          <div class="kt-iframe-loading" id="kt-iframe-loading">  
+            <div class="kt-iframe-spinner"></div>  
+            <div class="kt-iframe-loading-text">Loading view…</div>  
+          </div>  
+          <iframe title="embedded" loading="lazy" src="${url}"></iframe>  
+        `;  
+
+        const iframe = iframeLayer.querySelector("iframe");  
+        const loader = iframeLayer.querySelector(".kt-iframe-loading");  
+
+        if(iframe){  
+          iframe.addEventListener("load", ()=>{  
+            if(loader){  
+              loader.classList.add("kt-iframe-loading-done");  
+              setTimeout(()=>{  
+                if(loader && loader.parentNode){  
+                  loader.parentNode.removeChild(loader);  
+                }  
+              }, 350);  
+            }  
+            if(!isPinned && statusMsg){  
+              statusMsg.textContent = url ? "EMBED: "+url : "READY (No content)";  
+            }  
+          });  
+        }  
+
+        updateIframeInteractivity();  
+      }  
+  
+      function updateIframeInteractivity(){  
+        iframeLayer.style.pointerEvents = "auto";  
+      }  
+  
+      function renderContent(menuIndex, subIndex){  
+        const key = menuIndex+":"+subIndex;  
+        const url = IFRAME_MAP[key] || "";  
+
+        if(!isPinned && statusMsg){  
+          statusMsg.textContent = url ? "LOADING: "+url : "READY (No content)";  
+        }  
+
+        injectIframe(url);  
+        currentViewUrl = url;  
+        currentViewTitleMain = breadcrumbMain.textContent || "";  
+        currentViewTitleSub  = breadcrumbSub.textContent || "";  
+      }  
+  
+      function setActiveMenu(menuIndex){  
+        activeMenu = menuIndex;  
+        document.querySelectorAll(".kt-mainmenu-btn").forEach(btn=>{  
+          btn.classList.toggle("active", Number(btn.getAttribute("data-menu"))===menuIndex);  
+        });  
+        submenuGroups.forEach(group=>{  
+          group.classList.toggle("active", Number(group.getAttribute("data-menu-sub"))===menuIndex);  
+        });  
+        const activeMain = document.querySelector('.kt-mainmenu-btn[data-menu="'+menuIndex+'"] span:nth-child(2)');  
+        if(activeMain) breadcrumbMain.textContent = menuIndex+" · "+activeMain.textContent.trim();  
+  
+        const firstSub = document.querySelector('.kt-submenu-btn[data-menu="'+menuIndex+'"][data-sub-index="0"]');  
+        if(firstSub){ setActiveSub(menuIndex,0); } else { breadcrumbSub.textContent=""; renderContent(menuIndex,-1); }  
+  
+        if(!isPinned && statusMsg) statusMsg.textContent = "ACTIVE MENU: "+menuIndex;  
+      }  
+  
+      function setActiveSub(menuIndex, subIndex){  
+        submenuButtons.forEach(btn=>{  
+          const m=Number(btn.getAttribute("data-menu"));  
+          const s=Number(btn.getAttribute("data-sub-index"));  
+          btn.classList.toggle("active", m===menuIndex && s===subIndex);  
+        });  
+        const sub = document.querySelector('.kt-submenu-btn[data-menu="'+menuIndex+'"][data-sub-index="'+subIndex+'"]');  
+        if(sub){   
+          breadcrumbSub.textContent=sub.textContent.trim();   
+          if(!isPinned && statusMsg) statusMsg.textContent="ACTIVE: "+menuIndex+" · "+breadcrumbSub.textContent;   
+        }  
+        else {   
+          breadcrumbSub.textContent="";   
+          if(!isPinned && statusMsg) statusMsg.textContent="ACTIVE MENU: "+menuIndex+" · (no sub)";   
+        }  
+  
+        renderContent(menuIndex, subIndex);  
+      }  
+  
+      function setBottomActive(role){  
+        activeBottom = role;  
+        bottomItems.forEach(item=>{  
+          item.classList.toggle("active", item.getAttribute("data-bottom-role")===role);  
+        });  
+      }  
+  
+      function showWorkspacePage(){  
+        workspacePage.style.display="block";  
+      }  
+      function hideWorkspacePage(){  
+        workspacePage.style.display="none";  
+      }  
+
+      /* === PINNED/AUTOHIDE STATE HANDLER === */
+      function showTopBars(){  
+        if(activeBottom!=="home") return;  
+        mainmenuStrip.classList.remove("kt-hide-top");  
+        contentHeader.classList.remove("kt-hide-top");  
+        clearTimeout(graceTimer);  
+        graceTimer=setTimeout(()=>{},CLICK_GRACE);  
+        updateIframeInteractivity();  
+      }  
+  
+      function hideTopBars(){  
+        if(isPinned) return;  
+        mainmenuStrip.classList.add("kt-hide-top");  
+        contentHeader.classList.add("kt-hide-top");  
+        updateIframeInteractivity();  
+      }  
+  
+      function showBottomBars(){  
+        if(activeBottom!=="home") return;  
+        submenuStrip.classList.remove("kt-hide-bottom");  
+        if(statusbar) statusbar.classList.remove("kt-hide-bottom");  
+        clearTimeout(graceTimer);  
+        graceTimer=setTimeout(()=>{},CLICK_GRACE);  
+        updateIframeInteractivity();  
+      }  
+  
+      function hideBottomBars(){  
+        if(isPinned) return;  
+        submenuStrip.classList.add("kt-hide-bottom");  
+        if(statusbar) statusbar.classList.add("kt-hide-bottom");  
+        updateIframeInteractivity();  
+      }  
+  
+      function showAllBars(){  
+        if(activeBottom!=="home") return;  
+        mainmenuStrip.classList.remove("kt-hide-top");  
+        contentHeader.classList.remove("kt-hide-top");  
+        submenuStrip.classList.remove("kt-hide-bottom");  
+        if(statusbar) statusbar.classList.remove("kt-hide-bottom");  
+        clearTimeout(graceTimer);  
+        graceTimer=setTimeout(()=>{},CLICK_GRACE);  
+        updateIframeInteractivity();  
+      }  
+  
+      function hideAllBars(){  
+        if(isPinned) return;  
+        mainmenuStrip.classList.add("kt-hide-top");  
+        contentHeader.classList.add("kt-hide-top");  
+        submenuStrip.classList.add("kt-hide-bottom");  
+        if(statusbar) statusbar.classList.add("kt-hide-bottom");  
+        updateIframeInteractivity();  
+      }  
+  
+      function scheduleHide(){  
+        if(activeBottom!=="home" || isPinned) return;  
+        clearTimeout(hideTimer);  
+        hideTimer=setTimeout(()=>{ hideAllBars(); }, HIDE_DELAY);  
+      }  
+
+      function applyPinnedState(){
+        document.body.classList.toggle("kt-pinned", isPinned);
+        if(isPinned){
+          clearTimeout(hideTimer);
+          if(statusMsg) statusMsg.textContent = "Autohide disabled";
+          showAllBars();
+        } else {
+          if(statusMsg) statusMsg.textContent = currentViewUrl ? "EMBED: "+currentViewUrl : "READY";
+          if(activeBottom==="home") scheduleHide();
+        }
+      }
+  
+      function handleMouseMove(e){  
+        if(activeBottom!=="home" || isPinned) return;  
+        const y = e.clientY;  
+        const h = window.innerHeight;  
+        const nearTop = y <= TOP_TRIGGER_ZONE;  
+        const nearBottom = y >= (h - BOTTOM_TRIGGER_ZONE);  
+  
+        if (nearTop) {  
+          showTopBars();  
+          scheduleHide();  
+        } else if (nearBottom) {  
+          showBottomBars();  
+          scheduleHide();  
+        }  
+      }  
+  
+      window.addEventListener("mousemove", handleMouseMove, {passive:true});  
+  
+      window.addEventListener("touchstart",(e)=>{  
+        if(activeBottom!=="home" || isPinned) return;  
+        const y=e.touches[0]?.clientY??0, h=window.innerHeight;  
+        const nearTop = y <= TOP_TRIGGER_ZONE;  
+        const nearBottom = y >= (h - BOTTOM_TRIGGER_ZONE);  
+  
+        if(nearTop) showTopBars();  
+        if(nearBottom) showBottomBars();  
+        scheduleHide();  
+      },{passive:true});  
+
+      function showLayoutCheatsheet(){
+        const cheats=document.getElementById("kt-cheatsheet");  
+        cheats.style.display="block"; 
+        setTimeout(()=>{cheats.style.display="none";},2000);  
+        if(activeBottom==="home" && !isPinned){ showAllBars(); scheduleHide(); }  
+      }
+  
+      /* SEARCH INDEX + FIND */  
+      function buildSearchIndex(){  
+        const idx=[];  
+        document.querySelectorAll(".kt-mainmenu-btn").forEach(btn=>{  
+          const menuIdx=Number(btn.getAttribute("data-menu"));  
+          const name=btn.querySelector("span:nth-child(2)")?.textContent?.trim()||"";  
+          idx.push({label:name,menu:menuIdx,sub:null,type:"menu"});  
+        });  
+        document.querySelectorAll(".kt-submenu-btn").forEach(btn=>{  
+          const menuIdx=Number(btn.getAttribute("data-menu"));  
+          const subIdx=Number(btn.getAttribute("data-sub-index"));  
+          const name=btn.textContent.trim();  
+          idx.push({label:name,menu:menuIdx,sub:subIdx,type:"sub"});  
+        });  
+        return idx;  
+      }  
+      function findBestMatch(index,qRaw){  
+        const q=qRaw.toLowerCase();  
+        return index.find(it=>it.label.toLowerCase()===q)  
+            || index.find(it=>it.label.toLowerCase().startsWith(q))  
+            || index.find(it=>it.label.toLowerCase().includes(q))  
+            || null;  
+      }  
+  
+      let searchIndex=buildSearchIndex();  
+  
+      function openOverlay(el){ el.style.display="flex"; updateIframeInteractivity(); }  
+      function closeOverlay(el){ el.style.display="none"; updateIframeInteractivity(); }  
+  
+      function clearSearchSuggestions(){  
+        if(!searchSuggestions) return;  
+        searchSuggestions.innerHTML = "";  
+        searchSuggestions.classList.add("hidden");  
+      }  
+
+      function clearSearchChips(){
+        if(!searchChips) return;
+        searchChips.innerHTML = "";
+      }
+
+      function jumpToTarget(match){
+        if(!match) return;
+        if(activeBottom!=="home"){  
+          setBottomActive("home");  
+          hideWorkspacePage();  
+        }  
+        setActiveMenu(match.menu);  
+        if(match.sub!==null && match.sub!==undefined) setActiveSub(match.menu,match.sub);  
+        if(!isPinned && statusMsg) statusMsg.textContent=`SEARCH goto: ${match.label} (${match.type})`;  
+      }
+  
+      function updateSearchSuggestions(qRaw){  
+        if(!searchSuggestions) return;  
+        const q = (qRaw || "").trim();  
+        if(!q){  
+          clearSearchSuggestions();  
+          return;  
+        }  
+        const qLower = q.toLowerCase();  
+        const matches = searchIndex  
+          .filter(it => it.label.toLowerCase().includes(qLower))  
+          .slice(0, 10);  
+  
+        if(matches.length===0){  
+          clearSearchSuggestions();  
+          return;  
+        }  
+  
+        searchSuggestions.innerHTML = "";  
+  
+        matches.forEach(match => {  
+          const item = document.createElement("div");  
+          item.className = "kt-search-suggestion-item";  
+  
+          const mainSpan = document.createElement("span");  
+          mainSpan.className = "kt-search-suggestion-main";  
+          mainSpan.textContent = match.label;  
+  
+          const metaSpan = document.createElement("span");  
+          metaSpan.className = "kt-search-suggestion-meta";  
+          metaSpan.textContent = match.type==="menu"  
+            ? `Menu ${match.menu}`  
+            : `Sub ${match.menu}:${match.sub}`;  
+  
+          item.appendChild(mainSpan);  
+          item.appendChild(metaSpan);  
+  
+          item.addEventListener("click", () => {  
+            jumpToTarget(match);
+            closeSearch();  
+          });  
+  
+          searchSuggestions.appendChild(item);  
+        });  
+  
+        searchSuggestions.classList.remove("hidden");  
+      }  
+
+      /* RANDOM CHIPS BAWAH INPUT SEARCH */
+      function renderRandomChips(){
+        if(!searchChips) return;
+        clearSearchChips();
+        if(!searchIndex || !searchIndex.length) return;
+
+        const candidates = searchIndex.slice();
+        if(!candidates.length) return;
+
+        for(let i = candidates.length - 1; i > 0; i--){
+          const j = Math.floor(Math.random() * (i + 1));
+          const tmp = candidates[i];
+          candidates[i] = candidates[j];
+          candidates[j] = tmp;
+        }
+
+        const maxCount = Math.min(3, candidates.length);
+        const minCount = Math.min(2, maxCount);
+        const count = maxCount <= 2 ? maxCount : (minCount + Math.floor(Math.random() * (maxCount - minCount + 1)));
+        const picks = candidates.slice(0, count);
+
+        picks.forEach(match => {
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "kt-search-chip";
+          chip.textContent = match.label;
+          chip.addEventListener("click", () => {
+            jumpToTarget(match);
+            closeSearch();
+          });
+          searchChips.appendChild(chip);
+        });
+      }
+  
+      function openSearch(){  
+        searchIndex=buildSearchIndex();  
+        openOverlay(searchOvl);  
+        setTimeout(()=>searchInput.focus(),10);  
+        if(!isPinned && statusMsg) statusMsg.textContent="SEARCH: active";  
+        if(activeBottom==="home"){  
+          showAllBars();  
+        }  
+        renderRandomChips();
+        updateSearchSuggestions(searchInput.value || "");  
+      }  
+      function closeSearch(){   
+        closeOverlay(searchOvl);   
+        clearSearchSuggestions();  
+        clearSearchChips();
+        if(!isPinned && statusMsg) statusMsg.textContent="SEARCH: closed";   
+        if(activeBottom==="home" && !isPinned) scheduleHide();   
+      }  
+  
+      searchClose.addEventListener("click", closeSearch);  
+      searchOvl.addEventListener("click",(e)=>{ if(e.target===searchOvl) closeSearch(); });  
+  
+      searchInput.addEventListener("input",(e)=>{  
+        const v = e.target.value || "";  
+        updateSearchSuggestions(v);  
+      });  
+  
+      searchInput.addEventListener("keydown",(e)=>{  
+        if(e.key==="Escape"){ e.preventDefault(); closeSearch(); return; }  
+        if(e.key==="Enter"){  
+          e.preventDefault();  
+          const q=(searchInput.value||"").trim();  
+          if(!q){   
+            if(!isPinned && statusMsg) statusMsg.textContent="SEARCH: empty";   
+            closeSearch();   
+            return;   
+          }  
+          const match=findBestMatch(searchIndex,q);  
+          if(match){  
+            jumpToTarget(match);
+          }  
+          else{  
+            if(!isPinned && statusMsg) statusMsg.textContent=`SEARCH: "${q}" not found`;  
+          }  
+          closeSearch();  
+        }  
+      });  
+  
+      function showAllBarsIfHome(){
+        if(activeBottom==="home") showAllBars();
+      }
+
+      function hideAllBarsIfNeeded(){
+        if(activeBottom==="home" && !isPinned) scheduleHide();
+      }
+
+      /* FLOATING MENU LOGIC */  
+      function toggleAiMenu(force){  
+        const isOpen = aiMenu.style.display==="flex";  
+        const next = typeof force==="boolean" ? force : !isOpen;  
+        aiMenu.style.display = next ? "flex" : "none";  
+      }  
+
+      function openAiPane(mode){  
+        // reset Alerts panel state setiap kali berpindah mode
+        alertsPanelOpen = false;
+        alertsListEl = null;
+
+        if(mode==="ai"){  
+          aiTitle.textContent = "Kuantara AI Assistant";  
+          aiSubtitle.textContent = "Kuantara AI terintegrasi langsung di dalam panel ini.";  
+          aiBody.innerHTML =  
+            '<iframe src="'+KUANTARA_AI_URL+'" ' +  
+            'title="Kuantara AI" loading="lazy" ' +  
+            'style="width:100%;height:100%;border:0;display:block;"></iframe>';  
+          aiFooter.style.display = "none";
+          aiFooter.innerHTML = '';  
+          aiPanel.style.display="flex";  
+          showAllBarsIfHome();
+        }else if(mode==="mini"){  
+          aiTitle.textContent = "Mini Chart";  
+          aiSubtitle.textContent = "Chart kecil untuk quick view XAUUSD.";  
+          aiBody.innerHTML =  
+            '<iframe src="'+MINI_CHART_URL+'" ' +  
+            'title="Mini Chart" loading="lazy" ' +  
+            'style="width:100%;height:100%;border:0;display:block;"></iframe>';  
+          aiFooter.style.display = "none";
+          aiFooter.innerHTML = '';  
+          aiPanel.style.display="flex";  
+          showAllBarsIfHome();
+        }else if(mode==="notes"){  
+          aiTitle.textContent = "Notes";  
+          aiSubtitle.textContent = "Catatan cepat untuk ide trade dan macro view.";  
+          aiBody.innerHTML =  
+            '<textarea id="kt-notes-area" ' +  
+            'style="width:100%;height:100%;background:#111;border:none;border-radius:0;' +  
+            'color:var(--text-main);padding:6px;font-size:11px;resize:none;box-sizing:border-box;outline:none;overflow:auto;" ' +  
+            'placeholder="Tulis catatan di sini..."></textarea>';  
+          aiFooter.style.display = "none";
+          aiFooter.innerHTML = '';  
+  
+          const notesArea = document.getElementById("kt-notes-area");  
+          if(window.localStorage){  
+            const saved = localStorage.getItem("kuantara_notes");  
+            if(saved) notesArea.value = saved;  
+            notesArea.addEventListener("input", ()=>localStorage.setItem("kuantara_notes", notesArea.value));  
+          }  
+          aiPanel.style.display="flex";  
+          showAllBarsIfHome();
+        }else if(mode==="signals"){  
+          aiTitle.textContent = "Alerts";  
+          aiSubtitle.textContent = "History notifikasi Fastbull & jam pasar.";  
+          aiBody.innerHTML = `
+            <div class="kt-alerts-wrapper">
+              <div class="kt-alerts-header">
+                <span>Alerts History</span>
+                <span class="kt-alerts-header-badge">
+                  ${alertStore.length ? alertStore.length + " items" : "No alerts yet"}
+                </span>
+              </div>
+              <div class="kt-alerts-list" id="kt-alerts-list"></div>
+            </div>
+          `;
+          aiFooter.style.display = "flex";
+          aiFooter.innerHTML = `
+            <button class="kt-ai-btn" id="kt-alerts-clear-btn">Clear Alerts</button>
+          `;
+          aiPanel.style.display="flex";  
+          showAllBarsIfHome();
+
+          alertsPanelOpen = true;
+          alertsListEl = document.getElementById("kt-alerts-list");
+          renderAlertsList();
+
+          const clearBtn = document.getElementById("kt-alerts-clear-btn");
+          if(clearBtn){
+            clearBtn.addEventListener("click", ()=>{
+              clearAlerts();
+            });
+          }
+        }else if(mode==="settings"){  
+          aiTitle.textContent = "Settings";  
+          aiSubtitle.textContent = "Pengaturan tampilan Kuantara Terminal.";  
+          aiBody.innerHTML = `
+            <div style="width:100%;height:100%;padding:10px 12px;box-sizing:border-box;overflow:auto;color:var(--text-main);font-size:11px;line-height:1.6;">
+              <div style="margin-bottom:8px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;font-size:10px;">
+                Display Controls
+              </div>
+              <div style="margin-bottom:6px;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                  <input type="checkbox" id="kt-set-topbar" style="accent-color:var(--amber);" />
+                  <span>Tampilkan Top Bar</span>
+                </label>
+              </div>
+              <div style="margin-bottom:6px;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                  <input type="checkbox" id="kt-set-newstape" style="accent-color:var(--amber);" />
+                  <span>Tampilkan News Tape (Breaking)</span>
+                </label>
+                <div style="font-size:10px;color:var(--text-muted);margin-left:18px;margin-top:2px;">
+                  Strip berita berjalan tepat di bawah Top Bar.
+                </div>
+              </div>
+              <div style="margin-bottom:6px;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                  <input type="checkbox" id="kt-set-bottomnav" style="accent-color:var(--amber);" />
+                  <span>Tampilkan Bottom Menu</span>
+                </label>
+              </div>
+              <div style="margin-bottom:10px;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                  <input type="checkbox" id="kt-set-autohide" style="accent-color:var(--amber);" />
+                  <span>Aktifkan Auto-hide Strip Menu (top &amp; bottom)</span>
+                </label>
+                <div style="font-size:10px;color:var(--text-muted);margin-left:18px;margin-top:2px;">
+                  Jika off: strip menu selalu terlihat (mode pinned). Jika on: strip akan sembunyi otomatis.
+                </div>
+              </div>
+              <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
+                <button id="kt-settings-reset" 
+                        style="padding:5px 10px;border-radius:4px;border:1px solid var(--border-soft);background:linear-gradient(180deg,#222,#111);color:var(--text-muted);cursor:pointer;box-shadow:var(--shadow-tactile);font-size:11px;">
+                  Reset ke Default
+                </button>
+              </div>
+            </div>
+          `;
+          aiFooter.style.display = "none";
+          aiFooter.innerHTML = '';  
+          aiPanel.style.display="flex";  
+          showAllBarsIfHome();
+
+          const topbarChk = document.getElementById("kt-set-topbar");
+          const bottomChk = document.getElementById("kt-set-bottomnav");
+          const newstapeChk = document.getElementById("kt-set-newstape");
+          const autohideChk = document.getElementById("kt-set-autohide");
+          const resetBtn = document.getElementById("kt-settings-reset");
+
+          if(topbarChk){
+            topbarChk.checked = !document.body.classList.contains("kt-hide-topbar");
+            topbarChk.addEventListener("change", ()=>{
+              if(topbarChk.checked){
+                document.body.classList.remove("kt-hide-topbar");
+              }else{
+                document.body.classList.add("kt-hide-topbar");
+              }
+            });
+          }
+          if(newstapeChk){
+            const hasTape = document.body.classList.contains("kt-show-newstape");
+            newstapeChk.checked = hasTape;
+            newstapeChk.addEventListener("change", ()=>{
+              if(newstapeChk.checked){
+                document.body.classList.add("kt-show-newstape");
+              }else{
+                document.body.classList.remove("kt-show-newstape");
+              }
+            });
+          }
+          if(bottomChk){
+            bottomChk.checked = !document.body.classList.contains("kt-hide-bottomnav");
+            bottomChk.addEventListener("change", ()=>{
+              if(bottomChk.checked){
+                document.body.classList.remove("kt-hide-bottomnav");
+              }else{
+                document.body.classList.add("kt-hide-bottomnav");
+              }
+            });
+          }
+          if(autohideChk){
+            autohideChk.checked = !isPinned; // checked = autohide ON
+            autohideChk.addEventListener("change", ()=>{
+              isPinned = !autohideChk.checked;
+              applyPinnedState();
+            });
+          }
+          if(resetBtn){
+            resetBtn.addEventListener("click", ()=>{
+              document.body.classList.remove("kt-hide-topbar","kt-hide-bottomnav");
+              document.body.classList.add("kt-show-newstape");
+              isPinned = true;
+              applyPinnedState();
+              if(topbarChk) topbarChk.checked = true;
+              if(bottomChk) bottomChk.checked = true;
+              if(newstapeChk) newstapeChk.checked = true;
+              if(autohideChk) autohideChk.checked = false;
+            });
+          }
+        }  
+      }  
+  
+      function setupEventListeners() {  
+        /* Main menu */  
+        mainButtons.forEach(btn => {  
+          btn.addEventListener('click', (e) => {  
+            e.stopPropagation();  
+            if(activeBottom!=="home"){  
+              setBottomActive("home");  
+              hideWorkspacePage();  
+            }  
+            setActiveMenu(Number(btn.getAttribute("data-menu")));  
+            if(!isPinned) { showAllBars(); scheduleHide(); }  
+          });  
+        });  
+  
+        /* Submenu */  
+        submenuButtons.forEach(btn => {  
+          btn.addEventListener('click', (e) => {  
+            e.stopPropagation();  
+            if(activeBottom!=="home"){  
+              setBottomActive("home");  
+              hideWorkspacePage();  
+            }  
+            const menuIndex = Number(btn.getAttribute("data-menu"));  
+            const subIndex = Number(btn.getAttribute("data-sub-index"));  
+            setActiveSub(menuIndex, subIndex);  
+            if(!isPinned) { showAllBars(); scheduleHide(); }  
+          });  
+        });  
+  
+        /* Bottom bar behaviour */  
+        bottomItems.forEach(item=>{  
+          item.addEventListener("click",(e)=>{  
+            e.stopPropagation();  
+            const role = item.getAttribute("data-bottom-role");  
+  
+            if(role==="home"){  
+              setBottomActive("home");  
+              hideWorkspacePage();  
+              setActiveMenu(0);  
+              setActiveSub(0,0);  
+              if(!isPinned) { showAllBars(); scheduleHide(); }  
+            }  
+            else if(role==="workspace"){  
+              setBottomActive("workspace");  
+              hideWorkspacePage(); // reset dulu
+              hideAllBars();  
+              injectIframe("");  
+              showWorkspacePage();  
+            }  
+            else if(role==="search"){  
+              if(activeBottom!=="home"){  
+                setBottomActive("home");  
+                hideWorkspacePage();  
+                setActiveMenu(0);  
+                setActiveSub(0,0);  
+              }  
+              openSearch();  
+              showAllBars();  
+            }  
+          });  
+        });  
+  
+        /* Workspace buttons */  
+        if(workspaceAddBtn){  
+          workspaceAddBtn.addEventListener("click",(e)=>{  
+            e.stopPropagation();  
+            addCurrentViewToWorkspace();  
+          });  
+        }  
+        if(workspaceClearBtn){  
+          workspaceClearBtn.addEventListener("click",(e)=>{  
+            e.stopPropagation();  
+            clearWorkspace();  
+          });  
+        }  
+  
+        /* Pin/Unpin Double Click on Topbar */  
+        topbar.addEventListener("dblclick", (e) => {  
+          isPinned = !isPinned;  
+          applyPinnedState();
+        });  
+      }  
+  
+      aiFab.addEventListener("click", (e)=>{  
+        e.stopPropagation();  
+        toggleAiMenu();  
+        showAllBarsIfHome();  
+      });  
+  
+      aiMenuButtons.forEach(btn=>{  
+        btn.addEventListener("click",(e)=>{  
+          e.stopPropagation();  
+          const pane = btn.getAttribute("data-pane");  
+          toggleAiMenu(false);  
+          openAiPane(pane);  
+        });  
+      });  
+  
+      aiClose.addEventListener("click", ()=>{  
+        aiPanel.style.display="none";  
+      });  
+  
+      window.addEventListener("click",(e)=>{  
+        if(!aiFab.contains(e.target) && !aiMenu.contains(e.target) && !aiPanel.contains(e.target)){  
+          toggleAiMenu(false);  
+        }  
+      });  
+  
+      aiPanel.addEventListener("click",(e)=>{ e.stopPropagation(); });  
+  
+      /* WORKSPACE LOGIC */  
+      function ensureWorkspacePlaceholder(){  
+        if(!workspaceBoard) return;  
+        if(!workspaceBoard.querySelector(".kt-workspace-window")){  
+          workspaceBoard.innerHTML =  
+            '<div class="kt-workspace-placeholder">' +  
+            'Belum ada window di Workspace.<br>' +  
+            'Pergi ke Home, pilih view yang kamu suka, lalu klik <b>Add current view</b>.' +  
+            '</div>';  
+        }  
+      }  
+  
+      function createWorkspaceWindow(url, titleMain, titleSub){  
+        if(!workspaceBoard || !url) return;  
+        const placeholder = workspaceBoard.querySelector(".kt-workspace-placeholder");  
+        if(placeholder) placeholder.remove();  
+  
+        const win = document.createElement("div");  
+        win.className = "kt-workspace-window";  
+        const count = workspaceBoard.querySelectorAll(".kt-workspace-window").length;  
+        const offset = count * 24;  
+  
+        win.style.left = (20 + offset) + "px";  
+        win.style.top  = (20 + offset) + "px";  
+        win.style.width = "380px";  
+        win.style.height = "240px";  
+  
+        const title = (titleMain || "View") + (titleSub ? " · " + titleSub : "");  
+  
+        win.innerHTML = `  
+          <div class="kt-workspace-window-header">  
+            <span class="kt-workspace-window-title">${title}</span>  
+            <button class="kt-workspace-window-close" title="Close">✕</button>  
+          </div>  
+          <div class="kt-workspace-window-body">  
+            <iframe src="${url}" loading="lazy" title="Workspace view" frameborder="0"></iframe>  
+          </div>  
+          <div class="kt-workspace-resizer" title="Drag to resize"></div>  
+        `;  
+  
+        workspaceBoard.appendChild(win);  
+  
+        const closeBtn = win.querySelector(".kt-workspace-window-close");  
+        if(closeBtn){  
+          closeBtn.addEventListener("click", ()=>{  
+            win.remove();  
+            ensureWorkspacePlaceholder();  
+          });  
+        }  
+  
+        attachDragHandlers(win);  
+        attachResizeHandlers(win);  
+      }  
+  
+      function addCurrentViewToWorkspace(){  
+        if(!currentViewUrl){  
+          if(!isPinned && statusMsg) statusMsg.textContent = "WORKSPACE: no active view to add";  
+          return;  
+        }  
+        createWorkspaceWindow(currentViewUrl, currentViewTitleMain, currentViewTitleSub);  
+        if(!isPinned && statusMsg) statusMsg.textContent = "WORKSPACE: view added";  
+      }  
+  
+      function clearWorkspace(){  
+        if(!workspaceBoard) return;  
+        workspaceBoard.innerHTML = "";  
+        ensureWorkspacePlaceholder();  
+        if(!isPinned && statusMsg) statusMsg.textContent = "WORKSPACE: cleared";  
+      }  
+  
+      function attachDragHandlers(win){  
+        const header = win.querySelector(".kt-workspace-window-header");  
+        if(!header || !workspaceBoard) return;  
+        let isDragging=false, startX=0,startY=0,startLeft=0,startTop=0;  
+  
+        header.addEventListener("pointerdown",(e)=>{  
+          const isClose = e.target.closest(".kt-workspace-window-close");  
+          if(isClose) return;  
+          e.preventDefault();  
+          isDragging=true;  
+          const rect = win.getBoundingClientRect();  
+          const boardRect = workspaceBoard.getBoundingClientRect();  
+          startX = e.clientX;  
+          startY = e.clientY;  
+          startLeft = rect.left - boardRect.left;  
+          startTop  = rect.top  - boardRect.top;  
+  
+          win.setPointerCapture(e.pointerId);  
+  
+          const onMove = (ev)=>{  
+            if(!isDragging) return;  
+            const dx = ev.clientX - startX;  
+            const dy = ev.clientY - startY;  
+  
+            let newLeft = startLeft + dx;  
+            let newTop  = startTop + dy;  
+  
+            const maxLeft = workspaceBoard.clientWidth - win.offsetWidth;  
+            const maxTop  = workspaceBoard.clientHeight - 40;  
+  
+            if(newLeft < 0) newLeft = 0;  
+            if(newTop  < 0) newTop  = 0;  
+            if(newLeft > maxLeft) newLeft = maxLeft;  
+            if(newTop  > maxTop)  newTop  = maxTop;  
+  
+            win.style.left = newLeft + "px";  
+            win.style.top  = newTop  + "px";  
+          };  
+  
+          const onUp = (ev)=>{  
+            isDragging=false;  
+            try { win.releasePointerCapture(ev.pointerId); } catch(e){}  
+            window.removeEventListener("pointermove", onMove);  
+            window.removeEventListener("pointerup", onUp);  
+          };  
+  
+          window.addEventListener("pointermove", onMove);  
+          window.addEventListener("pointerup", onUp);  
+        });  
+      }  
+  
+      function attachResizeHandlers(win){  
+        const handle = win.querySelector(".kt-workspace-resizer");  
+        if(!handle || !workspaceBoard) return;  
+  
+        let isResizing=false, startX=0,startY=0,startW=0,startH=0;  
+  
+        handle.addEventListener("pointerdown",(e)=>{  
+          e.preventDefault();  
+          e.stopPropagation();  
+          isResizing=true;  
+          const rect = win.getBoundingClientRect();  
+          startX = e.clientX;  
+          startY = e.clientY;  
+          startW = rect.width;  
+          startH = rect.height;  
+  
+          win.setPointerCapture(e.pointerId);  
+  
+          const onMove = (ev)=>{  
+            if(!isResizing) return;  
+            const dx = ev.clientX - startX;  
+            const dy = ev.clientY - startY;  
+            let newW = startW + dx;  
+            let newH = startH + dy;  
+  
+            const minW = 220;  
+            const minH = 140;  
+            const boardRect = workspaceBoard.getBoundingClientRect();  
+            const winRect = win.getBoundingClientRect();  
+  
+            if(newW < minW) newW = minW;  
+            if(newH < minH) newH = minH;  
+            if(winRect.left + newW > boardRect.right) newW = boardRect.right - winRect.left;  
+            if(winRect.top + newH > boardRect.bottom) newH = boardRect.bottom - winRect.top;  
+  
+            win.style.width  = newW + "px";  
+            win.style.height = newH + "px";  
+          };  
+  
+          const onUp = (ev)=>{  
+            isResizing=false;  
+            try { win.releasePointerCapture(ev.pointerId); } catch(e){}  
+            window.removeEventListener("pointermove", onMove);  
+            window.removeEventListener("pointerup", onUp);  
+          };  
+  
+          window.addEventListener("pointermove", onMove);  
+          window.addEventListener("pointerup", onUp);  
+        });  
+      }  
+  
+      /* Keyboard */  
+      window.addEventListener("keydown",(e)=>{  
+        if(e.ctrlKey && (e.key==="f"||e.key==="F")){ e.preventDefault(); openSearch(); return; }  
+        if(e.altKey && !e.ctrlKey && !e.shiftKey){  
+          const k=e.key; if(k>="0"&&k<="9"){  
+            e.preventDefault();  
+            if(activeBottom!=="home"){  
+              setBottomActive("home");  
+              hideWorkspacePage();  
+            }  
+            setActiveMenu(Number(k));  
+            if(!isPinned) { showAllBars(); scheduleHide(); }  
+            return;  
+          }  
+        }  
+        if(e.ctrlKey && !e.altKey){  
+          const k=e.key; if(k>="1"&&k<="9"){  
+            e.preventDefault();  
+            if(activeBottom!=="home"){  
+              setBottomActive("home");  
+              hideWorkspacePage();  
+            }  
+            setActiveSub(activeMenu, Number(k)-1);  
+            if(!isPinned) { showAllBars(); scheduleHide(); }  
+            return;  
+          }  
+        }  
+        if(e.key==="Escape"){  
+          e.preventDefault();  
+          setBottomActive("home");  
+          hideWorkspacePage();  
+          setActiveMenu(0);  
+          setActiveSub(0,0);  
+          if(!isPinned) { showAllBars(); scheduleHide(); }  
+          return;  
+        }  
+        if(e.key==="Shift" && !e.repeat && !e.ctrlKey && !e.altKey){  
+          showLayoutCheatsheet();
+          return;  
+        }  
+      });  
+  
+      /* HELPER: apakah market buka antara 08.00–17.00 waktu lokal */  
+      function isMarketOpen(label, hour, minute){  
+        const mins = hour*60 + minute;  
+        return mins >= 8*60 && mins < 17*60;  
+      }  
+
+      const sessionState = {
+        SYD: null,
+        TYO: null,
+        LDN: null,
+        NYC: null
+      };
+  
+      /* Clocks pakai timezone asli (akurasi DST) + session-change alerts */  
+      function updateSessions(){  
+        const now = new Date();  
+        sessionTimes.forEach(el=>{  
+          const tzid = el.getAttribute("data-tzid");  
+          if(!tzid){  
+            el.textContent="--:--";  
+            return;  
+          }  
+  
+          const parts = new Intl.DateTimeFormat('en-GB',{  
+            hour:'2-digit',  
+            minute:'2-digit',  
+            hour12:false,  
+            timeZone: tzid  
+          }).formatToParts(now);  
+  
+          const hourStr = (parts.find(p=>p.type==="hour")?.value) || "00";  
+          const minStr  = (parts.find(p=>p.type==="minute")?.value) || "00";  
+  
+          el.textContent = hourStr+":"+minStr;  
+  
+          const hour = parseInt(hourStr,10);  
+          const minute = parseInt(minStr,10);  
+  
+          const parent = el.closest(".kt-session-item");  
+          if(!parent) return;  
+          const labelEl = parent.querySelector(".kt-session-label");  
+          const label = (labelEl?.textContent || "").trim();  
+  
+          const openNow = isMarketOpen(label,hour,minute);  
+          if(openNow){  
+            parent.classList.add("open");  
+          } else {  
+            parent.classList.remove("open");  
+          }  
+
+          // Session-change notification (OPEN/CLOSE) sekali tiap perubahan
+          if(sessionState.hasOwnProperty(label)){
+            const prev = sessionState[label];
+            if(prev === null){
+              sessionState[label] = openNow;
+            }else if(prev !== openNow){
+              sessionState[label] = openNow;
+              const stateLabel = openNow ? "OPEN" : "CLOSE";
+              const id = `session_${label}_${stateLabel}_${now.toDateString()}`;
+              addAlert({
+                id,
+                type: "session",
+                title: `Market Session ${label}`,
+                message: `${label} session ${stateLabel} · ${hourStr}:${minStr} (local)`,
+                ts: now.getTime()
+              }, true);
+            }
+          }
+        });  
+      }  
+      updateSessions();  
+      setInterval(updateSessions,1000);  
+  
+      /* Event listeners for auto-hide hover zones */  
+      [mainmenuStrip, contentHeader, submenuStrip, statusbar, bottomNav].forEach(el=>{  
+        if(!el) return;
+        el.addEventListener("mouseenter", ()=>{  
+          if(activeBottom!=="home" && el!==bottomNav) return;  
+          clearTimeout(hideTimer);  
+          if (el === mainmenuStrip || el === contentHeader) {  
+            showTopBars();  
+          } else if (el !== bottomNav) {  
+            showBottomBars();  
+          }  
+        });  
+        el.addEventListener("mouseleave", ()=>{  
+          if(el===bottomNav) return;  
+          scheduleHide();  
+        });  
+        el.addEventListener("pointerdown", ()=>{ clearTimeout(hideTimer); });  
+        el.addEventListener("click", (e)=>{ e.stopPropagation(); });  
+      });  
+  
+      document.querySelectorAll('.kt-mainmenu-btn, .kt-submenu-btn').forEach(btn=>{  
+        btn.addEventListener('pointerdown', (e)=>{  
+          e.stopPropagation();  
+          showAllBars();  
+          updateIframeInteractivity();  
+        });  
+        btn.addEventListener('click', (e)=>{ e.stopPropagation(); });  
+      });  
+  
+      /* Init */  
+      setupEventListeners();  
+      setActiveMenu(1);  
+      setBottomActive("home");  
+      hideWorkspacePage();  
+      ensureWorkspacePlaceholder();  
+      applyPinnedState(); // default pinned = autohide off
+      updateIframeInteractivity();  
+    })();  
+  </script>  
+
+  <!-- FASTBULL BREAKING NEWS TICKER SCRIPT + NEWS ALERTS -->
+  <script>
+    // ========== CONFIG ==========
+    const FASTBULL_NEWS_ENDPOINT = "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
+    const FASTBULL_HEADERS = { Accept: "application/json", "client-type": "4", clientversion: "latest", langid: "13" };
+    const FASTBULL_CORS_PROXY = "https://api.allorigins.win/raw?url=";
+
+    const AUTO_REFRESH_INTERVAL = 60000;
+
+    // =======================================================================
+    // DATA TAG FASTBULL
+    // =======================================================================
+    const FASTBULL_TAG_DATA = [
+      {
+        categoryName: "Highlights",
+        tagList: [
+          { id: 143, tagName: "Breaking/Top News" },
+          { id: 174, tagName: "Corporate Announcements" }
+        ]
+      },
+      {
+        categoryName: "Macro & Central Banks",
+        tagList: [
+          { id: 100, tagName: "All Central Banks" },
+          { id: 115, tagName: "Fed (USA)" },
+          { id: 118, tagName: "ECB (Europe)" },
+          { id: 120, tagName: "BOE (UK)" },
+          { id: 123, tagName: "BOJ (Japan)" },
+          { id: 124, tagName: "RBA (Australia)" },
+          { id: 116, tagName: "BOC (Canada)" },
+          { id: 114, tagName: "PBOC (China)" },
+          { id: 132, tagName: "Central Banks Updates" },
+          { id: 110, tagName: "Inflation" },
+          { id: 111, tagName: "Interest Rates" },
+          { id: 112, tagName: "Employment" },
+          { id: 125, tagName: "Monetary Policy" },
+          { id: 127, tagName: "Fiscal Policy" }
+        ]
+      },
+      {
+        categoryName: "Markets",
+        tagList: [
+          { id: 94, tagName: "Forex (FX)" },
+          { id: 95, tagName: "Stocks (Equities)" },
+          { id: 152, tagName: "Major Indices" },
+          { id: 169, tagName: "Stock Ratings" },
+          { id: 163, tagName: "Dividends" },
+          { id: 97, tagName: "Commodities" },
+          { id: 117, tagName: "Trade" }
+        ]
+      },
+      {
+        categoryName: "Crypto",
+        tagList: [
+          { id: 98, tagName: "Cryptocurrency" },
+          { id: 155, tagName: "Bitcoin" },
+          { id: 157, tagName: "Ethereum" },
+          { id: 134, tagName: "Regulation (Crypto)" }
+        ]
+      },
+      {
+        categoryName: "Geopolitics & Events",
+        tagList: [
+          { id: 136, tagName: "National Security" },
+          { id: 105, tagName: "Disasters/Accidents" },
+          { id: 108, tagName: "Russia-Ukraine" },
+          { id: 177, tagName: "Middle East" },
+          { id: 176, tagName: "Trump Trade" },
+          { id: 135, tagName: "Politics" }
+        ]
+      }
+    ];
+
+    const FASTBULL_ID_TO_LABEL = {};
+    FASTBULL_TAG_DATA.forEach(cat => {
+      cat.tagList.forEach(tag => {
+        FASTBULL_ID_TO_LABEL[tag.id] = tag.tagName;
+        FASTBULL_ID_TO_LABEL[String(tag.id)] = tag.tagName;
+      });
+    });
+
+    const getAllFastbullIds = () => {
+      const ids = [];
+      FASTBULL_TAG_DATA.forEach(cat => {
+        cat.tagList.forEach(tag => ids.push(tag.id));
+      });
+      ids.push(109, 144, 119, 122, 129, 133, 137, 154, 156, 158, 162, 164);
+      return [...new Set(ids)].join(",");
+    };
+
+    // ========== DOM ==========
+    const fastbullTickerEl = document.getElementById("fastbull-ticker");
+
+    // ========== STATE ==========
+    const fastbullCache = new Map();
+    let fastbullProxyEnabled = false;
+    let highImpactOnly = true; // hanya high impact
+    const fastbullSeenNewsIds = new Set(); // untuk notif sekali saja
+
+    // ========== HELPERS ==========
+    const formatTimestamp = (value) => {
+      if (!value) return "";
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return "";
+      return d.toLocaleTimeString("id-ID",{
+        hour:"2-digit",
+        minute:"2-digit",
+        timeZone:"Asia/Jakarta"
+      }) + " WIB";
+    };
+
+    const normalizeFastbullItem = (item) => {
+      const rawTagsStr = typeof item.tags === "string" ? item.tags : "";
+      const rawTagsArray = rawTagsStr.split(",").map(t => t.trim()).filter(Boolean);
+      const ts = new Date(item.releasedDate).getTime();
+      return {
+        id: item.newsId,
+        source: item.simWebsiteName || "FastBull",
+        rawTags: rawTagsArray,
+        title: item.newsTitle || "Untitled Headline",
+        time: formatTimestamp(item.releasedDate),
+        isImportant: Number(item.important) === 1,
+        timestamp: isNaN(ts) ? 0 : ts
+      };
+    };
+
+    const getFastbullItemsForTopic = (topicKey) => {
+      return fastbullCache.get(topicKey) || [];
+    };
+
+    const getFastbullItemsForDisplay = () => {
+      let items = getFastbullItemsForTopic("all");
+      if (highImpactOnly){
+        items = items.filter(item => item.isImportant);
+      }
+      return [...items].sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+    };
+
+    const renderTicker = (trackEl, items) => {
+      if (!trackEl) return;
+
+      trackEl.innerHTML = "";
+
+      const hasItems = items && items.length;
+      const sourceItems = hasItems ? items : [{
+        time:"",
+        title:"Waiting for latest high impact headlines..."
+      }];
+
+      const appendSequence = () => {
+        sourceItems.forEach(item => {
+          const span = document.createElement("span");
+          span.className = "ticker-item" + (hasItems ? "" : " empty");
+          span.textContent = item.time
+            ? `[${item.time}] ${item.title}`
+            : item.title;
+          trackEl.appendChild(span);
+        });
+      };
+
+      appendSequence();
+      appendSequence();
+
+      trackEl.style.animation = "none";
+      void trackEl.offsetWidth;
+      trackEl.style.animation = "ticker-scroll 90s linear infinite";
+    };
+
+    const renderFastbullTicker = () => {
+      const items = getFastbullItemsForDisplay();
+      renderTicker(fastbullTickerEl, items);
+    };
+
+    // ========== FETCHING ==========
+    const fetchFastbullNews = async (topicId = "all", forceRefresh = false) => {
+      const cacheKey = topicId;
+      const tagIdsToSend = topicId === "all" ? getAllFastbullIds() : topicId;
+
+      if (!forceRefresh && fastbullCache.has(cacheKey)){
+        renderFastbullTicker();
+        return;
+      }
+
+      try{
+        const baseUrl = `${FASTBULL_NEWS_ENDPOINT}?checkImportant=0&pageSize=100&tagIds=${tagIdsToSend}`;
+        let payload;
+
+        try{
+          const r = await fetch(baseUrl,{ headers:FASTBULL_HEADERS });
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          payload = await r.json();
+        }catch(err){
+          if (fastbullProxyEnabled) throw err;
+          fastbullProxyEnabled = true;
+          const r = await fetch(FASTBULL_CORS_PROXY + encodeURIComponent(baseUrl));
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          payload = await r.json();
+        }
+
+        const list = JSON.parse(payload.bodyMessage || "{}").pageDatas || [];
+        const items = list.map(item => normalizeFastbullItem(item));
+
+        fastbullCache.set(cacheKey, items);
+        renderFastbullTicker();
+
+        // Push notification untuk setiap high-impact baru (important = 1), sekali saja
+        const now = Date.now();
+        items.forEach(it => {
+          if(!it.isImportant) return;
+          if(!it.id) return;
+          if(fastbullSeenNewsIds.has(it.id)) return;
+          fastbullSeenNewsIds.add(it.id);
+
+          if(window.KTPushNotification){
+            window.KTPushNotification({
+              id: "news_" + it.id,
+              type: "news",
+              title: "BREAKING! " + (it.time || ""),
+              message: it.title,
+              ts: it.timestamp || now
+            });
+          }
+        });
+      }catch(e){
+        if (!fastbullCache.has("all") && fastbullTickerEl){
+          fastbullTickerEl.innerHTML = '<span class="ticker-item empty">Error loading headlines…</span>';
+        }
+      }
+    };
+
+    // ========== INIT ==========
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchFastbullNews("all");
+      setInterval(() => {
+        fetchFastbullNews("all", true);
+      }, AUTO_REFRESH_INTERVAL);
+    });
+  </script>
+</body>  
+</html>
