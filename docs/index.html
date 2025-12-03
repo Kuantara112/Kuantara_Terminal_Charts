@@ -208,7 +208,7 @@
       top: var(--topbar-h);
       height: var(--newstape-h);
       padding: 0 12px;
-      display: none;              /* default off, diaktifkan via body.kt-show-newstape */
+      display: none;
       align-items: center;
       justify-content: center;
       z-index: 2950;
@@ -228,21 +228,21 @@
       border:1px solid #7f1d1d;
       width:100%;
       max-width:100%;
-      height:var(--ticker-h);        /* tinggi FIX & kecil */
+      height:var(--ticker-h);
       display:flex;
-      align-items:stretch;           /* anak full height shell */
+      align-items:stretch;
     }
 
     .ticker-label{
       flex:0 0 auto;
       padding:0 10px;
-      height:100%;                   /* sama tinggi dengan shell */
+      height:100%;
       display:flex;
       align-items:center;
       justify-content:center;
       background:#7f1d1d;
       color:#ffffff;
-      font-size:12px;                /* sedikit lebih kecil biar muat */
+      font-size:12px;
       font-weight:700;
       letter-spacing:0.16em;
       text-transform:uppercase;
@@ -599,7 +599,7 @@
   
     .kt-ai-panel-body{ padding: 0; font-size: 11px; color: var(--text-muted); display: flex; flex-direction: column; gap: 0; flex: 1; min-height: 0; overflow: hidden; }  
   
-    .kt-ai-footer{ padding: 0; border-top: none; display: none; justify-content: flex-end; gap: 6px; flex: 0 0 auto; }  
+    .kt-ai-footer{ padding: 6px 8px; border-top: 1px solid var(--border-soft); display: none; justify-content: flex-end; gap: 6px; flex: 0 0 auto; }  
         
     .kt-ai-btn{  
       padding: 4px 10px; border-radius: 3px; font-size: 11px; border: 1px solid var(--border-soft);  
@@ -607,8 +607,10 @@
       box-shadow: var(--shadow-tactile); transition: all 0.15s ease;  
     }  
     .kt-ai-btn.primary{ background: var(--amber); color: #000; border-color: transparent; box-shadow: 0 2px 6px rgba(255,191,0,0.3); }  
+    .kt-ai-btn:hover{ border-color: var(--border-highlight); color: var(--text-main); }  
+    .kt-ai-btn:active{ transform: translateY(1px); box-shadow: var(--shadow-active); }  
   
-    /* SEARCH OVERLAY */  
+    /* ===== SEARCH OVERLAY ===== */  
     .kt-overlay{  
       position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
       display: none; align-items: center; justify-content: center; z-index: 4000;  
@@ -689,7 +691,197 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.6);  
     }  
     .kt-cheatsheet b{ color: var(--amber); }  
-  
+
+    /* ===== TOAST NOTIFICATION SYSTEM ===== */
+    .kt-toast-container{
+      position: fixed;
+      right: 16px;
+      bottom: calc(var(--bottomnav-h) + 70px);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 3500;
+      pointer-events: none;
+    }
+    .kt-toast{
+      min-width: 220px;
+      max-width: 280px;
+      background: rgba(18,18,18,0.96);
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-depth);
+      padding: 7px 10px;
+      font-size: 10px;
+      color: var(--text-main);
+      pointer-events: auto;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      opacity: 0;
+      transform: translateY(6px);
+      animation: kt-toast-in 0.22s ease-out forwards;
+    }
+    .kt-toast-title{
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      font-size: 9.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .kt-toast-badge{
+      padding: 1px 5px;
+      border-radius: 999px;
+      font-size: 9px;
+      background: rgba(255,191,0,0.12);
+      color: var(--amber);
+      border: 1px solid rgba(255,191,0,0.5);
+    }
+    .kt-toast-body{
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+    .kt-toast-meta{
+      font-size: 9px;
+      opacity: .6;
+      margin-top: 2px;
+    }
+    .kt-toast-news{
+      border-left: 2px solid var(--amber);
+    }
+    .kt-toast-session{
+      border-left: 2px solid #38bdf8;
+    }
+    .kt-toast.hide{
+      animation: kt-toast-out 0.18s ease-in forwards;
+    }
+    @keyframes kt-toast-in{
+      from{opacity:0;transform:translateY(6px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+    @keyframes kt-toast-out{
+      from{opacity:1;transform:translateY(0);}
+      to{opacity:0;transform:translateY(6px);}
+    }
+
+    @media (max-width: 600px){
+      .kt-toast-container{
+        left: 8px;
+        right: 8px;
+        bottom: calc(var(--bottomnav-h) + 60px);
+        align-items: center;
+      }
+      .kt-toast{
+        width: 100%;
+        max-width: 360px;
+      }
+    }
+
+    /* ===== ALERTS PANEL ===== */
+    .kt-alerts-wrapper{
+      width:100%;
+      height:100%;
+      padding:8px 10px;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      color:var(--text-main);
+      font-size:11px;
+    }
+    .kt-alerts-header{
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--text-muted);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid var(--border-soft);
+      padding-bottom:4px;
+      gap:6px;
+    }
+    .kt-alerts-header span:first-child{
+      color:var(--amber);
+    }
+    .kt-alerts-header-badge{
+      font-size:9px;
+      padding:1px 5px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      color:var(--text-muted);
+    }
+    .kt-alerts-empty{
+      font-size:10px;
+      color:var(--text-muted);
+      opacity:.7;
+      margin-top:4px;
+    }
+    .kt-alerts-list{
+      flex:1;
+      min-height:0;
+      overflow:auto;
+      padding-right:2px;
+      margin-top:2px;
+    }
+    .kt-alert-item{
+      border-radius:6px;
+      border:1px solid var(--border-soft);
+      padding:6px 8px;
+      margin-bottom:4px;
+      background:rgba(10,10,10,0.9);
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .kt-alert-item-news{
+      border-left:2px solid var(--amber);
+    }
+    .kt-alert-item-session{
+      border-left:2px solid #38bdf8;
+    }
+    .kt-alert-row-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:4px;
+    }
+    .kt-alert-title{
+      font-size:10px;
+      font-weight:600;
+    }
+    .kt-alert-type-chip{
+      font-size:9px;
+      padding:1px 5px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+    .kt-alert-type-chip-news{
+      border-color:rgba(255,191,0,0.5);
+      color:var(--amber);
+      background:rgba(255,191,0,0.08);
+    }
+    .kt-alert-type-chip-session{
+      border-color:rgba(56,189,248,0.6);
+      color:#38bdf8;
+      background:rgba(8,47,73,0.7);
+    }
+    .kt-alert-message{
+      font-size:10px;
+      color:var(--text-muted);
+    }
+    .kt-alert-time{
+      font-size:9px;
+      color:var(--text-muted);
+      opacity:.7;
+      margin-top:2px;
+    }
+
     @media (min-width: 900px){  
       .kt-submenu-strip{ display: flex; justify-content: center; padding-left: 0; padding-right: 0; }  
       .kt-submenu-group{ max-width: 980px; }  
@@ -963,6 +1155,9 @@
     <div><b>Alt+0–9</b> Menu · <b>Ctrl+1–9</b> Sub · <b>Esc</b>=Alt+0 · <b>Ctrl+F</b> Search</div>  
   </div>  
 
+  <!-- Toast notification container -->
+  <div class="kt-toast-container" id="kt-toast-container"></div>
+
   <script>  
     (function(){  
       const mainButtons = document.querySelectorAll(".kt-mainmenu-btn");  
@@ -1002,7 +1197,8 @@
       const workspaceBoard = document.getElementById("kt-workspace-board");  
       const workspaceAddBtn = document.getElementById("kt-workspace-add-current");  
       const workspaceClearBtn = document.getElementById("kt-workspace-clear");  
-  
+      const toastContainer = document.getElementById("kt-toast-container");
+
       const TOP_TRIGGER_ZONE = 60;  
       const BOTTOM_TRIGGER_ZONE = 120;  
       const HIDE_DELAY = 1800;  
@@ -1087,6 +1283,178 @@
         "9:2":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_edu.html",  
         "9:3":"https://kuantara112.github.io/Kuantara_Terminal_Charts/tools_others.html"  
       };  
+
+      /* ===== ALERTS & NOTIFICATIONS STATE ===== */
+      const ALERTS_STORAGE_KEY = "kuantara_alerts_v1";
+      let alertStore = [];
+      let seenAlertIds = new Set();
+      let alertsPanelOpen = false;
+      let alertsListEl = null;
+
+      let toastQueue = [];
+      let toastActive = false;
+
+      function loadAlertsFromStorage(){
+        try{
+          if(!window.localStorage) return;
+          const raw = localStorage.getItem(ALERTS_STORAGE_KEY);
+          if(!raw) return;
+          const arr = JSON.parse(raw);
+          if(Array.isArray(arr)){
+            alertStore = arr.map(a => ({
+              id: a.id || null,
+              type: a.type || "info",
+              title: a.title || "",
+              message: a.message || "",
+              ts: a.ts || a.timestamp || Date.now()
+            }));
+            alertStore.forEach(a => {
+              if(a.id) seenAlertIds.add(a.id);
+            });
+          }
+        }catch(e){}
+      }
+
+      function saveAlertsToStorage(){
+        try{
+          if(!window.localStorage) return;
+          const payload = alertStore.slice(0,100);
+          localStorage.setItem(ALERTS_STORAGE_KEY, JSON.stringify(payload));
+        }catch(e){}
+      }
+
+      function formatAlertTime(ts){
+        try{
+          const d = new Date(ts || Date.now());
+          return d.toLocaleString("id-ID",{
+            day:"2-digit",
+            month:"short",
+            hour:"2-digit",
+            minute:"2-digit"
+          });
+        }catch(e){
+          return "";
+        }
+      }
+
+      function enqueueToast(alert){
+        if(!toastContainer) return;
+        toastQueue.push(alert);
+        if(!toastActive) processToastQueue();
+      }
+
+      function processToastQueue(){
+        if(!toastContainer){
+          toastQueue = [];
+          toastActive = false;
+          return;
+        }
+        const next = toastQueue.shift();
+        if(!next){
+          toastActive = false;
+          return;
+        }
+        toastActive = true;
+        const toast = document.createElement("div");
+        const type = next.type || "default";
+        toast.className = "kt-toast" + (type === "news" ? " kt-toast-news" : type === "session" ? " kt-toast-session" : "");
+        const badgeLabel = type === "news" ? "NEWS" : type === "session" ? "SESSION" : "ALERT";
+        const meta = next.meta || "";
+        toast.innerHTML = `
+          <div class="kt-toast-title">
+            <span class="kt-toast-badge">${badgeLabel}</span>
+            <span>${next.title || ""}</span>
+          </div>
+          <div class="kt-toast-body">${next.message || ""}</div>
+          ${meta ? `<div class="kt-toast-meta">${meta}</div>` : ""}
+        `;
+        toastContainer.appendChild(toast);
+
+        const visibleMs = 4500;
+        const totalMs = visibleMs + 250;
+
+        setTimeout(() => {
+          toast.classList.add("hide");
+          setTimeout(() => {
+            toast.remove();
+            processToastQueue();
+          }, 220);
+        }, visibleMs);
+      }
+
+      function renderAlertsList(){
+        if(!alertsPanelOpen || !alertsListEl) return;
+        alertsListEl.innerHTML = "";
+        if(!alertStore.length){
+          const empty = document.createElement("div");
+          empty.className = "kt-alerts-empty";
+          empty.textContent = "Belum ada notifikasi. Breaking news & sesi market akan muncul di sini.";
+          alertsListEl.appendChild(empty);
+          return;
+        }
+        alertStore
+          .slice()
+          .sort((a,b) => (b.ts || 0) - (a.ts || 0))
+          .forEach(a => {
+            const row = document.createElement("div");
+            row.className = "kt-alert-item " + (a.type === "news" ? "kt-alert-item-news" : a.type === "session" ? "kt-alert-item-session" : "");
+            const chipClass = a.type === "news" ? "kt-alert-type-chip kt-alert-type-chip-news" :
+                              a.type === "session" ? "kt-alert-type-chip kt-alert-type-chip-session" :
+                              "kt-alert-type-chip";
+            const chipLabel = a.type === "news" ? "NEWS" : a.type === "session" ? "SESSION" : "ALERT";
+            row.innerHTML = `
+              <div class="kt-alert-row-top">
+                <div class="kt-alert-title">${a.title || ""}</div>
+                <div class="${chipClass}">${chipLabel}</div>
+              </div>
+              <div class="kt-alert-message">${a.message || ""}</div>
+              <div class="kt-alert-time">${formatAlertTime(a.ts)}</div>
+            `;
+            alertsListEl.appendChild(row);
+          });
+      }
+
+      function addAlert(alert, showToast = true){
+        if(!alert || !alert.message) return;
+        const id = alert.id || null;
+        if(id && seenAlertIds.has(id)){
+          return; // notif hanya muncul sekali
+        }
+        if(id) seenAlertIds.add(id);
+        const normalized = {
+          id,
+          type: alert.type || "info",
+          title: alert.title || "Alert",
+          message: alert.message || "",
+          ts: alert.ts || Date.now()
+        };
+        alertStore.unshift(normalized);
+        if(alertStore.length > 100) alertStore.length = 100;
+        saveAlertsToStorage();
+        if(alertsPanelOpen) renderAlertsList();
+        if(showToast){
+          enqueueToast({
+            type: normalized.type,
+            title: normalized.title,
+            message: normalized.message,
+            meta: formatAlertTime(normalized.ts)
+          });
+        }
+      }
+
+      function clearAlerts(){
+        alertStore = [];
+        seenAlertIds = new Set();
+        saveAlertsToStorage();
+        if(alertsPanelOpen) renderAlertsList();
+      }
+
+      // expose untuk Fastbull & event lain
+      window.KTPushNotification = function(alert){
+        addAlert(alert, true);
+      };
+
+      loadAlertsFromStorage();
   
       function injectIframe(url){  
         if(!url){  
@@ -1495,6 +1863,10 @@
       }  
 
       function openAiPane(mode){  
+        // reset Alerts panel state setiap kali berpindah mode
+        alertsPanelOpen = false;
+        alertsListEl = null;
+
         if(mode==="ai"){  
           aiTitle.textContent = "Kuantara AI Assistant";  
           aiSubtitle.textContent = "Kuantara AI terintegrasi langsung di dalam panel ini.";  
@@ -1502,6 +1874,7 @@
             '<iframe src="'+KUANTARA_AI_URL+'" ' +  
             'title="Kuantara AI" loading="lazy" ' +  
             'style="width:100%;height:100%;border:0;display:block;"></iframe>';  
+          aiFooter.style.display = "none";
           aiFooter.innerHTML = '';  
           aiPanel.style.display="flex";  
           showAllBarsIfHome();
@@ -1512,6 +1885,7 @@
             '<iframe src="'+MINI_CHART_URL+'" ' +  
             'title="Mini Chart" loading="lazy" ' +  
             'style="width:100%;height:100%;border:0;display:block;"></iframe>';  
+          aiFooter.style.display = "none";
           aiFooter.innerHTML = '';  
           aiPanel.style.display="flex";  
           showAllBarsIfHome();
@@ -1523,6 +1897,7 @@
             'style="width:100%;height:100%;background:#111;border:none;border-radius:0;' +  
             'color:var(--text-main);padding:6px;font-size:11px;resize:none;box-sizing:border-box;outline:none;overflow:auto;" ' +  
             'placeholder="Tulis catatan di sini..."></textarea>';  
+          aiFooter.style.display = "none";
           aiFooter.innerHTML = '';  
   
           const notesArea = document.getElementById("kt-notes-area");  
@@ -1535,15 +1910,35 @@
           showAllBarsIfHome();
         }else if(mode==="signals"){  
           aiTitle.textContent = "Alerts";  
-          aiSubtitle.textContent = "Ringkasan alert trading & notifikasi utama.";  
-          aiBody.innerHTML =  
-            '<div style="width:100%;height:100%;padding:8px 10px;box-sizing:border-box;font-size:10px;line-height:1.5;color:var(--text-muted);overflow:auto;">' +  
-            'Panel ini akan menampilkan alert dari sistem Kuantara (algo, screener, atau alert eksternal). ' +  
-            'Integrasi backend bisa diarahkan untuk push alert terbaru ke area ini secara realtime.' +  
-            '</div>';  
-          aiFooter.innerHTML = '';  
+          aiSubtitle.textContent = "History notifikasi Fastbull & jam pasar.";  
+          aiBody.innerHTML = `
+            <div class="kt-alerts-wrapper">
+              <div class="kt-alerts-header">
+                <span>Alerts History</span>
+                <span class="kt-alerts-header-badge">
+                  ${alertStore.length ? alertStore.length + " items" : "No alerts yet"}
+                </span>
+              </div>
+              <div class="kt-alerts-list" id="kt-alerts-list"></div>
+            </div>
+          `;
+          aiFooter.style.display = "flex";
+          aiFooter.innerHTML = `
+            <button class="kt-ai-btn" id="kt-alerts-clear-btn">Clear Alerts</button>
+          `;
           aiPanel.style.display="flex";  
           showAllBarsIfHome();
+
+          alertsPanelOpen = true;
+          alertsListEl = document.getElementById("kt-alerts-list");
+          renderAlertsList();
+
+          const clearBtn = document.getElementById("kt-alerts-clear-btn");
+          if(clearBtn){
+            clearBtn.addEventListener("click", ()=>{
+              clearAlerts();
+            });
+          }
         }else if(mode==="settings"){  
           aiTitle.textContent = "Settings";  
           aiSubtitle.textContent = "Pengaturan tampilan Kuantara Terminal.";  
@@ -1590,6 +1985,7 @@
               </div>
             </div>
           `;
+          aiFooter.style.display = "none";
           aiFooter.innerHTML = '';  
           aiPanel.style.display="flex";  
           showAllBarsIfHome();
@@ -1982,8 +2378,15 @@
         const mins = hour*60 + minute;  
         return mins >= 8*60 && mins < 17*60;  
       }  
+
+      const sessionState = {
+        SYD: null,
+        TYO: null,
+        LDN: null,
+        NYC: null
+      };
   
-      /* Clocks pakai timezone asli (akurasi DST) */  
+      /* Clocks pakai timezone asli (akurasi DST) + session-change alerts */  
       function updateSessions(){  
         const now = new Date();  
         sessionTimes.forEach(el=>{  
@@ -2013,11 +2416,31 @@
           const labelEl = parent.querySelector(".kt-session-label");  
           const label = (labelEl?.textContent || "").trim();  
   
-          if(isMarketOpen(label,hour,minute)){  
+          const openNow = isMarketOpen(label,hour,minute);  
+          if(openNow){  
             parent.classList.add("open");  
           } else {  
             parent.classList.remove("open");  
           }  
+
+          // Session-change notification (OPEN/CLOSE) sekali tiap perubahan
+          if(sessionState.hasOwnProperty(label)){
+            const prev = sessionState[label];
+            if(prev === null){
+              sessionState[label] = openNow;
+            }else if(prev !== openNow){
+              sessionState[label] = openNow;
+              const stateLabel = openNow ? "OPEN" : "CLOSE";
+              const id = `session_${label}_${stateLabel}_${now.toDateString()}`;
+              addAlert({
+                id,
+                type: "session",
+                title: `Market Session ${label}`,
+                message: `${label} session ${stateLabel} · ${hourStr}:${minStr} (local)`,
+                ts: now.getTime()
+              }, true);
+            }
+          }
         });  
       }  
       updateSessions();  
@@ -2063,7 +2486,7 @@
     })();  
   </script>  
 
-  <!-- FASTBULL BREAKING NEWS TICKER SCRIPT -->
+  <!-- FASTBULL BREAKING NEWS TICKER SCRIPT + NEWS ALERTS -->
   <script>
     // ========== CONFIG ==========
     const FASTBULL_NEWS_ENDPOINT = "https://api.fastbull.com/fastbull-news-service/api/getNewsPageByTagIds";
@@ -2159,7 +2582,8 @@
     // ========== STATE ==========
     const fastbullCache = new Map();
     let fastbullProxyEnabled = false;
-    let highImpactOnly = true; // selalu high impact
+    let highImpactOnly = true; // hanya high impact
+    const fastbullSeenNewsIds = new Set(); // untuk notif sekali saja
 
     // ========== HELPERS ==========
     const formatTimestamp = (value) => {
@@ -2266,6 +2690,25 @@
 
         fastbullCache.set(cacheKey, items);
         renderFastbullTicker();
+
+        // Push notification untuk setiap high-impact baru (important = 1), sekali saja
+        const now = Date.now();
+        items.forEach(it => {
+          if(!it.isImportant) return;
+          if(!it.id) return;
+          if(fastbullSeenNewsIds.has(it.id)) return;
+          fastbullSeenNewsIds.add(it.id);
+
+          if(window.KTPushNotification){
+            window.KTPushNotification({
+              id: "news_" + it.id,
+              type: "news",
+              title: "BREAKING! " + (it.time || ""),
+              message: it.title,
+              ts: it.timestamp || now
+            });
+          }
+        });
       }catch(e){
         if (!fastbullCache.has("all") && fastbullTickerEl){
           fastbullTickerEl.innerHTML = '<span class="ticker-item empty">Error loading headlines…</span>';
