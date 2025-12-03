@@ -1285,13 +1285,11 @@
     const TIMEZONE = "Asia/Makassar";
     const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyMTgzNzM0NiwicmVnaXN0ZXJfdHlwZSI6Im9hdXRoMiIsImFwcF9uYW1lIjoiQ2hpdENoYXRfQ2hyb21lX0V4dCIsInRva2VuX2lkIjoiZTZlOGIwZGUtN2Q3Zi00NTZkLTkxNGQtNzUwNDQ0ZjkyZTNjIiwiaXNzIjoic2lkZXIuYWkiLCJhdWQiOlsiIl0sImV4cCI6MTc4ODY5NjUxMCwibmJmIjoxNzU3NTkyNTEwLCJpYXQiOjE3NTc1OTI1MTB9.mcq86TwFwPtql3S77_vhnJRGj08878Ej5WGkvY3OxWI";
 
-    const AI_STRUCTURED_PROMPT = `**WAJIB** gunakan fitur pencarian (tools search) untuk mengecek berita dan data **terbaru** sebelum menjawab. Jangan hanya mengandalkan pengetahuan statis. Bertindak sebagai **macro strategist** dan **trader multi-aset**.
-  
-
+    const AI_STRUCTURED_PROMPT = `**WAJIB** gunakan fitur pencarian (tools search) untuk mengecek berita dan data **terbaru kurang dari 24 jam terakhir** sebelum menjawab. Jangan hanya mengandalkan pengetahuan statis. Bertindak sebagai **macro strategist** dan **trader multi-aset**.
   
 Tugasmu:
   
-1. Jelaskan kondisi global makro **terbaru (<= 2 hari terakhir,WAJIB INFORMASI TERBARU!) dari sumber Reuters,Bloomberg,Invesinglive,Livesquawk,Yahoo Finance atau sebagainya** mencakup: 
+1. Jelaskan kondisi global makro **terbaru (<= 24 jam terakhir,WAJIB INFORMASI TERBARU!) dari sumber Reuters,Bloomberg,Investinglive,Livesquawk,Yahoo Finance atau sebagainya** mencakup: 
   
    - headlines berita utama,
   
