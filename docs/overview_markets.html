@@ -7,7 +7,10 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
 
   <style>
     :root {
@@ -74,7 +77,8 @@
       background:#3a3a3a;
     }
 
-    html, body {
+    html,
+    body {
       width:100%;
       height:100%;
     }
@@ -89,7 +93,9 @@
       flex-direction:column;
     }
 
-    .font-mono { font-family:var(--font-mono)!important; }
+    .font-mono {
+      font-family:var(--font-mono)!important;
+    }
 
     /* === Page Layout === */
     .kt-page {
@@ -108,7 +114,7 @@
       flex:1;
       display:grid;
       grid-template-columns:1fr 1fr 1fr;
-      grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr);
+      grid-template-rows:minmax(0, 1.3fr) minmax(0, 1fr);
       grid-template-areas:
         "ai ai headlines"
         "risk heatmap heatmap";
@@ -192,10 +198,18 @@
     }
 
     /* === Grid Areas === */
-    .ai-summary { grid-area:ai; }
-    .headline-bubbles { grid-area:headlines; }
-    .risk-meter-card { grid-area:risk; }
-    .market-heatmap { grid-area:heatmap; }
+    .ai-summary {
+      grid-area:ai;
+    }
+    .headline-bubbles {
+      grid-area:headlines;
+    }
+    .risk-meter-card {
+      grid-area:risk;
+    }
+    .market-heatmap {
+      grid-area:heatmap;
+    }
 
     /* --- AI Summary Panel --- */
     .ai-summary-body {
@@ -266,7 +280,9 @@
       z-index:2;
       border-bottom:1px solid var(--border-subtle);
     }
-    th:first-child { text-align:left; }
+    th:first-child {
+      text-align:left;
+    }
     td {
       padding:6px 10px;
       border-bottom:1px solid var(--border-subtle);
@@ -275,8 +291,12 @@
       text-align:right;
       font-size:var(--fs-body);
     }
-    td:first-child { text-align:left; }
-    tr:hover td { background:var(--bg-card-hover); }
+    td:first-child {
+      text-align:left;
+    }
+    tr:hover td {
+      background:var(--bg-card-hover);
+    }
 
     .ai-signal-symbol {
       font-weight:600;
@@ -289,9 +309,18 @@
       padding:2px 6px;
       border-radius:4px;
     }
-    .ai-signal-bias.long { background:var(--color-up-bg); color:var(--color-up); }
-    .ai-signal-bias.short { background:var(--color-down-bg); color:var(--color-down); }
-    .ai-signal-bias.neutral { background:#1a1a1a; color:var(--text-muted); }
+    .ai-signal-bias.long {
+      background:var(--color-up-bg);
+      color:var(--color-up);
+    }
+    .ai-signal-bias.short {
+      background:var(--color-down-bg);
+      color:var(--color-down);
+    }
+    .ai-signal-bias.neutral {
+      background:#1a1a1a;
+      color:var(--text-muted);
+    }
     .ai-signal-conf {
       font-family:var(--font-mono);
       opacity:0.8;
@@ -378,9 +407,15 @@
       display:inline-block;
       margin-right:4px;
     }
-    .legend-low { background:#46c97f; }
-    .legend-medium { background:#ffbf00; }
-    .legend-high { background:#ff4d4f; }
+    .legend-low {
+      background:#46c97f;
+    }
+    .legend-medium {
+      background:#ffbf00;
+    }
+    .legend-high {
+      background:#ff4d4f;
+    }
 
     /* --- Risk Meter --- */
     .risk-meter-wrapper {
@@ -446,8 +481,12 @@
       font-weight:500;
       font-size:var(--fs-body);
     }
-    .quote-change.pos { color:var(--color-up); }
-    .quote-change.neg { color:var(--color-down); }
+    .quote-change.pos {
+      color:var(--color-up);
+    }
+    .quote-change.neg {
+      color:var(--color-down);
+    }
 
     /* --- Heatmap --- */
     .heatmap-grid {
@@ -473,7 +512,9 @@
       border:1px solid rgba(0,0,0,0.25);
       overflow:hidden;
     }
-    .heatmap-cell:hover { opacity:0.85; }
+    .heatmap-cell:hover {
+      opacity:0.85;
+    }
 
     .heatmap-symbol {
       font-size:9.5px;
@@ -546,10 +587,18 @@
         flex-direction:column;
         gap:16px;
       }
-      .ai-summary { min-height:500px; }
-      .headline-bubbles { min-height:300px; }
-      .risk-meter-card { min-height:300px; }
-      .market-heatmap { min-height:400px; }
+      .ai-summary {
+        min-height:500px;
+      }
+      .headline-bubbles {
+        min-height:300px;
+      }
+      .risk-meter-card {
+        min-height:300px;
+      }
+      .market-heatmap {
+        min-height:400px;
+      }
     }
 
     @media (max-width:768px) {
@@ -583,16 +632,18 @@
         <div class="kt-card-header">
           <div>
             <div class="kt-card-title">AI Macro Summary</div>
-            <div class="kt-card-subtitle">Synthesized Macro &amp; Trade Ideas<span id="kt-timestamp"></span></div>
+            <div class="kt-card-subtitle">Synthesized Macro &amp; Trade Ideas</div>
           </div>
           <button class="kt-card-btn" onclick="generateSummary()">REFRESH AI</button>
         </div>
+
         <div class="kt-card-body ai-summary-body">
           <div class="ai-summary-main">
             <div id="ai-market-summary" class="ai-summary-text">
               Klik tombol "REFRESH AI" untuk ringkasan makro terkini dan ide trade multi-aset...
             </div>
           </div>
+
           <div class="ai-signals-panel">
             <div class="ai-signals-header">Live Signals</div>
             <div class="table-container">
@@ -625,14 +676,22 @@
             <div class="kt-card-subtitle">Impact-Weighted Event Map</div>
           </div>
         </div>
+
         <div class="kt-card-body">
           <div id="headline-bubble-chart" class="headline-bubble-chart">
             <!-- populated by JS -->
           </div>
+
           <div class="headline-bubbles-legend">
-            <div style="display:flex; align-items:center;"><span class="legend-dot legend-low"></span>Low</div>
-            <div style="display:flex; align-items:center;"><span class="legend-dot legend-medium"></span>Med</div>
-            <div style="display:flex; align-items:center;"><span class="legend-dot legend-high"></span>High</div>
+            <div style="display:flex; align-items:center;">
+              <span class="legend-dot legend-low"></span>Low
+            </div>
+            <div style="display:flex; align-items:center;">
+              <span class="legend-dot legend-medium"></span>Med
+            </div>
+            <div style="display:flex; align-items:center;">
+              <span class="legend-dot legend-high"></span>High
+            </div>
           </div>
         </div>
       </section>
@@ -645,15 +704,22 @@
               <div id="risk-meter-value" class="risk-val">50</div>
               <div id="risk-meter-tag" class="risk-tag">NEUTRAL</div>
             </div>
+
             <div class="risk-meter-track">
-              <div id="risk-meter-pointer" class="risk-meter-pointer" style="left:50%;"></div>
+              <div
+                id="risk-meter-pointer"
+                class="risk-meter-pointer"
+                style="left:50%;"
+              ></div>
             </div>
+
             <div class="risk-meter-labels">
               <span>Risk-Off</span>
               <span>Neutral</span>
               <span>Risk-On</span>
             </div>
           </div>
+
           <div class="table-container">
             <table id="risk-quotes-table">
               <thead>
@@ -690,9 +756,9 @@
     // ============================
     // CONFIG – TradingView backend
     // ============================
-    const BASE_URL    = "https://kuancloud.loclx.io";
-    const INTERVAL    = "1D";
-    const BARS_COUNT  = 2;
+    const BASE_URL = "https://kuancloud.loclx.io";
+    const INTERVAL = "1D";
+    const BARS_COUNT = 2;
     const MAX_CONCURRENT = 4;
 
     // Cache data
@@ -701,7 +767,7 @@
     const SYMBOL_CONFIG = {
       SPX:    { label:"SPX",    name:"S&P 500",              apiSymbol:"INDEX:SPX" },
       NDX:    { label:"NDX",    name:"Nasdaq 100",           apiSymbol:"INDEX:NDX" },
-      RUT:    { label:"RUT",    name:"Russell 2000",         apiSymbol:"TVC:RUT" },
+      RUT:    { label:"RUT",    name:"Russell 2000",         apiSymbol:"INDEX:RUT" },
       DXY:    { label:"DXY",    name:"US Dollar Index",      apiSymbol:"INDEX:DXY" },
       EURUSD: { label:"EURUSD", name:"EUR/USD",              apiSymbol:"FX:EURUSD" },
       USDJPY: { label:"USDJPY", name:"USD/JPY",              apiSymbol:"FX:USDJPY" },
@@ -710,10 +776,10 @@
       WTI:    { label:"WTI",    name:"Crude Oil WTI",        apiSymbol:"TVC:USOIL" },
       BRENT:  { label:"BRENT",  name:"Brent Crude",          apiSymbol:"TVC:UKOIL" },
       HYG:    { label:"HYG",    name:"iShares High Yield",   apiSymbol:"AMEX:HYG" },
-      LQD:    { label:"LQD",    name:"iShares IG Credit",    apiSymbol:"AMEX:LQD" },
+      LQD:    { label:"LQD",    name:"iShares IG Credit",    apiSymbol:"NYSE:LQD" },
       US10Y:  { label:"US10Y",  name:"US 10Y Yield",         apiSymbol:"TVC:US10Y" },
       US2Y:   { label:"US2Y",   name:"US 2Y Yield",          apiSymbol:"TVC:US02Y" },
-      MOVE:   { label:"MOVE",   name:"MOVE Index",           apiSymbol:"TVC:MOVE" },
+      MOVE:   { label:"MOVE",   name:"MOVE Index",           apiSymbol:"INDEX:MOVE" },
       VIX:    { label:"VIX",    name:"VIX Index",            apiSymbol:"INDEX:VIX" },
       EEM:    { label:"EEM",    name:"EM Equities",          apiSymbol:"AMEX:EEM" },
       EFA:    { label:"EFA",    name:"DM ex-US Equities",    apiSymbol:"AMEX:EFA" },
@@ -737,7 +803,7 @@
     function updateTimestamp(ts) {
       const el = document.getElementById("kt-timestamp");
       if (!el) return;
-      el.textContent = " · Last: " + ts;
+      el.textContent = "· Last: " + ts;
     }
 
     // ============================
@@ -864,7 +930,11 @@
 
       const sorted = list
         .map((it, idx) => ({ ...it, _idx: idx }))
-        .sort((a, b) => (Number(b.impactPct || b.impact || 0) - Number(a.impactPct || a.impact || 0)));
+        .sort(
+          (a, b) =>
+            (Number(b.impactPct || b.impact || 0) -
+              Number(a.impactPct || a.impact || 0))
+        );
 
       const maxRadius = Math.max(Math.min(w, h) / 2 - maxSize / 2 - 10, 30);
       const placed = [];
@@ -872,7 +942,10 @@
       sorted.forEach((item, order) => {
         const bubble = document.createElement("div");
         const impactRaw = Number(item.impactPct || item.impact || 0);
-        const impact = Math.max(0, Math.min(100, isNaN(impactRaw) ? 0 : impactRaw));
+        const impact = Math.max(
+          0,
+          Math.min(100, isNaN(impactRaw) ? 0 : impactRaw)
+        );
 
         const size = minSize + (impact / 100) * (maxSize - minSize);
         const radius = size / 2;
@@ -1154,8 +1227,13 @@
 
       let label = "NEUTRAL";
       let color = "var(--text-muted)";
-      if (s <= 35) { label = "RISK-OFF"; color = "var(--color-down)"; }
-      else if (s >= 65) { label = "RISK-ON"; color = "var(--color-up)"; }
+      if (s <= 35) {
+        label = "RISK-OFF";
+        color = "var(--color-down)";
+      } else if (s >= 65) {
+        label = "RISK-ON";
+        color = "var(--color-up)";
+      }
 
       tagEl.textContent = label;
       tagEl.style.color = color;
@@ -1166,11 +1244,31 @@
     // ============================
     function renderStaticNonMarket() {
       updateHeadlines([
-        { title:"US CPI in focus as markets reassess timing of first Fed cut",          time:"Beberapa hari terakhir", impactPct:82 },
-        { title:"Dollar consolidates; JPY under pressure on policy divergence",         time:"Beberapa hari terakhir", impactPct:68 },
-        { title:"Tech outperforms cyclicals as earnings revisions improve",             time:"Beberapa hari terakhir", impactPct:51 },
-        { title:"Crude pulls back after sharp rally; positioning remains crowded",      time:"Beberapa hari terakhir", impactPct:44 },
-        { title:"Credit spreads stay tight despite elevated yields",                    time:"Beberapa hari terakhir", impactPct:33 }
+        {
+          title:"US CPI in focus as markets reassess timing of first Fed cut",
+          time:"Beberapa hari terakhir",
+          impactPct:82
+        },
+        {
+          title:"Dollar consolidates; JPY under pressure on policy divergence",
+          time:"Beberapa hari terakhir",
+          impactPct:68
+        },
+        {
+          title:"Tech outperforms cyclicals as earnings revisions improve",
+          time:"Beberapa hari terakhir",
+          impactPct:51
+        },
+        {
+          title:"Crude pulls back after sharp rally; positioning remains crowded",
+          time:"Beberapa hari terakhir",
+          impactPct:44
+        },
+        {
+          title:"Credit spreads stay tight despite elevated yields",
+          time:"Beberapa hari terakhir",
+          impactPct:33
+        }
       ]);
 
       updateTradingSignals([
@@ -1187,88 +1285,168 @@
     const TIMEZONE = "Asia/Makassar";
     const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyMTgzNzM0NiwicmVnaXN0ZXJfdHlwZSI6Im9hdXRoMiIsImFwcF9uYW1lIjoiQ2hpdENoYXRfQ2hyb21lX0V4dCIsInRva2VuX2lkIjoiZTZlOGIwZGUtN2Q3Zi00NTZkLTkxNGQtNzUwNDQ0ZjkyZTNjIiwiaXNzIjoic2lkZXIuYWkiLCJhdWQiOlsiIl0sImV4cCI6MTc4ODY5NjUxMCwibmJmIjoxNzU3NTkyNTEwLCJpYXQiOjE3NTc1OTI1MTB9.mcq86TwFwPtql3S77_vhnJRGj08878Ej5WGkvY3OxWI";
 
-    const AI_STRUCTURED_PROMPT = `Bertindak sebagai **macro strategist** dan **trader multi-aset**.
+    const AI_STRUCTURED_PROMPT = `**WAJIB** gunakan fitur pencarian (tools search) untuk mengecek berita dan data **terbaru** sebelum menjawab. Jangan hanya mengandalkan pengetahuan statis. Bertindak sebagai **macro strategist** dan **trader multi-aset**.
+  
 
+  
 Tugasmu:
-1. Jelaskan kondisi global makro **terkini** (anggap data 1–2 hari terakhir) mencakup:
+  
+1. Jelaskan kondisi global makro **terbaru (<= 2 hari terakhir,WAJIB INFORMASI TERBARU!) dari sumber Reuters,Bloomberg,Invesinglive,Livesquawk,Yahoo Finance atau sebagainya** mencakup: 
+  
    - headlines berita utama,
+  
    - speech/komentar bank sentral,
+  
    - informasi suku bunga dan probabilitas hikes/cuts/hold,
+  
    - kondisi inflasi,
+  
    - data ekonomi kunci,
+  
    - sentimen risk-on/risk-off,
+  
    - kekuatan dolar AS,
-   - faktor geopolitik utama **yang relevan sekarang**.
+  
+   - faktor geopolitik utama **(pilih hanya yang betul-betul relevan & terbaru)**.
+  
 2. Buat ide trade **hari ini** untuk 4 kelompok aset:
+  
    - Forex – 3–5 pasangan mayor/cross,
+  
    - Komoditas utama – emas, perak, minyak, dsb,
+  
    - Indeks saham global utama,
+  
    - Kripto besar.
+  
    Untuk **setiap aset** berikan:
+  
    - \`symbol\` (ticker),
+  
    - \`bias\` salah satu dari: LONG, SHORT, NEUTRAL,
+  
    - \`confidence\` angka 0–100 (seberapa yakin),
+  
    - \`reason\` 1–2 kalimat singkat **berbasis narasi makro** (bukan teknikal).
+  
 3. Dari narasi makro dan ide trade di atas, rangkum **katalis utama** yang sedang menggerakkan pasar
+  
    (misalnya: rilis CPI, surprise payrolls, statement dovish/hawkish, eskalasi geopolitik, dll)
+  
    dan beri penilaian \`impact\` 0–100 untuk bobot pengaruhnya terhadap market saat ini.
+  
 4. Berikan \`risk_score\` 0–100 dimana 0 = sangat Risk-Off, 50 = netral, 100 = sangat Risk-On.
+  
 
+  
 **Aturan Penting:**
-- Gunakan **hanya informasi yang wajar terjadi dalam 5 hari terakhir**; jika ragu, buat asumsi yang realistis berdasarkan pola historis pasar.
-- **Jangan lakukan browsing atau pencarian web**; cukup gunakan pengetahuan makro umum dan pola pasar yang masuk akal.
+  
+- Gunakan **hanya informasi yang wajar terjadi dalam 5 hari terakhir**; jika ragu, buat asumsi yang realistis.
+  
 - **Jangan** tampilkan harga, level teknikal, atau timeframe spesifik.
+  
 - Fokus pada **bias** & **alasan makro**.
+  
 - Jawab dalam **Bahasa Indonesia**.
+  
 
+  
 Output **WAJIB** hanya satu objek JSON valid **tanpa teks lain**, tanpa backticks, tanpa penjelasan tambahan.
+  
 
+  
 Struktur JSON yang HARUS kamu ikuti:
+  
 
+  
 {
+  
   "summary": "Satu paragraf ringkas (Bahasa Indonesia) menjelaskan kondisi global makro terbaru. Gunakan <b>bold</b> untuk poin penting.",
+  
   "risk_score": 58,
+  
   "trades": {
+  
     "forex": [
+  
       {
+  
         "symbol": "EURUSD",
+  
         "bias": "LONG",
+  
         "confidence": 78,
+  
         "reason": "Alasan makro singkat berbasis data / narasi fundamental."
+  
       }
+  
     ],
+  
     "commodities": [
+  
       {
+  
         "symbol": "XAUUSD",
+  
         "bias": "SHORT",
+  
         "confidence": 65,
+  
         "reason": "Alasan makro."
+  
       }
+  
     ],
+  
     "indices": [
+  
       {
+  
         "symbol": "SPX",
+  
         "bias": "LONG",
+  
         "confidence": 75,
+  
         "reason": "Alasan makro terkait earnings, likuiditas, policy, dsb."
+  
       }
+  
     ],
+  
     "crypto": [
+  
       {
+  
         "symbol": "BTCUSD",
+  
         "bias": "LONG",
+  
         "confidence": 70,
+  
         "reason": "Alasan makro terkait likuiditas USD, adopsi institusional, regulasi, dsb."
+  
       }
+  
     ]
+  
   },
+  
   "catalysts": [
+  
     {
+  
       "title": "Judul katalis singkat",
+  
       "time": "Hari ini / Semalam / Beberapa hari terakhir",
+  
       "impact": 85
+  
     }
+  
   ]
+  
 }`;
 
     let isGenerating = false;
@@ -1306,12 +1484,9 @@ Struktur JSON yang HARUS kamu ikuti:
             user_input_text: "Generate macro market summary & trades"
           }
         ],
-        // OPTIM: matikan tools search biar latency jauh berkurang
-        tools: {},
+        tools: { auto: ["search"] },
         stream: true,
-        output_language: "id",
-        // OPTIM: batasi panjang output supaya respon lebih cepat
-        max_output_tokens: 900
+        output_language: "id"
       };
 
       const resp = await fetch(`${API_BASE}/completions`, {
@@ -1380,10 +1555,11 @@ Struktur JSON yang HARUS kamu ikuti:
       let jsonStr = fullText.trim();
 
       if (jsonStr.startsWith("```")) {
-        jsonStr = jsonStr.replace(/^```json/i,"")
-                         .replace(/^```/i,"")
-                         .replace(/```$/,"")
-                         .trim();
+        jsonStr = jsonStr
+          .replace(/^```json/i,"")
+          .replace(/^```/i,"")
+          .replace(/```$/,"")
+          .trim();
       }
 
       return JSON.parse(jsonStr);
@@ -1460,8 +1636,13 @@ Struktur JSON yang HARUS kamu ikuti:
 
           let label = "NEUTRAL";
           let color = "var(--text-muted)";
-          if (s <= 35) { label = "RISK-OFF"; color = "var(--color-down)"; }
-          else if (s >= 65) { label = "RISK-ON"; color = "var(--color-up)"; }
+          if (s <= 35) {
+            label = "RISK-OFF";
+            color = "var(--color-down)";
+          } else if (s >= 65) {
+            label = "RISK-ON";
+            color = "var(--color-up)";
+          }
 
           tagEl.textContent = label;
           tagEl.style.color = color;
@@ -1481,8 +1662,7 @@ Struktur JSON yang HARUS kamu ikuti:
         btn.style.opacity = "0.7";
       }
 
-      // UX: info waktu tunggu lebih pendek
-      updateAiSummary("Memahami kondisi market sekitar 8–10 detik, harap tunggu sebentar...");
+      updateAiSummary("Memahami kondisi market sekitar 20 detik, harap bersabar...");
       updateTradingSignals([]);
       updateHeadlines([]);
 
@@ -1508,7 +1688,7 @@ Struktur JSON yang HARUS kamu ikuti:
     function initDashboard() {
       renderStaticNonMarket();  // lightweight dummy untuk first paint
       loadMarketDataOnce();     // Fetch TV data sekali saat user buka page
-      generateSummary();        // Auto-jalankan AI saat halaman dibuka
+      generateSummary();        // 🔥 Auto-jalankan AI saat halaman dibuka
     }
 
     window.addEventListener("DOMContentLoaded", initDashboard);
