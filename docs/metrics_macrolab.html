@@ -106,6 +106,7 @@
           <div class="kt-pill-page active" data-page="economic">Economic</div>
           <div class="kt-pill-page" data-page="recession">Recession</div>
           <div class="kt-pill-page" data-page="liquidity">Liquidity</div>
+          <div class="kt-pill-page" data-page="ratesprob">Rates Prob</div>
         </div>
       </header>
 
@@ -113,6 +114,7 @@
         <iframe id="economicFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macrolab_economic.html"></iframe>
         <iframe id="recessionFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macrolab_recession.html"></iframe>
         <iframe id="liquidityFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macrolab_liquidity.html"></iframe>
+        <iframe id="ratesprobFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_macrolab_ratesprob.html"></iframe>
       </div>
     </section>
   </div>
@@ -123,12 +125,18 @@
     economic: document.getElementById("economicFrame"),
     recession: document.getElementById("recessionFrame"),
     liquidity: document.getElementById("liquidityFrame"),
+    ratesprob: document.getElementById("ratesprobFrame"),
   };
 
   const pagePills = document.querySelectorAll(".kt-pill-page");
   const titleEl = document.getElementById("quotesTitle");
 
-  const TITLES = { economic: "Economic", recession: "Recession", liquidity: "Liquidity" };
+  const TITLES = {
+    economic: "Economic",
+    recession: "Recession",
+    liquidity: "Liquidity",
+    ratesprob: "Rates Prob"
+  };
 
   function updatePanel(key) {
     titleEl.textContent = TITLES[key];
