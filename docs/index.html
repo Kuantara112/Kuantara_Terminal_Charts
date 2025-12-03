@@ -1329,7 +1329,7 @@
     <div class="kt-hotkey-panel-inner">
       <div class="kt-hotkey-panel-header">
         <div>
-          <div class="kt-hotkey-panel-label">Caps Lock toggles this overlay</div>
+          <div class="kt-hotkey-panel-label">Ctrl toggles this overlay</div>
           <div class="kt-hotkey-panel-title">Keyboard & Navigation Guide</div>
         </div>
         <button class="kt-hotkey-panel-close" id="kt-hotkey-panel-close" aria-label="Close">&times;</button>
@@ -1398,6 +1398,8 @@
       let currentViewUrl = "";  
       let currentViewTitleMain = "";  
       let currentViewTitleSub  = "";  
+      let ctrlHotkeyPending = false;
+      let notesModeActive = false;
   
       /* Map menu:sub -> iframe URL */  
       const FEED_247_URL    = "https://kuantara112.github.io/Kuantara_Terminal_Charts/news_feeds_247.html";  
@@ -1472,7 +1474,7 @@
         { combo: "Number (0-9)", desc: "Pilih menu utama" },
         { combo: "Alt + Number (1-9)", desc: "Pilih submenu aktif" },
         { combo: "Shift", desc: "Masuk ke Workspace" },
-        { combo: "Caps Lock", desc: "Tampilkan panel informasi ini" },
+        { combo: "Ctrl", desc: "Tampilkan panel informasi ini" },
         { combo: "Esc", desc: "Kembali ke Home dan reset tampilan" }
       ];
 
@@ -2130,6 +2132,10 @@
         // reset Alerts panel state setiap kali berpindah mode
         alertsPanelOpen = false;
         alertsListEl = null;
+        notesModeActive = (mode === "notes");
+        if(notesModeActive){
+          ctrlHotkeyPending = false;
+        }
 
         if(mode==="ai"){  
           aiTitle.textContent = "Kuantara AI Assistant";  
@@ -2423,6 +2429,7 @@
   
       aiClose.addEventListener("click", ()=>{  
         aiPanel.style.display="none";  
+        notesModeActive = false;
       });  
   
       window.addEventListener("click",(e)=>{  
@@ -2617,9 +2624,15 @@
 
       window.addEventListener("keydown",(e)=>{  
         const hotkeyOpen = isHotkeyPanelVisible();
-        if(!e.ctrlKey && !e.metaKey && !e.altKey && e.key==="CapsLock" && !e.repeat){  
-          toggleHotkeyPanel(!hotkeyOpen);  
+        if(notesModeActive){  
           return;  
+        }  
+        if(e.key==="Control" && !e.metaKey && !e.altKey && !e.shiftKey){  
+          if(!e.repeat){ ctrlHotkeyPending = true; }  
+          return;  
+        }  
+        if(ctrlHotkeyPending && e.key!=="Control"){  
+          ctrlHotkeyPending = false;  
         }  
         if(hotkeyOpen){  
           if(e.key==="Escape"){  
@@ -2671,6 +2684,18 @@
           e.preventDefault();  
           activateWorkspaceView();  
           return;  
+        }  
+      });  
+
+      window.addEventListener("keyup",(e)=>{  
+        if(notesModeActive){  
+          return;  
+        }  
+        if(e.key==="Control"){  
+          if(ctrlHotkeyPending){  
+            toggleHotkeyPanel(!isHotkeyPanelVisible());  
+          }  
+          ctrlHotkeyPending = false;  
         }  
       });  
   
