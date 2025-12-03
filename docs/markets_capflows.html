@@ -45,17 +45,17 @@
       padding:16px;
       overflow-y:auto;
       scrollbar-width:thin;
-      scrollbar-color:rgba(0,0,0,0.7) rgba(0,0,0,0.15);
+      scrollbar-color:rgba(0,0,0,0.4) transparent;
     }
 
     body::-webkit-scrollbar{
       width:8px;
     }
     body::-webkit-scrollbar-track{
-      background:rgba(0,0,0,0.15);
+      background:transparent;
     }
     body::-webkit-scrollbar-thumb{
-      background:rgba(0,0,0,0.7);
+      background:rgba(0,0,0,0.4);
       border-radius:999px;
     }
 
@@ -96,8 +96,10 @@
     .panel-title{
       font-size:var(--fs-subtitle);
       font-weight:600;
-      letter-spacing:0.12em;
-      text-transform:uppercase;
+      letter-spacing:0.08em;
+      /* tidak lagi uppercase */
+      /* text-transform:uppercase; */
+      color:var(--accent);
     }
 
     .chart-holder{
@@ -206,7 +208,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">RISK-ON / RISK-OFF GAUGE</div>
+          <div class="panel-title">Risk-On / Risk-Off Gauge</div>
         </div>
       </div>
       <div class="chart-holder">
@@ -223,7 +225,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">RISK / SAFE NETFLOW PROXY</div>
+          <div class="panel-title">Risk / Safe Netflow Proxy</div>
         </div>
       </div>
       <div class="chart-holder">
@@ -243,7 +245,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">MARKET PHASE DYNAMICS</div>
+          <div class="panel-title">Market Phase Dynamics</div>
         </div>
       </div>
       <div class="chart-holder">
@@ -260,7 +262,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">US SECTORS</div>
+          <div class="panel-title">US Sectors</div>
         </div>
       </div>
       <div class="chart-holder">
@@ -280,7 +282,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">BENCHMARK / MACRO</div>
+          <div class="panel-title">Benchmark / Macro</div>
         </div>
         <div class="controls">
           <span class="control-label">Group:</span>
@@ -337,7 +339,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">FOREX STRENGTH – CHANGE HISTOGRAM</div>
+          <div class="panel-title">Forex Strength – Change Histogram</div>
         </div>
       </div>
       <div class="chart-holder">
@@ -355,7 +357,7 @@
     <section class="panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">COMMODITIES STRENGTH METER</div>
+          <div class="panel-title">Commodities Strength Meter</div>
         </div>
       </div>
       <div class="chart-holder">
@@ -612,13 +614,14 @@ function showError(id, msg) {
   }
 }
 
-// broadcast error ke semua panel
-function broadcastError(msg) {
+// broadcast error ke semua panel – pesan user-friendly
+function broadcastError(detail) {
   const ids = [
     "gauge-error","bars-error","phase-error","sector-error",
     "rel-error","dm-error","comdt-error"
   ];
-  ids.forEach(id => showError(id, msg));
+  const userMsg = "Koneksi data dashboard sedang bermasalah. Coba muat ulang halaman atau hubungi admin jika masalah terus berlanjut.";
+  ids.forEach(id => showError(id, userMsg));
 }
 
 // ================== ECHARTS RENDERERS ==================
@@ -1372,7 +1375,7 @@ function createStreamWS(url, label){
 
     ws.onclose = () => {
       console.warn(`${label} WS closed, reconnecting...`);
-      setTimeout(connect, 5000);
+      setTimeout(connect, 5005);
     };
   }
 
