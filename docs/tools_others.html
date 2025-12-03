@@ -1,143 +1,239 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Situs Sedang Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Kuantara Modules</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
 
   <style>
-    :root {
-      --bg:#050505;
-      --card:#151515;
+    :root{
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --border-soft:#262626;
       --accent:#ffbf00;
+      --accent-soft:rgba(255,191,0,0.14);
       --text-main:#f5f5f5;
       --text-muted:#9b9b9b;
+      --radius-lg:999px;
+      --fs-chip:11.5px;
     }
 
     *{
       box-sizing:border-box;
       margin:0;
       padding:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:"Fira Code",monospace;
     }
 
-    body{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: radial-gradient(circle at top, #222 0, var(--bg) 55%);
+    html,body{
+      width:100%;
+      height:100%;
+      background:#000000; /* full hitam */
       color:var(--text-main);
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid #222;
-      border-radius:18px;
-      padding:24px 26px;
-      max-width:420px;
-      width:90%;
-      text-align:center;
-      box-shadow:0 18px 40px rgba(0,0,0,0.6);
+    body{
+      display:flex;
+      align-items:stretch;
+      justify-content:center;
     }
 
-    .badge{
+    .shell{
+      width:100%;
+      max-width:1200px;
+      padding:10px 10px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .chips-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      border-radius:var(--radius-lg);
+      border:1px solid var(--border-soft);
+      padding:6px 11px;
+      font-size:var(--fs-chip);
+      color:var(--text-muted);
+      background:rgba(0,0,0,0.5);
+      cursor:pointer;
       display:inline-flex;
       align-items:center;
-      gap:8px;
-      padding:6px 12px;
+      gap:6px;
+      transition:background 0.18s ease,border-color 0.18s ease,color 0.18s ease,transform 0.08s ease;
+      white-space:nowrap;
+    }
+
+    .chip-dot{
+      width:6px;
+      height:6px;
       border-radius:999px;
-      background:rgba(255,191,0,0.1);
-      border:1px solid rgba(255,191,0,0.5);
-      font-size:13px;
-      color:var(--accent);
-      margin-bottom:18px;
+      background:var(--border-soft);
     }
 
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 12px rgba(255,191,0,0.8);
-    }
-
-    h1{
-      font-size:22px;
-      margin-bottom:8px;
-    }
-
-    p{
-      font-size:14px;
-      line-height:1.6;
-      color:var(--text-muted);
-      margin-bottom:18px;
-    }
-
-    .time-estimate{
-      font-size:13px;
-      color:var(--text-muted);
-      background:#101010;
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:18px;
-    }
-
-    .btn{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      border:1px solid var(--accent);
-      color:var(--accent);
-      text-decoration:none;
-      font-size:14px;
-      transition:background 0.2s, color 0.2s, transform 0.1s;
-    }
-
-    .btn:hover{
-      background:var(--accent);
+    .chip.active{
       color:#000;
-      transform:translateY(-1px);
+      background:var(--accent);
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px var(--accent-soft),0 0 15px rgba(0,0,0,0.9);
+      transform:translateY(-0.5px);
     }
 
-    .footer-text{
-      margin-top:16px;
+    .chip.active .chip-dot{
+      background:#000;
+    }
+
+    .chip:hover:not(.active){
+      border-color:var(--accent);
+      color:var(--text-main);
+    }
+
+    .view-shell{
+      flex:1;
+      min-height:0;
+      margin-top:4px;
+      border-radius:14px;
+      border:1px solid var(--border-soft);
+      background:var(--bg-main);
+      overflow:hidden;
+      display:flex;
+      align-items:stretch;
+      justify-content:stretch;
+      position:relative;
+    }
+
+    iframe{
+      width:100%;
+      border:none;
+      background:#000;
+    }
+
+    .iframe-el{
+      height:calc(100vh - 90px);
+    }
+
+    @media (max-width:768px){
+      .shell{
+        padding:10px 8px 12px;
+      }
+      .view-shell{
+        border-radius:10px;
+      }
+      .iframe-el{
+        height:calc(100vh - 110px);
+      }
+    }
+
+    .placeholder{
+      width:100%;
+      height:100%;
+      padding:18px 16px;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      justify-content:flex-start;
+      gap:6px;
+      color:var(--text-muted);
       font-size:11px;
-      color:#666;
+    }
+
+    .placeholder-badge{
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      border-radius:999px;
+      padding:3px 9px;
+      border:1px dashed var(--border-soft);
+      background:rgba(0,0,0,0.6);
+      color:var(--accent);
+    }
+
+    .placeholder-main{
+      font-size:12px;
+      color:var(--text-main);
+    }
+
+    .placeholder-sub{
+      font-size:11px;
+      opacity:0.8;
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Sedang Maintenance</span>
+  <div class="shell">
+
+    <div class="chips-row">
+      <button class="chip" data-key="lite">
+        <span class="chip-dot"></span>
+        <span>Lite Terminal Legacy</span>
+      </button>
+
+      <button class="chip" data-key="terminal1">
+        <span class="chip-dot"></span>
+        <span>Terminal 1.0 Legacy</span>
+      </button>
+
+      <button class="chip" data-key="store">
+        <span class="chip-dot"></span>
+        <span>Kuantara Analytics Store</span>
+      </button>
     </div>
 
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p>
-      Kami sedang melakukan maintenance sistem untuk meningkatkan performa
-      dan stabilitas layanan. Selama proses ini, beberapa fitur mungkin
-      tidak dapat diakses sementara.
-    </p>
-
-    <div class="time-estimate">
-      Silakan coba kembali beberapa saat lagi. Terima kasih atas
-      pengertian dan kesabaran Anda.
+    <div class="view-shell" id="view-shell">
+      <!-- Default: belum ada iframe -->
+      <div class="placeholder">
+        <div class="placeholder-badge">select module</div>
+        <div class="placeholder-main">Silakan pilih salah satu modul di atas.</div>
+        <div class="placeholder-sub">Aplikasi akan dimuat hanya ketika dipilih.</div>
+      </div>
     </div>
+  </div>
 
-    <a href="#" class="btn" onclick="location.reload(); return false;">
-      Muat Ulang Halaman
-    </a>
+<script>
+  const chipConfig = {
+    lite: "https://kuantara112.github.io/Kuantara_Terminal_Charts/Terminal.html",
+    terminal1: "https://sider.ai/agents/web-creator/share/689d654bf530328388a396b2",
+    store: "https://lynk.id/kuantaraanalytics"
+  };
 
-    <div class="footer-text">
-      &copy; <span id="year"></span> — Semua hak dilindungi.
-    </div>
-  </main>
+  const chips = document.querySelectorAll(".chip");
+  const viewShell = document.getElementById("view-shell");
+  let iframeEl = null;
 
-  <script>
-    // Set tahun otomatis
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+  function ensureIframe() {
+    if (!iframeEl) {
+      iframeEl = document.createElement("iframe");
+      iframeEl.className = "iframe-el";
+      iframeEl.loading = "lazy";
+      viewShell.innerHTML = "";
+      viewShell.appendChild(iframeEl);
+    }
+  }
+
+  function handleChipClick(key) {
+    chips.forEach(chip => {
+      chip.classList.toggle("active", chip.dataset.key === key);
+    });
+
+    const url = chipConfig[key];
+    if (!url) return;
+
+    ensureIframe();
+    iframeEl.src = url;
+  }
+
+  chips.forEach(chip => {
+    chip.addEventListener("click", () => handleChipClick(chip.dataset.key));
+  });
+</script>
+
 </body>
 </html>
