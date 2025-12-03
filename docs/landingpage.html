@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuantara Terminal | Macro Bestie-nya Trader</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#050505',
+                        surface: '#0f0f11',
+                        surfaceHighlight: '#1a1a1c',
+                        primary: '#FFBF00', // Amber
+                        primaryDim: 'rgba(255, 191, 0, 0.15)',
+                        secondary: '#0c2d4e', 
+                        secondaryDim: 'rgba(12, 45, 78, 0.4)',
+                        textMain: '#f5f5f7',
+                        textMuted: '#86868b',
+                    },
+                    fontFamily: {
+                        sans: ['"Fira Code"', 'monospace'],
+                        mono: ['"Fira Code"', 'monospace'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            font-family: "Fira Code", monospace !important;
+        }
+
+        body {
+            background-color: #050505;
+            color: #f5f5f7;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(20, 20, 23, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-glass {
+            background: rgba(5, 5, 5, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .terminal-glow {
+            box-shadow: 0 0 120px -30px rgba(255, 191, 0, 0.15), 0 0 80px -50px rgba(12, 45, 78, 0.5);
+        }
+
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            border-color: rgba(12, 45, 78, 0.5); 
+            background: rgba(30, 30, 35, 0.8);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stagger-1 { transition-delay: 100ms; }
+        .stagger-2 { transition-delay: 200ms; }
+        .stagger-3 { transition-delay: 300ms; }
+        .stagger-4 { transition-delay: 400ms; }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary selection:text-black">
+
+    <nav class="fixed w-full z-50 nav-glass transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="font-semibold tracking-tight text-xl text-white">Kuantara Analytics</span>
+            </div>
+            <div class="hidden md:flex gap-8 text-sm text-textMuted font-medium">
+                <a href="#features" class="hover:text-white transition-colors">Fitur</a>
+                <a href="#why" class="hover:text-white transition-colors">Kenapa Kuantara?</a>
+                <a href="#pricing" class="hover:text-white transition-colors">Langganan</a>
+            </div>
+            <a href="#pricing" class="px-4 py-1.5 rounded-full bg-white text-black text-xs font-semibold hover:bg-gray-200 transition-colors">
+                Masuk Terminal
+            </a>
+        </div>
+    </nav>
+
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="absolute top-10 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-secondary/20 blur-[150px] rounded-full pointer-events-none"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10 text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-primary mb-6 reveal">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                v2.1 udah rilis!
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tight mb-6 reveal stagger-1">
+                Terminal <span class="text-primary">Trader Pro.</span>
+            </h1>
+            
+            <p class="text-xl text-textMuted max-w-2xl mx-auto mb-10 leading-relaxed reveal stagger-2">
+                Dibikin khusus buat analis dan trader serius. 
+                <span class="text-white">Keputusan tajam, data real-time,</span> workflow ala hedge fund. Gak pakai ribet, tinggal gas.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20 reveal stagger-3">
+                <a href="#pricing" class="px-8 py-4 rounded-full bg-white text-black font-medium text-base hover:scale-105 transition-transform">
+                    Coba Early Access
+                </a>
+            </div>
+
+            <div class="relative w-full max-w-5xl mx-auto reveal stagger-4 terminal-glow animate-float">
+                <div class="glass-panel rounded-xl overflow-hidden shadow-2xl border-t border-white/20">
+                    <div class="h-8 bg-secondary/20 border-b border-white/5 flex items-center px-4 gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                        <div class="ml-auto text-xs text-secondary-200 font-mono opacity-70">kuantara_main.exe</div>
+                    </div>
+                    <div class="p-1 bg-[#09090b] grid grid-cols-12 gap-[1px]">
+                        <div class="col-span-1 bg-surfaceHighlight h-[400px] flex flex-col items-center py-4 gap-6 border-r border-white/5">
+                            <span class="iconify text-primary" data-icon="solar:chart-2-bold-duotone" data-width="24"></span>
+                            <span class="iconify text-textMuted hover:text-white" data-icon="solar:globe-bold-duotone" data-width="24"></span>
+                            <span class="iconify text-textMuted hover:text-white" data-icon="solar:layers-minimalistic-bold-duotone" data-width="24"></span>
+                        </div>
+                        <div class="col-span-8 bg-[#0a0a0a] p-6 relative">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="font-mono text-primary text-sm">> GLOBAL_RISK_MONITOR</h3>
+                                <div class="font-mono text-xs text-green-500 flex items-center gap-1">● TERHUBUNG</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="h-32 bg-white/5 rounded border border-white/5 p-3">
+                                    <div class="text-xs text-textMuted font-mono mb-2">S&P 500 GAMMA</div>
+                                    <div class="w-full h-16 bg-gradient-to-t from-primary/20 to-transparent flex items-end">
+                                        <div class="w-full border-t-2 border-primary"></div>
+                                    </div>
+                                </div>
+                                <div class="h-32 bg-white/5 rounded border border-white/5 p-3">
+                                    <div class="text-xs text-textMuted font-mono mb-2">KORELASI US10Y / DXY</div>
+                                    <div class="w-full h-16 flex items-center justify-center">
+                                        <span class="font-mono text-2xl text-white">0.82</span>
+                                    </div>
+                                </div>
+                                <div class="col-span-2 h-24 bg-white/5 rounded border border-white/5 p-3 flex items-center gap-4">
+                                    <span class="iconify text-textMuted" data-icon="simple-icons:nvidia" data-width="24"></span>
+                                    <span class="iconify text-textMuted" data-icon="simple-icons:bitcoin" data-width="24"></span>
+                                    <div class="h-px flex-1 bg-white/10"></div>
+                                    <span class="font-mono text-xs text-primary">NET FLOW POSITIF</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-3 bg-surfaceHighlight p-4 border-l border-white/5">
+                            <div class="text-xs font-mono text-textMuted mb-4">AI_INSIGHT_STREAM</div>
+                            <div class="space-y-3">
+                                <div class="text-[10px] text-gray-400 font-mono p-2 bg-white/5 rounded border-l-2 border-primary">
+                                    CPI agak melandai. Yield AS kemungkinan turun. Saatnya lirik TLT.
+                                </div>
+                                <div class="text-[10px] text-gray-400 font-mono p-2 bg-white/5 rounded">
+                                    Ada divergensi volume di futures minyak (CL1). Hati-hati.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="why" class="py-24 bg-surface/30 border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="reveal stagger-1">
+                    <span class="iconify text-secondary mb-4" data-icon="solar:server-square-cloud-bold-duotone" data-width="32"></span>
+                    <h3 class="text-xl font-semibold mb-3">Pipa Data Multi-Sumber</h3>
+                    <p class="text-textMuted text-sm leading-relaxed">
+                        Kita tarik data institusi dari berbagai sumber ke satu layar. Latensi super cepat, harga jauh di bawah Bloomberg Terminal.
+                    </p>
+                </div>
+                <div class="reveal stagger-2">
+                    <span class="iconify text-secondary mb-4" data-icon="solar:graph-new-up-bold-duotone" data-width="32"></span>
+                    <h3 class="text-xl font-semibold mb-3">Likuiditas No. 1</h3>
+                    <p class="text-textMuted text-sm leading-relaxed">
+                        Harga bisa bohong, tapi likuiditas selalu jujur. Pantau injeksi likuiditas, flow ETF, dan pergerakan big money secara instan.
+                    </p>
+                </div>
+                <div class="reveal stagger-3">
+                    <span class="iconify text-secondary mb-4" data-icon="solar:cpu-bolt-bold-duotone" data-width="32"></span>
+                    <h3 class="text-xl font-semibold mb-3">Komentar AI Cerdas</h3>
+                    <p class="text-textMuted text-sm leading-relaxed">
+                        AI kita baca risalah bank sentral dan laporan earnings dalam hitungan detik. Rangkuman sentimen makro, langsung ke intinya.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-32">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="mb-16 reveal">
+                <h2 class="text-3xl md:text-5xl font-semibold mb-4">Command Center Kamu.</h2>
+                <p class="text-textMuted text-lg">Setiap modul didesain biar kamu bisa ambil keputusan cepet.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <div class="glass-panel p-6 rounded-2xl card-hover reveal lg:col-span-2">
+                    <div class="flex justify-between items-start mb-8">
+                        <span class="iconify text-textMuted" data-icon="solar:flag-bold-duotone" data-width="32"></span>
+                        <span class="text-xs font-mono text-primary">LIVE</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Dashboard Makro AS</h3>
+                    <p class="text-sm text-textMuted">Lengkap dari GDPNow, Klaim Pengangguran, sampai inversi Kurva Yield. Satu layar, semua info.</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl card-hover reveal stagger-1">
+                    <span class="iconify text-textMuted mb-8" data-icon="solar:shield-warning-bold-duotone" data-width="32"></span>
+                    <h3 class="text-lg font-semibold mb-2">Risiko Global</h3>
+                    <p class="text-sm text-textMuted">Pantau VIX, MOVE, skew, dan korelasi antar aset biar gak kejebak market.</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl card-hover reveal stagger-2">
+                    <span class="iconify text-textMuted mb-8" data-icon="solar:wad-of-money-bold-duotone" data-width="32"></span>
+                    <h3 class="text-lg font-semibold mb-2">Explorer ETF</h3>
+                    <p class="text-sm text-textMuted">Liat duit gede (Smart Money) pindah kemana. Rotasi sektor kelihatan jelas.</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl card-hover reveal">
+                    <span class="iconify text-textMuted mb-8" data-icon="solar:pie-chart-2-bold-duotone" data-width="32"></span>
+                    <h3 class="text-lg font-semibold mb-2">Mesin FedWatch</h3>
+                    <p class="text-sm text-textMuted">Probabilitas suku bunga dihitung dari futures SOFR secara real-time.</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl card-hover reveal stagger-1 lg:col-span-2 bg-gradient-to-br from-secondary/30 to-transparent border-secondary/20">
+                    <div class="flex justify-between items-start mb-8">
+                        <span class="iconify text-white" data-icon="solar:magic-stick-3-bold-duotone" data-width="32"></span>
+                        <span class="font-mono text-xs bg-secondary/50 text-white px-2 py-1 rounded">BETA</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 text-white">Insight AI Kuantara</h3>
+                    <p class="text-sm text-gray-300">Tanya data pakai bahasa manusia. "Coba cariin korelasi Emas sama Real Rates 6 bulan terakhir dong."</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl card-hover reveal stagger-2">
+                    <span class="iconify text-textMuted mb-8" data-icon="solar:users-group-two-rounded-bold-duotone" data-width="32"></span>
+                    <h3 class="text-lg font-semibold mb-2">Sentimen Ritel</h3>
+                    <p class="text-sm text-textMuted">Indikator kontrarian. Liat posisi ritel lagi numpuk dimana, kita lawan.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 border-y border-white/5 bg-surface/20">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-center text-3xl font-semibold mb-16 reveal">Kata Mereka yang Udah Cuan.</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="reveal">
+                    <p class="text-lg leading-relaxed mb-6">"Akhirnya ada data sekelas institusi tapi gak pakai onboarding yang ribet. Kuantara itu isinya daging semua."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-mono text-sm text-secondary">A</div>
+                        <div class="text-sm">
+                            <div class="font-semibold">Alex V.</div>
+                            <div class="text-textMuted">Strategis Makro</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal stagger-1">
+                    <p class="text-lg leading-relaxed mb-6">"Desainnya enak banget dimata. Gak banyak noise, cuma chart sama flow yang beneran nggerakin pasar."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-mono text-sm text-secondary">J</div>
+                        <div class="text-sm">
+                            <div class="font-semibold">Jenna K.</div>
+                            <div class="text-textMuted">Prop Trader</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal stagger-2">
+                    <p class="text-lg leading-relaxed mb-6">"Jujur, ini gantiin 3 tools langganan gue. Buat prep trading mingguan, fitur cross-asset-nya kepake banget."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-mono text-sm text-secondary">M</div>
+                        <div class="text-sm">
+                            <div class="font-semibold">Marcus L.</div>
+                            <div class="text-textMuted">Fund Manager</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="py-32">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-4xl font-semibold text-center mb-4 reveal">Akses Terminal</h2>
+            <p class="text-center text-textMuted mb-16 reveal">Investasi leher ke atas. Pilih paket yang pas buat lo.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <!-- Paket 3 Bulan -->
+                <div class="glass-panel p-8 rounded-2xl flex flex-col reveal card-hover">
+                    <h3 class="text-lg font-medium text-textMuted mb-2">Paket 3 Bulan</h3>
+                    <div class="text-3xl font-semibold font-mono mb-6">
+                        Rp189.000<span class="text-sm text-textMuted">/bulan</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 text-sm text-textMuted flex-1">
+                        <li class="flex items-center gap-2">
+                            <span class="iconify text-primary" data-icon="solar:check-circle-bold"></span> 
+                            Semua Modul Makro
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="iconify text-primary" data-icon="solar:check-circle-bold"></span> 
+                            Berita Real-time
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-black transition-all text-sm font-medium">
+                        Sikat
+                    </button>
+                </div>
+
+                <!-- Paket 6 Bulan -->
+                <div class="glass-panel p-8 rounded-2xl flex flex-col reveal stagger-1 card-hover">
+                    <h3 class="text-lg font-medium text-textMuted mb-2">Paket 6 Bulan</h3>
+                    <div class="text-3xl font-semibold font-mono mb-6">
+                        Rp179.000<span class="text-sm text-textMuted">/bulan</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 text-sm text-textMuted flex-1">
+                        <li class="flex items-center gap-2">
+                            <span class="iconify text-primary" data-icon="solar:check-circle-bold"></span> 
+                            Semua di paket 3 bulan
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="iconify text-primary" data-icon="solar:check-circle-bold"></span> 
+                            Explorer Arus ETF
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-black transition-all text-sm font-medium">
+                        Sikat
+                    </button>
+                </div>
+
+                <!-- Tahunan (Paling Hemat) -->
+                <div class="glass-panel p-8 rounded-2xl flex flex-col reveal stagger-2 card-hover relative overflow-hidden">
+                    <div class="absolute top-0 right-0 px-3 py-1 bg-primary text-black text-[10px] font-bold">PALING HEMAT</div>
+                    <h3 class="text-lg font-medium text-white mb-2">Tahunan</h3>
+                    <div class="text-3xl font-semibold font-mono mb-6 text-primary">
+                        Rp166.000<span class="text-sm text-textMuted text-white">/bulan</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 text-sm text-textMuted flex-1">
+                        <li class="flex items-center gap-2">
+                            <span class="iconify text-primary" data-icon="solar:check-circle-bold"></span> 
+                            Akses Full Suite
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="iconify text-primary" data-icon="solar:check-circle-bold"></span> 
+                            Mesin AI Kuantara
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 rounded-xl bg-white text-black hover:bg-gray-200 transition-all text-sm font-medium">
+                        Pilih Ini
+                    </button>
+                </div>
+
+                <!-- Sekali Bayar -->
+                <div class="glass-panel p-8 rounded-2xl flex flex-col reveal stagger-3 card-hover border-primary/30">
+                    <h3 class="text-lg font-medium text-primary mb-2">Sekali Bayar</h3>
+                    <div class="text-3xl font-semibold font-mono mb-6">
+                        Rp4.900.000<span class="text-sm text-textMuted">/sekali bayar</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 text-sm text-textMuted flex-1">
+                        <li class="flex items-center gap-2">
+                            <span class="iconify text-primary" data-icon="solar:star-bold"></span> 
+                            Founder's Badge
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="iconify text-primary" data-icon="solar:star-bold"></span> 
+                            Request Fitur Prioritas
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="iconify text-secondary" data-icon="simple-icons:discord"></span> 
+                            Grup Discord Privat
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 rounded-xl bg-primary/10 text-primary border border-primary/50 hover:bg-primary hover:text-black transition-all text-sm font-medium">
+                        Jadi Partner
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-white/5 bg-black text-xs text-textMuted">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                <span class="font-mono text-gray-500">© 2024 Kuantara Terminal.</span>
+            </div>
+            
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-white transition-colors">Privasi</a>
+                <a href="#" class="hover:text-white transition-colors">S&K</a>
+                <a href="#" class="hover:text-white transition-colors">Data Policy</a>
+                <a href="#" class="hover:text-white transition-colors">Kontak</a>
+            </div>
+
+            <div class="flex gap-4 items-center opacity-50">
+                <span class="iconify hover:text-secondary transition-colors" data-icon="simple-icons:github"></span>
+                <span class="iconify hover:text-secondary transition-colors" data-icon="simple-icons:x"></span>
+                <span class="iconify hover:text-secondary transition-colors" data-icon="simple-icons:discord"></span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: "0px 0px -50px 0px"
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
