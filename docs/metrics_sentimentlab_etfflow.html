@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuantara – GLD & SPY ETF Flows</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <!-- PapaParse -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <style>
+    :root{
+      --bg-root:#000000;
+      --bg-panel:#141414;
+      --bg-panel-soft:#181818;
+      --border-soft:#262626;
+      --accent:#ffbf00;
+      --accent-soft:rgba(255,191,0,0.16);
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --danger:#ef4444;
+      --success:#22c55e;
+
+      --radius-lg:0px;   /* biar rapet ke tepi */
+      --radius-sm:0px;
+
+      --fs-title:14px;
+      --fs-subtitle:11px;
+      --fs-small:10px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace !important;
+    }
+
+    html,body{
+      width:100%;
+      height:100%;
+      background:var(--bg-root);
+      color:var(--text-main);
+      overflow:hidden;
+    }
+
+    body{
+      display:flex;
+      align-items:stretch;
+      justify-content:stretch;
+    }
+
+    .app-shell{
+      width:100vw;
+      height:100vh;
+      display:flex;
+    }
+
+    .content{
+      width:100%;
+      height:100%;
+      display:grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      gap:0;                 /* tidak ada space antar panel */
+    }
+
+    .panel{
+      background:radial-gradient(circle at top left,#1b1b1b 0,#101010 55%);
+      border-radius:var(--radius-lg);
+      border:1px solid var(--border-soft);
+      display:flex;
+      flex-direction:column;
+      padding:8px 10px;
+      min-height:0;
+    }
+
+    .panel-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      padding-bottom:4px;
+    }
+
+    .panel-title-block{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .panel-title{
+      font-size:var(--fs-title);
+    }
+
+    .panel-subtitle{
+      font-size:var(--fs-subtitle);
+      color:var(--text-muted);
+    }
+
+    .label-chip{
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      background:rgba(0,0,0,0.4);
+      white-space:nowrap;
+    }
+
+    .panel-body{
+      flex:1;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .chart{
+      width:100%;
+      height:100%;
+      border-radius:var(--radius-sm);
+      background:radial-gradient(circle at top,#181818 0,#101010 60%);
+      border:1px solid #202020;
+      padding:4px;
+      flex:1;
+      min-height:0;
+    }
+
+    #chart-gld, #chart-spy{
+      width:100%;
+      height:100%;
+    }
+
+    .panel-footer{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      gap:8px;
+      flex-wrap:wrap;
+      padding-top:2px;
+    }
+
+    .legend{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .legend-item{
+      display:flex;
+      align-items:center;
+      gap:5px;
+    }
+
+    .leg-box{
+      width:10px;
+      height:10px;
+      border-radius:3px;
+    }
+
+    .leg-gld{ background:#ffbf00; }
+    .leg-spy{ background:#38bdf8; }
+
+    .sync-status{
+      font-size:var(--fs-small);
+      color:var(--text-muted);
+      white-space:nowrap;
+    }
+
+    .sync-dot{
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#22c55e;
+      box-shadow:0 0 6px rgba(34,197,94,0.6);
+      display:inline-block;
+      margin-right:4px;
+    }
+
+    .error-banner{
+      margin-top:4px;
+      font-size:var(--fs-small);
+      color:var(--danger);
+    }
+
+    @media (max-width:900px){
+      .content{
+        grid-template-columns:minmax(0,1fr);
+        grid-template-rows: minmax(0,1fr) minmax(0,1fr);
+      }
+      .panel{
+        border-radius:0;
+      }
+      html,body{
+        overflow:hidden;
+      }
+    }
+
+    /* Scrollbar (kalau nanti overflow di mobile/iframe) */
+    ::-webkit-scrollbar{
+      width:8px;
+    }
+    ::-webkit-scrollbar-track{
+      background:transparent;
+    }
+    ::-webkit-scrollbar-thumb{
+      background:rgba(80,80,80,0.6);
+      border-radius:999px;
+    }
+    ::-webkit-scrollbar-thumb:hover{
+      background:rgba(120,120,120,0.8);
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <main class="content">
+    <!-- Left: GLD flows -->
+    <section class="panel">
+      <div class="panel-header">
+        <div class="panel-title-block">
+          <div class="panel-title">GLD Weekly Net Flows</div>
+          <div class="panel-subtitle">Gold ETF flows (USD millions).</div>
+        </div>
+        <div class="label-chip">GLD Flows</div>
+      </div>
+
+      <div class="panel-body">
+        <div class="chart">
+          <div id="chart-gld"></div>
+        </div>
+        <div class="panel-footer">
+          <div class="legend">
+            <div class="legend-item">
+              <div class="leg-box leg-gld"></div>
+              <span>GLD Net Flows</span>
+            </div>
+          </div>
+          <div class="sync-status" id="sync-info-gld">
+            <span class="sync-dot"></span>Loading CSV…
+          </div>
+        </div>
+        <div class="error-banner" id="error-gld" style="display:none;"></div>
+      </div>
+    </section>
+
+    <!-- Right: SPY flows -->
+    <section class="panel">
+      <div class="panel-header">
+        <div class="panel-title-block">
+          <div class="panel-title">SPY Weekly Net Flows</div>
+          <div class="panel-subtitle">S&P 500 ETF flows (USD millions).</div>
+        </div>
+        <div class="label-chip">SPY Flows</div>
+      </div>
+
+      <div class="panel-body">
+        <div class="chart">
+          <div id="chart-spy"></div>
+        </div>
+        <div class="panel-footer">
+          <div class="legend">
+            <div class="legend-item">
+              <div class="leg-box leg-spy"></div>
+              <span>SPY Net Flows</span>
+            </div>
+          </div>
+          <div class="sync-status" id="sync-info-spy">
+            <span class="sync-dot"></span>Waiting for data…
+          </div>
+        </div>
+        <div class="error-banner" id="error-spy" style="display:none;"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTskCnvtqaEed8luWTm9ACnkHnNK8hlsG13UWv9NVAsq4_JmfCcyCpoRvMRN6Dxl0GBC20KVYw-FtgL/pub?gid=0&single=true&output=csv";
+
+  const gldDom = document.getElementById('chart-gld');
+  const spyDom = document.getElementById('chart-spy');
+
+  const gldChart = echarts.init(gldDom, null, {renderer:'canvas'});
+  const spyChart = echarts.init(spyDom, null, {renderer:'canvas'});
+
+  function parseNumber(value){
+    if(value === null || value === undefined) return NaN;
+    return parseFloat(String(value).replace(/,/g,'').trim());
+  }
+
+  function loadData(){
+    Papa.parse(CSV_URL,{
+      download:true,
+      header:true,
+      skipEmptyLines:true,
+      complete: function(results){
+        try{
+          const rows = results.data.filter(r => r["Date"]);
+          const dates = [];
+          const gldFlows = [];
+          const spyFlows = [];
+
+          rows.forEach(row => {
+            const d = row["Date"];
+            const gld = parseNumber(row["GLD Net Flows"]);
+            const spy = parseNumber(row["SPY Net Flows"]);
+
+            if(!d || isNaN(gld) || isNaN(spy)) return;
+
+            dates.push(d);
+            gldFlows.push(gld);
+            spyFlows.push(spy);
+          });
+
+          if(dates.length === 0){
+            throw new Error("No valid rows parsed from CSV. Check header names & values.");
+          }
+
+          renderSingleFlowChart(gldChart, dates, gldFlows, "#ffbf00");
+          renderSingleFlowChart(spyChart, dates, spyFlows, "#38bdf8");
+
+          document.getElementById('sync-info-gld').innerHTML =
+            '<span class="sync-dot"></span>'+dates[0]+' → '+dates[dates.length-1];
+          document.getElementById('sync-info-spy').innerHTML =
+            '<span class="sync-dot"></span>'+dates[0]+' → '+dates[dates.length-1];
+        }catch(err){
+          console.error(err);
+          document.getElementById('error-gld').style.display = 'block';
+          document.getElementById('error-gld').textContent =
+            'Error parsing data: '+err.message;
+          document.getElementById('error-spy').style.display = 'block';
+          document.getElementById('error-spy').textContent =
+            'Charts disabled due to parse error.';
+        }
+      },
+      error: function(err){
+        console.error(err);
+        document.getElementById('error-gld').style.display = 'block';
+        document.getElementById('error-gld').textContent =
+          'Failed to fetch CSV: '+err;
+        document.getElementById('error-spy').style.display = 'block';
+        document.getElementById('error-spy').textContent =
+          'Failed to fetch CSV: '+err;
+      }
+    });
+  }
+
+  function renderSingleFlowChart(chart, dates, dataArr, baseColor){
+    const colors = dataArr.map(v => {
+      if(v >= 0){
+        return baseColor;
+      }else{
+        return baseColor === "#ffbf00" ? "#f97316" : "#0ea5e9";
+      }
+    });
+
+    const option = {
+      backgroundColor:'transparent',
+      tooltip:{
+        trigger:'axis',
+        axisPointer:{type:'shadow'},
+        valueFormatter: v => v!=null ? v.toFixed(2)+' M' : ''
+      },
+      grid:{
+        left:40,
+        right:16,
+        top:24,
+        bottom:30,
+        containLabel:false
+      },
+      xAxis:{
+        type:'category',
+        data:dates,
+        axisLine:{lineStyle:{color:'#555'}},
+        axisTick:{show:false},
+        axisLabel:{
+          color:'#aaaaaa',
+          fontSize:10,
+          formatter:function(value,index){
+            return index % 2 === 0 ? value : '';
+          }
+        }
+      },
+      yAxis:{
+        type:'value',
+        axisLine:{show:false},
+        axisTick:{show:false},
+        splitLine:{lineStyle:{color:'#262626'}},
+        axisLabel:{
+          color:'#aaaaaa',
+          fontSize:10,
+          formatter:function(v){ return v+'M'; }
+        }
+      },
+      dataZoom:[
+        {
+          type:'inside',
+          start:40,
+          end:100
+        },
+        {
+          type:'slider',
+          start:40,
+          end:100,
+          height:12,
+          bottom:4,
+          borderColor:'#222',
+          backgroundColor:'#050505',
+          fillerColor:'rgba(255,191,0,0.15)',
+          handleSize:10,
+          handleStyle:{color:'#ffbf00'}
+        }
+      ],
+      series:[
+        {
+          name:'Net Flows',
+          type:'bar',
+          data:dataArr.map((v,i)=>({value:v,itemStyle:{color:colors[i]}})),
+          barWidth:12,
+          itemStyle:{
+            borderRadius:[2,2,0,0]
+          },
+          markLine:{
+            symbol:'none',
+            lineStyle:{
+              type:'dashed',
+              color:'#666'
+            },
+            data:[{yAxis:0}]
+          }
+        }
+      ]
+    };
+
+    chart.setOption(option);
+  }
+
+  window.addEventListener('resize',function(){
+    gldChart.resize();
+    spyChart.resize();
+  });
+
+  loadData();
+</script>
+</body>
+</html>
