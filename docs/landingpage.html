@@ -3,12 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Kuantara Terminal | Macro Bestie-nya Trader</title>
-    
+
+    <!-- Primary SEO -->
+    <meta name="description" content="Kuantara Terminal itu ‘command center’ buat kamu yang trading Saham, Komoditas, Forex, sampai kripto. Satu layar isi data makro, ETF flows, risiko global, dan insight AI biar keputusan trading kamu makin tajam.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://kuantara-analytics.com/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Kuantara Terminal — Macro Bestie-nya Trader">
+    <meta property="og:description" content="Dari trader Saham, Komoditas, sampai Forex. Dari analis Global Makro sampe teknikal. Semua data penting kamu, dikumpulin rapi di satu terminal.">
+    <meta property="og:url" content="https://kuantara-analytics.com/">
+    <meta property="og:image" content="https://kuantara-analytics.com/og-cover.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Kuantara Terminal — Macro Bestie-nya Trader">
+    <meta name="twitter:description" content="Terminal makro modern buat trader multi-asset. Lihat cross-asset view, ETF flows, dan insight AI di satu layar, tanpa pusing buka banyak tab.">
+    <meta name="twitter:image" content="https://kuantara-analytics.com/og-cover.jpg">
+
+    <!-- Brand / Theming -->
+    <meta name="theme-color" content="#020617">
+
+    <!-- Favicon & PWA Hooks -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
-    
+
+    <!-- Tailwind & Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
 
@@ -17,13 +47,13 @@
             theme: {
                 extend: {
                     colors: {
-                        background: '#050505',
-                        surface: '#0f0f11',
-                        surfaceHighlight: '#1a1a1c',
-                        primary: '#FFBF00', // Amber
+                        background: '#020617',          // dark navy root
+                        surface: '#050b18',             // panel dasar
+                        surfaceHighlight: '#0b1120',    // panel highlight
+                        primary: '#FFBF00',             // Amber
                         primaryDim: 'rgba(255, 191, 0, 0.15)',
-                        secondary: '#0c2d4e', 
-                        secondaryDim: 'rgba(12, 45, 78, 0.4)',
+                        secondary: '#0f3b63',           // navy aksen
+                        secondaryDim: 'rgba(15, 59, 99, 0.4)',
                         textMain: '#f5f5f7',
                         textMuted: '#86868b',
                     },
@@ -52,26 +82,28 @@
         }
 
         body {
-            background-color: #050505;
+            background-color: #020617; /* dark navy root */
             color: #f5f5f7;
             overflow-x: hidden;
         }
 
         .glass-panel {
-            background: rgba(20, 20, 23, 0.6);
+            background: rgba(6, 12, 30, 0.78); /* navy glass */
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(148, 163, 184, 0.25); /* slate border */
         }
 
         .nav-glass {
-            background: rgba(5, 5, 5, 0.7);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(3, 10, 26, 0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.25);
         }
 
         .terminal-glow {
-            box-shadow: 0 0 120px -30px rgba(255, 191, 0, 0.15), 0 0 80px -50px rgba(12, 45, 78, 0.5);
+            box-shadow:
+                0 0 120px -30px rgba(255, 191, 0, 0.18),
+                0 0 90px -40px rgba(15, 59, 99, 0.7);
         }
 
         .card-hover {
@@ -79,8 +111,8 @@
         }
         .card-hover:hover {
             transform: translateY(-4px);
-            border-color: rgba(12, 45, 78, 0.5); 
-            background: rgba(30, 30, 35, 0.8);
+            border-color: rgba(56, 189, 248, 0.5); /* cyan-ish navy glow */
+            background: rgba(15, 23, 42, 0.92);    /* deep navy hover */
         }
 
         .reveal {
@@ -97,106 +129,146 @@
         .stagger-2 { transition-delay: 200ms; }
         .stagger-3 { transition-delay: 300ms; }
         .stagger-4 { transition-delay: 400ms; }
-        
+
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #050505; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;   /* blue-gray thumb */
+            border-radius: 4px;
+        }
     </style>
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Kuantara Terminal",
+      "operatingSystem": "Web",
+      "applicationCategory": "FinanceApplication",
+      "description": "Kuantara Terminal adalah terminal pasar keuangan berbasis web untuk trader dan analis yang butuh data makro, likuiditas global, ETF flows, dan insight AI dalam satu layar.",
+      "url": "https://kuantara-analytics.com/",
+      "brand": {
+        "@type": "Brand",
+        "name": "Kuantara Analytics"
+      },
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "IDR",
+        "price": "166000",
+        "url": "https://kuantara-analytics.com/#pricing"
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "Kuantara Analytics"
+      }
+    }
+    </script>
 </head>
 <body class="antialiased selection:bg-primary selection:text-black">
 
     <nav class="fixed w-full z-50 nav-glass transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <span class="font-semibold tracking-tight text-xl text-white">Kuantara Analytics</span>
+                <span class="font-semibold tracking-tight text-lg sm:text-xl text-white">Kuantara Analytics</span>
             </div>
             <div class="hidden md:flex gap-8 text-sm text-textMuted font-medium">
                 <a href="#features" class="hover:text-white transition-colors">Fitur</a>
                 <a href="#why" class="hover:text-white transition-colors">Kenapa Kuantara?</a>
                 <a href="#pricing" class="hover:text-white transition-colors">Langganan</a>
             </div>
-            <a href="#pricing" class="px-4 py-1.5 rounded-full bg-white text-black text-xs font-semibold hover:bg-gray-200 transition-colors">
+            <a href="https://terminal-kuantara.com" class="px-3 sm:px-4 py-1.5 rounded-full bg-white text-black text-[11px] sm:text-xs font-semibold hover:bg-gray-200 transition-colors">
                 Masuk Terminal
             </a>
         </div>
     </nav>
 
-    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <div class="absolute top-10 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-secondary/20 blur-[150px] rounded-full pointer-events-none"></div>
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
+    <section class="relative pt-28 sm:pt-32 pb-16 lg:pt-44 lg:pb-32 overflow-hidden">
+        <!-- Navy glow background -->
+        <div class="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] sm:w-[900px] h-[480px] sm:h-[600px] bg-secondary/40 blur-[140px] rounded-full pointer-events-none"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] sm:w-[800px] h-[400px] sm:h-[500px] bg-primary/15 blur-[120px] rounded-full pointer-events-none"></div>
 
-        <div class="max-w-7xl mx-auto px-6 relative z-10 text-center">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-primary mb-6 reveal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[11px] sm:text-xs text-primary mb-5 sm:mb-6 reveal">
                 <span class="relative flex h-2 w-2">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                 </span>
                 v2.1 udah rilis!
             </div>
-            
-            <h1 class="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tight mb-6 reveal stagger-1">
-                Terminal <span class="text-primary">Trader Pro.</span>
+
+            <h1 class="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-semibold tracking-tight mb-4 sm:mb-6 reveal stagger-1 leading-tight">
+                Terminal Pasar Keuangan<span class="text-primary"> buat Semua Trader </span>
             </h1>
-            
-            <p class="text-xl text-textMuted max-w-2xl mx-auto mb-10 leading-relaxed reveal stagger-2">
-                Dibikin khusus buat analis dan trader serius. 
-                <span class="text-white">Keputusan tajam, data real-time,</span> workflow ala hedge fund. Gak pakai ribet, tinggal gas.
+
+            <p class="text-base sm:text-lg md:text-xl text-textMuted max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed reveal stagger-2">
+                Dari trader Saham, Komoditas, hingga Forex — dari analis Global Makro sampe analis Teknikal?
+                <span class="text-white">Data yang kamu butuhkan, ada di terminal kita!</span>
             </p>
 
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20 reveal stagger-3">
-                <a href="#pricing" class="px-8 py-4 rounded-full bg-white text-black font-medium text-base hover:scale-105 transition-transform">
-                    Coba Early Access
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-12 sm:mb-20 reveal stagger-3">
+                <a href="#pricing" class="px-7 sm:px-8 py-3.5 sm:py-4 rounded-full bg-white text-black font-medium text-sm sm:text-base hover:scale-105 transition-transform">
+                    Coba Terminal Sekarang
                 </a>
             </div>
 
-            <div class="relative w-full max-w-5xl mx-auto reveal stagger-4 terminal-glow animate-float">
+            <div class="relative w-full max-w-5xl mx-auto reveal stagger-4 terminal-glow animate-float" aria-label="Preview antarmuka Kuantara Terminal">
                 <div class="glass-panel rounded-xl overflow-hidden shadow-2xl border-t border-white/20">
-                    <div class="h-8 bg-secondary/20 border-b border-white/5 flex items-center px-4 gap-2">
+                    <div class="h-8 bg-secondary/40 border-b border-white/10 flex items-center px-4 gap-2">
                         <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
                         <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
                         <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
-                        <div class="ml-auto text-xs text-secondary-200 font-mono opacity-70">kuantara_main.exe</div>
-                    </div>
-                    <div class="p-1 bg-[#09090b] grid grid-cols-12 gap-[1px]">
-                        <div class="col-span-1 bg-surfaceHighlight h-[400px] flex flex-col items-center py-4 gap-6 border-r border-white/5">
-                            <span class="iconify text-primary" data-icon="solar:chart-2-bold-duotone" data-width="24"></span>
-                            <span class="iconify text-textMuted hover:text-white" data-icon="solar:globe-bold-duotone" data-width="24"></span>
-                            <span class="iconify text-textMuted hover:text-white" data-icon="solar:layers-minimalistic-bold-duotone" data-width="24"></span>
+                        <div class="ml-auto text-[10px] sm:text-xs text-secondary-200 font-mono opacity-70 truncate">
+                            kuantara_main.exe
                         </div>
-                        <div class="col-span-8 bg-[#0a0a0a] p-6 relative">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="font-mono text-primary text-sm">> GLOBAL_RISK_MONITOR</h3>
-                                <div class="font-mono text-xs text-green-500 flex items-center gap-1">● TERHUBUNG</div>
+                    </div>
+                    <div class="p-1 bg-[#020617] grid grid-cols-1 md:grid-cols-12 gap-[1px]">
+                        <!-- Side nav: hanya muncul di md ke atas -->
+                        <div class="hidden md:flex md:col-span-1 bg-surfaceHighlight md:h-[400px] flex-col items-center py-4 gap-6 border-r border-white/5">
+                            <span class="iconify text-primary" data-icon="solar:chart-2-bold-duotone" data-width="24" aria-hidden="true"></span>
+                            <span class="iconify text-textMuted hover:text-white" data-icon="solar:globe-bold-duotone" data-width="24" aria-hidden="true"></span>
+                            <span class="iconify text-textMuted hover:text-white" data-icon="solar:layers-minimalistic-bold-duotone" data-width="24" aria-hidden="true"></span>
+                        </div>
+
+                        <!-- Main chart area -->
+                        <div class="col-span-1 md:col-span-8 bg-[#050b18] p-4 sm:p-6 relative">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-4 sm:mb-6">
+                                <h3 class="font-mono text-primary text-xs sm:text-sm">&gt; GLOBAL_RISK_MONITOR</h3>
+                                <div class="font-mono text-[10px] sm:text-xs text-green-400 flex items-center gap-1">
+                                    ● TERHUBUNG
+                                </div>
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="h-32 bg-white/5 rounded border border-white/5 p-3">
-                                    <div class="text-xs text-textMuted font-mono mb-2">S&P 500 GAMMA</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                <div class="h-28 sm:h-32 bg-white/5 rounded border border-white/10 p-3">
+                                    <div class="text-[11px] text-textMuted font-mono mb-2">S&amp;P 500 GAMMA</div>
                                     <div class="w-full h-16 bg-gradient-to-t from-primary/20 to-transparent flex items-end">
                                         <div class="w-full border-t-2 border-primary"></div>
                                     </div>
                                 </div>
-                                <div class="h-32 bg-white/5 rounded border border-white/5 p-3">
-                                    <div class="text-xs text-textMuted font-mono mb-2">KORELASI US10Y / DXY</div>
+                                <div class="h-28 sm:h-32 bg-white/5 rounded border border-white/10 p-3">
+                                    <div class="text-[11px] text-textMuted font-mono mb-2">KORELASI US10Y / DXY</div>
                                     <div class="w-full h-16 flex items-center justify-center">
-                                        <span class="font-mono text-2xl text-white">0.82</span>
+                                        <span class="font-mono text-xl sm:text-2xl text-white">0.82</span>
                                     </div>
                                 </div>
-                                <div class="col-span-2 h-24 bg-white/5 rounded border border-white/5 p-3 flex items-center gap-4">
-                                    <span class="iconify text-textMuted" data-icon="simple-icons:nvidia" data-width="24"></span>
-                                    <span class="iconify text-textMuted" data-icon="simple-icons:bitcoin" data-width="24"></span>
+                                <div class="col-span-1 sm:col-span-2 h-20 sm:h-24 bg-white/5 rounded border border-white/10 p-3 flex items-center gap-4">
+                                    <span class="iconify text-textMuted" data-icon="simple-icons:nvidia" data-width="24" aria-hidden="true"></span>
+                                    <span class="iconify text-textMuted" data-icon="simple-icons:bitcoin" data-width="24" aria-hidden="true"></span>
                                     <div class="h-px flex-1 bg-white/10"></div>
-                                    <span class="font-mono text-xs text-primary">NET FLOW POSITIF</span>
+                                    <span class="font-mono text-[10px] sm:text-xs text-primary text-right">NET FLOW POSITIF</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-span-3 bg-surfaceHighlight p-4 border-l border-white/5">
-                            <div class="text-xs font-mono text-textMuted mb-4">AI_INSIGHT_STREAM</div>
+
+                        <!-- AI insight panel -->
+                        <div class="col-span-1 md:col-span-3 bg-surfaceHighlight p-4 border-t md:border-t-0 md:border-l border-white/5">
+                            <div class="text-[11px] sm:text-xs font-mono text-textMuted mb-3 sm:mb-4">AI_INSIGHT_STREAM</div>
                             <div class="space-y-3">
-                                <div class="text-[10px] text-gray-400 font-mono p-2 bg-white/5 rounded border-l-2 border-primary">
-                                    CPI agak melandai. Yield AS kemungkinan turun. Saatnya lirik TLT.
+                                <div class="text-[10px] text-gray-300 font-mono p-2 bg-white/5 rounded border-l-2 border-primary">
+                                    CPI mulai melandai, yield AS rawan turun. Kandidat entry TLT mulai keliatan cakep.
                                 </div>
-                                <div class="text-[10px] text-gray-400 font-mono p-2 bg-white/5 rounded">
-                                    Ada divergensi volume di futures minyak (CL1). Hati-hati.
+                                <div class="text-[10px] text-gray-300 font-mono p-2 bg-white/5 rounded">
+                                    Ada divergensi volume di futures minyak (CL1). Jangan FOMO, tunggu konfirmasi.
                                 </div>
                             </div>
                         </div>
@@ -206,105 +278,124 @@
         </div>
     </section>
 
-    <section id="why" class="py-24 bg-surface/30 border-y border-white/5">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+    <section id="why" class="py-20 sm:py-24 bg-surface/40 border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
                 <div class="reveal stagger-1">
-                    <span class="iconify text-secondary mb-4" data-icon="solar:server-square-cloud-bold-duotone" data-width="32"></span>
-                    <h3 class="text-xl font-semibold mb-3">Data Multi-Sumber</h3>
-                    <p class="text-textMuted text-sm leading-relaxed">
-                        Kita tarik data institusi dari berbagai sumber ke satu layar. Latensi super cepat, harga jauh di bawah Bloomberg Terminal.
+                    <span class="iconify text-secondary mb-4" data-icon="solar:server-square-cloud-bold-duotone" data-width="32" aria-hidden="true"></span>
+                    <h3 class="text-lg sm:text-xl font-semibold mb-3">Data Banyak Sumber, Satu Layar</h3>
+                    <p class="text-textMuted text-sm sm:text-[15px] leading-relaxed">
+                        Data institusi, makro, sampai positioning kita tarik ke satu tempat. Kamu cukup buka satu terminal, bukan 5–6 tab sekaligus.
                     </p>
                 </div>
                 <div class="reveal stagger-2">
-                    <span class="iconify text-secondary mb-4" data-icon="solar:graph-new-up-bold-duotone" data-width="32"></span>
-                    <h3 class="text-xl font-semibold mb-3">Likuiditas No. 1</h3>
-                    <p class="text-textMuted text-sm leading-relaxed">
-                        Harga bisa bohong, tapi likuiditas selalu jujur. Pantau injeksi likuiditas, flow ETF, dan pergerakan big money secara instan.
+                    <span class="iconify text-secondary mb-4" data-icon="solar:graph-new-up-bold-duotone" data-width="32" aria-hidden="true"></span>
+                    <h3 class="text-lg sm:text-xl font-semibold mb-3">Likuiditas yang Jadi Kompas</h3>
+                    <p class="text-textMuted text-sm sm:text-[15px] leading-relaxed">
+                        Harga kadang drama, likuiditas lebih jujur. Kamu bisa lihat injeksi likuiditas, ETF flows, dan pergerakan “duit gede” dengan cepat.
                     </p>
                 </div>
                 <div class="reveal stagger-3">
-                    <span class="iconify text-secondary mb-4" data-icon="solar:cpu-bolt-bold-duotone" data-width="32"></span>
-                    <h3 class="text-xl font-semibold mb-3">Komentar AI Cerdas</h3>
-                    <p class="text-textMuted text-sm leading-relaxed">
-                        AI kita baca risalah bank sentral dan laporan earnings dalam hitungan detik. Rangkuman sentimen makro, langsung ke intinya.
+                    <span class="iconify text-secondary mb-4" data-icon="solar:cpu-bolt-bold-duotone" data-width="32" aria-hidden="true"></span>
+                    <h3 class="text-lg sm:text-xl font-semibold mb-3">AI yang Ngomong Bahasa Trader</h3>
+                    <p class="text-textMuted text-sm sm:text-[15px] leading-relaxed">
+                        Bukan sekadar AI yang pintar baca teks. Kita tuning biar bisa ngobrol ala trader: baca risalah bank sentral, earnings, dan news, lalu kasih intinya ke kamu.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="features" class="py-32">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="mb-16 reveal">
-                <h2 class="text-3xl md:text-5xl font-semibold mb-4">Command Center Kamu.</h2>
-                <p class="text-textMuted text-lg">Setiap modul didesain biar kamu bisa ambil keputusan cepet.</p>
+    <section id="features" class="py-24 sm:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="mb-12 sm:mb-16 reveal text-center sm:text-left">
+                <h2 class="text-2xl sm:text-3xl md:text-5xl font-semibold mb-3 sm:mb-4">Command Center Kamu.</h2>
+                <p class="text-textMuted text-base sm:text-lg">
+                    Satu kali buka, semua yang kamu butuh buat nyusun skenario pasar langsung kebaca.
+                </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+
                 <div class="glass-panel p-6 rounded-2xl card-hover reveal lg:col-span-2">
-                    <div class="flex justify-between items-start mb-8">
-                        <span class="iconify text-textMuted" data-icon="solar:flag-bold-duotone" data-width="32"></span>
-                        <span class="text-xs font-mono text-primary">LIVE</span>
+                    <div class="flex justify-between items-start mb-6 sm:mb-8">
+                        <span class="iconify text-textMuted" data-icon="solar:flag-bold-duotone" data-width="32" aria-hidden="true"></span>
+                        <span class="text-[10px] sm:text-xs font-mono text-primary">LIVE</span>
                     </div>
-                    <h3 class="text-lg font-semibold mb-2">Dashboard Makro AS</h3>
-                    <p class="text-sm text-textMuted">Lengkap dari GDPNow, Klaim Pengangguran, sampai inversi Kurva Yield. Satu layar, semua info.</p>
+                    <h3 class="text-base sm:text-lg font-semibold mb-2">Dashboard Makro AS</h3>
+                    <p class="text-sm text-textMuted">
+                        Dari GDPNow, klaim pengangguran, inflasi, sampai inversi kurva yield. Biar kamu bisa ngerti “cerita besar”-nya pasar, bukan cuma lihat candle doang.
+                    </p>
                 </div>
 
                 <div class="glass-panel p-6 rounded-2xl card-hover reveal stagger-1">
-                    <span class="iconify text-textMuted mb-8" data-icon="solar:shield-warning-bold-duotone" data-width="32"></span>
-                    <h3 class="text-lg font-semibold mb-2">Risiko Global</h3>
-                    <p class="text-sm text-textMuted">Pantau VIX, MOVE, skew, dan korelasi antar aset biar gak kejebak market.</p>
+                    <span class="iconify text-textMuted mb-6 sm:mb-8" data-icon="solar:shield-warning-bold-duotone" data-width="32" aria-hidden="true"></span>
+                    <h3 class="text-base sm:text-lg font-semibold mb-2">Radar Risiko Global</h3>
+                    <p class="text-sm text-textMuted">
+                        VIX, MOVE, skew, dan korelasi antar aset kita rangkum rapi. Biar kamu tahu kapan market lagi ramah, kapan lagi siap nendang.
+                    </p>
                 </div>
 
                 <div class="glass-panel p-6 rounded-2xl card-hover reveal stagger-2">
-                    <span class="iconify text-textMuted mb-8" data-icon="solar:wad-of-money-bold-duotone" data-width="32"></span>
-                    <h3 class="text-lg font-semibold mb-2">Explorer ETF</h3>
-                    <p class="text-sm text-textMuted">Liat duit gede (Smart Money) pindah kemana. Rotasi sektor kelihatan jelas.</p>
+                    <span class="iconify text-textMuted mb-6 sm:mb-8" data-icon="solar:wad-of-money-bold-duotone" data-width="32" aria-hidden="true"></span>
+                    <h3 class="text-base sm:text-lg font-semibold mb-2">ETF &amp; Sector Flow Explorer</h3>
+                    <p class="text-sm text-textMuted">
+                        Dari sektor defensif ke growth, dari bond ke equity. Kamu bisa lihat duit besar lagi geser ke mana, tanpa tebak-tebakan.
+                    </p>
                 </div>
 
                 <div class="glass-panel p-6 rounded-2xl card-hover reveal">
-                    <span class="iconify text-textMuted mb-8" data-icon="solar:pie-chart-2-bold-duotone" data-width="32"></span>
-                    <h3 class="text-lg font-semibold mb-2">Mesin FedWatch</h3>
-                    <p class="text-sm text-textMuted">Probabilitas suku bunga dihitung dari futures SOFR secara real-time.</p>
+                    <span class="iconify text-textMuted mb-6 sm:mb-8" data-icon="solar:pie-chart-2-bold-duotone" data-width="32" aria-hidden="true"></span>
+                    <h3 class="text-base sm:text-lg font-semibold mb-2">Mesin FedWatch</h3>
+                    <p class="text-sm text-textMuted">
+                        Probabilitas suku bunga kita hitung dari futures SOFR. Jadi kamu nggak cuma dengar headline, tapi lihat ekspektasi pasar benerannya.
+                    </p>
                 </div>
 
-                <div class="glass-panel p-6 rounded-2xl card-hover reveal stagger-1 lg:col-span-2 bg-gradient-to-br from-secondary/30 to-transparent border-secondary/20">
-                    <div class="flex justify-between items-start mb-8">
-                        <span class="iconify text-white" data-icon="solar:magic-stick-3-bold-duotone" data-width="32"></span>
-                        <span class="font-mono text-xs bg-secondary/50 text-white px-2 py-1 rounded">BETA</span>
+                <div class="glass-panel p-6 rounded-2xl card-hover reveal stagger-1 lg:col-span-2 bg-gradient-to-br from-secondary/40 to-transparent border-secondary/40">
+                    <div class="flex justify-between items-start mb-6 sm:mb-8">
+                        <span class="iconify text-white" data-icon="solar:magic-stick-3-bold-duotone" data-width="32" aria-hidden="true"></span>
+                        <span class="font-mono text-[10px] sm:text-xs bg-secondary/60 text-white px-2 py-1 rounded">BETA</span>
                     </div>
-                    <h3 class="text-lg font-semibold mb-2 text-white">Insight AI Kuantara</h3>
-                    <p class="text-sm text-gray-300">Tanya data pakai bahasa manusia. "Coba cariin korelasi Emas sama Real Rates 6 bulan terakhir dong."</p>
+                    <h3 class="text-base sm:text-lg font-semibold mb-2 text-white">Insight AI Kuantara</h3>
+                    <p class="text-sm text-gray-200">
+                        Nanya data sekarang gampang: “Coba cariin korelasi Emas sama Real Rates 6 bulan terakhir dong.”
+                        Tinggal ketik, AI bantu tarik data dan kasih konteksnya ke kamu.
+                    </p>
                 </div>
 
                 <div class="glass-panel p-6 rounded-2xl card-hover reveal stagger-2">
-                    <span class="iconify text-textMuted mb-8" data-icon="solar:users-group-two-rounded-bold-duotone" data-width="32"></span>
-                    <h3 class="text-lg font-semibold mb-2">Sentimen Ritel</h3>
-                    <p class="text-sm text-textMuted">Indikator kontrarian. Liat posisi ritel lagi numpuk dimana, kita lawan.</p>
+                    <span class="iconify text-textMuted mb-6 sm:mb-8" data-icon="solar:users-group-two-rounded-bold-duotone" data-width="32" aria-hidden="true"></span>
+                    <h3 class="text-base sm:text-lg font-semibold mb-2">Sentimen Trader Ritel</h3>
+                    <p class="text-sm text-textMuted">
+                        Kita tunjukin posisi ritel lagi numpuk di mana. Cocok buat kamu yang suka ambil posisi kontrarian dan nggak mau ikut kebawa arus.
+                    </p>
                 </div>
 
             </div>
         </div>
     </section>
 
-    <section class="py-24 border-y border-white/5 bg-surface/20">
-        <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-center text-3xl font-semibold mb-16 reveal">Kata Mereka yang Udah Cuan.</h2>
+    <section class="py-20 sm:py-24 border-y border-white/5 bg-surface/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <h2 class="text-center text-2xl sm:text-3xl font-semibold mb-12 sm:mb-16 reveal">Kata Mereka yang Udah Pakai.</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="reveal">
-                    <p class="text-lg leading-relaxed mb-6">"Akhirnya ada data sekelas institusi tapi gak pakai onboarding yang ribet. Kuantara itu isinya daging semua."</p>
+                    <p class="text-base sm:text-lg leading-relaxed mb-6">
+                        "Akhirnya ada data sekelas institusi tapi nggak pakai onboarding ribet. Tinggal login, langsung disuguhi data yang kepake buat decision."
+                    </p>
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-mono text-sm text-secondary">A</div>
                         <div class="text-sm">
                             <div class="font-semibold">Alex V.</div>
-                            <div class="text-textMuted">Strategis Makro</div>
+                            <div class="text-textMuted">Strategis Global Makro</div>
                         </div>
                     </div>
                 </div>
                 <div class="reveal stagger-1">
-                    <p class="text-lg leading-relaxed mb-6">"Desainnya enak banget dimata. Gak banyak noise, cuma chart sama flow yang beneran nggerakin pasar."</p>
+                    <p class="text-base sm:text-lg leading-relaxed mb-6">
+                        "Layout-nya bersih, enak di mata. Gak kebanyakan ornamen, cuma chart dan flow yang beneran ngaruh ke posisi yang gue ambil."
+                    </p>
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-mono text-sm text-secondary">J</div>
                         <div class="text-sm">
@@ -314,7 +405,9 @@
                     </div>
                 </div>
                 <div class="reveal stagger-2">
-                    <p class="text-lg leading-relaxed mb-6">"Jujur, ini gantiin 3 tools langganan gue. Buat prep trading mingguan, fitur cross-asset-nya kepake banget."</p>
+                    <p class="text-base sm:text-lg leading-relaxed mb-6">
+                        "Buat weekly prep, Kuantara gantiin 2–3 tools yang biasa gue buka. Tinggal buka satu terminal, cross-asset view langsung kebaca."
+                    </p>
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-mono text-sm text-secondary">M</div>
                         <div class="text-sm">
@@ -327,99 +420,101 @@
         </div>
     </section>
 
-    <section id="pricing" class="py-32">
-        <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-4xl font-semibold text-center mb-4 reveal">Akses Terminal</h2>
-            <p class="text-center text-textMuted mb-16 reveal">Investasi leher ke atas. Pilih paket yang pas buat lo.</p>
+    <section id="pricing" class="py-24 sm:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <h2 class="text-3xl sm:text-4xl font-semibold text-center mb-4 reveal">Akses Terminal</h2>
+            <p class="text-center text-textMuted mb-12 sm:mb-16 reveal text-sm sm:text-base">
+                Investasi leher ke atas dulu, baru lot tambah besar. Pilih paket yang paling pas buat kamu.
+            </p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                
+
                 <!-- Paket 3 Bulan -->
-                <div class="glass-panel p-8 rounded-2xl flex flex-col reveal card-hover">
-                    <h3 class="text-lg font-medium text-textMuted mb-2">Paket 3 Bulan</h3>
-                    <div class="text-3xl font-semibold font-mono mb-6">
-                        Rp189.000<span class="text-sm text-textMuted">/bulan</span>
+                <div class="glass-panel p-7 sm:p-8 rounded-2xl flex flex-col reveal card-hover">
+                    <h3 class="text-base sm:text-lg font-medium text-textMuted mb-2">Paket 3 Bulan</h3>
+                    <div class="text-2xl sm:text-3xl font-semibold font-mono mb-6">
+                        Rp189.000<span class="text-xs sm:text-sm text-textMuted">/bulan</span>
                     </div>
                     <ul class="space-y-3 mb-8 text-sm text-textMuted flex-1">
                         <li class="flex items-center gap-2">
-                            <span class="iconify text-primary" data-icon="solar:check-circle-bold"></span> 
-                            Semua Modul Makro
+                            <span class="iconify text-primary" data-icon="solar:check-circle-bold" aria-hidden="true"></span>
+                            Akses semua modul makro &amp; risiko
                         </li>
                         <li class="flex items-center gap-2">
-                            <span class="iconify text-primary" data-icon="solar:check-circle-bold"></span> 
-                            Berita Real-time
+                            <span class="iconify text-primary" data-icon="solar:check-circle-bold" aria-hidden="true"></span>
+                            Feed berita real-time terkurasi
                         </li>
                     </ul>
                     <button class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-black transition-all text-sm font-medium">
-                        Sikat
+                        Mulai 3 Bulan Dulu
                     </button>
                 </div>
 
                 <!-- Paket 6 Bulan -->
-                <div class="glass-panel p-8 rounded-2xl flex flex-col reveal stagger-1 card-hover">
-                    <h3 class="text-lg font-medium text-textMuted mb-2">Paket 6 Bulan</h3>
-                    <div class="text-3xl font-semibold font-mono mb-6">
-                        Rp179.000<span class="text-sm text-textMuted">/bulan</span>
+                <div class="glass-panel p-7 sm:p-8 rounded-2xl flex flex-col reveal stagger-1 card-hover">
+                    <h3 class="text-base sm:text-lg font-medium text-textMuted mb-2">Paket 6 Bulan</h3>
+                    <div class="text-2xl sm:text-3xl font-semibold font-mono mb-6">
+                        Rp179.000<span class="text-xs sm:text-sm text-textMuted">/bulan</span>
                     </div>
                     <ul class="space-y-3 mb-8 text-sm text-textMuted flex-1">
                         <li class="flex items-center gap-2">
-                            <span class="iconify text-primary" data-icon="solar:check-circle-bold"></span> 
-                            Semua di paket 3 bulan
+                            <span class="iconify text-primary" data-icon="solar:check-circle-bold" aria-hidden="true"></span>
+                            Semua fitur di paket 3 bulan
                         </li>
                         <li class="flex items-center gap-2">
-                            <span class="iconify text-primary" data-icon="solar:check-circle-bold"></span> 
-                            Explorer Arus ETF
+                            <span class="iconify text-primary" data-icon="solar:check-circle-bold" aria-hidden="true"></span>
+                            Explorer arus ETF &amp; rotasi sektor
                         </li>
                     </ul>
                     <button class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-black transition-all text-sm font-medium">
-                        Sikat
+                        Commit 6 Bulan
                     </button>
                 </div>
 
                 <!-- Tahunan (Paling Hemat) -->
-                <div class="glass-panel p-8 rounded-2xl flex flex-col reveal stagger-2 card-hover relative overflow-hidden">
+                <div class="glass-panel p-7 sm:p-8 rounded-2xl flex flex-col reveal stagger-2 card-hover relative overflow-hidden">
                     <div class="absolute top-0 right-0 px-3 py-1 bg-primary text-black text-[10px] font-bold">PALING HEMAT</div>
-                    <h3 class="text-lg font-medium text-white mb-2">Tahunan</h3>
-                    <div class="text-3xl font-semibold font-mono mb-6 text-primary">
-                        Rp166.000<span class="text-sm text-textMuted text-white">/bulan</span>
+                    <h3 class="text-base sm:text-lg font-medium text-white mb-2">Tahunan</h3>
+                    <div class="text-2xl sm:text-3xl font-semibold font-mono mb-6 text-primary">
+                        Rp166.000<span class="text-xs sm:text-sm text-textMuted text-white">/bulan</span>
                     </div>
                     <ul class="space-y-3 mb-8 text-sm text-textMuted flex-1">
                         <li class="flex items-center gap-2">
-                            <span class="iconify text-primary" data-icon="solar:check-circle-bold"></span> 
-                            Akses Full Suite
+                            <span class="iconify text-primary" data-icon="solar:check-circle-bold" aria-hidden="true"></span>
+                            Akses full semua modul &amp; dashboard
                         </li>
                         <li class="flex items-center gap-2">
-                            <span class="iconify text-primary" data-icon="solar:check-circle-bold"></span> 
-                            Mesin AI Kuantara
+                            <span class="iconify text-primary" data-icon="solar:check-circle-bold" aria-hidden="true"></span>
+                            Akses penuh ke mesin AI Kuantara
                         </li>
                     </ul>
                     <button class="w-full py-3 rounded-xl bg-white text-black hover:bg-gray-200 transition-all text-sm font-medium">
-                        Pilih Ini
+                        Gas Tahunan
                     </button>
                 </div>
 
                 <!-- Sekali Bayar -->
-                <div class="glass-panel p-8 rounded-2xl flex flex-col reveal stagger-3 card-hover border-primary/30">
-                    <h3 class="text-lg font-medium text-primary mb-2">Sekali Bayar</h3>
-                    <div class="text-3xl font-semibold font-mono mb-6">
-                        Rp4.900.000<span class="text-sm text-textMuted">/sekali bayar</span>
+                <div class="glass-panel p-7 sm:p-8 rounded-2xl flex flex-col reveal stagger-3 card-hover border-primary/30">
+                    <h3 class="text-base sm:text-lg font-medium text-primary mb-2">Sekali Bayar</h3>
+                    <div class="text-2xl sm:text-3xl font-semibold font-mono mb-6">
+                        Rp4.900.000<span class="text-xs sm:text-sm text-textMuted">/sekali bayar</span>
                     </div>
                     <ul class="space-y-3 mb-8 text-sm text-textMuted flex-1">
                         <li class="flex items-center gap-2">
-                            <span class="iconify text-primary" data-icon="solar:star-bold"></span> 
-                            Founder's Badge
+                            <span class="iconify text-primary" data-icon="solar:star-bold" aria-hidden="true"></span>
+                            Founder's Badge di dalam ekosistem
                         </li>
                         <li class="flex items-center gap-2">
-                            <span class="iconify text-primary" data-icon="solar:star-bold"></span> 
-                            Request Fitur Prioritas
+                            <span class="iconify text-primary" data-icon="solar:star-bold" aria-hidden="true"></span>
+                            Prioritas request fitur &amp; modul baru
                         </li>
                         <li class="flex items-center gap-2">
-                            <span class="iconify text-secondary" data-icon="simple-icons:discord"></span> 
-                            Grup Discord Privat
+                            <span class="iconify text-secondary" data-icon="simple-icons:discord" aria-hidden="true"></span>
+                            Akses ke grup Discord privat
                         </li>
                     </ul>
                     <button class="w-full py-3 rounded-xl bg-primary/10 text-primary border border-primary/50 hover:bg-primary hover:text-black transition-all text-sm font-medium">
-                        Jadi Partner
+                        Gabung Sebagai Founder
                     </button>
                 </div>
 
@@ -427,23 +522,24 @@
         </div>
     </section>
 
-    <footer class="py-12 border-t border-white/5 bg-black text-xs text-textMuted">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex items-center gap-2">
+    <footer class="py-10 sm:py-12 border-t border-white/5 bg-background text-[11px] sm:text-xs text-textMuted">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6">
+            <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-center md:text-left">
                 <span class="font-mono text-gray-500">© 2024 Kuantara Terminal.</span>
-            </div>
-            
-            <div class="flex gap-6">
-                <a href="#" class="hover:text-white transition-colors">Privasi</a>
-                <a href="#" class="hover:text-white transition-colors">S&K</a>
-                <a href="#" class="hover:text-white transition-colors">Data Policy</a>
-                <a href="#" class="hover:text-white transition-colors">Kontak</a>
+                <span class="font-mono text-gray-500">Dibangun buat bantu kamu baca pasar lebih jernih.</span>
             </div>
 
-            <div class="flex gap-4 items-center opacity-50">
-                <span class="iconify hover:text-secondary transition-colors" data-icon="simple-icons:github"></span>
-                <span class="iconify hover:text-secondary transition-colors" data-icon="simple-icons:x"></span>
-                <span class="iconify hover:text-secondary transition-colors" data-icon="simple-icons:discord"></span>
+            <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+                <a href="#" class="hover:text-white transition-colors">Kebijakan Privasi</a>
+                <a href="#" class="hover:text-white transition-colors">S&amp;K Layanan</a>
+                <a href="#" class="hover:text-white transition-colors">Kebijakan Data</a>
+                <a href="#" class="hover:text-white transition-colors">Kontak Tim</a>
+            </div>
+
+            <div class="flex gap-3 sm:gap-4 items-center opacity-60">
+                <span class="iconify hover:text-secondary transition-colors" data-icon="simple-icons:github" aria-hidden="true"></span>
+                <span class="iconify hover:text-secondary transition-colors" data-icon="simple-icons:x" aria-hidden="true"></span>
+                <span class="iconify hover:text-secondary transition-colors" data-icon="simple-icons:discord" aria-hidden="true"></span>
             </div>
         </div>
     </footer>
