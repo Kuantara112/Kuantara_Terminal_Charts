@@ -105,6 +105,7 @@
         <div id="quotesTitle">Curves</div>
         <div class="kt-page-tabs">
           <div class="kt-pill-page active" data-page="curves">Curves</div>
+          <div class="kt-pill-page" data-page="spread">Spread</div>
           <div class="kt-pill-page" data-page="rotations">Rotations</div>
           <div class="kt-pill-page" data-page="seasonality">Seasonality</div>
           <div class="kt-pill-page" data-page="volatility">Volatility</div>
@@ -114,6 +115,7 @@
       <div class="kt-panel-body">
         <!-- Breadth dihapus -->
         <iframe id="curvesFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_marketlab_curves.html"></iframe>
+        <iframe id="spreadFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_marketlab_spread.html"></iframe>
         <iframe id="rotationsFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_marketlab_rotations.html"></iframe>
         <iframe id="seasonalityFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_marketlab_seasonality.html"></iframe>
         <iframe id="volatilityFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_marketlab_volatility.html"></iframe>
@@ -125,6 +127,7 @@
 <script>
   const frames = {
     curves: document.getElementById("curvesFrame"),
+    spread: document.getElementById("spreadFrame"),
     rotations: document.getElementById("rotationsFrame"),
     seasonality: document.getElementById("seasonalityFrame"),
     volatility: document.getElementById("volatilityFrame"),
@@ -135,6 +138,7 @@
 
   const TITLES = { 
     curves: "Curves", 
+    spread: "Spread",
     rotations: "Rotations",
     seasonality: "Seasonality", 
     volatility: "Volatility" 
