@@ -107,14 +107,16 @@
           <div class="kt-pill-page active" data-page="cot">COT</div>
           <div class="kt-pill-page" data-page="retail">Retail</div>
           <div class="kt-pill-page" data-page="etf">ETF Flow</div>
+          <div class="kt-pill-page" data-page="bookmap">Bookmap</div>
         </div>
       </header>
 
       <div class="kt-panel-body">
-        <!-- Broad dihapus, hanya COT, Retail & ETF Flow -->
+        <!-- Broad dihapus, hanya COT, Retail, ETF Flow & Bookmap -->
         <iframe id="cotFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentimentlab_cot.html"></iframe>
         <iframe id="retailFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentimentlab_retail.html"></iframe>
         <iframe id="etfFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentimentlab_etfflow.html"></iframe>
+        <iframe id="bookmapFrame" src="https://kuantara112.github.io/Kuantara_Terminal_Charts/metrics_sentimentlab_bookmap.html"></iframe>
       </div>
     </section>
   </div>
@@ -125,6 +127,7 @@
     cot: document.getElementById("cotFrame"),
     retail: document.getElementById("retailFrame"),
     etf: document.getElementById("etfFrame"),
+    bookmap: document.getElementById("bookmapFrame"),
   };
 
   const pagePills = document.querySelectorAll(".kt-pill-page");
@@ -133,7 +136,8 @@
   const TITLES = {
     cot: "COT",
     retail: "Retail",
-    etf: "ETF Flow"
+    etf: "ETF Flow",
+    bookmap: "Bookmap"
   };
 
   function updatePanel(key) {
