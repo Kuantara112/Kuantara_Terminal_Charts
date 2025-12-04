@@ -1,1 +1,511 @@
-testing
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuantara – US vs Global 10Y Yield Spreads</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+  <style>
+    :root {
+      --bg-root:#000000;
+      --bg-main:#111111;
+      --bg-card:#151515;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+    }
+
+    * {
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace;
+    }
+
+    html, body { height:100%; }
+
+    body {
+      background:var(--bg-root);
+      color:var(--text-main);
+      min-height:100vh;
+      padding:16px;
+      overflow-y:auto;
+    }
+
+    body::-webkit-scrollbar { width:6px; }
+    body::-webkit-scrollbar-track { background:transparent; }
+    body::-webkit-scrollbar-thumb {
+      background:rgba(0,0,0,0.6);
+      border-radius:3px;
+    }
+
+    .shell {
+      width:100%;
+      max-width:1200px;
+      margin:0 auto;
+      background:var(--bg-main);
+      border-radius:10px;
+      border:1px solid var(--border-soft);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:12px;
+    }
+
+    .top-bar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .status-text {
+      font-size:11px;
+      color:var(--text-muted);
+    }
+
+    .status-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      font-size:11px;
+    }
+
+    .badge {
+      padding:2px 6px;
+      border-radius:999px;
+      font-size:10px;
+      border:1px solid var(--border-soft);
+      color:var(--text-muted);
+    }
+    .badge.ok {
+      border-color:#22c55e;
+      color:#22c55e;
+    }
+    .badge.error {
+      border-color:#ef4444;
+      color:#ef4444;
+    }
+
+    .chip {
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:10px;
+      border:1px solid var(--border-soft);
+      background:#101010;
+      color:var(--text-muted);
+      white-space:nowrap;
+    }
+
+    .card {
+      margin-top:6px;
+      background:var(--bg-card);
+      border-radius:8px;
+      border:1px solid var(--border-soft);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:0;
+    }
+
+    .card-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .card-title {
+      font-size:13px;
+      font-weight:500;
+    }
+
+    .card-subtitle {
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .country-controls {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      font-size:10px;
+      align-items:center;
+    }
+
+    .country-controls label {
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      background:#101010;
+      cursor:pointer;
+      color:var(--text-muted);
+    }
+
+    .country-controls input[type="checkbox"] {
+      accent-color:var(--accent);
+      width:10px;
+      height:10px;
+    }
+
+    .chart-box {
+      width:100%;
+      height:520px;
+    }
+
+    @media (max-width:900px) {
+      .chart-box { height:480px; }
+    }
+
+    @media (max-width:600px) {
+      body { padding:10px 6px; }
+      .shell { padding:10px; }
+      .chart-box { height:460px; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <!-- Top status bar -->
+  <div class="top-bar">
+    <div class="status-text" id="statusText">Initializing…</div>
+    <div class="status-right">
+      <div id="statusBadge" class="badge">IDLE</div>
+      <div class="chip">Source: FRED (OECD 10Y)</div>
+      <div class="chip">Spread: US 10Y – Country 10Y</div>
+    </div>
+  </div>
+
+  <!-- Main card -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">US vs Global 10Y Government Bond Yield Spreads</div>
+        <div class="card-subtitle">
+          Monthly data, US 10Y (IRLTLT01USM156N) minus each country's 10Y yield · higher &gt; US yield &gt; country
+        </div>
+      </div>
+      <div class="country-controls" id="countryControls">
+        <!-- checkboxes diisi via JS -->
+      </div>
+    </div>
+    <div id="spreadChart" class="chart-box"></div>
+  </div>
+</div>
+
+<script>
+  // =========================
+  // CONFIG
+  // =========================
+  const PROXIES = [
+    "",  // coba direct dulu
+    "https://cors-anywhere-proxy-six.vercel.app/",
+    "https://cors.eu.org/"
+  ];
+
+  // GANTI API KEY INI DENGAN FRED API KEY MILIKMU
+  const API_KEY  = "9353b7c58744f0c2c80a310279ef6af5";
+  const FRED_OBS = "https://api.stlouisfed.org/fred/series/observations";
+
+  // Base: US 10Y OECD long-term yield
+  const BASE_SERIES_ID = "IRLTLT01USM156N";
+
+  // Negara lain (kode FRED OECD 10Y)
+  const COUNTRIES = [
+    { id:"JPN", name:"Japan",   fred:"IRLTLT01JPM156N" },
+    { id:"DEU", name:"Germany", fred:"IRLTLT01DEM156N" },
+    { id:"GBR", name:"UK",      fred:"IRLTLT01GBM156N" },
+    { id:"CAN", name:"Canada",  fred:"IRLTLT01CAM156N" },
+    { id:"AUS", name:"Australia", fred:"IRLTLT01AUM156N" }
+    // bisa tambah: France, Italy, Euro Area, dll
+  ];
+
+  // date range
+  const START_DATE = "1990-01-01";
+  const END_DATE   = new Date().toISOString().slice(0,10);
+
+  const statusText  = document.getElementById("statusText");
+  const statusBadge = document.getElementById("statusBadge");
+  const countryControls = document.getElementById("countryControls");
+
+  let spreadChart = null;
+  let datasets = {};   // { countryId: { dates:[], spreads:[] } }
+
+  function setStatus(text, mode = "idle") {
+    statusText.textContent = text;
+    statusBadge.textContent = mode.toUpperCase();
+    statusBadge.classList.remove("ok","error");
+    if (mode === "ok") statusBadge.classList.add("ok");
+    if (mode === "error") statusBadge.classList.add("error");
+  }
+
+  // =========================
+  // CORS HELPERS
+  // =========================
+  function buildProxyUrl(proxy, url) {
+    if (!proxy) return url;
+    const isCorsAnywhere = proxy.includes("cors-anywhere") || proxy.includes("vercel.app");
+    if (isCorsAnywhere) {
+      return proxy.endsWith("/") ? `${proxy}${url}` : `${proxy}/${url}`;
+    }
+    const clean = url.replace(/^https?:\/\//, "");
+    return proxy.endsWith("/") ? `${proxy}${clean}` : `${proxy}/${clean}`;
+  }
+
+  async function fetchWithProxies(url, options = {}, proxies = PROXIES) {
+    let lastError = null;
+    for (const proxy of proxies) {
+      const target = buildProxyUrl(proxy, url);
+      const mergedOptions = {
+        ...options,
+        cache:"no-store",
+        headers:{
+          ...(options.headers || {}),
+          "Cache-Control":"no-cache"
+        }
+      };
+      try {
+        const res = await fetch(target, mergedOptions);
+        if (res.ok) return res;
+        lastError = new Error(`HTTP ${res.status} via ${proxy || "direct"}`);
+      } catch (e) {
+        lastError = e;
+      }
+    }
+    throw lastError || new Error("Request failed");
+  }
+
+  function buildFredObsUrl(seriesId, start, end) {
+    const params = new URLSearchParams({
+      series_id: seriesId,
+      api_key:   API_KEY,
+      file_type: "json",
+      observation_start: start,
+      observation_end:   end
+    });
+    return `${FRED_OBS}?${params.toString()}`;
+  }
+
+  async function fetchFredSeries(seriesId, start, end) {
+    const url = buildFredObsUrl(seriesId, start, end);
+    const res = await fetchWithProxies(url);
+    const js  = await res.json();
+    const obs = js.observations || [];
+    const dates = [];
+    const values = [];
+    for (const o of obs) {
+      const v = o.value;
+      if (v === "" || v === "." || v == null) continue;
+      const num = parseFloat(v);
+      if (Number.isNaN(num)) continue;
+      dates.push(o.date);
+      values.push(num);
+    }
+    return { dates, values };
+  }
+
+  // =========================
+  // DATA PROCESSING
+  // =========================
+  function buildSpread(base, other) {
+    const mapBase  = new Map();
+    const mapOther = new Map();
+
+    for (let i=0; i<base.dates.length; i++) {
+      mapBase.set(base.dates[i], base.values[i]);
+    }
+    for (let i=0; i<other.dates.length; i++) {
+      mapOther.set(other.dates[i], other.values[i]);
+    }
+
+    const allDates = Array.from(new Set(
+      [...mapBase.keys()].filter(d => mapOther.has(d))
+    ));
+    allDates.sort();
+
+    const dates = [];
+    const spreads = [];
+    for (const d of allDates) {
+      const b = mapBase.get(d);
+      const o = mapOther.get(d);
+      if (b == null || o == null) continue;
+      dates.push(d);
+      // Spread: US 10Y – Country 10Y
+      spreads.push(b - o);
+    }
+    return { dates, spreads };
+  }
+
+  // =========================
+  // CHART OPTION
+  // =========================
+  function buildSpreadOption(datasets, activeIds) {
+    const series = [];
+    let anyData = false;
+
+    activeIds.forEach(id => {
+      const ds = datasets[id];
+      if (!ds || !ds.dates.length) return;
+      anyData = true;
+      const country = COUNTRIES.find(c => c.id === id);
+      series.push({
+        name: country ? country.name : id,
+        type: "line",
+        symbol: "none",
+        smooth: true,
+        lineStyle: { width: 2 },
+        data: ds.dates.map((d,i)=>[d, ds.spreads[i]])
+      });
+    });
+
+    if (!anyData) {
+      throw new Error("No data to plot – check active country selection.");
+    }
+
+    return {
+      backgroundColor:"#151515",
+      grid:{ left:70, right:30, top:40, bottom:60 },
+
+      tooltip:{
+        trigger:"axis",
+        axisPointer:{ type:"cross" },
+        formatter: params => {
+          if (!params || !params.length) return "";
+          const date = echarts.format.formatTime("yyyy-MM-dd", params[0].value[0]);
+          let out = `${date}<br/>`;
+          params.forEach(p => {
+            const v = p.value[1];
+            if (v == null || Number.isNaN(v)) return;
+            out += `${p.marker}${p.seriesName}: ${v.toFixed(2)} %-pts (US – ${p.seriesName})<br/>`;
+          });
+          return out;
+        }
+      },
+
+      legend:{
+        top:8,
+        left:"center",
+        textStyle:{ color:"#f5f5f5", fontSize:10 }
+      },
+
+      xAxis:{
+        type:"time",
+        axisLine:{ lineStyle:{ color:"#444" } },
+        axisLabel:{ color:"#aaaaaa", fontSize:9 },
+        splitLine:{ show:false }
+      },
+
+      yAxis:{
+        type:"value",
+        name:"US 10Y – Country 10Y (percent points)",
+        nameTextStyle:{ color:"#f5f5f5", fontSize:11 },
+        axisLine:{ lineStyle:{ color:"#444" } },
+        axisLabel:{ color:"#aaaaaa", fontSize:9 },
+        splitLine:{ lineStyle:{ color:"#222" } },
+        axisPointer:{ label:{ formatter: p => p.value.toFixed(2)+" %-pts" } }
+      },
+
+      series
+    };
+  }
+
+  // =========================
+  // UI HANDLING
+  // =========================
+  function initCountryControls() {
+    countryControls.innerHTML = "";
+    COUNTRIES.forEach((c, idx) => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.value = c.id;
+      // default: aktifkan 3 besar dulu
+      input.checked = (c.id === "JPN" || c.id === "DEU" || c.id === "GBR");
+      label.appendChild(input);
+      const span = document.createElement("span");
+      span.textContent = c.name;
+      label.appendChild(span);
+      countryControls.appendChild(label);
+
+      input.addEventListener("change", () => {
+        renderChart();
+      });
+    });
+  }
+
+  function getActiveCountryIds() {
+    const ids = [];
+    const inputs = countryControls.querySelectorAll("input[type='checkbox']");
+    inputs.forEach(input => {
+      if (input.checked) ids.push(input.value);
+    });
+    return ids;
+  }
+
+  function renderChart() {
+    if (!spreadChart) return;
+    try {
+      const active = getActiveCountryIds();
+      const option = buildSpreadOption(datasets, active);
+      spreadChart.setOption(option, true);
+      setStatus("US vs Global 10Y yield spreads ready", "ok");
+    } catch (err) {
+      console.error(err);
+      setStatus("Render error: " + err.message, "error");
+    }
+  }
+
+  // =========================
+  // INIT APP
+  // =========================
+  async function initApp() {
+    try {
+      setStatus("Loading FRED series (US + countries)…", "idle");
+
+      const basePromise = fetchFredSeries(BASE_SERIES_ID, START_DATE, END_DATE);
+      const countryPromises = COUNTRIES.map(c =>
+        fetchFredSeries(c.fred, START_DATE, END_DATE)
+      );
+
+      const baseSeries = await basePromise;
+      const countrySeries = await Promise.all(countryPromises);
+
+      // Build spreads
+      COUNTRIES.forEach((c, idx) => {
+        datasets[c.id] = buildSpread(baseSeries, countrySeries[idx]);
+      });
+
+      spreadChart = echarts.init(document.getElementById("spreadChart"));
+      initCountryControls();
+      renderChart();
+
+      window.addEventListener("resize", () => {
+        spreadChart && spreadChart.resize();
+      });
+    } catch (err) {
+      console.error(err);
+      setStatus("Init error: " + err.message, "error");
+    }
+  }
+
+  window.addEventListener("load", () => {
+    initApp();
+  });
+</script>
+</body>
+</html>
