@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuantara – Pending Orders Snapshot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Fira Code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap"/>
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+  <style>
+    :root{
+      --bg-root:#000000;
+      --bg-main:#0b0b0b;
+      --bg-panel:#111111;
+      --border-soft:#2b2b2b;
+      --text-main:#f5f5f5;
+      --text-muted:#9b9b9b;
+      --accent:#ffbf00;
+
+      --buy-stop:#22c55e;
+      --buy-limit:#3b82f6;
+      --sell-limit:#ef4444;
+      --sell-stop:#eab308;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Fira Code",monospace;
+    }
+
+    html, body{
+      height:100%;
+      width:100%;
+    }
+
+    body{
+      min-height:100vh;
+      background-color:var(--bg-root);
+      color:var(--text-main);
+      overflow:hidden;
+    }
+
+    .layout-root{
+      height:100vh;
+      width:100vw;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      padding:0;
+    }
+
+    .header{
+      display:flex;
+      justify-content:flex-start;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      padding:8px 10px 0 10px;
+    }
+
+    .control-group{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+
+    .label{
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .selector{
+      border:1px solid var(--border-soft);
+      background-color:var(--bg-main);
+      color:var(--text-main);
+      padding:6px 10px;
+      font-size:11px;
+      border-radius:999px;
+      outline:none;
+      cursor:pointer;
+    }
+
+    .selector:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(255,191,0,0.12);
+    }
+
+    .card{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      background-color:var(--bg-panel);
+      border:1px solid var(--border-soft);
+      border-radius:12px 12px 0 0;
+      padding:8px 10px 10px 10px;
+      min-height:0;
+    }
+
+    .card-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:11px;
+      margin-bottom:4px;
+      gap:8px;
+    }
+
+    .pair-name{
+      font-weight:600;
+      letter-spacing:0.03em;
+    }
+
+    .subtitle{
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .pill{
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      font-size:10px;
+      color:var(--text-muted);
+    }
+
+    .status-ok{ color:#22c55e; }
+    .status-err{ color:#ef4444; }
+
+    .legend-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      font-size:10px;
+      color:var(--text-muted);
+      margin-bottom:4px;
+    }
+
+    .legend-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      display:inline-block;
+      margin-right:4px;
+    }
+    .legend-buy-stop{ background:var(--buy-stop); }
+    .legend-buy-limit{ background:var(--buy-limit); }
+    .legend-sell-limit{ background:var(--sell-limit); }
+    .legend-sell-stop{ background:var(--sell-stop); }
+
+    .legend-current-line{
+      border-bottom:2px dashed #e5e7eb;
+      width:14px;
+      margin-right:4px;
+      display:inline-block;
+    }
+
+    .chart{
+      flex:1;
+      width:100%;
+      min-height:0;
+    }
+
+    @media (max-width:600px){
+      .header{
+        padding:6px 8px 0 8px;
+      }
+      .card{
+        border-radius:0;
+        padding:6px 8px 8px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="layout-root">
+
+  <!-- CONTROL BAR (dropdown pair saja, tanpa refresh) -->
+  <div class="header">
+    <div class="control-group">
+      <span class="label">Pair:</span>
+      <select id="pair-select" class="selector"></select>
+    </div>
+  </div>
+
+  <!-- SINGLE CARD: ONLY PENDING ORDERS -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="pair-name" id="card-pair-name"></div>
+        <!-- subtitle dikosongkan (tidak ada teks Pending Orders...) -->
+        <div class="subtitle" id="card-subtitle"></div>
+      </div>
+      <!-- status chip di kanan header -->
+      <div class="pill" id="card-status">Idle</div>
+    </div>
+
+    <div class="legend-row">
+      <span><span class="legend-dot legend-buy-stop"></span>Buy-dominant</span>
+      <span><span class="legend-dot legend-sell-limit"></span>Sell-dominant</span>
+      <span><span class="legend-dot legend-sell-stop"></span>Balanced</span>
+      <span><span class="legend-current-line"></span>Current Price</span>
+    </div>
+
+    <div class="chart" id="main-chart"></div>
+  </div>
+</div>
+
+<script>
+  // =========================================
+  // CONFIG
+  // =========================================
+  const PROXIES = [
+    "https://cors-anywhere-proxy-six.vercel.app/",
+    "https://cors.eu.org/",
+    "" // fallback: direct
+  ];
+
+  const API_BASE =
+    "https://api.fastbull.com/fastbull-macro-data-service/api/getWebPendingOrder";
+
+  // orderType=1 (Pending Orders)
+  const SYMBOLS = [
+    { pairId: 28, symbol: "XAUUSD", label: "Gold" },
+    { pairId: 2,  symbol: "EURUSD", label: "Euro" },
+    { pairId: 8,  symbol: "USDJPY", label: "Yen" },
+    { pairId: 30, symbol: "WTI",    label: "Crude Oil" }
+  ];
+
+  let currentPair = SYMBOLS[0];
+  let mainChart = null;
+
+  // Buffer time-series untuk heatmap ala Bookmap
+  const MAX_COLUMNS = 120; // max history
+  let priceAxis = [];      // price ladder (string label, ascending low → high) -> X
+  let timeAxis  = [];      // time labels -> Y
+  let timeBuffer = [];     // [{ total:[..], net:[..], currentPrice }, ...]
+
+  // =========================================
+  // UTIL – FETCH VIA PROXIES & NORMALISASI JSON
+  // =========================================
+  async function fetchWithProxies(path) {
+    const targetUrl = API_BASE + path;
+
+    let lastError = null;
+
+    for (const proxy of PROXIES) {
+      const url = proxy ? proxy + targetUrl : targetUrl;
+      try {
+        const res = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json, text/plain, */*"
+          }
+        });
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status);
+        }
+
+        const text = await res.text();
+        let json;
+        try {
+          json = JSON.parse(text);
+        } catch (e) {
+          throw new Error("Invalid JSON from proxy");
+        }
+
+        const normalized = normalizeFastbullResponse(json);
+        return normalized;
+      } catch (err) {
+        console.warn("Proxy failed:", proxy || "[direct]", err);
+        lastError = err;
+      }
+    }
+    throw new Error("All proxies failed: " + (lastError ? lastError.message : "Unknown error"));
+  }
+
+  function normalizeFastbullResponse(raw) {
+    if (raw && typeof raw === "object") {
+      if (typeof raw.bodyMessage === "string") {
+        try {
+          const inner = JSON.parse(raw.bodyMessage);
+          if (Array.isArray(inner)) return inner;
+        } catch (e) {
+          console.warn("bodyMessage parse failed, trying fallback", e);
+        }
+      }
+      if (Array.isArray(raw.bodyMessage)) {
+        return raw.bodyMessage;
+      }
+      if (Array.isArray(raw.data)) {
+        return raw.data;
+      }
+    }
+
+    if (Array.isArray(raw)) return raw;
+
+    throw new Error("Unsupported response format");
+  }
+
+  // =========================================
+  // TRANSFORMASI SNAPSHOT
+  // =========================================
+  function transformSnapshot(entry) {
+    const prices = (entry.price || []).map(v => parseFloat(v));
+    const priceLabels = entry.priceRange || entry.price || [];
+
+    const buyRaw = entry.buyOrder || [];
+    const sellRaw = entry.sellOrder || [];
+
+    const buy = buyRaw.map(v => parseFloat(v));
+    const sell = sellRaw.map(v => parseFloat(v));
+
+    const currentPrice = parseFloat(entry.currentPrice || "0");
+    const frequency = entry.frequency || 30;
+    const createTime = entry.createTime || null;
+
+    return {
+      prices,
+      priceLabels,
+      buy,
+      sell,
+      currentPrice,
+      meta: { frequency, createTime, pairId: entry.pairId, type: entry.type }
+    };
+  }
+
+  function buildOrderBuckets(snapshot) {
+    const { prices, buy, sell, currentPrice } = snapshot;
+
+    const buyStop = [];
+    const buyLimit = [];
+    const sellLimit = [];
+    const sellStop = [];
+
+    for (let i = 0; i < prices.length; i++) {
+      const p = prices[i];
+      const b = buy[i] || 0;
+      const s = sell[i] || 0;
+
+      if (!isFinite(p)) {
+        buyStop.push(0); buyLimit.push(0); sellLimit.push(0); sellStop.push(0);
+        continue;
+      }
+
+      if (p >= currentPrice) {
+        // atas current price
+        buyStop.push(b);
+        buyLimit.push(0);
+        sellLimit.push(s);
+        sellStop.push(0);
+      } else {
+        // bawah current price
+        buyStop.push(0);
+        buyLimit.push(b);
+        sellLimit.push(0);
+        sellStop.push(s);
+      }
+    }
+
+    return { buyStop, buyLimit, sellLimit, sellStop };
+  }
+
+  // =========================================
+  // BUFFER TIME HEATMAP ala BOOKMAP
+  // =========================================
+  function updateTimeBuffers(snapshot) {
+    const { prices, priceLabels } = snapshot;
+    const { buyStop, buyLimit, sellLimit, sellStop } = buildOrderBuckets(snapshot);
+
+    // Susun per level (harga) lalu sort ascending harga
+    const levels = prices.map((p, i) => ({
+      price: p,
+      label: priceLabels[i] || String(p),
+      buyStop: buyStop[i] || 0,
+      buyLimit: buyLimit[i] || 0,
+      sellLimit: sellLimit[i] || 0,
+      sellStop: sellStop[i] || 0
+    })).filter(l => isFinite(l.price));
+
+    levels.sort((a, b) => a.price - b.price); // ascending: rendah → tinggi
+
+    const sortedLabels = levels.map(l => l.label);
+    const buyVol = levels.map(l => (l.buyStop + l.buyLimit));
+    const sellVol = levels.map(l => Math.abs(l.sellLimit) + Math.abs(l.sellStop));
+    const totalVol = buyVol.map((b, idx) => b + sellVol[idx]);
+    const netVol   = buyVol.map((b, idx) => b - sellVol[idx]); // >0 buy-dominant, <0 sell-dominant
+
+    // Jika price ladder berubah, reset history
+    if (!priceAxis.length || priceAxis.length !== sortedLabels.length) {
+      priceAxis = sortedLabels.slice();
+      timeAxis = [];
+      timeBuffer = [];
+    } else {
+      let changed = false;
+      for (let i = 0; i < sortedLabels.length; i++) {
+        if (sortedLabels[i] !== priceAxis[i]) {
+          changed = true;
+          break;
+        }
+      }
+      if (changed) {
+        priceAxis = sortedLabels.slice();
+        timeAxis = [];
+        timeBuffer = [];
+      }
+    }
+
+    const now = new Date();
+    const timeLabel = now.toLocaleTimeString('en-GB', {
+      hour12:false,
+      hour:'2-digit',
+      minute:'2-digit',
+      second:'2-digit'
+    });
+
+    timeAxis.push(timeLabel);
+    timeBuffer.push({ total: totalVol, net: netVol, currentPrice: snapshot.currentPrice });
+
+    if (timeAxis.length > MAX_COLUMNS) {
+      timeAxis.shift();
+      timeBuffer.shift();
+    }
+  }
+
+  // =========================================
+  // ECHARTS: TIME HEATMAP + BUBBLE TRADES (PRICE = X, TIME = Y)
+  // =========================================
+  function makeTimeHeatmapOption() {
+    if (!priceAxis.length || !timeAxis.length || !timeBuffer.length) {
+      return {};
+    }
+
+    const latest = timeBuffer[timeBuffer.length - 1];
+    const currentPrice = latest.currentPrice || 0;
+
+    // Cari max volume untuk normalisasi warna heatmap
+    const allVals = [];
+    timeBuffer.forEach(row => {
+      row.total.forEach(v => {
+        if (v && isFinite(v)) allVals.push(Math.abs(v));
+      });
+    });
+    const maxVal = allVals.length ? Math.max(...allVals, 0) : 0;
+
+    const rootStyle = getComputedStyle(document.documentElement);
+    const buyColor   = rootStyle.getPropertyValue('--buy-stop').trim()   || '#22c55e';
+    const sellColor  = rootStyle.getPropertyValue('--sell-limit').trim() || '#ef4444';
+    const neutralColor = rootStyle.getPropertyValue('--sell-stop').trim() || '#eab308';
+
+    // BASE HEATMAP (X = PRICE INDEX, Y = TIME INDEX)
+    const heatData = [];
+
+    for (let t = 0; t < timeAxis.length; t++) {
+      const row = timeBuffer[t];
+      const tot = row.total;
+      const net = row.net;
+      for (let p = 0; p < priceAxis.length; p++) {
+        const val = tot[p] || 0;
+        if (!val || !isFinite(val)) continue;
+
+        const absVal = Math.abs(val);
+        const norm = maxVal > 0 ? absVal / maxVal : 0;
+        const opacity = 0.08 + 0.92 * norm;
+
+        const sign = net[p] || 0;
+        const color = sign > 0 ? buyColor : (sign < 0 ? sellColor : neutralColor);
+
+        heatData.push({
+          value: [p, t, val],
+          itemStyle: {
+            color,
+            opacity: Math.min(1, Math.max(0, opacity))
+          }
+        });
+      }
+    }
+
+    // BUBBLE TRADES (overlay) – snapshot terakhir (baris waktu terakhir)
+    const bubbleData = [];
+    const lastTimeIndex = timeAxis.length - 1;
+    const lastRow = timeBuffer[lastTimeIndex];
+    const lastNet = lastRow.net;
+    const lastTotal = lastRow.total;
+
+    const absNetVals = lastNet.map(v => Math.abs(v || 0));
+    const maxNet = absNetVals.length ? Math.max(...absNetVals, 0) : 0;
+
+    for (let p = 0; p < priceAxis.length; p++) {
+      const vol = Math.abs(lastTotal[p] || 0);
+      if (!vol || !isFinite(vol)) continue;
+
+      const net = lastNet[p] || 0;
+      const imbalanceNorm = maxNet > 0 ? Math.abs(net) / maxNet : 0;
+      const size = 4 + 16 * imbalanceNorm; // bubble size (px)
+
+      const color = net > 0 ? buyColor : (net < 0 ? sellColor : neutralColor);
+
+      bubbleData.push({
+        value: [p, lastTimeIndex, vol],
+        symbolSize: size,
+        itemStyle: {
+          color,
+          opacity: 0.98,
+          borderColor: '#000000',
+          borderWidth: 0.6
+        }
+      });
+    }
+
+    // Cari label harga terdekat untuk current price
+    let closestIdx = -1;
+    let minDiff = Infinity;
+    priceAxis.forEach((lbl, idx) => {
+      const p = parseFloat(lbl);
+      if (!isFinite(p)) return;
+      const diff = Math.abs(p - currentPrice);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = idx;
+      }
+    });
+    const currentPriceLabel =
+      closestIdx >= 0 ? priceAxis[closestIdx] : currentPrice.toFixed(2);
+
+    // Zoom horizontal fokus sekitar current price (X axis)
+    const n = priceAxis.length || 1;
+    let centerPct = 50;
+    if (n > 1 && closestIdx >= 0) {
+      centerPct = (closestIdx / (n - 1)) * 100;
+    }
+    const windowSize = 30;
+    let startX = Math.max(0, centerPct - windowSize / 2);
+    let endX   = Math.min(100, centerPct + windowSize / 2);
+    if (endX - startX < 5) {
+      endX = Math.min(100, startX + 5);
+    }
+
+    return {
+      grid: {
+        left: 60,
+        right: 10,
+        top: 30,
+        bottom: 40        // ruang untuk label harga + slider
+      },
+      xAxis: {
+        type: 'category',
+        data: priceAxis, // PRICE → X
+        axisLine: { lineStyle: { color: '#4b5563' } },
+        axisLabel: {
+          color: '#9ca3af',
+          fontSize: 9
+        },
+        axisTick: { show: false },
+        splitArea: { show: false }
+      },
+      yAxis: {
+        type: 'category',
+        data: timeAxis, // TIME → Y
+        axisLine: { lineStyle: { color: '#4b5563' } },
+        axisLabel: {
+          color: '#9ca3af',
+          fontSize: 8,
+          formatter: v => v
+        },
+        axisTick: { show: false },
+        splitArea: { show: false }
+      },
+      animation: false,
+      tooltip: {
+        trigger: 'item',
+        formatter: params => {
+          const priceIdx = params.value[0];
+          const timeIdx  = params.value[1];
+          const vol      = params.value[2];
+
+          const time  = timeAxis[timeIdx];
+          const price = priceAxis[priceIdx];
+
+          if (params.seriesType === 'heatmap') {
+            return [
+              `<b>${time}</b>`,
+              `Price: ${price}`,
+              `Total Pending: ${vol.toFixed(2)}`
+            ].join('<br/>');
+          } else if (params.seriesType === 'scatter') {
+            return [
+              `<b>${time} (Last Snapshot)</b>`,
+              `Price: ${price}`,
+              `Bubble Vol: ${vol.toFixed(2)}`
+            ].join('<br/>');
+          }
+          return '';
+        }
+      },
+      dataZoom: [
+        // horizontal zoom di PRICE (X)
+        {
+          type: 'slider',
+          xAxisIndex: 0,
+          bottom: 6,
+          height: 14,
+          start: startX,
+          end: endX,
+          backgroundColor: '#050505',
+          fillerColor: 'rgba(255,191,0,0.22)',
+          borderColor: '#374151'
+        },
+        {
+          type: 'inside',
+          xAxisIndex: 0,
+          start: startX,
+          end: endX
+        },
+        // vertical scroll di TIME (Y)
+        {
+          type: 'inside',
+          yAxisIndex: 0,
+          start: 0,
+          end: 100
+        }
+      ],
+      series: [
+        {
+          name: 'Order Heatmap',
+          type: 'heatmap',
+          data: heatData,
+          progressive: 0,
+          emphasis: { focus: 'self' },
+          markLine: {
+            symbol: 'none',
+            label: {
+              show: true,
+              position: 'insideEndTop',
+              color: '#e5e7eb',
+              fontSize: 9,
+              formatter: () => `Current: ${currentPrice.toFixed(2)}`
+            },
+            lineStyle: {
+              type: 'dashed',
+              color: '#e5e7eb',
+              width: 1
+            },
+            data: [
+              { xAxis: currentPriceLabel }
+            ]
+          }
+        },
+        {
+          name: 'Trades (Bubble)',
+          type: 'scatter',
+          data: bubbleData,
+          symbol: 'circle',
+          zlevel: 3
+        }
+      ]
+    };
+  }
+
+  function renderOrdersChart(dom) {
+    if (!mainChart) {
+      mainChart = echarts.init(dom);
+    }
+    const option = makeTimeHeatmapOption();
+    mainChart.setOption(option, true);
+    return mainChart;
+  }
+
+  // =========================================
+  // UI BINDING
+  // =========================================
+  const pairSelect = document.getElementById('pair-select');
+  const statusEl   = document.getElementById('card-status');
+  const pairNameEl = document.getElementById('card-pair-name');
+
+  SYMBOLS.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.symbol;
+    opt.textContent = `${s.symbol} – ${s.label}`;
+    pairSelect.appendChild(opt);
+  });
+  pairSelect.value = currentPair.symbol;
+
+  function updateCardMeta() {
+    pairNameEl.textContent = currentPair.symbol;
+  }
+
+  async function loadSnapshot(pair, isManual=false) {
+    if (!pair) return;
+
+    if (statusEl) {
+      statusEl.textContent = isManual ? "Manual refresh…" : "Loading…";
+      statusEl.classList.remove('status-ok','status-err');
+    }
+
+    try {
+      const arr = await fetchWithProxies(
+        `?orderType=1&pairId=${pair.pairId}&selectTime=`
+      );
+      if (!arr || !arr.length) {
+        throw new Error("Empty snapshot");
+      }
+      const snap = transformSnapshot(arr[0]);
+
+      // Update buffer time-series & render heatmap + bubbles
+      updateTimeBuffers(snap);
+
+      const dom = document.getElementById('main-chart');
+      renderOrdersChart(dom);
+
+      if (statusEl) {
+        statusEl.textContent =
+          `OK · Update/ ${snap.meta.frequency}menit · CurrentPrice ${snap.currentPrice.toFixed(2)}`;
+        statusEl.classList.add('status-ok');
+      }
+    } catch (err) {
+      console.error('Snapshot error', pair.symbol, err);
+      if (statusEl) {
+        statusEl.textContent = `Error: ${err.message}`;
+        statusEl.classList.add('status-err');
+      }
+    }
+  }
+
+  pairSelect.addEventListener('change', () => {
+    const sym = pairSelect.value;
+    const found = SYMBOLS.find(s => s.symbol === sym);
+    if (found) {
+      currentPair = found;
+      updateCardMeta();
+
+      // reset buffer & chart saat ganti pair
+      priceAxis = [];
+      timeAxis = [];
+      timeBuffer = [];
+      if (mainChart) {
+        mainChart.dispose();
+        mainChart = null;
+      }
+
+      loadSnapshot(currentPair, true);
+    }
+  });
+
+  // resize global
+  window.addEventListener('resize', () => {
+    if (mainChart) mainChart.resize();
+  });
+
+  // initial
+  updateCardMeta();
+  loadSnapshot(currentPair);
+
+  // auto-poll tiap 60 detik
+  setInterval(() => {
+    loadSnapshot(currentPair);
+  }, 60000);
+</script>
+</body>
+</html>
