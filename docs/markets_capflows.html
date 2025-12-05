@@ -36,6 +36,24 @@
       margin:0;
       padding:0;
       font-family:"Fira Code",monospace;
+      /* GLOBAL SCROLLBAR: hitam transparan */
+      scrollbar-width:thin;
+      scrollbar-color:rgba(0,0,0,0.45) transparent;
+    }
+
+    /* Chrome / Edge / Safari – global scrollbar */
+    *::-webkit-scrollbar{
+      width:8px;
+    }
+    *::-webkit-scrollbar-track{
+      background:transparent;
+    }
+    *::-webkit-scrollbar-thumb{
+      background:rgba(0,0,0,0.45); /* hitam transparan */
+      border-radius:999px;
+    }
+    *::-webkit-scrollbar-thumb:hover{
+      background:rgba(0,0,0,0.65); /* sedikit lebih solid saat hover */
     }
 
     body{
@@ -44,19 +62,6 @@
       color:var(--text-main);
       padding:16px;
       overflow-y:auto;
-      scrollbar-width:thin;
-      scrollbar-color:rgba(0,0,0,0.4) transparent;
-    }
-
-    body::-webkit-scrollbar{
-      width:8px;
-    }
-    body::-webkit-scrollbar-track{
-      background:transparent;
-    }
-    body::-webkit-scrollbar-thumb{
-      background:rgba(0,0,0,0.4);
-      border-radius:999px;
     }
 
     .page{
